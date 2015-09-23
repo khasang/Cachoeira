@@ -1,3 +1,2 @@
-# Cachoeira
-В этой ветке ведётся работа над User stories и roadMap проекта Cachoeira.
-Cachoeira – кроссплатформенный OpenSource проект, в рамках которого будет разработан программный продукт, предназначенный управления проектами по водопадному подходу
+# User stories & road Map
+В этой ветке ведётся работа над user stories и road map проекта Cachoeira.
