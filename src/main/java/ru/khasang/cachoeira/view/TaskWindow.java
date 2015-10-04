@@ -29,7 +29,7 @@ public class TaskWindow {
     Stage stage;
 
     public TaskWindow() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("TaskWindow.fxml"));   //грузим макет окна
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/TaskWindow.fxml"));   //грузим макет окна
         fxmlLoader.setController(this);                                                         //говорим макету, что этот класс является его контроллером
         try {
             root = fxmlLoader.load();

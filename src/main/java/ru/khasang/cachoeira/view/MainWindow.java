@@ -1,16 +1,11 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -36,7 +31,7 @@ public class MainWindow {
 //    ObservableList resourceTableModel = FXCollections.observableArrayList();    //<Resource> модель для ресурсов
 
     public MainWindow() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MainWindow.fxml"));  //грузим макет окна
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));  //грузим макет окна
         fxmlLoader.setController(this);                                                     //говорим макету, что этот класс является его контроллером
         try {
             root = fxmlLoader.load();
@@ -118,7 +113,7 @@ public class MainWindow {
         //минимум JDK 8u40
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Cachoeira");
-        alert.setHeaderText("Вы хотите сохранить изменения в Имя Проекта?");
+        alert.setHeaderText("Вы хотите сохранить изменения в Имя проекта?");
 
         ButtonType saveProjectButtonType = new ButtonType("Сохранить");
         ButtonType dontSaveProjectButtonType = new ButtonType("Не сохранять");

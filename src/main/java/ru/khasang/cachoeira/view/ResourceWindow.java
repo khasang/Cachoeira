@@ -28,7 +28,7 @@ public class ResourceWindow {
     Stage stage;
 
     public ResourceWindow() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ResourceWindow.fxml"));  //грузим макет окна
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ResourceWindow.fxml"));  //грузим макет окна
         fxmlLoader.setController(this);                                                         //говорим макету, что этот класс является его контроллером
         try {
             root = fxmlLoader.load();
