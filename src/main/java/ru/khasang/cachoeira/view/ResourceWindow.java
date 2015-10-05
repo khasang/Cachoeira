@@ -1,6 +1,7 @@
 package ru.khasang.cachoeira.view;
 
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,14 +19,19 @@ import java.io.IOException;
  */
 public class ResourceWindow {
 
-    public TextField resourceNameField;
-    public TableView taskTableView;
-    public TableColumn taskNameColumn;
-    public TableColumn taskCheckboxColumn;
-    public TextField resourceTypeField;
+    @FXML
+    private TextField resourceNameField;
+    @FXML
+    private TableView taskTableView;
+    @FXML
+    private TableColumn taskNameColumn;
+    @FXML
+    private TableColumn taskCheckboxColumn;
+    @FXML
+    private TextField resourceTypeField;
 
-    Parent root = null;
-    Stage stage;
+    private Parent root = null;
+    private Stage stage;
 
     public ResourceWindow() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ResourceWindow.fxml"));  //грузим макет окна

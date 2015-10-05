@@ -41,6 +41,15 @@
                               <ScrollPane fx:id="taskGanttScrollPane" fitToHeight="true" fitToWidth="true" />
                            </items>
                         </SplitPane>
+                        <HBox VBox.vgrow="NEVER">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#addNewTaskHandle" text="+" HBox.hgrow="NEVER">
+                                 <tooltip>
+                                    <Tooltip text="Добавить задачу" />
+                                 </tooltip>
+                              </Button>
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
                </content>
@@ -63,6 +72,15 @@
                               <ScrollPane fx:id="resourceGanttScrollPane" fitToHeight="true" fitToWidth="true" />
                            </items>
                         </SplitPane>
+                        <HBox VBox.vgrow="NEVER">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#addNewResourceHandle" text="+" HBox.hgrow="NEVER">
+                                 <tooltip>
+                                    <Tooltip text="Добавить ресурс" />
+                                 </tooltip>
+                              </Button>
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
                </content></Tab>
