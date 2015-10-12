@@ -1,11 +1,10 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -18,30 +17,24 @@ import java.io.IOException;
 /**
  * Created by truesik on 28.09.2015.
  */
-public class TaskWindow {
+public class ResourceWindow {
 
-
-    private final Stage mainWindow;
     @FXML
-    private TextField taskNameField;
+    private TextField resourceNameField;
     @FXML
-    private TableView resourceTableView;
+    private TableView taskTableView;
     @FXML
-    private TableColumn resourceNameColumn;
+    private TableColumn taskNameColumn;
     @FXML
-    private TableColumn resourceCheckboxColumn;
+    private TableColumn taskCheckboxColumn;
     @FXML
-    private DatePicker taskStartDatePicker;
-    @FXML
-    private DatePicker taskFinishDatePicker;
+    private TextField resourceTypeField;
 
     private Parent root = null;
     private Stage stage;
 
-    public TaskWindow(Stage mainWindow) {
-        this.mainWindow = mainWindow;
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/TaskWindow.fxml"));   //грузим макет окна
+    public ResourceWindow() {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ResourceWindow.fxml"));  //грузим макет окна
         fxmlLoader.setController(this);                                                         //говорим макету, что этот класс является его контроллером
         try {
             root = fxmlLoader.load();
@@ -55,19 +48,19 @@ public class TaskWindow {
         if (root != null) {
             stage.setScene(new Scene(root));
         }
-        stage.setTitle("Новая задача");
-        stage.initOwner(mainWindow);
+        stage.setTitle("Новый ресурс");
+//        stage.initOwner(nameOfParentWindow);
         stage.initModality(Modality.WINDOW_MODAL);  //чтобы окно сделать модальным, ему нужно присвоить "владельца" (строчка выше)
         stage.setResizable(false);                  //размер окна нельзя изменить
         stage.show();
     }
 
-    public void taskWindowOKButtonHandle(ActionEvent actionEvent) {
-        //добавляем задачу и закрываем окошко
+    public void resourceWindowOKButtonHandle(ActionEvent actionEvent) {
+        //добавляем ресурс и закрываем окошко
         stage.close();
     }
 
-    public void taskWindowCancelButtonHandle(ActionEvent actionEvent) {
+    public void resourceWindowCancelButtonHandle(ActionEvent actionEvent) {
         stage.close();
     }
 }

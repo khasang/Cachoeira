@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.data;
+package ru.khasang.cachoeira.data;
 
 import junit.framework.TestCase;
 import org.junit.After;
