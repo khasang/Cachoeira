@@ -4,4 +4,5 @@
 Cachoeira – кроссплатформенный OpenSource проект, в рамках которого будет разработан программный продукт, предназначенный управления проектами по водопадному подходу
 
 
-# [User stories & road Map](https://github.com/khasang/Cachoeira/blob/master/User-stories.md)
+## [User stories](https://github.com/khasang/Cachoeira/blob/master/User-stories.md)
+## [Road Map](https://github.com/khasang/Cachoeira/blob/master/Road-map.md)
