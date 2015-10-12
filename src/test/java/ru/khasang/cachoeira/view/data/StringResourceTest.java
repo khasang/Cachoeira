@@ -1,9 +1,10 @@
-package data;
+package ru.khasang.cachoeira.view.data;
 
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.khasang.cachoeira.data.StringResource;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;

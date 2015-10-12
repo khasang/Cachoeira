@@ -1,4 +1,4 @@
-package data;
+package ru.khasang.cachoeira.data;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

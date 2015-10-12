@@ -1,15 +1,13 @@
-package model;
+package ru.khasang.cachoeira.view.model;
 
-import data.StringResource;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.khasang.cachoeira.model.Project;
 
 import java.util.Calendar;
 import java.util.Date;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by nadezhda on 07.10.2015.

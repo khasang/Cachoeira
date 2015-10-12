@@ -1,4 +1,4 @@
-package model;
+package ru.khasang.cachoeira.model;
 
 import java.util.Date;
 import java.util.List;
