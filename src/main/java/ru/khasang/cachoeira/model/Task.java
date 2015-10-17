@@ -7,8 +7,8 @@ import java.util.Date;
  */
 public class Task implements ITask {
     private String name;
-    private Date start;
-    private Date finish;
+    private Date startDate;
+    private Date finishDate;
     private int donePercent;
 
     @Override
@@ -22,23 +22,23 @@ public class Task implements ITask {
     }
 
     @Override
-    public Date getStart() {
-        return start;
+    public Date getStartDate() {
+        return startDate;
     }
 
     @Override
-    public void setStart(Date start) {
-        this.start = start;
+    public void setStartDate(Date start) {
+        this.startDate = start;
     }
 
     @Override
-    public Date getFinish() {
-        return finish;
+    public Date getFinishDate() {
+        return finishDate;
     }
 
     @Override
-    public void setFinish(Date finish) {
-        this.finish = finish;
+    public void setFinishDate(Date finish) {
+        this.finishDate = finish;
     }
 
     @Override

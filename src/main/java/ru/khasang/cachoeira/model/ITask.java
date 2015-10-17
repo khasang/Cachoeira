@@ -8,10 +8,10 @@ import java.util.Date;
 public interface ITask {
     String getName();
     void setName(String name);
-    Date getStart();
-    void setStart(Date start);
-    Date getFinish();
-    void setFinish(Date finish);
+    Date getStartDate();
+    void setStartDate(Date start);
+    Date getFinishDate();
+    void setFinishDate(Date finish);
     int getDonePercent();
     void setDonePercent(int donePercent);
 }
