@@ -2,6 +2,7 @@ package ru.khasang.cachoeira;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import ru.khasang.cachoeira.controller.ViewController;
 import ru.khasang.cachoeira.view.MainWindow;
 
 /**
@@ -10,8 +11,10 @@ import ru.khasang.cachoeira.view.MainWindow;
 public class Start extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
-        MainWindow mainWindow = new MainWindow();
-        mainWindow.launch();
+//        MainWindow mainWindow = new MainWindow();
+//        mainWindow.launch();
+        ViewController viewController = new ViewController();
+        viewController.launchMainWindow();
     }
 
     public static void main(String[] args) {

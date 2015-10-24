@@ -9,8 +9,8 @@ import java.util.List;
 public class Project implements IProject {
 
     private String name;
-    private Date start;
-    private Date finish;
+    private Date startDate;
+    private Date finishDate;
     private List<ITask> tasks; //Интерфейс ITask будет создаваться в другой задаче
 
     public Project() {
@@ -31,23 +31,23 @@ public class Project implements IProject {
     }
 
     @Override
-    public Date getStart() {
-        return start;
+    public Date getStartDate() {
+        return startDate;
     }
 
     @Override
-    public void setStart(Date start) {
-        this.start = start;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     @Override
-    public Date getFinish() {
-        return finish;
+    public Date getFinishDate() {
+        return finishDate;
     }
 
     @Override
-    public void setFinish(Date finish) {
-        this.finish = finish;
+    public void setFinishDate(Date finishDate) {
+        this.finishDate = finishDate;
     }
 
     @Override

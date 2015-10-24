@@ -17,8 +17,7 @@ import java.io.IOException;
 /**
  * Created by truesik on 28.09.2015.
  */
-public class ResourceWindow {
-
+public class ResourceWindow implements IWindow {
     @FXML
     private TextField resourceNameField;
     @FXML
@@ -43,6 +42,7 @@ public class ResourceWindow {
         }
     }
 
+    @Override
     public void launch() {
         stage = new Stage(StageStyle.UTILITY);      //StageStyle.UTILITY - в тайтле только один крестик
         if (root != null) {
@@ -53,6 +53,11 @@ public class ResourceWindow {
         stage.initModality(Modality.WINDOW_MODAL);  //чтобы окно сделать модальным, ему нужно присвоить "владельца" (строчка выше)
         stage.setResizable(false);                  //размер окна нельзя изменить
         stage.show();
+    }
+
+    @Override
+    public Stage getStage() {
+        return stage;
     }
 
     public void resourceWindowOKButtonHandle(ActionEvent actionEvent) {
