@@ -73,7 +73,7 @@ public class Task implements ITask {
 
     @Override
     public void setDependentTask(List<IDependentTask> dependentTask) {
-
+        this.dependentTasks = dependentTask;
     }
 
     @Override
@@ -88,21 +88,21 @@ public class Task implements ITask {
 
     @Override
     public void addResource(IResource resource) {
-
+        resources.add(resource);
     }
 
     @Override
     public void removeResource(IResource resource) {
-
+        resources.remove(resource);
     }
 
     @Override
     public List<IResource> getResourceList() {
-        return null;
+        return resources;
     }
 
     @Override
     public void setResourceList(List<IResource> resources) {
-        this.resources.addAll(resources);
+        this.resources = resources;
     }
 }

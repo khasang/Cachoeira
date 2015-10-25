@@ -1,6 +1,5 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -14,7 +13,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.TaskController;
 import ru.khasang.cachoeira.controller.ViewController;
 import ru.khasang.cachoeira.model.IResource;
@@ -55,7 +53,7 @@ public class MainWindow implements IWindow {
     private TaskController taskController;
     private TreeItem<ITask> rootTask = new TreeItem<>(new Task());  //todo исправить new Task на контроллер
     private ObservableList<ITask> taskTableModel = FXCollections.observableArrayList();        //<Task> модель для задач
-    //    ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();    //<Resource> модель для ресурсов
+    private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();    //<Resource> модель для ресурсов
 
     public MainWindow(TaskController taskController, ViewController viewController) {
         this.taskController = taskController;
@@ -117,12 +115,12 @@ public class MainWindow implements IWindow {
         refreshTableModel(); //костыль
 
         taskNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getName()));
-        startDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<Date>(param.getValue().getValue().getStartDate()));
-        finishDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<Date>(param.getValue().getValue().getFinishDate()));
+        startDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getStartDate()));
+        finishDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getFinishDate()));
 
-        //контекстные меню в списках задач и ресурсов todo вынести в отдельный класс
+        //контекстные меню в списках задач и ресурсов
         //контекстное меню на пустом месте таблицы
-        ContextMenu tableMenu = new ContextMenu();
+        ContextMenu taskTableMenu = new ContextMenu();
         MenuItem addNewTask = new MenuItem("Новая задача");
         addNewTask.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -130,84 +128,23 @@ public class MainWindow implements IWindow {
                 openNewTaskWindow();
             }
         });
-        tableMenu.getItems().addAll(addNewTask);   //заполняем меню
-        taskTreeTableView.setContextMenu(tableMenu);
+        taskTableMenu.getItems().addAll(addNewTask);   //заполняем меню
+        taskTreeTableView.setContextMenu(taskTableMenu);
 
-        taskTreeTableView.setRowFactory(new Callback<TreeTableView<ITask>, TreeTableRow<ITask>>() {
+        ContextMenu resourceTableMenu = new ContextMenu();
+        MenuItem addNewResource = new MenuItem("Новый ресурс");
+        addNewResource.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public TreeTableRow<ITask> call(TreeTableView<ITask> param) {
-                TreeTableRow<ITask> row = new TreeTableRow<>();
-                //контекстное меню на пустом месте таблицы
-//                ContextMenu tableMenu = new ContextMenu();
-//                MenuItem addNewTask = new MenuItem("Новая задача");
-//                addNewTask.setOnAction(new EventHandler<ActionEvent>() {
-//                    @Override
-//                    public void handle(ActionEvent event) {
-//                        openNewTaskWindow();
-//                    }
-//                });
-//                tableMenu.getItems().addAll(addNewTask);   //заполняем меню
-//                taskTreeTableView.setContextMenu(tableMenu);
-                //контекстное меню для элементов таблицы
-                ContextMenu rowMenu = new ContextMenu();
-                MenuItem setResource = new MenuItem("Назначить ресурс");
-                MenuItem getProperties = new MenuItem("Свойства");
-                MenuItem removeTask = new MenuItem("Удалить задачу");
-                setResource.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        //назначаем ресурс
-                    }
-                });
-                getProperties.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        taskController.setSelectedTask(row.getTreeItem().getValue());
-                        openPropertiesTaskWindow();
-                    }
-                });
-                removeTask.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        taskController.removeTask(row.getTreeItem().getValue());
-                        refreshTableModel();
-                    }
-                });
-                rowMenu.getItems().addAll(setResource, getProperties, removeTask);  //заполняем меню
-
-                row.contextMenuProperty().bind(
-                        Bindings.when(Bindings.isNotNull(row.itemProperty()))   //если на не пустом месте кликаем,
-                                .then(rowMenu)                                  //то выводим одно меню,
-                                .otherwise((ContextMenu) null));                    //а если на пустом, то другое
-                return row;
+            public void handle(ActionEvent event) {
+                openNewResourceWindow();
             }
         });
+        resourceTableMenu.getItems().addAll(addNewResource);   //заполняем меню
+        resourceTableView.setContextMenu(resourceTableMenu);
 
-//        resourceTableView.setRowFactory(new Callback<TableView, TableRow>() {
-//            @Override
-//            public TableRow call(TableView param) {
-//                TableRow row = new TableRow();
-//                ContextMenu rowMenu = new ContextMenu();
-//                MenuItem addNewResource = new MenuItem("Новый ресурс");
-//                addNewResource.setOnAction(new EventHandler<ActionEvent>() {
-//                    @Override
-//                    public void handle(ActionEvent event) {
-//                        //open add resource dialog
-//                    }
-//                });
-//                rowMenu.getItems().addAll(addNewResource);
-//                row.contextMenuProperty().bind(Bindings.when(Bindings.isNull(row.itemProperty()))
-//                        .then(rowMenu)
-//                        .otherwise((ContextMenu) null));
-//                return row;
-//            }
-//        });
+        taskTreeTableView.setRowFactory(new TaskContextMenuRowFactory(this)); //контекстное меню для каждого элемента таблицы задач
+        resourceTableView.setRowFactory(new ResourceContextMenuRowFactory(this)); //контекстное меню для каждого элкмента таблицы ресурсов
     }
-
-    private void openPropertiesTaskWindow() {
-        viewController.launchPropertiesTaskWindow(this);
-    }
-
 
     @Override
     public Stage getStage() {
@@ -229,6 +166,7 @@ public class MainWindow implements IWindow {
             }
         });
     }
+
 
     private void onClose() {
         //минимум JDK 8u40
@@ -280,9 +218,19 @@ public class MainWindow implements IWindow {
         openNewTaskWindow();
     }
 
-    public void openNewTaskWindow() {
-//        TaskWindow taskWindow = new TaskWindow(this); //todo переделать на контроллер
-//        taskWindow.launch();
+    private void openNewTaskWindow() {
         viewController.launchNewTaskWindow(this);
+    }
+
+    public void openPropertiesTaskWindow() {
+        viewController.launchPropertiesTaskWindow(this);
+    }
+
+    private void openNewResourceWindow() {
+
+    }
+
+    public TaskController getTaskController() {
+        return taskController;
     }
 }
