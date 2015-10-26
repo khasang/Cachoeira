@@ -12,7 +12,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
-import ru.khasang.cachoeira.controller.TaskController;
+import ru.khasang.cachoeira.controller.IController;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -39,14 +39,14 @@ public class TaskWindow implements IWindow {
     private DatePicker taskFinishDatePicker;
 
     private MainWindow mainWindow;
+    private IController controller;
     private boolean isNewTask = false;
     private Parent root = null;
     private Stage stage;
-    private TaskController taskController;
 
-    public TaskWindow(MainWindow mainWindow, TaskController taskController, boolean isNewTask) {
+    public TaskWindow(MainWindow mainWindow, IController controller, boolean isNewTask) {
         this.mainWindow = mainWindow;
-        this.taskController = taskController;
+        this.controller = controller;
         this.isNewTask = isNewTask;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/TaskWindow.fxml"));   //грузим макет окна
@@ -92,9 +92,9 @@ public class TaskWindow implements IWindow {
             taskStartDatePicker.setValue(LocalDate.now());                              //дефолтовое значение: Сегодняшняя дата
             taskFinishDatePicker.setValue(taskStartDatePicker.getValue().plusDays(1));  //плюс один день
         } else {
-            taskNameField.setText(taskController.getSelectedTask().getName());
-            taskStartDatePicker.setValue(taskController.getSelectedTask().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-            taskFinishDatePicker.setValue(taskController.getSelectedTask().getFinishDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            taskNameField.setText(controller.getSelectedTask().getName());
+            taskStartDatePicker.setValue(controller.getSelectedTask().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            taskFinishDatePicker.setValue(controller.getSelectedTask().getFinishDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         }
 
         ChangeListener changeListener = new ChangeListener() {
@@ -144,9 +144,9 @@ public class TaskWindow implements IWindow {
         Date taskFinishDate = Date.from(taskFinishDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());  //LocalDate to Date
 
         if (isNewTask) {
-            taskController.addTask(taskNameField.getText(), taskStartDate, taskFinishDate);
+            controller.handleAddTask(taskNameField.getText(), taskStartDate, taskFinishDate);
         } else {
-            taskController.updateTask(taskNameField.getText(), taskStartDate, taskFinishDate);
+            controller.handleChangeTask(taskNameField.getText(), taskStartDate, taskFinishDate);
 //            taskController.getSelectedTask().setName(taskNameField.getText());
 //            taskController.getSelectedTask().setStartDate(taskStartDate);
 //            taskController.getSelectedTask().setFinishDate(taskFinishDate);

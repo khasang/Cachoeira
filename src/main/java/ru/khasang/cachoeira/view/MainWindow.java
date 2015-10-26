@@ -13,8 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import ru.khasang.cachoeira.controller.TaskController;
-import ru.khasang.cachoeira.controller.ViewController;
+import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.Task;
@@ -23,6 +22,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Created by truesik on 28.09.2015.
@@ -49,15 +49,15 @@ public class MainWindow implements IWindow {
 
     private Parent root = null;
     private Stage stage;
-    private ViewController viewController;
-    private TaskController taskController;
+    private UIControl UIControl;
+    private IController controller;
     private TreeItem<ITask> rootTask = new TreeItem<>(new Task());  //todo исправить new Task на контроллер
     private ObservableList<ITask> taskTableModel = FXCollections.observableArrayList();        //<Task> модель для задач
     private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();    //<Resource> модель для ресурсов
 
-    public MainWindow(TaskController taskController, ViewController viewController) {
-        this.taskController = taskController;
-        this.viewController = viewController;
+    public MainWindow(IController controller, UIControl UIControl) {
+        this.controller = controller;
+        this.UIControl = UIControl;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));  //грузим макет окна
         fxmlLoader.setController(this);                                                     //говорим макету, что этот класс является его контроллером
@@ -154,10 +154,7 @@ public class MainWindow implements IWindow {
     public void refreshTableModel() {
         taskTableModel.clear(); //очищаем модель перед наполнением
         rootTask.getChildren().clear(); //отчищаем корневой элемент в таблице
-        //заполняем модель
-        for (ITask task : taskController.getTasks()) {
-            taskTableModel.add(task);
-        }
+        taskTableModel.addAll(controller.getProject().getTaskList().stream().collect(Collectors.toList())); //заполняем модель
         //из модели пихаем корневой элемент таблицы
         taskTableModel.stream().forEach(new Consumer<ITask>() {
             @Override
@@ -219,18 +216,18 @@ public class MainWindow implements IWindow {
     }
 
     private void openNewTaskWindow() {
-        viewController.launchNewTaskWindow(this);
+        UIControl.launchNewTaskWindow(this);
     }
 
     public void openPropertiesTaskWindow() {
-        viewController.launchPropertiesTaskWindow(this);
+        UIControl.launchPropertiesTaskWindow(this);
     }
 
     private void openNewResourceWindow() {
 
     }
 
-    public TaskController getTaskController() {
-        return taskController;
+    public IController getController() {
+        return controller;
     }
 }

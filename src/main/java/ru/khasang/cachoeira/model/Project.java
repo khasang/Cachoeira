@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class Project implements IProject {
     private String name;
     private Date startDate;
     private Date finishDate;
-    private List<ITask> tasks; //Интерфейс ITask будет создаваться в другой задаче
+    private List<ITask> tasks = new ArrayList<>(); //Интерфейс ITask будет создаваться в другой задаче
 
     public Project() {
     }

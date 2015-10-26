@@ -8,12 +8,19 @@ import java.util.List;
  */
 public interface IProject {
     String getName();
+
     void setName(String nameDate);
+
     Date getStartDate();
+
     void setStartDate(Date startDate);
+
     Date getFinishDate();
+
     void setFinishDate(Date finishDate);
+
     List<ITask> getTaskList(); //Интерфейс ITask будет создаваться в другой задаче
+
     void setTaskList(List<ITask> tasks);
 
 //    void save(String target); //Метод, сохраняющий проект в хранилище
