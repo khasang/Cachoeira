@@ -1,31 +1,30 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.TaskController;
-import ru.khasang.cachoeira.model.ITask;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
  * Created by truesik on 28.09.2015.
  */
 public class TaskWindow implements IWindow {
+    @FXML
+    private Button taskWindowOKButton;
     @FXML
     private TextField taskNameField;
     @FXML
@@ -71,12 +70,53 @@ public class TaskWindow implements IWindow {
         stage.setResizable(false);                  //размер окна нельзя изменить
         stage.show();
 
-        if (!isNewTask) {
+        taskWindowOKButton.setDisable(true);        //отключаем клопку ОК, пока не будут заполнены/изменены поля
+
+        //отключает возможность в Дате окончания выбрать дату предыдущую Начальной даты
+        taskFinishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(DatePicker param) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item.isBefore(taskStartDatePicker.getValue().plusDays(1))) {
+                            setDisable(true);
+                        }
+                    }
+                };
+            }
+        });
+
+        if (isNewTask) {
+            taskStartDatePicker.setValue(LocalDate.now());                              //дефолтовое значение: Сегодняшняя дата
+            taskFinishDatePicker.setValue(taskStartDatePicker.getValue().plusDays(1));  //плюс один день
+        } else {
             taskNameField.setText(taskController.getSelectedTask().getName());
             taskStartDatePicker.setValue(taskController.getSelectedTask().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             taskFinishDatePicker.setValue(taskController.getSelectedTask().getFinishDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         }
+
+        ChangeListener changeListener = new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                validate();
+            }
+        };
+
+        taskNameField.textProperty().addListener(changeListener);
+        taskStartDatePicker.valueProperty().addListener(changeListener);
+        taskFinishDatePicker.valueProperty().addListener(changeListener);
     }
+
+    private void validate() {
+        taskWindowOKButton.disableProperty().set(
+                        taskNameField.getText().trim().isEmpty() ||
+                        taskStartDatePicker.getValue().toString().trim().isEmpty() ||
+                        taskFinishDatePicker.getValue().toString().trim().isEmpty()); // отключаем кнопку ОК, если хотя бы одно из полей не заполнено todo сделать проверку на null, иначе nullPointerException
+    }
+
+
 
     @Override
     public Stage getStage() {
