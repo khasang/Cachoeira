@@ -208,10 +208,12 @@ public class MainWindow implements IWindow {
     }
 
     public void addNewResourceHandle(ActionEvent actionEvent) {
-        //отрытие окошка добавления нового ресурса
+        //открытие окошка добавления нового ресурса с помощью кнопки +
+        openNewResourceWindow();
     }
 
     public void addNewTaskHandle(ActionEvent actionEvent) {
+        //открытие окошка добавления новой задачи с помощью кнопки +
         openNewTaskWindow();
     }
 
@@ -224,7 +226,7 @@ public class MainWindow implements IWindow {
     }
 
     private void openNewResourceWindow() {
-
+        UIControl.launchResourceWindow();
     }
 
     public IController getController() {
