@@ -20,18 +20,23 @@ public class UIControl {
         taskWindow.launch();
     }
 
-    public void launchPropertiesTaskWindow(MainWindow mainWindow) {
+    public void launchPropertiesTaskWindow(MainWindow mainWindow) { //для свойств задачи
         taskWindow = new TaskWindow(mainWindow, controller, false);
         taskWindow.launch();
     }
 
-    public void launchResourceWindow() {
-        resourceWindow = new ResourceWindow();
+    public void launchResourceWindow(MainWindow mainWindow) { //для добавления нового ресурса
+        resourceWindow = new ResourceWindow(mainWindow, controller, true);
+        resourceWindow.launch();
+    }
+
+    public void launchPropertiesResourceWindow(MainWindow mainWindow) { //для свойств ресурса
+        resourceWindow = new ResourceWindow(mainWindow, controller, false);
         resourceWindow.launch();
     }
 
     public void refreshTableModel() {
-        mainWindow.refreshTableModel();
+        mainWindow.refreshTaskTableModel();
     } //временный костыль
 
     public Stage getMainWindowStage() {

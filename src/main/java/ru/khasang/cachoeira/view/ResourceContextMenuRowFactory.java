@@ -33,17 +33,15 @@ public class ResourceContextMenuRowFactory implements Callback<TableView<IResour
         getProperties.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //переписать под ресурсы
-//                mainWindow.getTaskController().setSelectedTask(row.getTreeItem().getValue());
-//                mainWindow.openPropertiesTaskWindow();
+                mainWindow.getController().setSelectedResource(row.getItem());
+                mainWindow.openPropertiesResourceWindow();
             }
         });
         removeResource.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //переписать под ресурсы
-//                mainWindow.getTaskController().removeTask(row.getTreeItem().getValue());
-//                mainWindow.refreshTableModel();
+                mainWindow.getController().handleRemoveResource(row.getItem());
+                mainWindow.refreshResourceTableModel();
             }
         });
         rowMenu.getItems().addAll(setTask, getProperties, removeResource);  //заполняем меню

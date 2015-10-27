@@ -16,6 +16,7 @@ import javafx.stage.WindowEvent;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.model.ResourceType;
 import ru.khasang.cachoeira.model.Task;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class MainWindow implements IWindow {
     @FXML
     private TableColumn<IResource, String> resourceNameColumn;      //стоблец с наименованием ресурса <Resource, String>
     @FXML
-    private TableColumn<IResource, String> resourceTypeColumn;      //столбец с типом ресурса <Resource, String>
+    private TableColumn<IResource, ResourceType> resourceTypeColumn;      //столбец с типом ресурса <Resource, String>
     @FXML
     private ScrollPane resourceGanttScrollPane;  //здесь должен быть канвас, также возможна с помощью этого скролла получится синхронизировать вертикальные скроллы таблицы ресурсов и ганта
 
@@ -108,15 +109,17 @@ public class MainWindow implements IWindow {
         });
 
         //нужно заполнить таблицы элементами
-//        resourceTableView.setItems(resourceTableModel);
-
         taskTreeTableView.setRoot(rootTask); //вешаем корневой TreeItem в TreeTableView. Он в fxml стоит как невидимый (<TreeTableView fx:id="taskTreeTableView" showRoot="false">).
         rootTask.setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
-        refreshTableModel(); //костыль
+        refreshTaskTableModel(); //костыль
+        refreshResourceTableModel();
 
         taskNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getName()));
         startDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getStartDate()));
         finishDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getFinishDate()));
+
+        resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));
+        resourceTypeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<ResourceType>(param.getValue().getType()));
 
         //контекстные меню в списках задач и ресурсов
         //контекстное меню на пустом месте таблицы
@@ -151,7 +154,7 @@ public class MainWindow implements IWindow {
         return stage;
     }
 
-    public void refreshTableModel() {
+    public void refreshTaskTableModel() {
         taskTableModel.clear(); //очищаем модель перед наполнением
         rootTask.getChildren().clear(); //отчищаем корневой элемент в таблице
         taskTableModel.addAll(controller.getProject().getTaskList().stream().collect(Collectors.toList())); //заполняем модель
@@ -162,6 +165,13 @@ public class MainWindow implements IWindow {
                 rootTask.getChildren().addAll(new TreeItem<>(taskTableModel));
             }
         });
+    }
+
+    public void refreshResourceTableModel() {
+        resourceTableModel.clear();
+        resourceTableView.getItems().clear();
+        resourceTableModel.addAll(controller.getProject().getResourceList().stream().collect(Collectors.toList()));
+        resourceTableView.setItems(resourceTableModel);
     }
 
 
@@ -226,7 +236,11 @@ public class MainWindow implements IWindow {
     }
 
     private void openNewResourceWindow() {
-        UIControl.launchResourceWindow();
+        UIControl.launchResourceWindow(this);
+    }
+
+    public void openPropertiesResourceWindow() {
+        UIControl.launchPropertiesResourceWindow(this);
     }
 
     public IController getController() {

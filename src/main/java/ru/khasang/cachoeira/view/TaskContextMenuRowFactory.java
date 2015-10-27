@@ -44,7 +44,7 @@ public class TaskContextMenuRowFactory implements Callback<TreeTableView<ITask>,
             @Override
             public void handle(ActionEvent event) {
                 mainWindow.getController().handleRemoveTask(row.getTreeItem().getValue());
-                mainWindow.refreshTableModel();
+                mainWindow.refreshTaskTableModel();
             }
         });
         rowMenu.getItems().addAll(setResource, getProperties, removeTask);  //заполняем меню

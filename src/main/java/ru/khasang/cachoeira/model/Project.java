@@ -13,6 +13,7 @@ public class Project implements IProject {
     private Date startDate;
     private Date finishDate;
     private List<ITask> tasks = new ArrayList<>(); //Интерфейс ITask будет создаваться в другой задаче
+    private List<IResource> resources = new ArrayList<>();
 
     public Project() {
     }
@@ -59,6 +60,16 @@ public class Project implements IProject {
     @Override
     public void setTaskList(List<ITask> tasks) {
         this.tasks = tasks;
+    }
+
+    @Override
+    public List<IResource> getResourceList() {
+        return resources;
+    }
+
+    @Override
+    public void setResourceList(List<IResource> resources) {
+        this.resources = resources;
     }
 
 //

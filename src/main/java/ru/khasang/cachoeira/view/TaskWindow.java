@@ -151,7 +151,7 @@ public class TaskWindow implements IWindow {
 //            taskController.getSelectedTask().setStartDate(taskStartDate);
 //            taskController.getSelectedTask().setFinishDate(taskFinishDate);
         }
-        mainWindow.refreshTableModel();
+        mainWindow.refreshTaskTableModel();
         stage.close();
     }
 

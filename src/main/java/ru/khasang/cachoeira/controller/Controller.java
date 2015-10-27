@@ -1,9 +1,6 @@
 package ru.khasang.cachoeira.controller;
 
-import ru.khasang.cachoeira.model.IProject;
-import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.model.Project;
-import ru.khasang.cachoeira.model.Task;
+import ru.khasang.cachoeira.model.*;
 
 import java.util.Date;
 
@@ -13,6 +10,7 @@ import java.util.Date;
 public class Controller implements IController {
     private IProject project = new Project("Test Project");
     private ITask task;
+    private IResource resource;
 
     @Override
     public IProject getDefaultProject() {
@@ -76,5 +74,49 @@ public class Controller implements IController {
 
     public void setSelectedTask(ITask task) {
         this.task = task;
+    }
+
+    @Override
+    public void handleAddResource(String resourceName, ResourceType type) {
+        resource = new Resource();
+        resource.setName(resourceName);
+        resource.setType(type);
+        project.getResourceList().add(resource);
+    }
+
+    @Override
+    public void notifyAddResource(IResource resource) {
+
+    }
+
+    @Override
+    public void handleRemoveResource(IResource resource) {
+        project.getResourceList().remove(resource);
+    }
+
+    @Override
+    public void notifyRemoveResource(IResource resource) {
+
+    }
+
+    @Override
+    public void handleChangeResource(String resourceName, ResourceType type) {
+        resource.setName(resourceName);
+        resource.setType(type);
+    }
+
+    @Override
+    public void notifyChangeResource(IResource resource) {
+
+    }
+
+    @Override
+    public IResource getSelectedResource() {
+        return resource;
+    }
+
+    @Override
+    public void setSelectedResource(IResource resource) {
+        this.resource = resource;
     }
 }

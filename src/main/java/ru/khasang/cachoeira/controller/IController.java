@@ -1,7 +1,9 @@
 package ru.khasang.cachoeira.controller;
 
 import ru.khasang.cachoeira.model.IProject;
+import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.model.ResourceType;
 
 import java.util.Date;
 
@@ -33,4 +35,20 @@ public interface IController {
     ITask getSelectedTask();
 
     void setSelectedTask(ITask task);
+
+    void handleAddResource(String resourceName, ResourceType type);
+
+    void notifyAddResource(IResource resource);
+
+    void handleRemoveResource(IResource resource);
+
+    void notifyRemoveResource(IResource resource);
+
+    void handleChangeResource(String resourceName, ResourceType type);
+
+    void notifyChangeResource(IResource resource);
+
+    IResource getSelectedResource();
+
+    void setSelectedResource(IResource resource);
 }
