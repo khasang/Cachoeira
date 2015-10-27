@@ -77,9 +77,10 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleAddResource(String resourceName, ResourceType type) {
+    public void handleAddResource(String resourceName, String email, ResourceType type) {
         resource = new Resource();
         resource.setName(resourceName);
+        resource.setEmail(email);
         resource.setType(type);
         project.getResourceList().add(resource);
     }
@@ -100,8 +101,9 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleChangeResource(String resourceName, ResourceType type) {
+    public void handleChangeResource(String resourceName, String email, ResourceType type) {
         resource.setName(resourceName);
+        resource.setEmail(email);
         resource.setType(type);
     }
 

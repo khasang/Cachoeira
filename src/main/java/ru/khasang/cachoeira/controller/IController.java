@@ -36,7 +36,7 @@ public interface IController {
 
     void setSelectedTask(ITask task);
 
-    void handleAddResource(String resourceName, ResourceType type);
+    void handleAddResource(String resourceName, String email, ResourceType type);
 
     void notifyAddResource(IResource resource);
 
@@ -44,7 +44,7 @@ public interface IController {
 
     void notifyRemoveResource(IResource resource);
 
-    void handleChangeResource(String resourceName, ResourceType type);
+    void handleChangeResource(String resourceName, String email, ResourceType type);
 
     void notifyChangeResource(IResource resource);
 

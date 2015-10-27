@@ -12,6 +12,7 @@
   </columnConstraints>
   <rowConstraints>
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
@@ -22,17 +23,17 @@
    </padding>
    <children>
       <Label text="Наименование" />
-      <Label text="Тип" GridPane.rowIndex="1" />
-      <Label text="Задачи:" GridPane.rowIndex="2" />
+      <Label text="Тип" GridPane.rowIndex="2" />
+      <Label text="Задачи:" GridPane.rowIndex="3" />
       <TextField fx:id="resourceNameField" GridPane.columnIndex="1" />
-      <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="4" GridPane.vgrow="NEVER">
+      <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="5" GridPane.vgrow="NEVER">
          <children>
             <Button defaultButton="true" minWidth="100.0" mnemonicParsing="false" onAction="#resourceWindowOKButtonHandle" text="OK" />
             <Region HBox.hgrow="ALWAYS" />
             <Button cancelButton="true" minWidth="100.0" mnemonicParsing="false" onAction="#resourceWindowCancelButtonHandle" text="Отмена" />
          </children>
       </HBox>
-      <TableView fx:id="taskTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+      <TableView fx:id="taskTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="4">
         <columns>
           <TableColumn fx:id="taskNameColumn" prefWidth="331.0" text="Наименование" />
           <TableColumn fx:id="taskCheckboxColumn" prefWidth="47.0" />
@@ -41,6 +42,8 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <ComboBox fx:id="resourceTypeComboBox" prefWidth="249.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+      <ComboBox fx:id="resourceTypeComboBox" prefWidth="249.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+      <Label text="Электронная почта" GridPane.rowIndex="1" />
+      <TextField fx:id="resourceEmailField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
    </children>
 </GridPane>

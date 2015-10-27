@@ -24,6 +24,8 @@ import java.io.IOException;
  */
 public class ResourceWindow implements IWindow {
     @FXML
+    private TextField resourceEmailField;
+    @FXML
     private ComboBox<ResourceType> resourceTypeComboBox;
     @FXML
     private TextField resourceNameField;
@@ -38,13 +40,13 @@ public class ResourceWindow implements IWindow {
     private Stage stage;
     private MainWindow mainWindow;
     private IController controller;
-    private boolean isNewResource = false;
+    private boolean isNewResource = false; //если тру, то значит нажали кнопку Новый ресурс, если фолз, то Свойства ресурса
     private ObservableList<ResourceType> resourceTypesModel = FXCollections.observableArrayList();
 
     public ResourceWindow(MainWindow mainWindow, IController controller, boolean IsNewResource) {
         this.mainWindow = mainWindow;
         this.controller = controller;
-        isNewResource = IsNewResource;
+        this.isNewResource = IsNewResource;
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ResourceWindow.fxml"));  //грузим макет окна
         fxmlLoader.setController(this);                                                         //говорим макету, что этот класс является его контроллером
         try {
@@ -61,7 +63,7 @@ public class ResourceWindow implements IWindow {
             stage.setScene(new Scene(root));
         }
         stage.setTitle("Новый ресурс");
-//        stage.initOwner(nameOfParentWindow);
+        stage.initOwner(mainWindow.getStage());
         stage.initModality(Modality.WINDOW_MODAL);  //чтобы окно сделать модальным, ему нужно присвоить "владельца" (строчка выше)
         stage.setResizable(false);                  //размер окна нельзя изменить
         stage.show();
@@ -70,9 +72,10 @@ public class ResourceWindow implements IWindow {
         resourceTypesModel.addAll(ResourceType.values());
         resourceTypeComboBox.setItems(resourceTypesModel);
 
-        if (!isNewResource) {
-            resourceNameField.setText(controller.getSelectedResource().getName());
-            resourceTypeComboBox.getSelectionModel().select(controller.getSelectedResource().getType());
+        if (!isNewResource) { //если свойства, то берем нужный ресурс и заполняем поля
+            resourceNameField.setText(controller.getSelectedResource().getName()); //имя
+            resourceEmailField.setText(controller.getSelectedResource().getEmail()); //почта
+            resourceTypeComboBox.getSelectionModel().select(controller.getSelectedResource().getType()); //тип ресурса
         }
     }
 
@@ -84,9 +87,9 @@ public class ResourceWindow implements IWindow {
     public void resourceWindowOKButtonHandle(ActionEvent actionEvent) {
         //добавляем ресурс и закрываем окошко
         if (isNewResource) {
-            controller.handleAddResource(resourceNameField.getText(), resourceTypeComboBox.getSelectionModel().getSelectedItem());
+            controller.handleAddResource(resourceNameField.getText(), resourceEmailField.getText(), resourceTypeComboBox.getSelectionModel().getSelectedItem());
         } else {
-            controller.handleChangeResource(resourceNameField.getText(), resourceTypeComboBox.getSelectionModel().getSelectedItem());
+            controller.handleChangeResource(resourceNameField.getText(), resourceEmailField.getText(), resourceTypeComboBox.getSelectionModel().getSelectedItem());
         }
         mainWindow.refreshResourceTableModel();
         stage.close();

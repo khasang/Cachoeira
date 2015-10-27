@@ -40,7 +40,7 @@ public class TaskWindow implements IWindow {
 
     private MainWindow mainWindow;
     private IController controller;
-    private boolean isNewTask = false;
+    private boolean isNewTask = false; //если тру, то нажата кнопка Новая задача, если фолз, то Свойства задачи
     private Parent root = null;
     private Stage stage;
 
