@@ -1,5 +1,9 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -9,40 +13,53 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import ru.khasang.cachoeira.controller.IController;
+import ru.khasang.cachoeira.model.IResource;
+import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.model.ResourceType;
+import ru.khasang.cachoeira.model.Task;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Created by truesik on 28.09.2015.
  */
-public class MainWindow {
+public class MainWindow implements IWindow {
     @FXML
-    private TreeTableView taskTreeTableView;     //таблица задач <Task>
+    private TreeTableView<ITask> taskTreeTableView;     //таблица задач <Task>
     @FXML
-    private TreeTableColumn taskNameColumn;      //столбец с наименованием задачи <Task, String>
+    private TreeTableColumn<ITask, String> taskNameColumn;      //столбец с наименованием задачи <Task, String>
     @FXML
-    private TreeTableColumn finishDateColumn;    //столбец с датой окончания задачи <Task, Date>
+    private TreeTableColumn<ITask, Date> finishDateColumn;    //столбец с датой окончания задачи <Task, Date>
     @FXML
-    private TreeTableColumn startDateColumn;     //столбец с датой начала задачи <Task, Date>
+    private TreeTableColumn<ITask, Date> startDateColumn;     //столбец с датой начала задачи <Task, Date>
     @FXML
     private ScrollPane taskGanttScrollPane;      //здесь должен быть канвас, также возможна с помощью этого скролла получится синхронизировать вертикальные скроллы таблицы задач и ганта
     @FXML
-    private TableView resourceTableView;         //таблица ресурсов <Resource>
+    private TableView<IResource> resourceTableView;         //таблица ресурсов <Resource>
     @FXML
-    private TableColumn resourceNameColumn;      //стоблец с наименованием ресурса <Resource, String>
+    private TableColumn<IResource, String> resourceNameColumn;      //стоблец с наименованием ресурса <Resource, String>
     @FXML
-    private TableColumn resourceTypeColumn;      //столбец с типом ресурса <Resource, String>
+    private TableColumn<IResource, ResourceType> resourceTypeColumn;      //столбец с типом ресурса <Resource, String>
     @FXML
     private ScrollPane resourceGanttScrollPane;  //здесь должен быть канвас, также возможна с помощью этого скролла получится синхронизировать вертикальные скроллы таблицы ресурсов и ганта
 
     private Parent root = null;
     private Stage stage;
+    private UIControl UIControl;
+    private IController controller;
+    private TreeItem<ITask> rootTask = new TreeItem<>(new Task());  //todo исправить new Task на контроллер
+    private ObservableList<ITask> taskTableModel = FXCollections.observableArrayList();        //<Task> модель для задач
+    private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();    //<Resource> модель для ресурсов
 
-//    ObservableList taskTableModel = FXCollections.observableArrayList();        //<Task> модель для задач
-//    ObservableList resourceTableModel = FXCollections.observableArrayList();    //<Resource> модель для ресурсов
+    public MainWindow(IController controller, UIControl UIControl) {
+        this.controller = controller;
+        this.UIControl = UIControl;
 
-    public MainWindow() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));  //грузим макет окна
         fxmlLoader.setController(this);                                                     //говорим макету, что этот класс является его контроллером
         try {
@@ -52,6 +69,7 @@ public class MainWindow {
         }
     }
 
+    @Override
     public void launch() {
         stage = new Stage();
         if (root != null) {
@@ -91,51 +109,71 @@ public class MainWindow {
         });
 
         //нужно заполнить таблицы элементами
-//        resourceTableView.setItems(resourceTableModel);
-//        taskTreeTableView...
+        taskTreeTableView.setRoot(rootTask); //вешаем корневой TreeItem в TreeTableView. Он в fxml стоит как невидимый (<TreeTableView fx:id="taskTreeTableView" showRoot="false">).
+        rootTask.setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
+        refreshTaskTableModel(); //костыль
+        refreshResourceTableModel();
+
+        taskNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getName()));
+        startDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getStartDate()));
+        finishDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getFinishDate()));
+
+        resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));
+        resourceTypeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<ResourceType>(param.getValue().getType()));
 
         //контекстные меню в списках задач и ресурсов
-//        taskTreeTableView.setRowFactory(new Callback<TreeTableView, TreeTableRow>() {
-//            @Override
-//            public TreeTableRow call(TreeTableView param) {
-//                TreeTableRow row = new TreeTableRow();
-//                ContextMenu rowMenu = new ContextMenu();
-//                MenuItem addNewResource = new MenuItem("Новый ресурс");
-//                addNewResource.setOnAction(new EventHandler<ActionEvent>() {
-//                    @Override
-//                    public void handle(ActionEvent event) {
-//                        //open add resource dialog
-//                        TaskWindow taskWindow = new TaskWindow();
-//                        taskWindow.launch();
-//                    }
-//                });
-//                rowMenu.getItems().addAll(addNewResource);
-//                row.contextMenuProperty().bind(Bindings.when(Bindings.isNull(row.itemProperty()))
-//                        .then(rowMenu)
-//                        .otherwise((ContextMenu) null));
-//                return row;
-//            }
-//        });
-//        resourceTableView.setRowFactory(new Callback<TableView, TableRow>() {
-//            @Override
-//            public TableRow call(TableView param) {
-//                TableRow row = new TableRow();
-//                ContextMenu rowMenu = new ContextMenu();
-//                MenuItem addNewResource = new MenuItem("Новый ресурс");
-//                addNewResource.setOnAction(new EventHandler<ActionEvent>() {
-//                    @Override
-//                    public void handle(ActionEvent event) {
-//                        //open add resource dialog
-//                    }
-//                });
-//                rowMenu.getItems().addAll(addNewResource);
-//                row.contextMenuProperty().bind(Bindings.when(Bindings.isNull(row.itemProperty()))
-//                        .then(rowMenu)
-//                        .otherwise((ContextMenu) null));
-//                return row;
-//            }
-//        });
+        //контекстное меню на пустом месте таблицы
+        ContextMenu taskTableMenu = new ContextMenu();
+        MenuItem addNewTask = new MenuItem("Новая задача");
+        addNewTask.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                openNewTaskWindow();
+            }
+        });
+        taskTableMenu.getItems().addAll(addNewTask);   //заполняем меню
+        taskTreeTableView.setContextMenu(taskTableMenu);
+
+        ContextMenu resourceTableMenu = new ContextMenu();
+        MenuItem addNewResource = new MenuItem("Новый ресурс");
+        addNewResource.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                openNewResourceWindow();
+            }
+        });
+        resourceTableMenu.getItems().addAll(addNewResource);   //заполняем меню
+        resourceTableView.setContextMenu(resourceTableMenu);
+
+        taskTreeTableView.setRowFactory(new TaskContextMenuRowFactory(this)); //контекстное меню для каждого элемента таблицы задач
+        resourceTableView.setRowFactory(new ResourceContextMenuRowFactory(this)); //контекстное меню для каждого элкмента таблицы ресурсов
     }
+
+    @Override
+    public Stage getStage() {
+        return stage;
+    }
+
+    public void refreshTaskTableModel() {
+        taskTableModel.clear(); //очищаем модель перед наполнением
+        rootTask.getChildren().clear(); //отчищаем корневой элемент в таблице
+        taskTableModel.addAll(controller.getProject().getTaskList().stream().collect(Collectors.toList())); //заполняем модель
+        //из модели пихаем корневой элемент таблицы
+        taskTableModel.stream().forEach(new Consumer<ITask>() {
+            @Override
+            public void accept(ITask taskTableModel) {
+                rootTask.getChildren().addAll(new TreeItem<>(taskTableModel));
+            }
+        });
+    }
+
+    public void refreshResourceTableModel() {
+        resourceTableModel.clear();
+        resourceTableView.getItems().clear();
+        resourceTableModel.addAll(controller.getProject().getResourceList().stream().collect(Collectors.toList()));
+        resourceTableView.setItems(resourceTableModel);
+    }
+
 
     private void onClose() {
         //минимум JDK 8u40
@@ -180,11 +218,32 @@ public class MainWindow {
     }
 
     public void addNewResourceHandle(ActionEvent actionEvent) {
-        //отрытие окошка добавления нового ресурса
+        //открытие окошка добавления нового ресурса с помощью кнопки +
+        openNewResourceWindow();
     }
 
     public void addNewTaskHandle(ActionEvent actionEvent) {
-        TaskWindow taskWindow = new TaskWindow(stage); //todo переделать на контроллер
-        taskWindow.launch();
+        //открытие окошка добавления новой задачи с помощью кнопки +
+        openNewTaskWindow();
+    }
+
+    private void openNewTaskWindow() {
+        UIControl.launchNewTaskWindow(this);
+    }
+
+    public void openPropertiesTaskWindow() {
+        UIControl.launchPropertiesTaskWindow(this);
+    }
+
+    private void openNewResourceWindow() {
+        UIControl.launchResourceWindow(this);
+    }
+
+    public void openPropertiesResourceWindow() {
+        UIControl.launchPropertiesResourceWindow(this);
+    }
+
+    public IController getController() {
+        return controller;
     }
 }

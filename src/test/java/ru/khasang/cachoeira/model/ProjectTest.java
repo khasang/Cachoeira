@@ -17,16 +17,16 @@ public class ProjectTest extends TestCase {
     private Project project;
     private final String name = "Project";
     private final String newName = "New project";
-    private final Date start = new Date();
-    private final Date finish = new Date();
+    private final Date startDate = new Date();
+    private final Date finishDate = new Date();
 
     @Before
     public void setUp() throws Exception {
         project = new Project(name);
         Calendar.getInstance().set(2015, 10, 7);
-        start.setTime(Calendar.getInstance().getTimeInMillis());
+        startDate.setTime(Calendar.getInstance().getTimeInMillis());
         Calendar.getInstance().set(2015, 12, 30);
-        finish.setTime(Calendar.getInstance().getTimeInMillis());
+        finishDate.setTime(Calendar.getInstance().getTimeInMillis());
     }
 
     @After
@@ -56,27 +56,27 @@ public class ProjectTest extends TestCase {
     }
 
     @Test
-    public void testGetStart() throws Exception {
-        project.setStart(start);
-        assertEquals(project.getStart(), start);
+    public void testGetStartDate() throws Exception {
+        project.setStartDate(startDate);
+        assertEquals(project.getStartDate(), startDate);
     }
 
     @Test
-    public void testSetStart() throws Exception {
-        project.setStart(start);
-        assertEquals(project.getStart(), start);
+    public void testSetStartDate() throws Exception {
+        project.setStartDate(startDate);
+        assertEquals(project.getStartDate(), startDate);
     }
 
     @Test
-    public void testGetFinish() throws Exception {
-        project.setFinish(finish);
-        assertEquals(project.getFinish(), finish);
+    public void testGetFinishDate() throws Exception {
+        project.setFinishDate(finishDate);
+        assertEquals(project.getFinishDate(), finishDate);
     }
 
     @Test
-    public void testSetFinish() throws Exception {
-        project.setFinish(finish);
-        assertEquals(project.getFinish(), finish);
+    public void testSetFinishDate() throws Exception {
+        project.setFinishDate(finishDate);
+        assertEquals(project.getFinishDate(), finishDate);
     }
 
     @Test

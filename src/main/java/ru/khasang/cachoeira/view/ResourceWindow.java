@@ -1,24 +1,30 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import ru.khasang.cachoeira.controller.IController;
+import ru.khasang.cachoeira.model.ResourceType;
 
 import java.io.IOException;
 
 /**
  * Created by truesik on 28.09.2015.
  */
-public class ResourceWindow {
-
+public class ResourceWindow implements IWindow {
+    @FXML
+    private ComboBox<ResourceType> resourceTypeComboBox;
     @FXML
     private TextField resourceNameField;
     @FXML
@@ -27,13 +33,18 @@ public class ResourceWindow {
     private TableColumn taskNameColumn;
     @FXML
     private TableColumn taskCheckboxColumn;
-    @FXML
-    private TextField resourceTypeField;
 
     private Parent root = null;
     private Stage stage;
+    private MainWindow mainWindow;
+    private IController controller;
+    private boolean isNewResource = false;
+    private ObservableList<ResourceType> resourceTypesModel = FXCollections.observableArrayList();
 
-    public ResourceWindow() {
+    public ResourceWindow(MainWindow mainWindow, IController controller, boolean IsNewResource) {
+        this.mainWindow = mainWindow;
+        this.controller = controller;
+        isNewResource = IsNewResource;
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ResourceWindow.fxml"));  //грузим макет окна
         fxmlLoader.setController(this);                                                         //говорим макету, что этот класс является его контроллером
         try {
@@ -43,6 +54,7 @@ public class ResourceWindow {
         }
     }
 
+    @Override
     public void launch() {
         stage = new Stage(StageStyle.UTILITY);      //StageStyle.UTILITY - в тайтле только один крестик
         if (root != null) {
@@ -53,10 +65,30 @@ public class ResourceWindow {
         stage.initModality(Modality.WINDOW_MODAL);  //чтобы окно сделать модальным, ему нужно присвоить "владельца" (строчка выше)
         stage.setResizable(false);                  //размер окна нельзя изменить
         stage.show();
+
+        //заполняем комбобокс типами ресурсов
+        resourceTypesModel.addAll(ResourceType.values());
+        resourceTypeComboBox.setItems(resourceTypesModel);
+
+        if (!isNewResource) {
+            resourceNameField.setText(controller.getSelectedResource().getName());
+            resourceTypeComboBox.getSelectionModel().select(controller.getSelectedResource().getType());
+        }
+    }
+
+    @Override
+    public Stage getStage() {
+        return stage;
     }
 
     public void resourceWindowOKButtonHandle(ActionEvent actionEvent) {
         //добавляем ресурс и закрываем окошко
+        if (isNewResource) {
+            controller.handleAddResource(resourceNameField.getText(), resourceTypeComboBox.getSelectionModel().getSelectedItem());
+        } else {
+            controller.handleChangeResource(resourceNameField.getText(), resourceTypeComboBox.getSelectionModel().getSelectedItem());
+        }
+        mainWindow.refreshResourceTableModel();
         stage.close();
     }
 

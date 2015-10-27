@@ -29,7 +29,7 @@
       <TextField fx:id="taskNameField" GridPane.columnIndex="1" />
       <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="5" GridPane.vgrow="NEVER">
          <children>
-            <Button defaultButton="true" minWidth="100.0" mnemonicParsing="false" onAction="#taskWindowOKButtonHandle" text="OK" />
+            <Button fx:id="taskWindowOKButton" defaultButton="true" minWidth="100.0" mnemonicParsing="false" onAction="#taskWindowOKButtonHandle" text="OK" />
             <Region HBox.hgrow="ALWAYS" />
             <Button cancelButton="true" minWidth="100.0" mnemonicParsing="false" onAction="#taskWindowCancelButtonHandle" text="Отмена" />
          </children>
