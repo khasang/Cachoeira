@@ -28,7 +28,7 @@ public interface IController {
 
     void notifyRemoveTask(ITask task);
 
-    void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate);
+    void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, List<IResource> resources);
 
     void notifyChangeTask(ITask task);
 

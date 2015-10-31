@@ -60,10 +60,12 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate) { //todo тоже подправил
+    public void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, List<IResource> resources) { //todo тоже подправил
         task.setName(taskNameField);
         task.setStartDate(taskStartDate);
         task.setFinishDate(taskFinishDate);
+        task.setResourceList(resources);
+        System.out.println(task.getResourceList());
     }
 
     @Override
