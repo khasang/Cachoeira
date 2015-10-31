@@ -3,6 +3,7 @@ package ru.khasang.cachoeira.controller;
 import ru.khasang.cachoeira.model.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by truesik on 22.10.2015.
@@ -33,12 +34,14 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleAddTask(String nameOfTask, Date startDate, Date finishDate) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
+    public void handleAddTask(String nameOfTask, Date startDate, Date finishDate, List<IResource> resources) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
         task = new Task();
         task.setName(nameOfTask);
         task.setStartDate(startDate);
         task.setFinishDate(finishDate);
+        task.setResourceList(resources);
         project.getTaskList().add(task);
+        System.out.println(task.getResourceList());
     }
 
     @Override
