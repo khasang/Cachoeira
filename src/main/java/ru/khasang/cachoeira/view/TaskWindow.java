@@ -245,7 +245,6 @@ public class TaskWindow implements IWindow {
 
         if (isNewTask) {
             controller.handleAddTask(taskNameField.getText(), taskStartDate, taskFinishDate, resourceList);
-
         } else {
             controller.handleChangeTask(taskNameField.getText(), taskStartDate, taskFinishDate, resourceList);
 //            taskController.getSelectedTask().setName(taskNameField.getText());

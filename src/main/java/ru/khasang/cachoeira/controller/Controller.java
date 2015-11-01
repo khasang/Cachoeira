@@ -82,12 +82,15 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleAddResource(String resourceName, String email, ResourceType type) {
+    public void handleAddResource(String resourceName, String email, ResourceType type, List<ITask> tasks) {
         resource = new Resource();
         resource.setName(resourceName);
         resource.setEmail(email);
         resource.setType(type);
         project.getResourceList().add(resource);
+        for (ITask t : tasks) {
+            t.addResource(resource); //присваиваем этот ресурс задаче из списка tasks
+        }
     }
 
     @Override
@@ -106,10 +109,21 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleChangeResource(String resourceName, String email, ResourceType type) {
+    public void handleChangeResource(String resourceName, String email, ResourceType type, List<ITask> tasks) {
         resource.setName(resourceName);
         resource.setEmail(email);
         resource.setType(type);
+
+        for (ITask t : project.getTaskList()) {
+            for (ITask tas : tasks) {
+                if (!t.equals(tas) && t.getResourceList().contains(resource)) {
+                    t.removeResource(resource);
+                }
+                if (!tas.getResourceList().contains(resource)) {
+                    tas.addResource(resource);
+                }
+            }
+        }
     }
 
     @Override

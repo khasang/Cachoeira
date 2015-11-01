@@ -77,6 +77,7 @@ public class MainWindow implements IWindow {
         }
         stage.setTitle("Cachoeira");
         stage.show();
+        stage.setTitle(controller.getProject().getName());
 
         //при нажатии на крестик в тайтле
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
