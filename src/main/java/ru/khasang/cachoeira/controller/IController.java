@@ -6,6 +6,7 @@ import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.ResourceType;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by truesik on 26.10.2015.
@@ -19,7 +20,7 @@ public interface IController {
 
     void notifyChangeProject(IProject project);
 
-    void handleAddTask(String nameOfTask, Date startDate, Date finishDate);
+    void handleAddTask(String nameOfTask, Date startDate, Date finishDate, List<IResource> resources);
 
     void notifyAddTask(ITask task);
 
@@ -27,7 +28,7 @@ public interface IController {
 
     void notifyRemoveTask(ITask task);
 
-    void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate);
+    void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, List<IResource> resources);
 
     void notifyChangeTask(ITask task);
 
@@ -36,7 +37,7 @@ public interface IController {
 
     void setSelectedTask(ITask task);
 
-    void handleAddResource(String resourceName, String email, ResourceType type);
+    void handleAddResource(String resourceName, String email, ResourceType type, List<ITask> tasks);
 
     void notifyAddResource(IResource resource);
 
@@ -44,7 +45,7 @@ public interface IController {
 
     void notifyRemoveResource(IResource resource);
 
-    void handleChangeResource(String resourceName, String email, ResourceType type);
+    void handleChangeResource(String resourceName, String email, ResourceType type, List<ITask> tasks);
 
     void notifyChangeResource(IResource resource);
 

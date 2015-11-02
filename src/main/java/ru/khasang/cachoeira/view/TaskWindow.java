@@ -1,23 +1,39 @@
 package ru.khasang.cachoeira.view;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.IController;
+import ru.khasang.cachoeira.model.IResource;
+import ru.khasang.cachoeira.model.ITask;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by truesik on 28.09.2015.
@@ -28,11 +44,11 @@ public class TaskWindow implements IWindow {
     @FXML
     private TextField taskNameField;
     @FXML
-    private TableView resourceTableView;
+    private TableView<IResource> resourceTableView;
     @FXML
-    private TableColumn resourceNameColumn;
+    private TableColumn<IResource, String> resourceNameColumn;
     @FXML
-    private TableColumn resourceCheckboxColumn;
+    private TableColumn<IResource, Boolean> resourceCheckboxColumn;
     @FXML
     private DatePicker taskStartDatePicker;
     @FXML
@@ -43,6 +59,8 @@ public class TaskWindow implements IWindow {
     private boolean isNewTask = false; //если тру, то нажата кнопка Новая задача, если фолз, то Свойства задачи
     private Parent root = null;
     private Stage stage;
+    private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();
+    private List<IResource> resourceList;
 
     public TaskWindow(MainWindow mainWindow, IController controller, boolean isNewTask) {
         this.mainWindow = mainWindow;
@@ -70,7 +88,8 @@ public class TaskWindow implements IWindow {
         stage.setResizable(false);                  //размер окна нельзя изменить
         stage.show();
 
-        taskWindowOKButton.setDisable(true);        //отключаем клопку ОК, пока не будут заполнены/изменены поля
+        resourceTableModel.addAll(controller.getProject().getResourceList());
+        resourceTableView.getItems().addAll(resourceTableModel);
 
         //отключает возможность в Дате окончания выбрать дату предыдущую Начальной даты
         taskFinishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
@@ -89,12 +108,94 @@ public class TaskWindow implements IWindow {
         });
 
         if (isNewTask) {
+            resourceList = new ArrayList<>(); //todo пришлось сделалть дополнительный список в который сбрасываются ресурсы с нажатым чекбоксом, т.к. я не понял как вытащить инфу из таблицы
+
+            taskWindowOKButton.setDisable(true);        //отключаем клопку ОК, пока не будут заполнены/изменены поля
             taskStartDatePicker.setValue(LocalDate.now());                              //дефолтовое значение: Сегодняшняя дата
             taskFinishDatePicker.setValue(taskStartDatePicker.getValue().plusDays(1));  //плюс один день
+
+            resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));  //колонка с именами ресурсов
+            resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
+                @Override
+                public TableCell<IResource, Boolean> call(TableColumn<IResource, Boolean> param) {
+                    return new TableCell<IResource, Boolean>() {
+                        @Override
+                        public void updateItem(Boolean item, boolean empty) {
+                            super.updateItem(item, empty);
+                            setAlignment(Pos.CENTER);
+//                            checkBox.setAlignment(Pos.CENTER);
+                            TableRow<IResource> currentRow = getTableRow();
+                            if (empty) {
+                                setText(null);
+                                setGraphic(null);
+                            } else {
+                                CheckBox checkBox = new CheckBox();
+                                setGraphic(checkBox);
+                                checkBox.setOnAction(new EventHandler<ActionEvent>() {
+                                    @Override
+                                    public void handle(ActionEvent event) {
+                                        if (checkBox.isSelected()) {
+                                            resourceList.add(currentRow.getItem());
+                                        } else {
+                                            resourceList.remove(currentRow.getItem());
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    };
+                }
+            });
         } else {
+            resourceList = new ArrayList<>(controller.getSelectedTask().getResourceList()); //todo пришлось сделалть дополнительный список в который сбрасываются ресурсы с нажатым чекбоксом, т.к. я не понял как вытащить инфу из таблицы
+
             taskNameField.setText(controller.getSelectedTask().getName());
             taskStartDatePicker.setValue(controller.getSelectedTask().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             taskFinishDatePicker.setValue(controller.getSelectedTask().getFinishDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+
+            resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));
+            resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
+                @Override
+                public TableCell<IResource, Boolean> call(TableColumn<IResource, Boolean> param) {
+                    return new TableCell<IResource, Boolean>() {
+                        @Override
+                        public void updateItem(Boolean item, boolean empty) {
+                            super.updateItem(item, empty);
+                            setAlignment(Pos.CENTER);
+//                            checkBox.setAlignment(Pos.CENTER);
+                            TableRow<IResource> currentRow = getTableRow();
+                            if (empty) {
+                                setText(null);
+                                setGraphic(null);
+                            } else {
+                                CheckBox checkBox = new CheckBox();
+                                setGraphic(checkBox);
+                                checkBox.setOnAction(new EventHandler<ActionEvent>() {
+                                    @Override
+                                    public void handle(ActionEvent event) {
+                                        if (checkBox.isSelected()) {
+                                            resourceList.add(currentRow.getItem());
+                                        } else {
+                                            resourceList.remove(currentRow.getItem());
+                                        }
+                                    }
+                                });
+
+                                for (IResource resource : controller.getSelectedTask().getResourceList()) {
+                                    if (resource.equals(currentRow.getItem())) {
+                                        System.out.println("true");
+                                        checkBox.selectedProperty().setValue(Boolean.TRUE);
+                                        break;
+                                    } else {
+                                        System.out.println("false");
+                                        checkBox.selectedProperty().setValue(Boolean.FALSE);
+                                    }
+                                }
+                            }
+                        }
+                    };
+                }
+            });
         }
 
         ChangeListener changeListener = new ChangeListener() {
@@ -111,11 +212,10 @@ public class TaskWindow implements IWindow {
 
     private void validate() {
         taskWindowOKButton.disableProperty().set(
-                        taskNameField.getText().trim().isEmpty() ||
+                taskNameField.getText().trim().isEmpty() ||
                         taskStartDatePicker.getValue().toString().trim().isEmpty() ||
                         taskFinishDatePicker.getValue().toString().trim().isEmpty()); // отключаем кнопку ОК, если хотя бы одно из полей не заполнено todo сделать проверку на null, иначе nullPointerException
     }
-
 
 
     @Override
@@ -144,9 +244,9 @@ public class TaskWindow implements IWindow {
         Date taskFinishDate = Date.from(taskFinishDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());  //LocalDate to Date
 
         if (isNewTask) {
-            controller.handleAddTask(taskNameField.getText(), taskStartDate, taskFinishDate);
+            controller.handleAddTask(taskNameField.getText(), taskStartDate, taskFinishDate, resourceList);
         } else {
-            controller.handleChangeTask(taskNameField.getText(), taskStartDate, taskFinishDate);
+            controller.handleChangeTask(taskNameField.getText(), taskStartDate, taskFinishDate, resourceList);
 //            taskController.getSelectedTask().setName(taskNameField.getText());
 //            taskController.getSelectedTask().setStartDate(taskStartDate);
 //            taskController.getSelectedTask().setFinishDate(taskFinishDate);

@@ -3,6 +3,7 @@ package ru.khasang.cachoeira.controller;
 import ru.khasang.cachoeira.model.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by truesik on 22.10.2015.
@@ -33,12 +34,14 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleAddTask(String nameOfTask, Date startDate, Date finishDate) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
+    public void handleAddTask(String nameOfTask, Date startDate, Date finishDate, List<IResource> resources) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
         task = new Task();
         task.setName(nameOfTask);
         task.setStartDate(startDate);
         task.setFinishDate(finishDate);
+        task.setResourceList(resources);
         project.getTaskList().add(task);
+        System.out.println(task.getResourceList());
     }
 
     @Override
@@ -57,10 +60,12 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate) { //todo тоже подправил
+    public void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, List<IResource> resources) { //todo тоже подправил
         task.setName(taskNameField);
         task.setStartDate(taskStartDate);
         task.setFinishDate(taskFinishDate);
+        task.setResourceList(resources);
+        System.out.println(task.getResourceList());
     }
 
     @Override
@@ -77,12 +82,15 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleAddResource(String resourceName, String email, ResourceType type) {
+    public void handleAddResource(String resourceName, String email, ResourceType type, List<ITask> tasks) {
         resource = new Resource();
         resource.setName(resourceName);
         resource.setEmail(email);
         resource.setType(type);
         project.getResourceList().add(resource);
+        for (ITask t : tasks) {
+            t.addResource(resource); //присваиваем этот ресурс задаче из списка tasks
+        }
     }
 
     @Override
@@ -101,10 +109,21 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleChangeResource(String resourceName, String email, ResourceType type) {
+    public void handleChangeResource(String resourceName, String email, ResourceType type, List<ITask> tasks) {
         resource.setName(resourceName);
         resource.setEmail(email);
         resource.setType(type);
+
+        for (ITask t : project.getTaskList()) {
+            for (ITask tas : tasks) {
+                if (!t.equals(tas) && t.getResourceList().contains(resource)) {
+                    t.removeResource(resource);
+                }
+                if (!tas.getResourceList().contains(resource)) {
+                    tas.addResource(resource);
+                }
+            }
+        }
     }
 
     @Override
