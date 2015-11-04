@@ -46,6 +46,8 @@ public class MainWindow implements IWindow {
     @FXML
     private TableColumn<IResource, ResourceType> resourceTypeColumn;      //столбец с типом ресурса <Resource, String>
     @FXML
+    private TableColumn<IResource, String> resourceEmailColumn;
+    @FXML
     private ScrollPane resourceGanttScrollPane;  //здесь должен быть канвас, также возможна с помощью этого скролла получится синхронизировать вертикальные скроллы таблицы ресурсов и ганта
 
     private Parent root = null;
@@ -115,12 +117,13 @@ public class MainWindow implements IWindow {
         refreshTaskTableModel(); //костыль
         refreshResourceTableModel();
 
-        taskNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getName()));
-        startDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getStartDate()));
-        finishDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getFinishDate()));
+        taskNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getName()));              //столбец задач Наименование
+        startDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getStartDate()));      //Дата начала
+        finishDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getFinishDate()));    //Дата окончания
 
-        resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));
-        resourceTypeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<ResourceType>(param.getValue().getType()));
+        resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));                     //столбец ресурсов Наименование
+        resourceTypeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getType()));                   //Тип
+        resourceEmailColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getEmail()));                   //Почта
 
         //контекстные меню в списках задач и ресурсов
         //контекстное меню на пустом месте таблицы
