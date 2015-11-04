@@ -11,6 +11,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ru.khasang.cachoeira.controller.IController;
@@ -29,6 +31,10 @@ import java.util.stream.Collectors;
  * Created by truesik on 28.09.2015.
  */
 public class MainWindow implements IWindow {
+    @FXML
+    private HBox dateLinePane;
+    @FXML
+    private Pane taskGanttPane;
     @FXML
     private TreeTableView<ITask> taskTreeTableView;     //таблица задач <Task>
     @FXML
@@ -169,6 +175,14 @@ public class MainWindow implements IWindow {
                 rootTask.getChildren().addAll(new TreeItem<>(taskTableModel));
             }
         });
+
+        double rowIndex = 3;
+        taskGanttPane.getChildren().clear();
+        for (ITask task : taskTableModel) {
+            TaskVision taskVision = new TaskVision(controller, UIControl, this, task, rowIndex);
+            taskGanttPane.getChildren().add(taskVision);
+            rowIndex = rowIndex + 24;
+        }
     }
 
     public void refreshResourceTableModel() {

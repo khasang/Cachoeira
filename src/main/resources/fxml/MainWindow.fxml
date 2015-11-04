@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -38,7 +40,12 @@
                                     <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                  </columnResizePolicy>
                               </TreeTableView>
-                              <ScrollPane fx:id="taskGanttScrollPane" fitToHeight="true" fitToWidth="true" />
+                              <VBox>
+                                 <children>
+                                    <HBox fx:id="dateLinePane" prefHeight="24.0" style="-fx-background-color: lightgray;" VBox.vgrow="NEVER" />
+                                    <Pane fx:id="taskGanttPane" VBox.vgrow="ALWAYS" style="-fx-background-color: white"/>
+                                 </children>
+                              </VBox>
                            </items>
                         </SplitPane>
                         <HBox VBox.vgrow="NEVER">

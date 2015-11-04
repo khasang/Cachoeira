@@ -187,6 +187,7 @@ public class ResourceWindow implements IWindow {
             controller.handleChangeResource(resourceNameField.getText(), resourceEmailField.getText(), resourceTypeComboBox.getSelectionModel().getSelectedItem(), taskList);
         }
         mainWindow.refreshResourceTableModel();
+        mainWindow.refreshTaskTableModel();
         stage.close();
     }
 
