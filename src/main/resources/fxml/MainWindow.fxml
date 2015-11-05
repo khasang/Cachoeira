@@ -40,10 +40,10 @@
                                     <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                  </columnResizePolicy>
                               </TreeTableView>
-                              <VBox>
+                              <VBox fx:id="vBox">
                                  <children>
-                                    <HBox fx:id="dateLinePane" prefHeight="24.0" style="-fx-background-color: lightgray;" VBox.vgrow="NEVER" />
-                                    <Pane fx:id="taskGanttPane" VBox.vgrow="ALWAYS" style="-fx-background-color: white"/>
+                                    <HBox fx:id="dateLinePane" prefHeight="24.0" stylesheets="@../css/header.css" VBox.vgrow="NEVER" />
+                                    <!--<Pane fx:id="taskGanttPane" style="-fx-background-color: white" VBox.vgrow="ALWAYS" />-->
                                  </children>
                               </VBox>
                            </items>

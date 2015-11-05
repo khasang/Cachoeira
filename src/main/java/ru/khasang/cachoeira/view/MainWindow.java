@@ -8,11 +8,11 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ru.khasang.cachoeira.controller.IController;
@@ -32,9 +32,11 @@ import java.util.stream.Collectors;
  */
 public class MainWindow implements IWindow {
     @FXML
-    private HBox dateLinePane;
+    private VBox vBox;
     @FXML
-    private Pane taskGanttPane;
+    private HBox dateLinePane;
+//    @FXML
+//    private Pane taskGanttPane;
     @FXML
     private TreeTableView<ITask> taskTreeTableView;     //таблица задач <Task>
     @FXML
@@ -56,6 +58,8 @@ public class MainWindow implements IWindow {
     @FXML
     private ScrollPane resourceGanttScrollPane;  //здесь должен быть канвас, также возможна с помощью этого скролла получится синхронизировать вертикальные скроллы таблицы ресурсов и ганта
 
+    private GanttGridPane ganttGridPane;
+    private Pane pane;
     private Parent root = null;
     private Stage stage;
     private UIControl UIControl;
@@ -83,9 +87,13 @@ public class MainWindow implements IWindow {
         if (root != null) {
             stage.setScene(new Scene(root));
         }
-        stage.setTitle("Cachoeira");
         stage.show();
         stage.setTitle(controller.getProject().getName());
+        ganttGridPane = new GanttGridPane();
+        pane = new Pane();
+        StackPane stackPane = new StackPane(ganttGridPane, pane);
+        vBox.getChildren().addAll(stackPane);
+        VBox.setVgrow(stackPane, Priority.ALWAYS);
 
         //при нажатии на крестик в тайтле
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -177,10 +185,10 @@ public class MainWindow implements IWindow {
         });
 
         double rowIndex = 3;
-        taskGanttPane.getChildren().clear();
+        pane.getChildren().clear();
         for (ITask task : taskTableModel) {
             TaskVision taskVision = new TaskVision(controller, UIControl, this, task, rowIndex);
-            taskGanttPane.getChildren().add(taskVision);
+            pane.getChildren().add(taskVision);
             rowIndex = rowIndex + 24;
         }
     }
