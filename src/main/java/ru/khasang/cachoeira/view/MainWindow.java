@@ -2,6 +2,8 @@ package ru.khasang.cachoeira.view;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -35,8 +37,6 @@ public class MainWindow implements IWindow {
     private VBox vBox;
     @FXML
     private HBox dateLinePane;
-//    @FXML
-//    private Pane taskGanttPane;
     @FXML
     private TreeTableView<ITask> taskTreeTableView;     //таблица задач <Task>
     @FXML
@@ -65,15 +65,15 @@ public class MainWindow implements IWindow {
     private UIControl UIControl;
     private IController controller;
     private TreeItem<ITask> rootTask = new TreeItem<>(new Task());  //todo исправить new Task на контроллер
-    private ObservableList<ITask> taskTableModel = FXCollections.observableArrayList();        //<Task> модель для задач
-    private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();    //<Resource> модель для ресурсов
+    private ObservableList<ITask> taskTableModel = FXCollections.observableArrayList();             //<Task> модель для задач
+    private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();     //<Resource> модель для ресурсов
 
     public MainWindow(IController controller, UIControl UIControl) {
         this.controller = controller;
         this.UIControl = UIControl;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));  //грузим макет окна
-        fxmlLoader.setController(this);                                                     //говорим макету, что этот класс является его контроллером
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));    //грузим макет окна
+        fxmlLoader.setController(this);                                                             //говорим макету, что этот класс является его контроллером
         try {
             root = fxmlLoader.load();
         } catch (IOException e) {
@@ -89,6 +89,7 @@ public class MainWindow implements IWindow {
         }
         stage.show();
         stage.setTitle(controller.getProject().getName());
+
         ganttGridPane = new GanttGridPane();
         pane = new Pane();
         StackPane stackPane = new StackPane(ganttGridPane, pane);

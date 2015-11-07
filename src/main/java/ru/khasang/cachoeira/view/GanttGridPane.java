@@ -10,7 +10,6 @@ public class GanttGridPane extends Pane {
     private static final double HALF_PIXEL_OFFSET = 0.5;
 
     private final Canvas canvas = new Canvas();
-    private boolean needsLayout = false;
 
     public GanttGridPane() {
         setStyle("-fx-background-color: white");
@@ -30,7 +29,7 @@ public class GanttGridPane extends Pane {
         canvas.setLayoutX(left);
         canvas.setLayoutY(top);
 
-        if (width != canvas.getWidth() || height != canvas.getHeight() || needsLayout) {
+        if (width != canvas.getWidth() || height != canvas.getHeight()) {
             canvas.setWidth(width);
             canvas.setHeight(height);
 
@@ -43,8 +42,6 @@ public class GanttGridPane extends Pane {
             for (int i = 0; i < vLineCount; i++) {
                 g.strokeLine(snap((i + 1) * spacing), 0, snap((i + 1) * spacing), height);
             }
-
-            needsLayout = false;
         }
     }
 
