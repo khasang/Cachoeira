@@ -12,6 +12,9 @@ public class Task implements ITask {
     private Date startDate;
     private Date finishDate;
     private int donePercent;
+    private String duration;
+    private PriorityList priority;
+    private int cost;
     private List<IDependentTask> dependentTasks = new ArrayList<>();
     private ITaskGroup taskGroup;
     private List<IResource> resources = new ArrayList<>();
@@ -54,6 +57,34 @@ public class Task implements ITask {
     @Override
     public void setDonePercent(int donePercent) {
         this.donePercent = donePercent;
+    }
+
+    @Override
+    public String getDuration() {
+        long difference=finishDate.getTime()-startDate.getTime();
+        duration=String.valueOf(difference/(24*60*60*1000))+" дн.";
+        return duration;
+    }
+
+
+    @Override
+    public int getCost() {
+        return cost;
+    }
+
+    @Override
+    public void setCost(int cost) {
+        this.cost=cost;
+    }
+
+    @Override
+    public PriorityList getPriorityType() {
+        return priority;
+    }
+
+    @Override
+    public void setPriotityType(PriorityList type) {
+        this.priority=type;
     }
 
     @Override
@@ -105,4 +136,5 @@ public class Task implements ITask {
     public void setResourceList(List<IResource> resources) {
         this.resources = resources;
     }
+
 }

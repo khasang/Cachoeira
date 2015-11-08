@@ -33,6 +33,13 @@
                                   <TreeTableColumn fx:id="taskNameColumn" prefWidth="75.0" text="Наименование" />
                                   <TreeTableColumn fx:id="startDateColumn" prefWidth="75.0" text="Дата начала" />
                                     <TreeTableColumn fx:id="finishDateColumn" prefWidth="75.0" text="Дата окончания" />
+
+                                    <TreeTableColumn fx:id="durationColumn" prefWidth="75.0" text="Продолжительность" visible="false"/>
+                                    <TreeTableColumn fx:id="donePercentColumn" prefWidth="75.0" text="Прогресс" visible="false"/>
+                                    <TreeTableColumn fx:id="priorityColumn" prefWidth="75.0" text="Приоритет" visible="false"/>
+                                    <TreeTableColumn fx:id="costColumn" prefWidth="75.0" text="Стоимость" visible="false"/>
+
+
                                 </columns>
                                  <columnResizePolicy>
                                     <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

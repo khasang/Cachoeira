@@ -25,6 +25,7 @@ import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.model.PriorityList;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -53,12 +54,20 @@ public class TaskWindow implements IWindow {
     private DatePicker taskStartDatePicker;
     @FXML
     private DatePicker taskFinishDatePicker;
+    //добавил:
+    @FXML
+    private TextField taskCostField;
+    @FXML
+    private Slider taskDonePercentSlider;
+    @FXML
+    private ComboBox<PriorityList> taskPriorityComboBox;
 
     private MainWindow mainWindow;
     private IController controller;
     private boolean isNewTask = false; //если тру, то нажата кнопка Новая задача, если фолз, то Свойства задачи
     private Parent root = null;
     private Stage stage;
+    private ObservableList<PriorityList> taskPriorityTypes = FXCollections.observableArrayList();
     private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();
     private List<IResource> resourceList;
 
@@ -87,6 +96,8 @@ public class TaskWindow implements IWindow {
         stage.initModality(Modality.WINDOW_MODAL);  //чтобы окно сделать модальным, ему нужно присвоить "владельца" (строчка выше)
         stage.setResizable(false);                  //размер окна нельзя изменить
         stage.show();
+        taskPriorityTypes.addAll(PriorityList.values());
+        taskPriorityComboBox.setItems(taskPriorityTypes);
 
         resourceTableModel.addAll(controller.getProject().getResourceList());
         resourceTableView.getItems().addAll(resourceTableModel);
@@ -113,6 +124,10 @@ public class TaskWindow implements IWindow {
             taskWindowOKButton.setDisable(true);        //отключаем клопку ОК, пока не будут заполнены/изменены поля
             taskStartDatePicker.setValue(LocalDate.now());                              //дефолтовое значение: Сегодняшняя дата
             taskFinishDatePicker.setValue(taskStartDatePicker.getValue().plusDays(1));  //плюс один день
+            //taskDonePercent.setValue(0);
+            taskCostField.setText(String.valueOf(0));
+            taskDonePercentSlider.setValue(0);
+            taskPriorityComboBox.setValue(PriorityList.Normal);
 
             resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));  //колонка с именами ресурсов
             resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
@@ -152,6 +167,11 @@ public class TaskWindow implements IWindow {
             taskNameField.setText(controller.getSelectedTask().getName());
             taskStartDatePicker.setValue(controller.getSelectedTask().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             taskFinishDatePicker.setValue(controller.getSelectedTask().getFinishDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            //добавляю:
+            taskCostField.setText(String.valueOf(controller.getSelectedTask().getCost()));
+            taskDonePercentSlider.setValue(controller.getSelectedTask().getDonePercent());
+
+            taskPriorityComboBox.getSelectionModel().select(controller.getSelectedTask().getPriorityType());
 
             resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));
             resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
@@ -208,13 +228,19 @@ public class TaskWindow implements IWindow {
         taskNameField.textProperty().addListener(changeListener);
         taskStartDatePicker.valueProperty().addListener(changeListener);
         taskFinishDatePicker.valueProperty().addListener(changeListener);
+        //добавил:
+        taskCostField.textProperty().addListener(changeListener);
+        taskDonePercentSlider.valueProperty().addListener(changeListener);
+        taskPriorityComboBox.valueProperty().addListener(changeListener);
     }
 
     private void validate() {
         taskWindowOKButton.disableProperty().set(
                 taskNameField.getText().trim().isEmpty() ||
+                        taskCostField.getText().trim().isEmpty()||
                         taskStartDatePicker.getValue().toString().trim().isEmpty() ||
                         taskFinishDatePicker.getValue().toString().trim().isEmpty()); // отключаем кнопку ОК, если хотя бы одно из полей не заполнено todo сделать проверку на null, иначе nullPointerException
+
     }
 
 
@@ -243,10 +269,11 @@ public class TaskWindow implements IWindow {
         Date taskStartDate = Date.from(taskStartDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());    //LocalDate to Date
         Date taskFinishDate = Date.from(taskFinishDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());  //LocalDate to Date
 
+        //добавил:
         if (isNewTask) {
-            controller.handleAddTask(taskNameField.getText(), taskStartDate, taskFinishDate, resourceList);
+            controller.handleAddTask(taskNameField.getText(), taskStartDate, taskFinishDate, Integer.valueOf(taskCostField.getText()),taskDonePercentSlider.getValue(),taskPriorityComboBox.getSelectionModel().getSelectedItem(),resourceList);
         } else {
-            controller.handleChangeTask(taskNameField.getText(), taskStartDate, taskFinishDate, resourceList);
+            controller.handleChangeTask(taskNameField.getText(), taskStartDate, taskFinishDate,Integer.valueOf(taskCostField.getText()),taskDonePercentSlider.getValue(),taskPriorityComboBox.getSelectionModel().getSelectedItem(), resourceList);
 //            taskController.getSelectedTask().setName(taskNameField.getText());
 //            taskController.getSelectedTask().setStartDate(taskStartDate);
 //            taskController.getSelectedTask().setFinishDate(taskFinishDate);

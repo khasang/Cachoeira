@@ -1,9 +1,6 @@
 package ru.khasang.cachoeira.controller;
 
-import ru.khasang.cachoeira.model.IProject;
-import ru.khasang.cachoeira.model.IResource;
-import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.model.ResourceType;
+import ru.khasang.cachoeira.model.*;
 
 import java.util.Date;
 import java.util.List;
@@ -19,16 +16,16 @@ public interface IController {
     void handleChangeProject(IProject project);
 
     void notifyChangeProject(IProject project);
-
-    void handleAddTask(String nameOfTask, Date startDate, Date finishDate, List<IResource> resources);
+    //добавил:
+    void handleAddTask(String nameOfTask, Date startDate, Date finishDate, Integer cost, double donePercent, PriorityList priorityType, List<IResource> resources);
 
     void notifyAddTask(ITask task);
 
     void handleRemoveTask(ITask task);
 
     void notifyRemoveTask(ITask task);
-
-    void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, List<IResource> resources);
+    //добавил:
+    void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, Integer taskCost, double taskDonePercent, PriorityList taskPriorityType, List<IResource> resources);
 
     void notifyChangeTask(ITask task);
 

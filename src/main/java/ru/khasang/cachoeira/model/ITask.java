@@ -23,6 +23,12 @@ public interface ITask {
 
     void setDonePercent(int donePercent);
 
+    String getDuration();
+
+    int getCost();
+
+    void setCost(int cost);
+
     void addDependentTask(IDependentTask dependentTask);
 
     void removeDependentTask(IDependentTask dependentTask);
@@ -42,4 +48,9 @@ public interface ITask {
     List<IResource> getResourceList();
 
     void setResourceList(List<IResource> resources);
+
+    PriorityList getPriorityType();
+
+    void setPriotityType(PriorityList type);
+
 }
