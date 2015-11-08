@@ -2,15 +2,12 @@ package ru.khasang.cachoeira.view;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -34,9 +31,7 @@ import java.util.stream.Collectors;
  */
 public class MainWindow implements IWindow {
     @FXML
-    private VBox vBox;
-    @FXML
-    private HBox dateLinePane;
+    private SplitPane splitPane;
     @FXML
     private TreeTableView<ITask> taskTreeTableView;     //таблица задач <Task>
     @FXML
@@ -58,8 +53,9 @@ public class MainWindow implements IWindow {
     @FXML
     private ScrollPane resourceGanttScrollPane;  //здесь должен быть канвас, также возможна с помощью этого скролла получится синхронизировать вертикальные скроллы таблицы ресурсов и ганта
 
-    private GanttGridPane ganttGridPane;
-    private Pane pane;
+//    private GanttChartGridLayer ganttChartGridLayer;
+//    private GanttChartObjectsLayer ganttChartObjectsLayer;
+    private GanttChart ganttChart;
     private Parent root = null;
     private Stage stage;
     private UIControl UIControl;
@@ -90,11 +86,9 @@ public class MainWindow implements IWindow {
         stage.show();
         stage.setTitle(controller.getProject().getName());
 
-        ganttGridPane = new GanttGridPane();
-        pane = new Pane();
-        StackPane stackPane = new StackPane(ganttGridPane, pane);
-        vBox.getChildren().addAll(stackPane);
-        VBox.setVgrow(stackPane, Priority.ALWAYS);
+        ganttChart = new GanttChart(controller, UIControl, this);
+        splitPane.getItems().add(ganttChart);
+        splitPane.setDividerPositions(0.3);
 
         //при нажатии на крестик в тайтле
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -184,14 +178,7 @@ public class MainWindow implements IWindow {
                 rootTask.getChildren().addAll(new TreeItem<>(taskTableModel));
             }
         });
-
-        double rowIndex = 3;
-        pane.getChildren().clear();
-        for (ITask task : taskTableModel) {
-            TaskVision taskVision = new TaskVision(controller, UIControl, this, task, rowIndex);
-            pane.getChildren().add(taskVision);
-            rowIndex = rowIndex + 24;
-        }
+        ganttChart.getGanttChartObjectsLayer().refreshDiagram();
     }
 
     public void refreshResourceTableModel() {

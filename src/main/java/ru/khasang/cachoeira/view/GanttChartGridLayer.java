@@ -5,13 +5,13 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
-public class GanttGridPane extends Pane {
+public class GanttChartGridLayer extends Pane {
     // This is to make the stroke be drawn 'on pixel'.
-    private static final double HALF_PIXEL_OFFSET = 0.5;
+    private static final double HALF_PIXEL_OFFSET = -0.5;
 
     private final Canvas canvas = new Canvas();
 
-    public GanttGridPane() {
+    public GanttChartGridLayer() {
         setStyle("-fx-background-color: white");
         getChildren().add(canvas);
     }
@@ -24,7 +24,7 @@ public class GanttGridPane extends Pane {
         final int left = (int) snappedLeftInset();
         final int width = (int) getWidth() - left - right;
         final int height = (int) getHeight() - top - bottom;
-        final int spacing = 30;
+        final int spacing = 70;
 
         canvas.setLayoutX(left);
         canvas.setLayoutY(top);
