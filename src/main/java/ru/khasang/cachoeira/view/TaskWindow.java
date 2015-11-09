@@ -9,6 +9,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +19,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -284,5 +287,36 @@ public class TaskWindow implements IWindow {
 
     public void taskWindowCancelButtonHandle(ActionEvent actionEvent) {
         stage.close();
+    }
+
+    public void onlyNumber(KeyEvent event) {
+        if ((isInteger(event.getText())||event.getText().equals(".") && (countChar(taskCostField.getText(),".")<1))||(event.getCode()== KeyCode.BACK_SPACE)){
+            taskCostField.setEditable(true);
+            if ((taskCostField.getText().length()>0) && (taskCostField.getText().lastIndexOf(".")!=-1)){
+                if ((taskCostField.getText().length()>taskCostField.getText().lastIndexOf(".")+2)&&(event.getCode()!= KeyCode.BACK_SPACE))
+                {
+                    taskCostField.setEditable(false);
+                }
+            }
+        }else{
+            taskCostField.setEditable(false);
+        }
+    }
+
+    private int countChar(String text, String s) {
+        int count=0;
+        for (char element : text.toCharArray()){
+            if (element == '.') count++;
+        }
+        return count;
+    }
+
+    private boolean isInteger(String string){
+        try {
+            Integer.parseInt(string);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 }

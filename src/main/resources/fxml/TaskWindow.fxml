@@ -56,6 +56,6 @@
 
 
        <Label text="Стоимость" GridPane.rowIndex="5" />
-      <TextField fx:id="taskCostField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <TextField fx:id="taskCostField" onKeyPressed="#onlyNumber" GridPane.columnIndex="1" GridPane.rowIndex="5" />
    </children>
 </GridPane>
