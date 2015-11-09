@@ -36,7 +36,7 @@ public class Controller implements IController {
 
     //добавил:
     @Override
-    public void handleAddTask(String nameOfTask, Date startDate, Date finishDate, Integer cost, double donePercent, PriorityList priority, List<IResource> resources) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
+    public void handleAddTask(String nameOfTask, Date startDate, Date finishDate, Double cost, double donePercent, PriorityList priority, List<IResource> resources) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
         task = new Task();
         task.setName(nameOfTask);
         task.setStartDate(startDate);
@@ -66,7 +66,7 @@ public class Controller implements IController {
 
 //Добавил:
     @Override
-    public void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, Integer taskCost, double taskDonePercent, PriorityList priority, List<IResource> resources) { //todo тоже подправил
+    public void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, Double taskCost, double taskDonePercent, PriorityList priority, List<IResource> resources) { //todo тоже подправил
         task.setName(taskNameField);
         task.setStartDate(taskStartDate);
         task.setFinishDate(taskFinishDate);

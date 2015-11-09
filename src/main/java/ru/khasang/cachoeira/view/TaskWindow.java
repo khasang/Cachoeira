@@ -128,7 +128,7 @@ public class TaskWindow implements IWindow {
             taskStartDatePicker.setValue(LocalDate.now());                              //дефолтовое значение: Сегодняшняя дата
             taskFinishDatePicker.setValue(taskStartDatePicker.getValue().plusDays(1));  //плюс один день
             //taskDonePercent.setValue(0);
-            taskCostField.setText(String.valueOf(0));
+            taskCostField.setText(String.valueOf(0.00));
             taskDonePercentSlider.setValue(0);
             taskPriorityComboBox.setValue(PriorityList.Normal);
 
@@ -274,9 +274,9 @@ public class TaskWindow implements IWindow {
 
         //добавил:
         if (isNewTask) {
-            controller.handleAddTask(taskNameField.getText(), taskStartDate, taskFinishDate, Integer.valueOf(taskCostField.getText()),taskDonePercentSlider.getValue(),taskPriorityComboBox.getSelectionModel().getSelectedItem(),resourceList);
+            controller.handleAddTask(taskNameField.getText(), taskStartDate, taskFinishDate, Double.valueOf(taskCostField.getText()),taskDonePercentSlider.getValue(),taskPriorityComboBox.getSelectionModel().getSelectedItem(),resourceList);
         } else {
-            controller.handleChangeTask(taskNameField.getText(), taskStartDate, taskFinishDate,Integer.valueOf(taskCostField.getText()),taskDonePercentSlider.getValue(),taskPriorityComboBox.getSelectionModel().getSelectedItem(), resourceList);
+            controller.handleChangeTask(taskNameField.getText(), taskStartDate, taskFinishDate,Double.valueOf(taskCostField.getText()),taskDonePercentSlider.getValue(),taskPriorityComboBox.getSelectionModel().getSelectedItem(), resourceList);
 //            taskController.getSelectedTask().setName(taskNameField.getText());
 //            taskController.getSelectedTask().setStartDate(taskStartDate);
 //            taskController.getSelectedTask().setFinishDate(taskFinishDate);

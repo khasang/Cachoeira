@@ -44,7 +44,7 @@ public class MainWindow implements IWindow {
     @FXML
     private TreeTableColumn<ITask,PriorityList> priorityColumn; //столбец Приоритет
     @FXML
-    private TreeTableColumn<ITask,Integer> costColumn; //столбец Стоимость
+    private TreeTableColumn<ITask,Double> costColumn; //столбец Стоимость
 
 
     @FXML

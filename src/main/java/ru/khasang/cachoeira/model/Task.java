@@ -14,7 +14,7 @@ public class Task implements ITask {
     private int donePercent;
     private String duration;
     private PriorityList priority;
-    private int cost;
+    private double cost;
     private List<IDependentTask> dependentTasks = new ArrayList<>();
     private ITaskGroup taskGroup;
     private List<IResource> resources = new ArrayList<>();
@@ -68,12 +68,12 @@ public class Task implements ITask {
 
 
     @Override
-    public int getCost() {
+    public double getCost() {
         return cost;
     }
 
     @Override
-    public void setCost(int cost) {
+    public void setCost(double cost) {
         this.cost=cost;
     }
 

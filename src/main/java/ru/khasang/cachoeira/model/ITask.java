@@ -25,9 +25,9 @@ public interface ITask {
 
     String getDuration();
 
-    int getCost();
+    double getCost();
 
-    void setCost(int cost);
+    void setCost(double cost);
 
     void addDependentTask(IDependentTask dependentTask);
 
