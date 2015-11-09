@@ -28,7 +28,7 @@
                <content>
                   <VBox>
                      <children>
-                        <SplitPane fx:id="splitPane" VBox.vgrow="ALWAYS">
+                        <SplitPane fx:id="taskSplitPane" VBox.vgrow="ALWAYS">
                            <items>
                               <TreeTableView fx:id="taskTreeTableView" showRoot="false">
                                 <columns>

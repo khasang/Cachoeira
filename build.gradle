@@ -1,5 +1,5 @@
 group 'ru.khasang.cachoeira'
-version '1.2'
+version '1.5.0'
 
 apply plugin: 'java'
 

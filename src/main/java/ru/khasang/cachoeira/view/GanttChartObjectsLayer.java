@@ -11,16 +11,17 @@ import ru.khasang.cachoeira.model.ITask;
  */
 
 public class GanttChartObjectsLayer extends Pane {
-    private double rowHeight = 24;
     private IController controller;
     private UIControl UIControl;
     private MainWindow mainWindow;
+    private int columnWidth;
     private ObservableList<ITask> taskTableModel = FXCollections.observableArrayList();
 
-    public GanttChartObjectsLayer(IController controller, UIControl UIControl, MainWindow mainWindow) {
+    public GanttChartObjectsLayer(IController controller, UIControl UIControl, MainWindow mainWindow, int columnWidth) {
         this.controller = controller;
         this.UIControl = UIControl;
         this.mainWindow = mainWindow;
+        this.columnWidth = columnWidth;
     }
 
     public void refreshDiagram() {
@@ -28,13 +29,10 @@ public class GanttChartObjectsLayer extends Pane {
         taskTableModel.clear();
         taskTableModel.addAll(controller.getProject().getTaskList());
 
-        double rowIndex = 0;
         for (ITask task : taskTableModel) {
-            GanttChartObject ganttChartObject = new GanttChartObject(controller, UIControl, mainWindow, task, rowIndex);
+            int rowIndex = taskTableModel.indexOf(task);
+            GanttChartObject ganttChartObject = new GanttChartObject(controller, UIControl, mainWindow, task, rowIndex, columnWidth);
             this.getChildren().add(ganttChartObject);
-            rowIndex = rowIndex + rowHeight;
         }
     }
-
-
 }

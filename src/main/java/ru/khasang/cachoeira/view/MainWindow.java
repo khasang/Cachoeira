@@ -11,7 +11,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ru.khasang.cachoeira.controller.IController;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public class MainWindow implements IWindow {
     @FXML
-    private SplitPane splitPane;
+    private SplitPane taskSplitPane;
     @FXML
     private TreeTableView<ITask> taskTreeTableView;     //таблица задач <Task>
     @FXML
@@ -86,9 +85,9 @@ public class MainWindow implements IWindow {
         stage.show();
         stage.setTitle(controller.getProject().getName());
 
-        ganttChart = new GanttChart(controller, UIControl, this);
-        splitPane.getItems().add(ganttChart);
-        splitPane.setDividerPositions(0.3);
+        ganttChart = new GanttChart(controller, UIControl, this, 70);
+        taskSplitPane.getItems().add(ganttChart);
+        taskSplitPane.setDividerPositions(0.3);
 
         //при нажатии на крестик в тайтле
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -259,5 +258,9 @@ public class MainWindow implements IWindow {
 
     public IController getController() {
         return controller;
+    }
+
+    public TreeTableView<ITask> getTaskTreeTableView() {
+        return taskTreeTableView;
     }
 }

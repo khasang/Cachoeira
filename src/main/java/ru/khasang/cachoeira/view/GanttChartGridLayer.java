@@ -10,8 +10,10 @@ public class GanttChartGridLayer extends Pane {
     private static final double HALF_PIXEL_OFFSET = -0.5;
 
     private final Canvas canvas = new Canvas();
+    private int columnWidth;
 
-    public GanttChartGridLayer() {
+    public GanttChartGridLayer(int columnWidth) {
+        this.columnWidth = columnWidth;
         setStyle("-fx-background-color: white");
         getChildren().add(canvas);
     }
@@ -24,7 +26,7 @@ public class GanttChartGridLayer extends Pane {
         final int left = (int) snappedLeftInset();
         final int width = (int) getWidth() - left - right;
         final int height = (int) getHeight() - top - bottom;
-        final int spacing = 70;
+        final int spacing = columnWidth;
 
         canvas.setLayoutX(left);
         canvas.setLayoutY(top);
