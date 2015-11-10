@@ -6,3 +6,4 @@ Cachoeira – кроссплатформенный OpenSource проект, в �
 
 ## [User stories](https://github.com/khasang/Cachoeira/blob/master/User-stories.md)
 ## [Road Map](https://github.com/khasang/Cachoeira/blob/master/Road-map.md)
+## [To Do] (https://github.com/khasang/Cachoeira/wiki/To-Do)
