@@ -59,7 +59,7 @@
                <content>
                   <VBox>
                      <children>
-                        <SplitPane dividerPositions="0.3" VBox.vgrow="ALWAYS">
+                        <SplitPane fx:id="resourceSplitPane" VBox.vgrow="ALWAYS">
                            <items>
                               <TableView fx:id="resourceTableView" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
                                 <columns>
@@ -71,7 +71,6 @@
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                  </columnResizePolicy>
                               </TableView>
-                              <ScrollPane fx:id="resourceGanttScrollPane" fitToHeight="true" fitToWidth="true" />
                            </items>
                         </SplitPane>
                         <HBox VBox.vgrow="NEVER">

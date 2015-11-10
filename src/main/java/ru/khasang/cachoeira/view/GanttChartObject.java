@@ -1,12 +1,11 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -42,7 +41,7 @@ public class GanttChartObject extends HBox {
 
 
         double startDay = ((task.getStartDate().getTime() - 1446498000000L) / (24 * 60 * 60 * 1000)) * columnWidth; //координата Х (дата начала задачи минус дата начала проекта (1446498000000L = 03.11.15 в миллисекундах от ~1977 года, нужно будет заменить на controller.getProject().getStartDate().getTime()) получаем разницу в днях и умножаем ее на длину дня в пикселях(MULTIPLIER)
-        setLayoutX(startDay - 1);
+        setLayoutX(startDay - 2); //"2" - подгонка под сетку
         setLayoutY(rowIndex * rowHeight);
 
         double taskWidth = ((task.getFinishDate().getTime() - task.getStartDate().getTime()) / (24 * 60 * 60 * 1000)) * columnWidth; // длина прямоугольника (разница между
@@ -52,15 +51,32 @@ public class GanttChartObject extends HBox {
         bar.setStroke(Color.valueOf("#B3E5FC"));  //цвет окантовки
         bar.setArcHeight(5);                      //сгругление углов
         bar.setArcWidth(5);                       //сгругление углов
+        //подсветка при наведении
+        bar.hoverProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (newValue) {
+                    bar.setFill(Color.valueOf("#41C2FA"));
+                    bar.setStroke(Color.valueOf("#72D1FA"));
+                } else {
+                    bar.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
+                    bar.setStroke(Color.valueOf("#B3E5FC"));
+                }
+            }
+        });
 
         getChildren().add(bar); //добавляем прямоугольник на HBox (панель)
 
+        showResourcesOnDiagram(task);
+
+        setContextMenu(bar); //контекстное меню при нажатии на прямоугольник, добавлено для теста (код нужно дописать)
+    }
+
+    public void showResourcesOnDiagram(ITask task) {
         for (IResource resource : task.getResourceList()) {
             Label resourceName = new Label(resource.getName());
             getChildren().add(resourceName); //добавляем ресурсы на HBox
         }
-
-        setContextMenu(bar); //контекстное меню при нажатии на прямоугольник, добавлено для теста (код нужно дописать)
     }
 
     public void setContextMenu(Rectangle taskShape) {
@@ -74,6 +90,7 @@ public class GanttChartObject extends HBox {
             }
         });
         MenuItem removeTask = new MenuItem("Удалить задачу");
+
         ContextMenu contextMenu = new ContextMenu(setResource, getProperties, removeTask);
 
         taskShape.setOnMousePressed(new EventHandler<MouseEvent>() {

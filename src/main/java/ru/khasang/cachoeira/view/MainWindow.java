@@ -32,6 +32,8 @@ public class MainWindow implements IWindow {
     @FXML
     private SplitPane taskSplitPane;
     @FXML
+    private SplitPane resourceSplitPane;
+    @FXML
     private TreeTableView<ITask> taskTreeTableView;     //таблица задач <Task>
     @FXML
     private TreeTableColumn<ITask, String> taskNameColumn;      //столбец с наименованием задачи <Task, String>
@@ -54,7 +56,8 @@ public class MainWindow implements IWindow {
 
 //    private GanttChartGridLayer ganttChartGridLayer;
 //    private GanttChartObjectsLayer ganttChartObjectsLayer;
-    private GanttChart ganttChart;
+    private GanttChart taskGanttChart;
+    private GanttChart resourceGanttChart;
     private Parent root = null;
     private Stage stage;
     private UIControl UIControl;
@@ -85,9 +88,14 @@ public class MainWindow implements IWindow {
         stage.show();
         stage.setTitle(controller.getProject().getName());
 
-        ganttChart = new GanttChart(controller, UIControl, this, 70);
-        taskSplitPane.getItems().add(ganttChart);
-        taskSplitPane.setDividerPositions(0.3);
+        taskGanttChart = new GanttChart(controller, UIControl, this, 70);
+        taskSplitPane.getItems().add(taskGanttChart);
+//        taskSplitPane.setDividerPositions(0.3);
+        taskSplitPane.setDividerPosition(0, 0.3);
+
+        resourceGanttChart = new GanttChart(controller, UIControl, this, 70);
+        resourceSplitPane.getItems().add(resourceGanttChart);
+        resourceSplitPane.setDividerPosition(0, 0.3);
 
         //при нажатии на крестик в тайтле
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -177,7 +185,7 @@ public class MainWindow implements IWindow {
                 rootTask.getChildren().addAll(new TreeItem<>(taskTableModel));
             }
         });
-        ganttChart.getGanttChartObjectsLayer().refreshDiagram();
+        taskGanttChart.getGanttChartObjectsLayer().refreshTaskDiagram();
     }
 
     public void refreshResourceTableModel() {
@@ -185,6 +193,7 @@ public class MainWindow implements IWindow {
         resourceTableView.getItems().clear();
         resourceTableModel.addAll(controller.getProject().getResourceList().stream().collect(Collectors.toList()));
         resourceTableView.setItems(resourceTableModel);
+        resourceGanttChart.getGanttChartObjectsLayer().refreshResourceDiagram();
     }
 
 
