@@ -60,7 +60,7 @@ public class StartWindow implements IWindow {
 
     @FXML
     private void openNewProjectWindowHandle(ActionEvent actionEvent) {
-        UIControl.launchStartWindow();
+        UIControl.launchNewProjectWindow();
     }
 
     @FXML

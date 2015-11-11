@@ -47,11 +47,23 @@ public class UIControl {
         resourceWindow.launch();
     }
 
-    public void refreshTableModel() {
-        mainWindow.refreshTaskTableModel();
-    } //временный костыль
+    public MainWindow getMainWindow() {
+        return mainWindow;
+    }
 
-    public Stage getMainWindowStage() {
-        return mainWindow.getStage();
+    public TaskWindow getTaskWindow() {
+        return taskWindow;
+    }
+
+    public ResourceWindow getResourceWindow() {
+        return resourceWindow;
+    }
+
+    public StartWindow getStartWindow() {
+        return startWindow;
+    }
+
+    public NewProjectWindow getNewProjectWindow() {
+        return newProjectWindow;
     }
 }

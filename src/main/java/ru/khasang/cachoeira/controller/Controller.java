@@ -2,6 +2,7 @@ package ru.khasang.cachoeira.controller;
 
 import ru.khasang.cachoeira.model.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,9 +10,10 @@ import java.util.List;
  * Created by truesik on 22.10.2015.
  */
 public class Controller implements IController {
-    private IProject project = new Project("Test Project");
+    private IProject project;
     private ITask task;
     private IResource resource;
+    private List<IProject> projectList = new ArrayList<>(); //по архитектуре не понял где у нас должен храниться список проектов, поэтому пускай пока будет здесь
 
     @Override
     public IProject getDefaultProject() {
@@ -138,5 +140,21 @@ public class Controller implements IController {
     @Override
     public void setSelectedResource(IResource resource) {
         this.resource = resource;
+    }
+
+    @Override
+    public void notifyAddProject(String projectName, Date startDate, Date finishDate, String description) {
+        project = new Project();
+        project.setName(projectName);
+        project.setStartDate(startDate);
+        project.setFinishDate(finishDate);
+        project.setDescription(description);
+        projectList.add(project);
+        setProject(project);
+    }
+
+    @Override
+    public void setProject(IProject project) {
+        this.project = project;
     }
 }

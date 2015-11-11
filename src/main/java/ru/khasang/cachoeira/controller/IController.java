@@ -52,4 +52,8 @@ public interface IController {
     IResource getSelectedResource();
 
     void setSelectedResource(IResource resource);
+
+    void notifyAddProject(String projectName, Date startDate, Date finishDate, String description);
+
+    void setProject(IProject project);
 }

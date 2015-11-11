@@ -8,17 +8,21 @@ import javafx.scene.Scene;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import ru.khasang.cachoeira.controller.IController;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * Created by truesik on 11.11.2015.
  */
 public class NewProjectWindow implements IWindow {
-    private final IController controller;
-    private final UIControl UIControl;
+    private IController controller;
+    private UIControl UIControl;
 
     @FXML
     private TextField newProjectNameField;
@@ -49,12 +53,17 @@ public class NewProjectWindow implements IWindow {
 
     @Override
     public void launch() {
-        stage = new Stage();
+        stage = new Stage(StageStyle.UTILITY);
         if (root != null) {
             stage.setScene(new Scene(root));
         }
+        stage.setResizable(false);
+        stage.initOwner(UIControl.getStartWindow().getStage());
+        stage.initModality(Modality.WINDOW_MODAL);
         stage.show();
-        stage.setTitle("New Project");
+        stage.setTitle("Новый проект");
+
+
     }
 
     @Override
@@ -69,11 +78,16 @@ public class NewProjectWindow implements IWindow {
 
     @FXML
     private void newProjectCreateButtonHandle(ActionEvent actionEvent) {
-
+        Date projectStartDate = Date.from(newProjectStartDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());    //LocalDate to Date
+        Date projectFinishDate = Date.from(newProjectFinishDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        controller.notifyAddProject(newProjectNameField.getText(), projectStartDate, projectFinishDate, newProjectDescriptionArea.getText());
+        stage.close();
+        UIControl.getStartWindow().getStage().close();
+        UIControl.launchMainWindow();
     }
 
     @FXML
     private void newProjectCancelButtonHandle(ActionEvent actionEvent) {
-
+        stage.close();
     }
 }

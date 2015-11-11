@@ -29,6 +29,10 @@ public interface IProject {
 
     void setResourceList(List<IResource> resources);
 
+    void setDescription(String description);
+
+    String getDescription();
+
 //    void save(String target); //Метод, сохраняющий проект в хранилище
 //    void load(String source); //Метод, загружающий проект из хранилища
 //    void exportResources(String target); //Метод, выгружающий ресурсы проекта во внешний файл
