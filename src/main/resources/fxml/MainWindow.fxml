@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -26,7 +28,7 @@
                <content>
                   <VBox>
                      <children>
-                        <SplitPane dividerPositions="0.3" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                        <SplitPane fx:id="taskSplitPane" VBox.vgrow="ALWAYS">
                            <items>
                               <TreeTableView fx:id="taskTreeTableView" showRoot="false">
                                 <columns>
@@ -38,7 +40,6 @@
                                     <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                  </columnResizePolicy>
                               </TreeTableView>
-                              <ScrollPane fx:id="taskGanttScrollPane" fitToHeight="true" fitToWidth="true" />
                            </items>
                         </SplitPane>
                         <HBox VBox.vgrow="NEVER">
@@ -58,7 +59,7 @@
                <content>
                   <VBox>
                      <children>
-                        <SplitPane dividerPositions="0.3" VBox.vgrow="ALWAYS">
+                        <SplitPane fx:id="resourceSplitPane" VBox.vgrow="ALWAYS">
                            <items>
                               <TableView fx:id="resourceTableView" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
                                 <columns>
@@ -70,7 +71,6 @@
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                  </columnResizePolicy>
                               </TableView>
-                              <ScrollPane fx:id="resourceGanttScrollPane" fitToHeight="true" fitToWidth="true" />
                            </items>
                         </SplitPane>
                         <HBox VBox.vgrow="NEVER">

@@ -22,6 +22,8 @@ import ru.khasang.cachoeira.model.ResourceType;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -127,6 +129,7 @@ public class ResourceWindow implements IWindow {
             for (ITask task : controller.getProject().getTaskList()) {
                 for (IResource resource : task.getResourceList()) {
                     if (controller.getSelectedResource().equals(resource)) {
+                        System.out.println("Заполняем Таск Виндов " + task.getName());
                         taskList.add(task);
                     }
                 }
@@ -185,8 +188,12 @@ public class ResourceWindow implements IWindow {
             controller.handleAddResource(resourceNameField.getText(), resourceEmailField.getText(), resourceTypeComboBox.getSelectionModel().getSelectedItem(), taskList);
         } else {
             controller.handleChangeResource(resourceNameField.getText(), resourceEmailField.getText(), resourceTypeComboBox.getSelectionModel().getSelectedItem(), taskList);
+            for (ITask task : taskList) {
+                System.out.println(task.getName());
+            }
         }
         mainWindow.refreshResourceTableModel();
+        mainWindow.refreshTaskTableModel();
         stage.close();
     }
 

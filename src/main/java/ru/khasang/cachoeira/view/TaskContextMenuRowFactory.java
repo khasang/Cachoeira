@@ -63,7 +63,7 @@ public class TaskContextMenuRowFactory implements Callback<TreeTableView<ITask>,
         setResource.getItems().clear();
         for (IResource resource : mainWindow.getController().getProject().getResourceList()) {                  //берем список всех ресурсов
             CheckMenuItem checkMenuItem = new CheckMenuItem(resource.getName());                                //создаем элемент меню для каждого ресурса
-            for (IResource resourceOfTask : row.getTreeItem().getValue().getResourceList()) {   //берем список ресурсов выделенной Задачи
+            for (IResource resourceOfTask : row.getTreeItem().getValue().getResourceList()) {                   //берем список ресурсов выделенной Задачи
                 if (resource.equals(resourceOfTask)) {                                                          //если ресурс из общего списка равен ресурсу из списка Задачи, то
                     checkMenuItem.selectedProperty().setValue(Boolean.TRUE);                                    //делаем этот элемент выделенным и
                     break;                                                                                      //прерываем цикл

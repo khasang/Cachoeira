@@ -65,7 +65,6 @@ public class Controller implements IController {
         task.setStartDate(taskStartDate);
         task.setFinishDate(taskFinishDate);
         task.setResourceList(resources);
-        System.out.println(task.getResourceList());
     }
 
     @Override

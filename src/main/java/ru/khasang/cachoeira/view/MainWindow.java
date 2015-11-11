@@ -30,6 +30,10 @@ import java.util.stream.Collectors;
  */
 public class MainWindow implements IWindow {
     @FXML
+    private SplitPane taskSplitPane;
+    @FXML
+    private SplitPane resourceSplitPane;
+    @FXML
     private TreeTableView<ITask> taskTreeTableView;     //таблица задач <Task>
     @FXML
     private TreeTableColumn<ITask, String> taskNameColumn;      //столбец с наименованием задачи <Task, String>
@@ -50,20 +54,24 @@ public class MainWindow implements IWindow {
     @FXML
     private ScrollPane resourceGanttScrollPane;  //здесь должен быть канвас, также возможна с помощью этого скролла получится синхронизировать вертикальные скроллы таблицы ресурсов и ганта
 
+//    private GanttChartGridLayer ganttChartGridLayer;
+//    private GanttChartObjectsLayer ganttChartObjectsLayer;
+    private GanttChart taskGanttChart;
+    private GanttChart resourceGanttChart;
     private Parent root = null;
     private Stage stage;
     private UIControl UIControl;
     private IController controller;
     private TreeItem<ITask> rootTask = new TreeItem<>(new Task());  //todo исправить new Task на контроллер
-    private ObservableList<ITask> taskTableModel = FXCollections.observableArrayList();        //<Task> модель для задач
-    private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();    //<Resource> модель для ресурсов
+    private ObservableList<ITask> taskTableModel = FXCollections.observableArrayList();             //<Task> модель для задач
+    private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();     //<Resource> модель для ресурсов
 
     public MainWindow(IController controller, UIControl UIControl) {
         this.controller = controller;
         this.UIControl = UIControl;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));  //грузим макет окна
-        fxmlLoader.setController(this);                                                     //говорим макету, что этот класс является его контроллером
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));    //грузим макет окна
+        fxmlLoader.setController(this);                                                             //говорим макету, что этот класс является его контроллером
         try {
             root = fxmlLoader.load();
         } catch (IOException e) {
@@ -77,9 +85,17 @@ public class MainWindow implements IWindow {
         if (root != null) {
             stage.setScene(new Scene(root));
         }
-        stage.setTitle("Cachoeira");
         stage.show();
         stage.setTitle(controller.getProject().getName());
+
+        taskGanttChart = new GanttChart(controller, UIControl, this, 70);
+        taskSplitPane.getItems().add(taskGanttChart);
+//        taskSplitPane.setDividerPositions(0.3);
+        taskSplitPane.setDividerPosition(0, 0.3);
+
+        resourceGanttChart = new GanttChart(controller, UIControl, this, 70);
+        resourceSplitPane.getItems().add(resourceGanttChart);
+        resourceSplitPane.setDividerPosition(0, 0.3);
 
         //при нажатии на крестик в тайтле
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -169,6 +185,7 @@ public class MainWindow implements IWindow {
                 rootTask.getChildren().addAll(new TreeItem<>(taskTableModel));
             }
         });
+        taskGanttChart.getGanttChartObjectsLayer().refreshTaskDiagram();
     }
 
     public void refreshResourceTableModel() {
@@ -176,6 +193,7 @@ public class MainWindow implements IWindow {
         resourceTableView.getItems().clear();
         resourceTableModel.addAll(controller.getProject().getResourceList().stream().collect(Collectors.toList()));
         resourceTableView.setItems(resourceTableModel);
+        resourceGanttChart.getGanttChartObjectsLayer().refreshResourceDiagram();
     }
 
 
@@ -249,5 +267,9 @@ public class MainWindow implements IWindow {
 
     public IController getController() {
         return controller;
+    }
+
+    public TreeTableView<ITask> getTaskTreeTableView() {
+        return taskTreeTableView;
     }
 }
