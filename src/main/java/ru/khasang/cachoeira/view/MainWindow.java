@@ -54,8 +54,6 @@ public class MainWindow implements IWindow {
     @FXML
     private ScrollPane resourceGanttScrollPane;  //здесь должен быть канвас, также возможна с помощью этого скролла получится синхронизировать вертикальные скроллы таблицы ресурсов и ганта
 
-//    private GanttChartGridLayer ganttChartGridLayer;
-//    private GanttChartObjectsLayer ganttChartObjectsLayer;
     private GanttChart taskGanttChart;
     private GanttChart resourceGanttChart;
     private Parent root = null;
@@ -222,29 +220,35 @@ public class MainWindow implements IWindow {
     }
 
     //ивенты при нажании на пункты основного меню
-    public void newProjectMenuItemHandle(ActionEvent actionEvent) {
+    @FXML
+    private void newProjectMenuItemHandle(ActionEvent actionEvent) {
         //открытие окошка создания нового проекта
     }
 
-    public void openProjectMenuItemHandle(ActionEvent actionEvent) {
+    @FXML
+    private void openProjectMenuItemHandle(ActionEvent actionEvent) {
         //открытие окошка выбора файла проекта (см. доки по FileChooser'у)
     }
 
-    public void saveProjectMenuItemHandle(ActionEvent actionEvent) {
+    @FXML
+    private void saveProjectMenuItemHandle(ActionEvent actionEvent) {
         //сохранение проекта
     }
 
-    public void exitMenuItemHandle(ActionEvent actionEvent) {
+    @FXML
+    private void exitMenuItemHandle(ActionEvent actionEvent) {
         //если произошли изменения в проекте: открытие диалогового окошка "Сохранить проект? Да Нет Отмена"
         onClose();
     }
 
-    public void addNewResourceHandle(ActionEvent actionEvent) {
+    @FXML
+    private void addNewResourceHandle(ActionEvent actionEvent) {
         //открытие окошка добавления нового ресурса с помощью кнопки +
         openNewResourceWindow();
     }
 
-    public void addNewTaskHandle(ActionEvent actionEvent) {
+    @FXML
+    private void addNewTaskHandle(ActionEvent actionEvent) {
         //открытие окошка добавления новой задачи с помощью кнопки +
         openNewTaskWindow();
     }
