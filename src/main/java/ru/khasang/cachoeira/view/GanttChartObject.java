@@ -40,7 +40,7 @@ public class GanttChartObject extends HBox {
         setAlignment(Pos.CENTER);
 
 
-        double startDay = ((task.getStartDate().getTime() - 1446498000000L) / (24 * 60 * 60 * 1000)) * columnWidth; //координата Х (дата начала задачи минус дата начала проекта (1446498000000L = 03.11.15 в миллисекундах от ~1977 года, нужно будет заменить на controller.getProject().getStartDate().getTime()) получаем разницу в днях и умножаем ее на длину дня в пикселях(MULTIPLIER)
+        double startDay = ((task.getStartDate().getTime() - controller.getProject().getStartDate().getTime()) / (24 * 60 * 60 * 1000)) * columnWidth; //координата Х (дата начала задачи минус дата начала проекта получаем разницу в днях и умножаем ее на длину дня в пикселях(MULTIPLIER)
         setLayoutX(startDay - 2); //"2" - подгонка под сетку
         setLayoutY(rowIndex * rowHeight);
 

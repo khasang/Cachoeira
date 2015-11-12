@@ -5,15 +5,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.IController;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -63,7 +66,23 @@ public class NewProjectWindow implements IWindow {
         stage.show();
         stage.setTitle("Новый проект");
 
-
+        newProjectNameField.setText("Новый проект"); //дефолтовое название проекта
+        newProjectStartDatePicker.setValue(LocalDate.now()); //по дефолту сегодняшняя дата
+        newProjectFinishDatePicker.setValue(newProjectStartDatePicker.getValue().plusDays(1));
+        newProjectFinishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(DatePicker param) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item.isBefore(newProjectStartDatePicker.getValue().plusDays(1))) {
+                            setDisable(true);
+                        }
+                    }
+                };
+            }
+        });
     }
 
     @Override
@@ -80,10 +99,10 @@ public class NewProjectWindow implements IWindow {
     private void newProjectCreateButtonHandle(ActionEvent actionEvent) {
         Date projectStartDate = Date.from(newProjectStartDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());    //LocalDate to Date
         Date projectFinishDate = Date.from(newProjectFinishDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-        controller.notifyAddProject(newProjectNameField.getText(), projectStartDate, projectFinishDate, newProjectDescriptionArea.getText());
-        stage.close();
-        UIControl.getStartWindow().getStage().close();
-        UIControl.launchMainWindow();
+        controller.notifyAddProject(newProjectNameField.getText(), projectStartDate, projectFinishDate, newProjectDescriptionArea.getText()); //создаем проект
+        stage.close(); // закрываем это окошко
+        UIControl.getStartWindow().getStage().close(); //закрываем стартовое окно
+        UIControl.launchMainWindow(); //запускаем главное окно
     }
 
     @FXML
