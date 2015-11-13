@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 
+import javax.naming.Context;
 import java.util.ArrayList;
 
 /**
@@ -14,6 +15,11 @@ import java.util.ArrayList;
 public class ContextMenuColumn extends ContextMenu {
 
     public ContextMenuColumn(TreeTableView<?> tTV) {
+        updateContextMenuColumnTTV(tTV);
+    }
+
+    public void updateContextMenuColumnTTV(TreeTableView<?> tTV){
+        super.getItems().clear();
         ArrayList<CheckMenuItem> contextItems=new ArrayList<>();
         for (int i = 1; i < tTV.getColumns().size(); i++) {
             contextItems.add(new CheckMenuItem(tTV.getColumns().get(i).getText()));
@@ -26,12 +32,16 @@ public class ContextMenuColumn extends ContextMenu {
                 }
             });
         }
-      //  contextItems.get(0).setDisable(true);
+        //  contextItems.get(0).setDisable(true);
         super.getItems().addAll(contextItems);
     }
 
 
     public ContextMenuColumn(TableView<?> tV) {
+        updateContextMenuColumnTV(tV);
+    }
+    public void updateContextMenuColumnTV(TableView<?> tV){
+        super.getItems().clear();
         ArrayList<CheckMenuItem> contextItems=new ArrayList<>();
         for (int i = 1; i < tV.getColumns().size(); i++) {
             contextItems.add(new CheckMenuItem(tV.getColumns().get(i).getText()));
@@ -47,6 +57,5 @@ public class ContextMenuColumn extends ContextMenu {
         //  contextItems.get(0).setDisable(true);
         super.getItems().addAll(contextItems);
     }
-
 
 }

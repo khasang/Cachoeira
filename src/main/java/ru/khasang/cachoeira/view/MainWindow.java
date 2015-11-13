@@ -143,11 +143,24 @@ public class MainWindow implements IWindow {
         //my ContextMenuColumn
         // contextMenuColumn for Task
         ContextMenuColumn contextMenuColumnTask=new ContextMenuColumn(taskTreeTableView);
+        contextMenuColumnTask.setOnShowing(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                contextMenuColumnTask.updateContextMenuColumnTTV(taskTreeTableView);
+            }
+        });
         for (int i = 0; i < taskTreeTableView.getColumns().size(); i++) {
             taskTreeTableView.getColumns().get(i).setContextMenu(contextMenuColumnTask);
         }
+
         // contextMenuColumn for Resource
         ContextMenuColumn contextMenuColumnResource=new ContextMenuColumn(resourceTableView);
+        contextMenuColumnResource.setOnShowing(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                contextMenuColumnResource.updateContextMenuColumnTV(resourceTableView);
+            }
+        });
         for (int i = 0; i < resourceTableView.getColumns().size(); i++) {
             resourceTableView.getColumns().get(i).setContextMenu(contextMenuColumnResource);
         }
