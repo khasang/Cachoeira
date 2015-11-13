@@ -38,7 +38,7 @@ public class GanttChart extends VBox {
         StackPane diagramPane = new StackPane(ganttChartGridLayer, verticalScrollPane); //нижний слой сетка, а над ним располагается слой с задачами
         VBox.setVgrow(diagramPane, Priority.ALWAYS);
 
-        ganttChartDateLine = new GanttChartDateLine(columnWidth);
+        ganttChartDateLine = new GanttChartDateLine(controller, columnWidth);
         VBox vBox = new VBox(ganttChartDateLine, diagramPane);
         VBox.setVgrow(ganttChartDateLine, Priority.NEVER);
 

@@ -8,7 +8,19 @@ public class UIControl {
     MainWindow mainWindow;
     TaskWindow taskWindow;
     ResourceWindow resourceWindow;
+    StartWindow startWindow;
+    NewProjectWindow newProjectWindow;
     IController controller = new Controller();
+
+    public void launchStartWindow() {
+        startWindow = new StartWindow(controller, this);
+        startWindow.launch();
+    }
+
+    public void launchNewProjectWindow() {
+        newProjectWindow = new NewProjectWindow(controller, this);
+        newProjectWindow.launch();
+    }
 
     public void launchMainWindow() {
         mainWindow = new MainWindow(controller, this);
@@ -35,11 +47,23 @@ public class UIControl {
         resourceWindow.launch();
     }
 
-    public void refreshTableModel() {
-        mainWindow.refreshTaskTableModel();
-    } //временный костыль
+    public MainWindow getMainWindow() {
+        return mainWindow;
+    }
 
-    public Stage getMainWindowStage() {
-        return mainWindow.getStage();
+    public TaskWindow getTaskWindow() {
+        return taskWindow;
+    }
+
+    public ResourceWindow getResourceWindow() {
+        return resourceWindow;
+    }
+
+    public StartWindow getStartWindow() {
+        return startWindow;
+    }
+
+    public NewProjectWindow getNewProjectWindow() {
+        return newProjectWindow;
     }
 }

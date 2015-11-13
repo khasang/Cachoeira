@@ -10,10 +10,9 @@ import ru.khasang.cachoeira.view.UIControl;
 public class Start extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
-//        MainWindow mainWindow = new MainWindow();
-//        mainWindow.launch();
         UIControl UIControl = new UIControl();
-        UIControl.launchMainWindow();
+//        UIControl.launchMainWindow();
+        UIControl.launchStartWindow();
     }
 
     public static void main(String[] args) {
