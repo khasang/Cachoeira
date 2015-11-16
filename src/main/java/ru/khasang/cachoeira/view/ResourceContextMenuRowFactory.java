@@ -41,7 +41,6 @@ public class ResourceContextMenuRowFactory implements Callback<TableView<IResour
             @Override
             public void handle(ActionEvent event) {
                 mainWindow.getController().handleRemoveResource(row.getItem());
-                mainWindow.refreshResourceTableModel();
             }
         });
         rowMenu.getItems().addAll(setTask, getProperties, removeResource);  //заполняем меню

@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.controller;
 
+import javafx.collections.ObservableList;
 import ru.khasang.cachoeira.model.*;
 
 import java.util.ArrayList;
@@ -35,20 +36,18 @@ public class Controller implements IController {
 
     }
 
-
     //добавил:
     @Override
-    public void handleAddTask(String nameOfTask, Date startDate, Date finishDate, Double cost, double donePercent, PriorityList priority, List<IResource> resources) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
+    public void handleAddTask(String nameOfTask, Date startDate, Date finishDate, Double cost, double donePercent, PriorityType priority, ObservableList<IResource> resources) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
         task = new Task();
         task.setName(nameOfTask);
         task.setStartDate(startDate);
         task.setFinishDate(finishDate);
         task.setDonePercent((int) donePercent);
         task.setCost(cost);
-        task.setPriotityType(priority);
+        task.setPriorityType(priority);
         task.setResourceList(resources);
         project.getTaskList().add(task);
-        System.out.println(task.getResourceList());
     }
 
     @Override
@@ -66,14 +65,14 @@ public class Controller implements IController {
 
     }
 
-//Добавил:
+    //Добавил:
     @Override
-    public void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, Double taskCost, double taskDonePercent, PriorityList priority, List<IResource> resources) { //todo тоже подправил
+    public void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, Double taskCost, double taskDonePercent, PriorityType priority, ObservableList<IResource> resources) { //todo тоже подправил
         task.setName(taskNameField);
         task.setStartDate(taskStartDate);
         task.setFinishDate(taskFinishDate);
         task.setCost(taskCost);
-        task.setPriotityType(priority);
+        task.setPriorityType(priority);
         task.setDonePercent((int) taskDonePercent);
         task.setResourceList(resources);
     }
@@ -110,6 +109,11 @@ public class Controller implements IController {
 
     @Override
     public void handleRemoveResource(IResource resource) {
+        for (ITask iTask : getProject().getTaskList()) {
+            if (iTask.getResourceList().contains(resource)) {
+                iTask.getResourceList().remove(resource);
+            }
+        }
         project.getResourceList().remove(resource);
     }
 

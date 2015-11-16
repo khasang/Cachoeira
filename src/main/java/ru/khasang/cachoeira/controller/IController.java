@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.controller;
 
+import javafx.collections.ObservableList;
 import ru.khasang.cachoeira.model.*;
 
 import java.util.Date;
@@ -17,7 +18,7 @@ public interface IController {
 
     void notifyChangeProject(IProject project);
     //добавил:
-    void handleAddTask(String nameOfTask, Date startDate, Date finishDate, Double cost, double donePercent, PriorityList priorityType, List<IResource> resources);
+    void handleAddTask(String nameOfTask, Date startDate, Date finishDate, Double cost, double donePercent, PriorityType priorityType, ObservableList<IResource> resources);
 
     void notifyAddTask(ITask task);
 
@@ -25,7 +26,7 @@ public interface IController {
 
     void notifyRemoveTask(ITask task);
     //добавил:
-    void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, Double taskCost, double taskDonePercent, PriorityList taskPriorityType, List<IResource> resources);
+    void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, Double taskCost, double taskDonePercent, PriorityType taskPriorityType, ObservableList<IResource> resources);
 
     void notifyChangeTask(ITask task);
 

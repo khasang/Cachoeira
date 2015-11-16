@@ -1,5 +1,9 @@
 package ru.khasang.cachoeira.model;
 
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,77 +13,109 @@ import java.util.List;
  */
 public class Project implements IProject {
 
-    private String name;
-    private Date startDate;
-    private Date finishDate;
-    private String description;
-    private List<ITask> tasks = new ArrayList<>(); //Интерфейс ITask будет создаваться в другой задаче
-    private List<IResource> resources = new ArrayList<>();
+    private StringProperty name = new SimpleStringProperty();
+    private ObjectProperty<Date> startDate = new SimpleObjectProperty<>();
+    private ObjectProperty<Date> finishDate = new SimpleObjectProperty<>();
+    private StringProperty description = new SimpleStringProperty();
+    private ObservableList<ITask> tasks = FXCollections.observableArrayList();
+    private ListProperty<ITask> taskListProperty = new SimpleListProperty<>(tasks);
+    private ObservableList<IResource> resources = FXCollections.observableArrayList();
+    private ListProperty<IResource> resourceListProperty = new SimpleListProperty<>(resources);
 
     public Project() {
     }
 
     public Project(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     @Override
     public String getName() {
-        return name;
+        return name.get();
     }
 
     @Override
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
+    }
+
+    @Override
+    public StringProperty nameProperty() {
+        return name;
     }
 
     @Override
     public Date getStartDate() {
-        return startDate;
+        return startDate.get();
     }
 
     @Override
     public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+        this.startDate.set(startDate);
+    }
+
+    @Override
+    public ObjectProperty<Date> startDateProperty() {
+        return startDate;
     }
 
     @Override
     public Date getFinishDate() {
-        return finishDate;
+        return finishDate.get();
     }
 
     @Override
     public void setFinishDate(Date finishDate) {
-        this.finishDate = finishDate;
+        this.finishDate.set(finishDate);
     }
 
     @Override
-    public List<ITask> getTaskList() {
+    public ObjectProperty<Date> finishDateProperty() {
+        return finishDate;
+    }
+
+    @Override
+    public ObservableList<ITask> getTaskList() {
         return tasks;
     }
 
     @Override
-    public void setTaskList(List<ITask> tasks) {
+    public void setTaskList(ObservableList<ITask> tasks) {
         this.tasks = tasks;
     }
 
     @Override
-    public List<IResource> getResourceList() {
+    public ListProperty<ITask> taskListProperty() {
+        return taskListProperty;
+    }
+
+    @Override
+    public ObservableList<IResource> getResourceList() {
         return resources;
     }
 
     @Override
-    public void setResourceList(List<IResource> resources) {
+    public void setResourceList(ObservableList<IResource> resources) {
         this.resources = resources;
     }
 
     @Override
-    public void setDescription(String description) {
-        this.description = description;
+    public ListProperty<IResource> resourceListProperty() {
+        return resourceListProperty;
     }
 
     @Override
     public String getDescription() {
+        return description.get();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description.set(description);
+    }
+
+    @Override
+    public StringProperty descriptionProperty() {
         return description;
     }
 

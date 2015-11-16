@@ -5,7 +5,10 @@ package ru.khasang.cachoeira.model;
  */
 public interface IDependentTask {
     Task getTask();
+
     void setTask(Task task);
+
     TaskDependenceType getDependence();
+
     void setDependence(TaskDependenceType dependence);
 }

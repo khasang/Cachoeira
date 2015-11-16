@@ -192,8 +192,6 @@ public class ResourceWindow implements IWindow {
                 System.out.println(task.getName());
             }
         }
-        mainWindow.refreshResourceTableModel();
-        mainWindow.refreshTaskTableModel();
         stage.close();
     }
 
