@@ -5,7 +5,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="431.0" prefWidth="404.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
   <columnConstraints>
     <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="280.0" minWidth="10.0" prefWidth="121.0" />
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="401.0" minWidth="10.0" prefWidth="249.0" />
@@ -14,9 +14,12 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+      <RowConstraints maxHeight="45.0" minHeight="10.0" prefHeight="36.0" vgrow="NEVER" />
+      <RowConstraints maxHeight="38.0" minHeight="10.0" prefHeight="24.0" vgrow="NEVER" />
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+      <RowConstraints maxHeight="90.0" minHeight="10.0" prefHeight="60.0" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="31.0" minHeight="0.0" prefHeight="30.0" vgrow="NEVER" />
   </rowConstraints>
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -25,16 +28,16 @@
       <Label text="Наименование" />
       <Label text="Дата начала" GridPane.rowIndex="1" />
       <Label text="Дата окончания" GridPane.rowIndex="2" />
-      <Label text="Ресурсы:" GridPane.rowIndex="3" />
+      <Label text="Ресурсы:" GridPane.rowIndex="6" />
       <TextField fx:id="taskNameField" GridPane.columnIndex="1" />
-      <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="5" GridPane.vgrow="NEVER">
+      <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="8" GridPane.vgrow="NEVER">
          <children>
             <Button fx:id="taskWindowOKButton" defaultButton="true" minWidth="100.0" mnemonicParsing="false" onAction="#taskWindowOKButtonHandle" text="OK" />
             <Region HBox.hgrow="ALWAYS" />
             <Button cancelButton="true" minWidth="100.0" mnemonicParsing="false" onAction="#taskWindowCancelButtonHandle" text="Отмена" />
          </children>
       </HBox>
-      <TableView fx:id="resourceTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="4">
+      <TableView fx:id="resourceTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="7">
         <columns>
           <TableColumn fx:id="resourceNameColumn" prefWidth="331.0" text="Наименование" />
           <TableColumn fx:id="resourceCheckboxColumn" prefWidth="47.0" />
@@ -45,5 +48,14 @@
       </TableView>
       <DatePicker fx:id="taskStartDatePicker" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <DatePicker fx:id="taskFinishDatePicker" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Label text="Прогресс (%)" GridPane.rowIndex="3" />
+      <Slider fx:id="taskDonePercentSlider" minorTickCount="4" prefHeight="33.0" prefWidth="249.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <Label text="Приоритет" GridPane.rowIndex="4" />
+      <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <ComboBox fx:id="taskPriorityComboBox" prefHeight="25.0" prefWidth="256.0" promptText="Выберите приоритет" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+
+       <Label text="Стоимость" GridPane.rowIndex="5" />
+      <TextField fx:id="taskCostField" onKeyPressed="#onlyNumber" GridPane.columnIndex="1" GridPane.rowIndex="5" />
    </children>
 </GridPane>

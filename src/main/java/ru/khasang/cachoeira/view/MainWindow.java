@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -11,13 +12,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ru.khasang.cachoeira.controller.IController;
-import ru.khasang.cachoeira.model.IResource;
-import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.model.ResourceType;
-import ru.khasang.cachoeira.model.Task;
+import ru.khasang.cachoeira.model.*;
 
 import java.io.IOException;
 import java.util.Date;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
  * Created by truesik on 28.09.2015.
  */
 public class MainWindow implements IWindow {
+
     @FXML
     private SplitPane taskSplitPane;
     @FXML
@@ -41,6 +41,16 @@ public class MainWindow implements IWindow {
     private TreeTableColumn<ITask, Date> finishDateColumn;    //столбец с датой окончания задачи <Task, Date>
     @FXML
     private TreeTableColumn<ITask, Date> startDateColumn;     //столбец с датой начала задачи <Task, Date>
+    @FXML
+    private TreeTableColumn<ITask,String> durationColumn; //столбец Продолжительность
+    @FXML
+    private TreeTableColumn<ITask,String> donePercentColumn; //столбец процент выполения
+    @FXML
+    private TreeTableColumn<ITask,PriorityList> priorityColumn; //столбец Приоритет
+    @FXML
+    private TreeTableColumn<ITask,Double> costColumn; //столбец Стоимость
+
+
     @FXML
     private ScrollPane taskGanttScrollPane;      //здесь должен быть канвас, также возможна с помощью этого скролла получится синхронизировать вертикальные скроллы таблицы задач и ганта
     @FXML
@@ -134,10 +144,43 @@ public class MainWindow implements IWindow {
         taskNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getName()));              //столбец задач Наименование
         startDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getStartDate()));      //Дата начала
         finishDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getFinishDate()));    //Дата окончания
+        durationColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getDuration()));
+        donePercentColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(String.valueOf(param.getValue().getValue().getDonePercent())+"%"));
+
+        priorityColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getPriorityType()));
+        costColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getCost()));
 
         resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));                     //столбец ресурсов Наименование
         resourceTypeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getType()));                   //Тип
         resourceEmailColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getEmail()));                   //Почта
+
+        //my ContextMenuColumn
+        // contextMenuColumn for Task
+        ContextMenuColumn contextMenuColumnTask=new ContextMenuColumn(taskTreeTableView);
+        contextMenuColumnTask.setOnShowing(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                contextMenuColumnTask.updateContextMenuColumnTTV(taskTreeTableView);
+            }
+        });
+        for (int i = 0; i < taskTreeTableView.getColumns().size(); i++) {
+            taskTreeTableView.getColumns().get(i).setContextMenu(contextMenuColumnTask);
+        }
+
+        // contextMenuColumn for Resource
+        ContextMenuColumn contextMenuColumnResource=new ContextMenuColumn(resourceTableView);
+        contextMenuColumnResource.setOnShowing(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                contextMenuColumnResource.updateContextMenuColumnTV(resourceTableView);
+            }
+        });
+        for (int i = 0; i < resourceTableView.getColumns().size(); i++) {
+            resourceTableView.getColumns().get(i).setContextMenu(contextMenuColumnResource);
+        }
+
+
+
 
         //контекстные меню в списках задач и ресурсов
         //контекстное меню на пустом месте таблицы
@@ -151,6 +194,7 @@ public class MainWindow implements IWindow {
         });
         taskTableMenu.getItems().addAll(addNewTask);   //заполняем меню
         taskTreeTableView.setContextMenu(taskTableMenu);
+
 
         ContextMenu resourceTableMenu = new ContextMenu();
         MenuItem addNewResource = new MenuItem("Новый ресурс");
