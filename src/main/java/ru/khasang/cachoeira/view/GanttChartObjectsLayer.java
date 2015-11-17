@@ -2,6 +2,7 @@ package ru.khasang.cachoeira.view;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
@@ -16,8 +17,7 @@ public class GanttChartObjectsLayer extends Pane {
     private UIControl UIControl;
     private MainWindow mainWindow;
     private int columnWidth;
-    private ObservableList<ITask> taskTableModel = FXCollections.observableArrayList();
-    private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();
+    private GanttChartObject ganttChartObject;
 
     public GanttChartObjectsLayer(IController controller, UIControl UIControl, MainWindow mainWindow, int columnWidth) {
         this.controller = controller;
@@ -28,27 +28,23 @@ public class GanttChartObjectsLayer extends Pane {
 
     public void refreshTaskDiagram() {
         this.getChildren().clear();
-        taskTableModel.clear();
-        taskTableModel.addAll(controller.getProject().getTaskList());
 
-        for (ITask task : taskTableModel) {
-            int rowIndex = taskTableModel.indexOf(task);
-            GanttChartObject ganttChartObject = new GanttChartObject(controller, UIControl, mainWindow, task, rowIndex, columnWidth);
+        for (ITask task : controller.getProject().getTaskList()) {
+            int rowIndex = controller.getProject().getTaskList().indexOf(task);
+            ganttChartObject = new GanttChartObject(controller, UIControl, mainWindow, task, rowIndex, columnWidth);
+            ganttChartObject.showResourcesOnDiagram();
             this.getChildren().add(ganttChartObject);
         }
     }
 
     public void refreshResourceDiagram() {
         this.getChildren().clear();
-        taskTableModel.clear();
-        resourceTableModel.clear();
-        taskTableModel.addAll(controller.getProject().getTaskList());
-        resourceTableModel.addAll(controller.getProject().getResourceList());
 
-        for (ITask task : taskTableModel) {
+        for (ITask task : controller.getProject().getTaskList()) {
             for (IResource resource : task.getResourceList()) {
-                int rowIndex = resourceTableModel.indexOf(resource);
-                GanttChartObject ganttChartObject = new GanttChartObject(controller, UIControl, mainWindow, task, rowIndex, columnWidth);
+                int rowIndex = controller.getProject().getResourceList().indexOf(resource);
+                ganttChartObject = new GanttChartObject(controller, UIControl, mainWindow, task, rowIndex, columnWidth);
+                ganttChartObject.showResourcesOnDiagram();
                 this.getChildren().add(ganttChartObject);
             }
         }

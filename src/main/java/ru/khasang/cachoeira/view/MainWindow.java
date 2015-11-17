@@ -124,18 +124,45 @@ public class MainWindow implements IWindow {
         //нужно заполнить таблицы элементами
         taskTreeTableView.setRoot(rootTask); //вешаем корневой TreeItem в TreeTableView. Он в fxml стоит как невидимый (<TreeTableView fx:id="taskTreeTableView" showRoot="false">).
         rootTask.setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
-        controller.getProject().taskListProperty().addListener(new ListChangeListener<ITask>() {
+        controller.getProject().getTaskList().addListener(new ListChangeListener<ITask>() {
             @Override
             public void onChanged(Change<? extends ITask> c) {
+                refreshTaskTreeTableView();
+                taskGanttChart.getGanttChartObjectsLayer().refreshTaskDiagram();
+                resourceGanttChart.getGanttChartObjectsLayer().refreshResourceDiagram();
                 while (c.next()) {
-                    if (c.wasAdded() || c.wasRemoved()) {
-                        rootTask.getChildren().clear();
-                        controller.getProject().getTaskList().stream().forEach(new Consumer<ITask>() {
-                            @Override
-                            public void accept(ITask iTask) {
-                                rootTask.getChildren().add(new TreeItem<>(iTask));
-                            }
-                        });
+                    if (c.wasAdded()) {
+                        System.out.println("Main Window Task Added!");
+                    }
+                    if (c.wasRemoved()) {
+                        System.out.println("Main Window Task Removed");
+                    }
+                    if (c.wasReplaced()) {
+                        System.out.println("Main Window Task Replaced");
+                    }
+                    if (c.wasUpdated()) {
+                        System.out.println("Main Window Task Updated");
+                    }
+                }
+            }
+        });
+        controller.getProject().getResourceList().addListener(new ListChangeListener<IResource>() {
+            @Override
+            public void onChanged(Change<? extends IResource> c) {
+                resourceGanttChart.getGanttChartObjectsLayer().refreshResourceDiagram();
+                taskGanttChart.getGanttChartObjectsLayer().refreshTaskDiagram();
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        System.out.println("Main Window Resource Added!");
+                    }
+                    if (c.wasRemoved()) {
+                        System.out.println("Main Window Resource Removed");
+                    }
+                    if (c.wasReplaced()) {
+                        System.out.println("Main Window Resource Replaced");
+                    }
+                    if (c.wasUpdated()) {
+                        System.out.println("Main Window Resource Updated");
                     }
                 }
             }
@@ -209,6 +236,16 @@ public class MainWindow implements IWindow {
         resourceTableView.setRowFactory(new ResourceContextMenuRowFactory(this)); //контекстное меню для каждого элкмента таблицы ресурсов
     }
 
+    private void refreshTaskTreeTableView() {
+        rootTask.getChildren().clear();
+        controller.getProject().getTaskList().stream().forEach(new Consumer<ITask>() {
+            @Override
+            public void accept(ITask iTask) {
+                rootTask.getChildren().add(new TreeItem<>(iTask));
+            }
+        });
+    }
+
     @Override
     public Stage getStage() {
         return stage;
@@ -273,19 +310,19 @@ public class MainWindow implements IWindow {
     }
 
     private void openNewTaskWindow() {
-        UIControl.launchNewTaskWindow(this);
+        UIControl.launchNewTaskWindow();
     }
 
     public void openPropertiesTaskWindow() {
-        UIControl.launchPropertiesTaskWindow(this);
+        UIControl.launchPropertiesTaskWindow();
     }
 
     private void openNewResourceWindow() {
-        UIControl.launchResourceWindow(this);
+        UIControl.launchResourceWindow();
     }
 
     public void openPropertiesResourceWindow() {
-        UIControl.launchPropertiesResourceWindow(this);
+        UIControl.launchPropertiesResourceWindow();
     }
 
     public IController getController() {
@@ -294,5 +331,14 @@ public class MainWindow implements IWindow {
 
     public TreeTableView<ITask> getTaskTreeTableView() {
         return taskTreeTableView;
+    }
+
+    public GanttChart getResourceGanttChart() {
+        return resourceGanttChart;
+    }
+
+    public GanttChart getTaskGanttChart() {
+
+        return taskGanttChart;
     }
 }

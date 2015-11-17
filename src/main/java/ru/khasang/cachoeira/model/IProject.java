@@ -35,13 +35,9 @@ public interface IProject {
 
     void setTaskList(ObservableList<ITask> tasks);
 
-    ListProperty<ITask> taskListProperty();
-
     ObservableList<IResource> getResourceList();
 
     void setResourceList(ObservableList<IResource> resources);
-
-    ListProperty<IResource> resourceListProperty();
 
     String getDescription();
 

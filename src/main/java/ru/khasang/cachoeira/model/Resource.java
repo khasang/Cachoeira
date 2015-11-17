@@ -14,47 +14,47 @@ public class Resource implements IResource {
     private StringProperty email = new SimpleStringProperty();
 
     @Override
-    public String getName() {
+    public final String getName() {
         return name.get();
     }
 
     @Override
-    public void setName(String name) {
+    public final void setName(String name) {
         this.name.set(name);
     }
 
     @Override
-    public StringProperty nameProperty() {
+    public final StringProperty nameProperty() {
         return name;
     }
 
     @Override
-    public ResourceType getType() {
+    public final ResourceType getType() {
         return type.get();
     }
 
     @Override
-    public void setType(ResourceType type) {
+    public final void setType(ResourceType type) {
         this.type.set(type);
     }
 
     @Override
-    public ObjectProperty<ResourceType> resourceTypeProperty() {
+    public final ObjectProperty<ResourceType> resourceTypeProperty() {
         return type;
     }
 
     @Override
-    public String getEmail() {
+    public final String getEmail() {
         return email.get();
     }
 
     @Override
-    public void setEmail(String email) {
+    public final void setEmail(String email) {
         this.email.set(email);
     }
 
     @Override
-    public StringProperty emailProperty() {
+    public final StringProperty emailProperty() {
         return email;
     }
 }

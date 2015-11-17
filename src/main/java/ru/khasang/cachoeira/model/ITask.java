@@ -51,8 +51,6 @@ public interface ITask {
 
     void setDependentTask(ObservableList<IDependentTask> dependentTask);
 
-    ListProperty<IDependentTask> dependentTaskListProperty();
-
     ITaskGroup getGroup();
 
     void setGroup(ITaskGroup group);
@@ -67,12 +65,9 @@ public interface ITask {
 
     void setResourceList(ObservableList<IResource> resources);
 
-    ListProperty<IResource> resourceListProperty();
-
     PriorityType getPriorityType();
 
     void setPriorityType(PriorityType type);
 
     ObjectProperty<PriorityType> priorityTypeProperty();
-
 }

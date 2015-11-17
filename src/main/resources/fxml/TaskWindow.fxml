@@ -5,12 +5,11 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="514.0" prefWidth="487.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <GridPane hgap="10.0" vgap="10.0" VBox.vgrow="ALWAYS">
         <columnConstraints>
-          <ColumnConstraints hgrow="NEVER" maxWidth="223.0" minWidth="10.0" prefWidth="101.0" />
+          <ColumnConstraints hgrow="NEVER" maxWidth="223.0" minWidth="10.0" prefWidth="136.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="363.0" minWidth="10.0" prefWidth="356.0" />
         </columnConstraints>
         <rowConstraints>
@@ -28,7 +27,7 @@
             <DatePicker fx:id="taskFinishDatePicker" prefHeight="25.0" prefWidth="429.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Slider fx:id="taskDonePercentSlider" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <ComboBox fx:id="taskPriorityComboBox" prefHeight="25.0" prefWidth="376.0" promptText="Выберите приоритет" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <TextField fx:id="taskCostField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <TextField fx:id="taskCostField" onKeyPressed="#onlyNumber" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             <Label text="Дата начала:" GridPane.rowIndex="1" />
             <Label text="Дата окончания:" GridPane.rowIndex="2" />
             <Label text="Прогресс (%):" GridPane.rowIndex="3" />

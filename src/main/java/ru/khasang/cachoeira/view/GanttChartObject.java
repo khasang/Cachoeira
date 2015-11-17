@@ -2,6 +2,8 @@ package ru.khasang.cachoeira.view;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.collections.WeakListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -21,12 +23,15 @@ public class GanttChartObject extends HBox {
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
     private static final double SPACING = 10;       //расстояние между элементами (прямоугольником задачи и лэйблами с названиями ресурсов)
     private static final double rowHeight = 24;
+
     private IController controller;
     private UIControl UIControl;
     private MainWindow mainWindow;
+
     private ITask task;
     private double rowIndex;                        //координата Y (строка задачи)
     private int columnWidth;
+    private Rectangle bar;
 
     public GanttChartObject(IController controller, UIControl UIControl, MainWindow mainWindow, ITask task, double rowIndex, int columnWidth) {
         this.controller = controller;
@@ -46,7 +51,7 @@ public class GanttChartObject extends HBox {
 
         double taskWidth = ((task.getFinishDate().getTime() - task.getStartDate().getTime()) / (24 * 60 * 60 * 1000)) * columnWidth; // длина прямоугольника (разница между
 
-        Rectangle bar = new Rectangle(0, 0, taskWidth, TASK_HEIGHT); //создаем прямоугольник
+        bar = new Rectangle(0, 0, taskWidth, TASK_HEIGHT); //создаем прямоугольник
         bar.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
         bar.setStroke(Color.valueOf("#B3E5FC"));  //цвет окантовки
         bar.setArcHeight(5);                      //сгругление углов
@@ -67,13 +72,12 @@ public class GanttChartObject extends HBox {
 
         getChildren().add(bar); //добавляем прямоугольник на HBox (панель)
 
-        showResourcesOnDiagram(task);
-
         setContextMenu(bar); //контекстное меню при нажатии на прямоугольник, добавлено для теста (код нужно дописать)
     }
 
-    public void showResourcesOnDiagram(ITask task) {
-        for (IResource resource : task.getResourceList()) {
+    public void showResourcesOnDiagram() {
+        this.getChildren().retainAll(bar);
+        for (IResource resource : this.task.getResourceList()) {
             Label resourceName = new Label(resource.getName());
             getChildren().add(resourceName); //добавляем ресурсы на HBox
         }
@@ -86,7 +90,7 @@ public class GanttChartObject extends HBox {
             @Override
             public void handle(ActionEvent event) {
                 controller.setSelectedTask(task);
-                UIControl.launchPropertiesTaskWindow(mainWindow);
+                UIControl.launchPropertiesTaskWindow();
             }
         });
         MenuItem removeTask = new MenuItem("Удалить задачу");
@@ -101,5 +105,9 @@ public class GanttChartObject extends HBox {
                 }
             }
         });
+    }
+
+    public ITask getTask() {
+        return task;
     }
 }
