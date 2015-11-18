@@ -1,6 +1,7 @@
 package ru.khasang.cachoeira.controller;
 
 import javafx.collections.ObservableList;
+import javafx.scene.input.DataFormat;
 import ru.khasang.cachoeira.model.*;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
  * Created by truesik on 22.10.2015.
  */
 public class Controller implements IController {
+    private static final DataFormat SERIALIZED_MIME_TYPE = new DataFormat("application/x-java-serialized-object");
     private IProject project;
     private ITask task;
     private IResource resource;
@@ -169,5 +171,9 @@ public class Controller implements IController {
     @Override
     public void setProject(IProject project) {
         this.project = project;
+    }
+
+    public static DataFormat getSerializedMimeType() {
+        return SERIALIZED_MIME_TYPE;
     }
 }
