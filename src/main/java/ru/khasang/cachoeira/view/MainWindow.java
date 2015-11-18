@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
+import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
+import ru.khasang.cachoeira.view.rowfactories.TaskTreeTableViewRowFactory;
 
 import java.io.IOException;
 import java.util.Date;
@@ -83,11 +85,11 @@ public class MainWindow implements IWindow {
         stage.show();
         stage.setTitle(controller.getProject().getName());
 
-        taskGanttChart = new GanttChart(controller, UIControl, this, 70);
+        taskGanttChart = new GanttChart(controller, UIControl, 70);
         taskSplitPane.getItems().add(taskGanttChart);
         taskSplitPane.setDividerPosition(0, 0.3);
 
-        resourceGanttChart = new GanttChart(controller, UIControl, this, 70);
+        resourceGanttChart = new GanttChart(controller, UIControl, 70);
         resourceSplitPane.getItems().add(resourceGanttChart);
         resourceSplitPane.setDividerPosition(0, 0.3);
 
@@ -128,8 +130,8 @@ public class MainWindow implements IWindow {
             @Override
             public void onChanged(Change<? extends ITask> c) {
                 refreshTaskTreeTableView();
-                taskGanttChart.getGanttChartObjectsLayer().refreshTaskDiagram();
-                resourceGanttChart.getGanttChartObjectsLayer().refreshResourceDiagram();
+                taskGanttChart.getObjectsLayer().refreshTaskDiagram();
+                resourceGanttChart.getObjectsLayer().refreshResourceDiagram();
                 while (c.next()) {
                     if (c.wasAdded()) {
                         System.out.println("Main Window Task Added!");
@@ -149,8 +151,8 @@ public class MainWindow implements IWindow {
         controller.getProject().getResourceList().addListener(new ListChangeListener<IResource>() {
             @Override
             public void onChanged(Change<? extends IResource> c) {
-                resourceGanttChart.getGanttChartObjectsLayer().refreshResourceDiagram();
-                taskGanttChart.getGanttChartObjectsLayer().refreshTaskDiagram();
+                resourceGanttChart.getObjectsLayer().refreshResourceDiagram();
+                taskGanttChart.getObjectsLayer().refreshTaskDiagram();
                 while (c.next()) {
                     if (c.wasAdded()) {
                         System.out.println("Main Window Resource Added!");
@@ -232,8 +234,8 @@ public class MainWindow implements IWindow {
         resourceTableMenu.getItems().addAll(addNewResource);   //заполняем меню
         resourceTableView.setContextMenu(resourceTableMenu);
 
-        taskTreeTableView.setRowFactory(new TaskContextMenuRowFactory(this)); //контекстное меню для каждого элемента таблицы задач
-        resourceTableView.setRowFactory(new ResourceContextMenuRowFactory(this)); //контекстное меню для каждого элкмента таблицы ресурсов
+        resourceTableView.setRowFactory(new ResourceTableViewRowFactory(this, controller)); //вешаем драг и дроп, и контекстное меню
+        taskTreeTableView.setRowFactory(new TaskTreeTableViewRowFactory(this, controller));
     }
 
     private void refreshTaskTreeTableView() {
@@ -256,7 +258,7 @@ public class MainWindow implements IWindow {
         //if (произошли изменения в проекте) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Cachoeira");
-        alert.setHeaderText("Вы хотите сохранить изменения в " +  controller.getProject().getName() + "?");
+        alert.setHeaderText("Вы хотите сохранить изменения в " + controller.getProject().getName() + "?");
 
         ButtonType saveProjectButtonType = new ButtonType("Сохранить");
         ButtonType dontSaveProjectButtonType = new ButtonType("Не сохранять");
@@ -333,12 +335,15 @@ public class MainWindow implements IWindow {
         return taskTreeTableView;
     }
 
+    public TableView<IResource> getResourceTableView() {
+        return resourceTableView;
+    }
+
     public GanttChart getResourceGanttChart() {
         return resourceGanttChart;
     }
 
     public GanttChart getTaskGanttChart() {
-
         return taskGanttChart;
     }
 }

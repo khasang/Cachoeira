@@ -1,18 +1,18 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.ganttchart;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
-public class GanttChartGridLayer extends Pane {
+public class GridLayer extends Pane {
     // This is to make the stroke be drawn 'on pixel'.
     private static final double HALF_PIXEL_OFFSET = -0.5;
 
     private final Canvas canvas = new Canvas();
     private int columnWidth;
 
-    public GanttChartGridLayer(int columnWidth) {
+    public GridLayer(int columnWidth) {
         this.columnWidth = columnWidth;
         setStyle("-fx-background-color: white");
         getChildren().add(canvas);

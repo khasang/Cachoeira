@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.ganttchart;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -14,14 +14,14 @@ import java.time.temporal.ChronoUnit;
 /**
  * Created by truesik on 08.11.2015.
  */
-public class GanttChartDateLine extends HBox {
+public class DateLine extends HBox {
     private LocalDate startDate;    //даты должны браться из controller.getProject().getStartDate()
     private LocalDate finishDate;      //аналогично
     private long between;
     private IController controller;
     private int columnWidth;
 
-    public GanttChartDateLine(IController controller, int columnWidth) {
+    public DateLine(IController controller, int columnWidth) {
         this.controller = controller;
         this.columnWidth = columnWidth;
 

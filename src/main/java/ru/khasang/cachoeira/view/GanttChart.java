@@ -7,22 +7,25 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import ru.khasang.cachoeira.controller.IController;
+import ru.khasang.cachoeira.view.ganttchart.DateLine;
+import ru.khasang.cachoeira.view.ganttchart.GridLayer;
+import ru.khasang.cachoeira.view.ganttchart.ObjectsLayer;
 
 /**
  * Created by truesik on 08.11.2015.
  */
 public class GanttChart extends VBox {
-    private GanttChartGridLayer ganttChartGridLayer;        //слой с сеткой
-    private GanttChartObjectsLayer ganttChartObjectsLayer;  //слой с объектами диаграммы (задачи, группы, ...)
-    private GanttChartDateLine ganttChartDateLine;          //шкала с датами
+    private GridLayer gridLayer;        //слой с сеткой
+    private ObjectsLayer objectsLayer;  //слой с объектами диаграммы (задачи, группы, ...)
+    private DateLine dateLine;          //шкала с датами
     private int columnWidth;                                //ширина колонок
 
-    public GanttChart(IController controller, UIControl UIControl, MainWindow mainWindow, int columnWidth) {
+    public GanttChart(IController controller, UIControl uiControl, int columnWidth) {
         this.columnWidth = columnWidth;
 
-        ganttChartGridLayer = new GanttChartGridLayer(columnWidth);
-        ganttChartObjectsLayer = new GanttChartObjectsLayer(controller, UIControl, mainWindow, columnWidth);
-        ScrollPane verticalScrollPane = new ScrollPane(ganttChartObjectsLayer);
+        gridLayer = new GridLayer(columnWidth);
+        objectsLayer = new ObjectsLayer(controller, uiControl, columnWidth);
+        ScrollPane verticalScrollPane = new ScrollPane(objectsLayer);
         verticalScrollPane.setFitToWidth(true);
         verticalScrollPane.getStylesheets().add(this.getClass().getResource("/css/scrollpane.css").toExternalForm()); //делаем вертикальный скроллпэйн прозрачным
 
@@ -31,16 +34,16 @@ public class GanttChart extends VBox {
         verticalScrollPane.vvalueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                mainWindow.getTaskTreeTableView().scrollTo(newValue.intValue()); //говорим таблице куда скроллить
+                uiControl.getMainWindow().getTaskTreeTableView().scrollTo(newValue.intValue()); //говорим таблице куда скроллить
             }
         });
 
-        StackPane diagramPane = new StackPane(ganttChartGridLayer, verticalScrollPane); //нижний слой сетка, а над ним располагается слой с задачами
+        StackPane diagramPane = new StackPane(gridLayer, verticalScrollPane); //нижний слой сетка, а над ним располагается слой с задачами
         VBox.setVgrow(diagramPane, Priority.ALWAYS);
 
-        ganttChartDateLine = new GanttChartDateLine(controller, columnWidth);
-        VBox vBox = new VBox(ganttChartDateLine, diagramPane);
-        VBox.setVgrow(ganttChartDateLine, Priority.NEVER);
+        dateLine = new DateLine(controller, columnWidth);
+        VBox vBox = new VBox(dateLine, diagramPane);
+        VBox.setVgrow(dateLine, Priority.NEVER);
 
         ScrollPane horizontalScrollPane = new ScrollPane(vBox);
         horizontalScrollPane.setFitToHeight(true);
@@ -53,15 +56,15 @@ public class GanttChart extends VBox {
         VBox.setVgrow(horizontalScrollPane, Priority.ALWAYS);
     }
 
-    public GanttChartGridLayer getGanttChartGridLayer() {
-        return ganttChartGridLayer;
+    public GridLayer getGridLayer() {
+        return gridLayer;
     }
 
-    public GanttChartObjectsLayer getGanttChartObjectsLayer() {
-        return ganttChartObjectsLayer;
+    public ObjectsLayer getObjectsLayer() {
+        return objectsLayer;
     }
 
-    public GanttChartDateLine getGanttChartDateLine() {
-        return ganttChartDateLine;
+    public DateLine getDateLine() {
+        return dateLine;
     }
 }
