@@ -62,7 +62,6 @@ public class TaskWindow implements IWindow {
     private Parent root = null;
     private Stage stage;
     private ObservableList<PriorityType> taskPriorityTypes = FXCollections.observableArrayList();
-    private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();
     private ObservableList<IResource> resourceList;
 
     public TaskWindow(MainWindow mainWindow, IController controller, boolean isNewTask) {
@@ -93,8 +92,7 @@ public class TaskWindow implements IWindow {
         taskPriorityTypes.addAll(PriorityType.values());
         taskPriorityComboBox.setItems(taskPriorityTypes);
 
-        resourceTableModel.addAll(controller.getProject().getResourceList());
-        resourceTableView.getItems().addAll(resourceTableModel);
+        resourceTableView.getItems().addAll(controller.getProject().getResourceList());
 
         //отключает возможность в Дате окончания выбрать дату предыдущую Начальной даты
         taskFinishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
@@ -117,7 +115,8 @@ public class TaskWindow implements IWindow {
 
             resourceList = FXCollections.observableArrayList(); //todo пришлось сделалть дополнительный список в который сбрасываются ресурсы с нажатым чекбоксом, т.к. я не понял как вытащить инфу из таблицы
 
-            taskWindowOKButton.setDisable(true);        //отключаем клопку ОК, пока не будут заполнены/изменены поля
+//            taskWindowOKButton.setDisable(true);        //отключаем клопку ОК, пока не будут заполнены/изменены поля
+            taskNameField.setText("Задача " + (controller.getProject().getTaskList().size() + 1));
             taskStartDatePicker.setValue(LocalDate.now());                              //дефолтовое значение: Сегодняшняя дата
             taskFinishDatePicker.setValue(taskStartDatePicker.getValue().plusDays(1));  //плюс один день
             //taskDonePercent.setValue(0);
