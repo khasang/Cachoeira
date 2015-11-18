@@ -49,7 +49,6 @@ public class ResourceWindow implements IWindow {
     private IController controller;
     private boolean isNewResource = false; //если тру, то значит нажали кнопку Новый ресурс, если фолз, то Свойства ресурса
     private ObservableList<ResourceType> resourceTypesModel = FXCollections.observableArrayList();
-    private ObservableList<ITask> taskModel = FXCollections.observableArrayList();
     private List<ITask> taskList;
 
     public ResourceWindow(MainWindow mainWindow, IController controller, boolean IsNewResource) {
@@ -80,12 +79,13 @@ public class ResourceWindow implements IWindow {
         resourceTypesModel.addAll(ResourceType.values());
         resourceTypeComboBox.setItems(resourceTypesModel);
 
-        taskModel.addAll(controller.getProject().getTaskList());
-        taskTableView.getItems().addAll(taskModel);
+        taskTableView.getItems().addAll(controller.getProject().getTaskList());
 
         if (isNewResource) {
             stage.setTitle("Новый ресурс");
             taskList = new ArrayList<>();
+
+            resourceNameField.setText("Ресурс " + (controller.getProject().getResourceList().size() + 1));
 
             taskNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
             taskCheckboxColumn.setCellFactory(new Callback<TableColumn<ITask, Boolean>, TableCell<ITask, Boolean>>() {
