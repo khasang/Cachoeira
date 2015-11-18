@@ -1,31 +1,82 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.rowfactories;
 
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import ru.khasang.cachoeira.controller.Controller;
+import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.view.MainWindow;
 
 /**
- * Created by truesik on 25.10.2015.
+ * Created by truesik on 18.11.2015.
  */
-public class TaskContextMenuRowFactory implements Callback<TreeTableView<ITask>, TreeTableRow<ITask>> {
-    private MainWindow mainWindow;
+public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask>, TreeTableRow<ITask>> {
 
-    public TaskContextMenuRowFactory(MainWindow mainWindow) {
+    private MainWindow mainWindow;
+    private IController controller;
+
+    public TaskTreeTableViewRowFactory(MainWindow mainWindow, IController controller) {
         this.mainWindow = mainWindow;
+        this.controller = controller;
     }
 
     @Override
     public TreeTableRow<ITask> call(TreeTableView<ITask> param) {
         TreeTableRow<ITask> row = new TreeTableRow<>();
+
+        /**Drag & Drop **/
+        row.setOnDragDetected(event -> {
+            if (!row.isEmpty()) {
+                Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
+                db.setDragView(row.snapshot(null, null));
+                ClipboardContent cc = new ClipboardContent();
+                cc.put(Controller.getSerializedMimeType(), row.getIndex());
+                db.setContent(cc);
+                event.consume();
+            }
+        });
+
+        row.setOnDragOver(event -> {
+            Dragboard db = event.getDragboard();
+            if (db.hasContent(Controller.getSerializedMimeType())) {
+                if (row.getIndex() != (Integer) db.getContent(Controller.getSerializedMimeType())) {
+                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                    event.consume();
+                }
+            }
+        });
+
+        row.setOnDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            if (db.hasContent(Controller.getSerializedMimeType())) {
+                int draggedIndex = (Integer) db.getContent(Controller.getSerializedMimeType());
+                TreeItem<ITask> draggedTask = mainWindow.getTaskTreeTableView().getRoot().getChildren().remove(draggedIndex);
+                controller.getProject().getTaskList().remove(draggedIndex);
+                int dropIndex;
+                if (row.isEmpty()) {
+                    dropIndex = mainWindow.getTaskTreeTableView().getRoot().getChildren().size();
+                } else {
+                    dropIndex = row.getIndex();
+                }
+                mainWindow.getTaskTreeTableView().getRoot().getChildren().add(dropIndex, draggedTask);
+                controller.getProject().getTaskList().add(dropIndex, draggedTask.getValue());
+                event.setDropCompleted(true);
+                mainWindow.getTaskTreeTableView().getSelectionModel().select(dropIndex);
+                event.consume();
+            }
+        });
+
+        /** Row Context Menu **/
         ContextMenu rowMenu = new ContextMenu();
         Menu setResource = new Menu("Назначить ресурс");
-
-//        refreshResourceMenu(setResource);
 
         MenuItem getProperties = new MenuItem("Свойства");
         MenuItem removeTask = new MenuItem("Удалить задачу");
@@ -54,7 +105,7 @@ public class TaskContextMenuRowFactory implements Callback<TreeTableView<ITask>,
         row.contextMenuProperty().bind(
                 Bindings.when(Bindings.isNotNull(row.itemProperty()))   //если на не пустом месте кликаем,
                         .then(rowMenu)                                  //то выводим одно меню,
-                        .otherwise((ContextMenu) null));                //а если на пустом, то другое
+                        .otherwise((ContextMenu) null));                //а
         return row;
     }
 

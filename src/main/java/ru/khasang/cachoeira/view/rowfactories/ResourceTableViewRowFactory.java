@@ -1,31 +1,81 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.rowfactories;
 
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import ru.khasang.cachoeira.controller.Controller;
+import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.view.MainWindow;
 
 /**
  * Created by truesik on 25.10.2015.
  */
-public class ResourceContextMenuRowFactory implements Callback<TableView<IResource>, TableRow<IResource>> {
+public class ResourceTableViewRowFactory implements Callback<TableView<IResource>, TableRow<IResource>> {
     private final MainWindow mainWindow;
+    private IController controller;
 
-    public ResourceContextMenuRowFactory(MainWindow mainWindow) {
+    public ResourceTableViewRowFactory(MainWindow mainWindow, IController controller) {
         this.mainWindow = mainWindow;
+        this.controller = controller;
     }
 
     @Override
     public TableRow<IResource> call(TableView<IResource> param) {
         TableRow<IResource> row = new TableRow<>();
+
+        /** Drag & Drop **/
+        row.setOnDragDetected(event -> {
+            if (!row.isEmpty()) {
+                Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
+                db.setDragView(row.snapshot(null, null));
+                ClipboardContent cc = new ClipboardContent();
+                cc.put(Controller.getSerializedMimeType(), row.getIndex());
+                db.setContent(cc);
+                event.consume();
+            }
+        });
+
+        row.setOnDragOver(event -> {
+            Dragboard db = event.getDragboard();
+            if (db.hasContent(Controller.getSerializedMimeType())) {
+                if (row.getIndex() != (Integer) db.getContent(Controller.getSerializedMimeType())) {
+                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                    event.consume();
+                }
+            }
+        });
+
+        row.setOnDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            if (db.hasContent(Controller.getSerializedMimeType())) {
+                int draggedIndex = (Integer) db.getContent(Controller.getSerializedMimeType());
+                IResource draggedResource = mainWindow.getResourceTableView().getItems().remove(draggedIndex);
+                int dropIndex;
+                if (row.isEmpty()) {
+                    dropIndex = mainWindow.getResourceTableView().getItems().size();
+                } else {
+                    dropIndex = row.getIndex();
+                }
+                mainWindow.getResourceTableView().getItems().add(dropIndex, draggedResource);
+                event.setDropCompleted(true);
+                mainWindow.getResourceTableView().getSelectionModel().select(dropIndex);
+                event.consume();
+            }
+        });
+
+
+        /** Row Context Menu**/
         ContextMenu rowMenu = new ContextMenu();
         Menu setTask = new Menu("Назначить задачу");
-
-//        refreshTaskMenu(setTask);
 
         MenuItem getProperties = new MenuItem("Свойства");
         MenuItem removeResource = new MenuItem("Удалить ресурс");
