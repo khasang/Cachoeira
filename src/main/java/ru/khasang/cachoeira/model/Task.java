@@ -107,7 +107,6 @@ public class Task implements ITask {
         return duration;
     }
 
-
     @Override
     public final double getCost() {
         return cost.get();
