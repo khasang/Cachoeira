@@ -11,17 +11,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
 import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
 import ru.khasang.cachoeira.view.rowfactories.TaskTreeTableViewRowFactory;
-import sun.reflect.generics.tree.Tree;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Optional;
