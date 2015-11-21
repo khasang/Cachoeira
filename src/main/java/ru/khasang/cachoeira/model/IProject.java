@@ -1,13 +1,10 @@
 package ru.khasang.cachoeira.model;
 
-import com.sun.xml.internal.stream.Entity;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by nadezhda on 07.10.2015.

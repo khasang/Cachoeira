@@ -1,6 +1,5 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,8 +21,6 @@ import ru.khasang.cachoeira.model.ResourceType;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**

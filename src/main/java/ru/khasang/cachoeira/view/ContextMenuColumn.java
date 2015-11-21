@@ -3,10 +3,7 @@ package ru.khasang.cachoeira.view;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
-import ru.khasang.cachoeira.model.IResource;
-import ru.khasang.cachoeira.model.ITask;
 
-import javax.naming.Context;
 import java.util.ArrayList;
 
 /**

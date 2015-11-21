@@ -1,6 +1,5 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.stage.Stage;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 

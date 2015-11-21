@@ -1,6 +1,5 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -26,9 +25,7 @@ import ru.khasang.cachoeira.model.PriorityType;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by truesik on 28.09.2015.

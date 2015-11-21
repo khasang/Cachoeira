@@ -3,8 +3,6 @@ package ru.khasang.cachoeira.view.ganttchart;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import ru.khasang.cachoeira.controller.IController;
 
 import java.time.LocalDate;

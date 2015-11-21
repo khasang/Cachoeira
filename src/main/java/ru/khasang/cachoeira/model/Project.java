@@ -6,9 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by nadezhda on 07.10.2015.
