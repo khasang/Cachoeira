@@ -5,18 +5,25 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
 import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
 import ru.khasang.cachoeira.view.rowfactories.TaskTreeTableViewRowFactory;
+import sun.reflect.generics.tree.Tree;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -174,7 +181,33 @@ public class MainWindow implements IWindow {
 
         taskNameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());              //столбец задач Наименование
         startDateColumn.setCellValueFactory(param -> param.getValue().getValue().startDateProperty());      //Дата начала
+        startDateColumn.setCellFactory(column -> new TreeTableCell<ITask, Date>() {
+            @Override
+            public void updateItem(Date item, boolean empty) {
+                super.updateItem(item, empty);
+                this.setAlignment(Pos.CENTER);
+                this.setText(null);
+                this.setGraphic(null);
+                if (!empty) {
+                    String dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(item);
+                    this.setText(dateFormatter);
+                }
+            }
+        });
         finishDateColumn.setCellValueFactory(param -> param.getValue().getValue().finishDateProperty());    //Дата окончания
+        finishDateColumn.setCellFactory(column -> new TreeTableCell<ITask, Date>() {
+            @Override
+            public void updateItem(Date item, boolean empty) {
+                super.updateItem(item, empty);
+                this.setAlignment(Pos.CENTER);
+                this.setText(null);
+                this.setGraphic(null);
+                if (!empty) {
+                    String dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(item);
+                    this.setText(dateFormatter);
+                }
+            }
+        });
         durationColumn.setCellValueFactory(param -> param.getValue().getValue().durationProperty());
         donePercentColumn.setCellValueFactory(param -> param.getValue().getValue().donePercentProperty().asObject());
         priorityColumn.setCellValueFactory(param -> param.getValue().getValue().priorityTypeProperty());

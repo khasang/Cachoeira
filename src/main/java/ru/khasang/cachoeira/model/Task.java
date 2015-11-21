@@ -2,13 +2,11 @@ package ru.khasang.cachoeira.model;
 
 import javafx.beans.Observable;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Raenar on 07.10.2015.
