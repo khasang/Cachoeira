@@ -1,6 +1,5 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.stage.Stage;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 
@@ -27,22 +26,22 @@ public class UIControl {
         mainWindow.launch();
     }
 
-    public void launchNewTaskWindow(MainWindow mainWindow) { //запускаем для добавления новой Задачи
+    public void launchNewTaskWindow() { //запускаем для добавления новой Задачи
         taskWindow = new TaskWindow(mainWindow, controller, true);
         taskWindow.launch();
     }
 
-    public void launchPropertiesTaskWindow(MainWindow mainWindow) { //для свойств задачи
+    public void launchPropertiesTaskWindow() { //для свойств задачи
         taskWindow = new TaskWindow(mainWindow, controller, false);
         taskWindow.launch();
     }
 
-    public void launchResourceWindow(MainWindow mainWindow) { //для добавления нового ресурса
+    public void launchResourceWindow() { //для добавления нового ресурса
         resourceWindow = new ResourceWindow(mainWindow, controller, true);
         resourceWindow.launch();
     }
 
-    public void launchPropertiesResourceWindow(MainWindow mainWindow) { //для свойств ресурса
+    public void launchPropertiesResourceWindow() { //для свойств ресурса
         resourceWindow = new ResourceWindow(mainWindow, controller, false);
         resourceWindow.launch();
     }

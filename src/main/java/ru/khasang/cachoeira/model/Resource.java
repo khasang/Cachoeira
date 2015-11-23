@@ -1,40 +1,60 @@
 package ru.khasang.cachoeira.model;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 /**
  * Created by truesik on 22.10.2015.
  */
 public class Resource implements IResource {
-    private String name;
-    private ResourceType type;
-    private String email;
+    private StringProperty name = new SimpleStringProperty();
+    private ObjectProperty<ResourceType> type = new SimpleObjectProperty<>();
+    private StringProperty email = new SimpleStringProperty();
 
     @Override
-    public String getName() {
+    public final String getName() {
+        return name.get();
+    }
+
+    @Override
+    public final void setName(String name) {
+        this.name.set(name);
+    }
+
+    @Override
+    public final StringProperty nameProperty() {
         return name;
     }
 
     @Override
-    public void setName(String name) {
-        this.name = name;
+    public final ResourceType getType() {
+        return type.get();
     }
 
     @Override
-    public ResourceType getType() {
+    public final void setType(ResourceType type) {
+        this.type.set(type);
+    }
+
+    @Override
+    public final ObjectProperty<ResourceType> resourceTypeProperty() {
         return type;
     }
 
     @Override
-    public void setType(ResourceType type) {
-        this.type = type;
+    public final String getEmail() {
+        return email.get();
     }
 
     @Override
-    public String getEmail() {
+    public final void setEmail(String email) {
+        this.email.set(email);
+    }
+
+    @Override
+    public final StringProperty emailProperty() {
         return email;
-    }
-
-    @Override
-    public void setEmail(String email) {
-        this.email = email;
     }
 }

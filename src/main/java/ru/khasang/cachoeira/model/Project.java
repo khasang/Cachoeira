@@ -1,85 +1,134 @@
 package ru.khasang.cachoeira.model;
 
-import java.util.ArrayList;
+import javafx.beans.Observable;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.util.Callback;
+
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by nadezhda on 07.10.2015.
  */
 public class Project implements IProject {
 
-    private String name;
-    private Date startDate;
-    private Date finishDate;
-    private String description;
-    private List<ITask> tasks = new ArrayList<>(); //Интерфейс ITask будет создаваться в другой задаче
-    private List<IResource> resources = new ArrayList<>();
+    private StringProperty name = new SimpleStringProperty();
+    private ObjectProperty<Date> startDate = new SimpleObjectProperty<>();
+    private ObjectProperty<Date> finishDate = new SimpleObjectProperty<>();
+    private StringProperty description = new SimpleStringProperty();
+    private ObservableList<ITask> tasks = FXCollections.observableArrayList(new Callback<ITask, Observable[]>() {
+        @Override
+        public Observable[] call(ITask param) {
+            return new Observable[] {
+                    param.nameProperty(),
+                    param.startDateProperty(),
+                    param.finishDateProperty(),
+                    param.donePercentProperty(),
+                    param.durationProperty(),
+                    param.priorityTypeProperty(),
+                    param.costProperty(),
+                    param.getDependentTasks(),
+                    param.groupProperty(),
+                    param.getResourceList()
+            };
+        }
+    });
+    private ObservableList<IResource> resources = FXCollections.observableArrayList(new Callback<IResource, Observable[]>() {
+        @Override
+        public Observable[] call(IResource param) {
+            return new Observable[] {
+                    param.nameProperty(),
+                    param.resourceTypeProperty(),
+                    param.emailProperty()
+            };
+        }
+    });
 
     public Project() {
     }
 
     public Project(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     @Override
-    public String getName() {
+    public final String getName() {
+        return name.get();
+    }
+
+    @Override
+    public final void setName(String name) {
+        this.name.set(name);
+    }
+
+    @Override
+    public final StringProperty nameProperty() {
         return name;
     }
 
     @Override
-    public void setName(String name) {
-        this.name = name;
+    public final Date getStartDate() {
+        return startDate.get();
     }
 
     @Override
-    public Date getStartDate() {
+    public final void setStartDate(Date startDate) {
+        this.startDate.set(startDate);
+    }
+
+    @Override
+    public final ObjectProperty<Date> startDateProperty() {
         return startDate;
     }
 
     @Override
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public final Date getFinishDate() {
+        return finishDate.get();
     }
 
     @Override
-    public Date getFinishDate() {
+    public final void setFinishDate(Date finishDate) {
+        this.finishDate.set(finishDate);
+    }
+
+    @Override
+    public final ObjectProperty<Date> finishDateProperty() {
         return finishDate;
     }
 
     @Override
-    public void setFinishDate(Date finishDate) {
-        this.finishDate = finishDate;
-    }
-
-    @Override
-    public List<ITask> getTaskList() {
+    public final ObservableList<ITask> getTaskList() {
         return tasks;
     }
 
     @Override
-    public void setTaskList(List<ITask> tasks) {
+    public final void setTaskList(ObservableList<ITask> tasks) {
         this.tasks = tasks;
     }
 
     @Override
-    public List<IResource> getResourceList() {
+    public final ObservableList<IResource> getResourceList() {
         return resources;
     }
 
     @Override
-    public void setResourceList(List<IResource> resources) {
+    public final void setResourceList(ObservableList<IResource> resources) {
         this.resources = resources;
     }
 
     @Override
-    public void setDescription(String description) {
-        this.description = description;
+    public final String getDescription() {
+        return description.get();
     }
 
     @Override
-    public String getDescription() {
+    public final void setDescription(String description) {
+        this.description.set(description);
+    }
+
+    @Override
+    public final StringProperty descriptionProperty() {
         return description;
     }
 

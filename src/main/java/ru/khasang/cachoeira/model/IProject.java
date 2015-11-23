@@ -1,9 +1,10 @@
 package ru.khasang.cachoeira.model;
 
-import com.sun.xml.internal.stream.Entity;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableList;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by nadezhda on 07.10.2015.
@@ -13,25 +14,33 @@ public interface IProject {
 
     void setName(String nameDate);
 
+    StringProperty nameProperty();
+
     Date getStartDate();
 
     void setStartDate(Date startDate);
+
+    ObjectProperty<Date> startDateProperty();
 
     Date getFinishDate();
 
     void setFinishDate(Date finishDate);
 
-    List<ITask> getTaskList(); //Интерфейс ITask будет создаваться в другой задаче
+    ObjectProperty<Date> finishDateProperty();
 
-    void setTaskList(List<ITask> tasks);
+    ObservableList<ITask> getTaskList();
 
-    List<IResource> getResourceList();
+    void setTaskList(ObservableList<ITask> tasks);
 
-    void setResourceList(List<IResource> resources);
+    ObservableList<IResource> getResourceList();
+
+    void setResourceList(ObservableList<IResource> resources);
+
+    String getDescription();
 
     void setDescription(String description);
 
-    String getDescription();
+    StringProperty descriptionProperty();
 
 //    void save(String target); //Метод, сохраняющий проект в хранилище
 //    void load(String source); //Метод, загружающий проект из хранилища

@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.ganttchart;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -13,25 +13,27 @@ import javafx.scene.shape.Rectangle;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.view.UIControl;
 
 /**
  * Created by truesik on 04.11.2015.
  */
-public class GanttChartObject extends HBox {
+public class ChartObject extends HBox {
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
     private static final double SPACING = 10;       //расстояние между элементами (прямоугольником задачи и лэйблами с названиями ресурсов)
     private static final double rowHeight = 24;
+
     private IController controller;
-    private UIControl UIControl;
-    private MainWindow mainWindow;
+    private UIControl uiControl;
+
     private ITask task;
     private double rowIndex;                        //координата Y (строка задачи)
     private int columnWidth;
+    private Rectangle bar;
 
-    public GanttChartObject(IController controller, UIControl UIControl, MainWindow mainWindow, ITask task, double rowIndex, int columnWidth) {
+    public ChartObject(IController controller, UIControl uiControl, ITask task, double rowIndex, int columnWidth) {
         this.controller = controller;
-        this.UIControl = UIControl;
-        this.mainWindow = mainWindow;
+        this.uiControl = uiControl;
         this.task = task;
         this.rowIndex = rowIndex;
         this.columnWidth = columnWidth;
@@ -46,7 +48,7 @@ public class GanttChartObject extends HBox {
 
         double taskWidth = ((task.getFinishDate().getTime() - task.getStartDate().getTime()) / (24 * 60 * 60 * 1000)) * columnWidth; // длина прямоугольника (разница между
 
-        Rectangle bar = new Rectangle(0, 0, taskWidth, TASK_HEIGHT); //создаем прямоугольник
+        bar = new Rectangle(0, 0, taskWidth, TASK_HEIGHT); //создаем прямоугольник
         bar.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
         bar.setStroke(Color.valueOf("#B3E5FC"));  //цвет окантовки
         bar.setArcHeight(5);                      //сгругление углов
@@ -67,13 +69,12 @@ public class GanttChartObject extends HBox {
 
         getChildren().add(bar); //добавляем прямоугольник на HBox (панель)
 
-        showResourcesOnDiagram(task);
-
         setContextMenu(bar); //контекстное меню при нажатии на прямоугольник, добавлено для теста (код нужно дописать)
     }
 
-    public void showResourcesOnDiagram(ITask task) {
-        for (IResource resource : task.getResourceList()) {
+    public void showResourcesOnDiagram() {
+        this.getChildren().retainAll(bar);
+        for (IResource resource : this.task.getResourceList()) {
             Label resourceName = new Label(resource.getName());
             getChildren().add(resourceName); //добавляем ресурсы на HBox
         }
@@ -86,7 +87,7 @@ public class GanttChartObject extends HBox {
             @Override
             public void handle(ActionEvent event) {
                 controller.setSelectedTask(task);
-                UIControl.launchPropertiesTaskWindow(mainWindow);
+                uiControl.launchPropertiesTaskWindow();
             }
         });
         MenuItem removeTask = new MenuItem("Удалить задачу");
@@ -97,9 +98,13 @@ public class GanttChartObject extends HBox {
             @Override
             public void handle(MouseEvent event) {
                 if (event.isSecondaryButtonDown()) {
-                    contextMenu.show(GanttChartObject.this, event.getScreenX(), event.getScreenY());
+                    contextMenu.show(ChartObject.this, event.getScreenX(), event.getScreenY());
                 }
             }
         });
+    }
+
+    public ITask getTask() {
+        return task;
     }
 }

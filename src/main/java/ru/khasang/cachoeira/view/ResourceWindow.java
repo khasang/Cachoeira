@@ -1,6 +1,5 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,8 +21,6 @@ import ru.khasang.cachoeira.model.ResourceType;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -49,7 +46,6 @@ public class ResourceWindow implements IWindow {
     private IController controller;
     private boolean isNewResource = false; //если тру, то значит нажали кнопку Новый ресурс, если фолз, то Свойства ресурса
     private ObservableList<ResourceType> resourceTypesModel = FXCollections.observableArrayList();
-    private ObservableList<ITask> taskModel = FXCollections.observableArrayList();
     private List<ITask> taskList;
 
     public ResourceWindow(MainWindow mainWindow, IController controller, boolean IsNewResource) {
@@ -71,7 +67,6 @@ public class ResourceWindow implements IWindow {
         if (root != null) {
             stage.setScene(new Scene(root));
         }
-        stage.setTitle("Новый ресурс");
         stage.initOwner(mainWindow.getStage());
         stage.initModality(Modality.WINDOW_MODAL);  //чтобы окно сделать модальным, ему нужно присвоить "владельца" (строчка выше)
         stage.setResizable(false);                  //размер окна нельзя изменить
@@ -81,13 +76,15 @@ public class ResourceWindow implements IWindow {
         resourceTypesModel.addAll(ResourceType.values());
         resourceTypeComboBox.setItems(resourceTypesModel);
 
-        taskModel.addAll(controller.getProject().getTaskList());
-        taskTableView.getItems().addAll(taskModel);
+        taskTableView.getItems().addAll(controller.getProject().getTaskList());
 
         if (isNewResource) {
+            stage.setTitle("Новый ресурс");
             taskList = new ArrayList<>();
 
-            taskNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));
+            resourceNameField.setText("Ресурс " + (controller.getProject().getResourceList().size() + 1));
+
+            taskNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
             taskCheckboxColumn.setCellFactory(new Callback<TableColumn<ITask, Boolean>, TableCell<ITask, Boolean>>() {
                 @Override
                 public TableCell<ITask, Boolean> call(TableColumn<ITask, Boolean> param) {
@@ -120,6 +117,7 @@ public class ResourceWindow implements IWindow {
                 }
             });
         } else { //если свойства, то берем нужный ресурс и заполняем поля
+            stage.setTitle("Свойства ресурса");
             resourceNameField.setText(controller.getSelectedResource().getName()); //имя
             resourceEmailField.setText(controller.getSelectedResource().getEmail()); //почта
             resourceTypeComboBox.getSelectionModel().select(controller.getSelectedResource().getType()); //тип ресурса
@@ -129,12 +127,11 @@ public class ResourceWindow implements IWindow {
             for (ITask task : controller.getProject().getTaskList()) {
                 for (IResource resource : task.getResourceList()) {
                     if (controller.getSelectedResource().equals(resource)) {
-                        System.out.println("Заполняем Таск Виндов " + task.getName());
                         taskList.add(task);
                     }
                 }
             }
-            taskNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));
+            taskNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
             taskCheckboxColumn.setCellFactory(new Callback<TableColumn<ITask, Boolean>, TableCell<ITask, Boolean>>() {
                 @Override
                 public TableCell<ITask, Boolean> call(TableColumn<ITask, Boolean> param) {
@@ -182,21 +179,18 @@ public class ResourceWindow implements IWindow {
         return stage;
     }
 
+    @FXML
     public void resourceWindowOKButtonHandle(ActionEvent actionEvent) {
         //добавляем ресурс и закрываем окошко
         if (isNewResource) {
             controller.handleAddResource(resourceNameField.getText(), resourceEmailField.getText(), resourceTypeComboBox.getSelectionModel().getSelectedItem(), taskList);
         } else {
             controller.handleChangeResource(resourceNameField.getText(), resourceEmailField.getText(), resourceTypeComboBox.getSelectionModel().getSelectedItem(), taskList);
-            for (ITask task : taskList) {
-                System.out.println(task.getName());
-            }
         }
-        mainWindow.refreshResourceTableModel();
-        mainWindow.refreshTaskTableModel();
         stage.close();
     }
 
+    @FXML
     public void resourceWindowCancelButtonHandle(ActionEvent actionEvent) {
         stage.close();
     }

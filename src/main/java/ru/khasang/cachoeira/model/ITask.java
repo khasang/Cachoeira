@@ -1,7 +1,9 @@
 package ru.khasang.cachoeira.model;
 
+import javafx.beans.property.*;
+import javafx.collections.ObservableList;
+
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Raenar on 07.10.2015.
@@ -11,46 +13,61 @@ public interface ITask {
 
     void setName(String name);
 
+    StringProperty nameProperty();
+
     Date getStartDate();
 
     void setStartDate(Date start);
+
+    ObjectProperty<Date> startDateProperty();
 
     Date getFinishDate();
 
     void setFinishDate(Date finish);
 
+    ObjectProperty<Date> finishDateProperty();
+
     int getDonePercent();
 
     void setDonePercent(int donePercent);
 
+    IntegerProperty donePercentProperty();
+
     String getDuration();
+
+    StringProperty durationProperty();
 
     double getCost();
 
     void setCost(double cost);
 
+    DoubleProperty costProperty();
+
     void addDependentTask(IDependentTask dependentTask);
 
     void removeDependentTask(IDependentTask dependentTask);
 
-    List<IDependentTask> getDependentTasks();
+    ObservableList<IDependentTask> getDependentTasks();
 
-    void setDependentTask(List<IDependentTask> dependentTask);
+    void setDependentTask(ObservableList<IDependentTask> dependentTask);
 
     ITaskGroup getGroup();
 
     void setGroup(ITaskGroup group);
 
+    ObjectProperty<ITaskGroup> groupProperty();
+
     void addResource(IResource resource);
 
     void removeResource(IResource resource);
 
-    List<IResource> getResourceList();
+    ObservableList<IResource> getResourceList();
 
-    void setResourceList(List<IResource> resources);
+    void setResourceList(ObservableList<IResource> resources);
 
-    PriorityList getPriorityType();
+    PriorityType getPriorityType();
 
-    void setPriotityType(PriorityList type);
+    void setPriorityType(PriorityType type);
 
+    ObjectProperty<PriorityType> priorityTypeProperty();
 }

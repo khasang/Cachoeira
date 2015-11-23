@@ -1,15 +1,10 @@
 package ru.khasang.cachoeira.view;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,8 +12,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
@@ -27,17 +20,12 @@ import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
-import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.model.PriorityList;
+import ru.khasang.cachoeira.model.PriorityType;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by truesik on 28.09.2015.
@@ -63,16 +51,15 @@ public class TaskWindow implements IWindow {
     @FXML
     private Slider taskDonePercentSlider;
     @FXML
-    private ComboBox<PriorityList> taskPriorityComboBox;
+    private ComboBox<PriorityType> taskPriorityComboBox;
 
     private MainWindow mainWindow;
     private IController controller;
     private boolean isNewTask = false; //если тру, то нажата кнопка Новая задача, если фолз, то Свойства задачи
     private Parent root = null;
     private Stage stage;
-    private ObservableList<PriorityList> taskPriorityTypes = FXCollections.observableArrayList();
-    private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();
-    private List<IResource> resourceList;
+    private ObservableList<PriorityType> taskPriorityTypes = FXCollections.observableArrayList();
+    private ObservableList<IResource> resourceList;
 
     public TaskWindow(MainWindow mainWindow, IController controller, boolean isNewTask) {
         this.mainWindow = mainWindow;
@@ -94,16 +81,15 @@ public class TaskWindow implements IWindow {
         if (root != null) {
             stage.setScene(new Scene(root));
         }
-        stage.setTitle("Новая задача");
+
         stage.initOwner(mainWindow.getStage());     //todo исправить на viewController
         stage.initModality(Modality.WINDOW_MODAL);  //чтобы окно сделать модальным, ему нужно присвоить "владельца" (строчка выше)
         stage.setResizable(false);                  //размер окна нельзя изменить
         stage.show();
-        taskPriorityTypes.addAll(PriorityList.values());
+        taskPriorityTypes.addAll(PriorityType.values());
         taskPriorityComboBox.setItems(taskPriorityTypes);
 
-        resourceTableModel.addAll(controller.getProject().getResourceList());
-        resourceTableView.getItems().addAll(resourceTableModel);
+        resourceTableView.getItems().addAll(controller.getProject().getResourceList());
 
         //отключает возможность в Дате окончания выбрать дату предыдущую Начальной даты
         taskFinishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
@@ -122,17 +108,20 @@ public class TaskWindow implements IWindow {
         });
 
         if (isNewTask) {
-            resourceList = new ArrayList<>(); //todo пришлось сделалть дополнительный список в который сбрасываются ресурсы с нажатым чекбоксом, т.к. я не понял как вытащить инфу из таблицы
+            stage.setTitle("Новая задача");
 
-            taskWindowOKButton.setDisable(true);        //отключаем клопку ОК, пока не будут заполнены/изменены поля
+            resourceList = FXCollections.observableArrayList(); //todo пришлось сделалть дополнительный список в который сбрасываются ресурсы с нажатым чекбоксом, т.к. я не понял как вытащить инфу из таблицы
+
+//            taskWindowOKButton.setDisable(true);        //отключаем клопку ОК, пока не будут заполнены/изменены поля
+            taskNameField.setText("Задача " + (controller.getProject().getTaskList().size() + 1));
             taskStartDatePicker.setValue(LocalDate.now());                              //дефолтовое значение: Сегодняшняя дата
             taskFinishDatePicker.setValue(taskStartDatePicker.getValue().plusDays(1));  //плюс один день
             //taskDonePercent.setValue(0);
             taskCostField.setText(String.valueOf(0.00));
             taskDonePercentSlider.setValue(0);
-            taskPriorityComboBox.setValue(PriorityList.Normal);
+            taskPriorityComboBox.setValue(PriorityType.Normal);
 
-            resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));  //колонка с именами ресурсов
+            resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());  //колонка с именами ресурсов
             resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
                 @Override
                 public TableCell<IResource, Boolean> call(TableColumn<IResource, Boolean> param) {
@@ -165,7 +154,9 @@ public class TaskWindow implements IWindow {
                 }
             });
         } else {
-            resourceList = new ArrayList<>(controller.getSelectedTask().getResourceList()); //todo пришлось сделалть дополнительный список в который сбрасываются ресурсы с нажатым чекбоксом, т.к. я не понял как вытащить инфу из таблицы
+            stage.setTitle("Свойства задачи");
+
+            resourceList = FXCollections.observableArrayList(controller.getSelectedTask().getResourceList()); //todo пришлось сделалть дополнительный список в который сбрасываются ресурсы с нажатым чекбоксом, т.к. я не понял как вытащить инфу из таблицы
 
             taskNameField.setText(controller.getSelectedTask().getName());
             taskStartDatePicker.setValue(controller.getSelectedTask().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
@@ -176,7 +167,7 @@ public class TaskWindow implements IWindow {
 
             taskPriorityComboBox.getSelectionModel().select(controller.getSelectedTask().getPriorityType());
 
-            resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));
+            resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
             resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
                 @Override
                 public TableCell<IResource, Boolean> call(TableColumn<IResource, Boolean> param) {
@@ -206,11 +197,9 @@ public class TaskWindow implements IWindow {
 
                                 for (IResource resource : controller.getSelectedTask().getResourceList()) {
                                     if (resource.equals(currentRow.getItem())) {
-                                        System.out.println("true");
                                         checkBox.selectedProperty().setValue(Boolean.TRUE);
                                         break;
                                     } else {
-                                        System.out.println("false");
                                         checkBox.selectedProperty().setValue(Boolean.FALSE);
                                     }
                                 }
@@ -240,7 +229,7 @@ public class TaskWindow implements IWindow {
     private void validate() {
         taskWindowOKButton.disableProperty().set(
                 taskNameField.getText().trim().isEmpty() ||
-                        taskCostField.getText().trim().isEmpty()||
+                        taskCostField.getText().trim().isEmpty() ||
                         taskStartDatePicker.getValue().toString().trim().isEmpty() ||
                         taskFinishDatePicker.getValue().toString().trim().isEmpty()); // отключаем кнопку ОК, если хотя бы одно из полей не заполнено todo сделать проверку на null, иначе nullPointerException
 
@@ -252,66 +241,49 @@ public class TaskWindow implements IWindow {
         return stage;
     }
 
+    @FXML
     public void taskWindowOKButtonHandle(ActionEvent actionEvent) {
         //добавляем задачу и закрываем окошко
-
-        //преобразование из LocalDate в Date
-//        LocalDate startLocalDate = taskStartDatePicker.getValue();
-//        ZonedDateTime startZonedDateTime = startLocalDate.atStartOfDay(ZoneId.systemDefault());
-//        Instant instant = Instant.from(startZonedDateTime);
-//        Date taskStartDate = Date.from(instant);
-//
-//        LocalDate finishLocalDate = taskFinishDatePicker.getValue();
-//        ZonedDateTime finishZonedDateTime = finishLocalDate.atStartOfDay(ZoneId.systemDefault());
-//        Instant instant1 = Instant.from(finishZonedDateTime);
-//        Date taskFinishDate = Date.from(instant1);
-
-//        Date taskStartDate = Date.from(Instant.from(taskStartDatePicker.getValue().atStartOfDay(ZoneId.systemDefault())));      //LocalDate to Date
-//        Date taskFinishDate = Date.from(Instant.from(taskFinishDatePicker.getValue().atStartOfDay(ZoneId.systemDefault())));    //LocalDate to Date
-
         Date taskStartDate = Date.from(taskStartDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());    //LocalDate to Date
         Date taskFinishDate = Date.from(taskFinishDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());  //LocalDate to Date
 
         //добавил:
         if (isNewTask) {
-            controller.handleAddTask(taskNameField.getText(), taskStartDate, taskFinishDate, Double.valueOf(taskCostField.getText()),taskDonePercentSlider.getValue(),taskPriorityComboBox.getSelectionModel().getSelectedItem(),resourceList);
+            controller.handleAddTask(taskNameField.getText(), taskStartDate, taskFinishDate, Double.valueOf(taskCostField.getText()), taskDonePercentSlider.getValue(), taskPriorityComboBox.getSelectionModel().getSelectedItem(), resourceList);
         } else {
-            controller.handleChangeTask(taskNameField.getText(), taskStartDate, taskFinishDate,Double.valueOf(taskCostField.getText()),taskDonePercentSlider.getValue(),taskPriorityComboBox.getSelectionModel().getSelectedItem(), resourceList);
-//            taskController.getSelectedTask().setName(taskNameField.getText());
-//            taskController.getSelectedTask().setStartDate(taskStartDate);
-//            taskController.getSelectedTask().setFinishDate(taskFinishDate);
+            controller.handleChangeTask(taskNameField.getText(), taskStartDate, taskFinishDate, Double.valueOf(taskCostField.getText()), taskDonePercentSlider.getValue(), taskPriorityComboBox.getSelectionModel().getSelectedItem(), resourceList);
         }
-        mainWindow.refreshTaskTableModel();
         stage.close();
     }
 
+    @FXML
     public void taskWindowCancelButtonHandle(ActionEvent actionEvent) {
         stage.close();
     }
 
+    @FXML
     public void onlyNumber(KeyEvent event) {
-        if ((isInteger(event.getText())||event.getText().equals(".") && (countChar(taskCostField.getText(),".")<1))||(event.getCode()== KeyCode.BACK_SPACE)){
+        if ((isInteger(event.getText()) || event.getText().equals(".") && (countChar(taskCostField.getText(), ".") < 1)) || (event.getCode() == KeyCode.BACK_SPACE)) {
             taskCostField.setEditable(true);
-            if ((taskCostField.getText().length()>0) && (taskCostField.getText().lastIndexOf(".")!=-1)){
-                if ((taskCostField.getText().length()>taskCostField.getText().lastIndexOf(".")+2)&&(event.getCode()!= KeyCode.BACK_SPACE))
-                {
+            if ((taskCostField.getText().length() > 0) && (taskCostField.getText().lastIndexOf(".") != -1)) {
+                if ((taskCostField.getText().length() > taskCostField.getText().lastIndexOf(".") + 2) && (event.getCode() != KeyCode.BACK_SPACE)) {
                     taskCostField.setEditable(false);
                 }
             }
-        }else{
+        } else {
             taskCostField.setEditable(false);
         }
     }
 
     private int countChar(String text, String s) {
-        int count=0;
-        for (char element : text.toCharArray()){
+        int count = 0;
+        for (char element : text.toCharArray()) {
             if (element == '.') count++;
         }
         return count;
     }
 
-    private boolean isInteger(String string){
+    private boolean isInteger(String string) {
         try {
             Integer.parseInt(string);
         } catch (Exception e) {

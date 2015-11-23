@@ -1,13 +1,11 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -15,18 +13,20 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
+import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
+import ru.khasang.cachoeira.view.rowfactories.TaskTreeTableViewRowFactory;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * Created by truesik on 28.09.2015.
  */
 public class MainWindow implements IWindow {
-
     @FXML
     private SplitPane taskSplitPane;
     @FXML
@@ -40,17 +40,13 @@ public class MainWindow implements IWindow {
     @FXML
     private TreeTableColumn<ITask, Date> startDateColumn;     //столбец с датой начала задачи <Task, Date>
     @FXML
-    private TreeTableColumn<ITask,String> durationColumn; //столбец Продолжительность
+    private TreeTableColumn<ITask, String> durationColumn; //столбец Продолжительность
     @FXML
-    private TreeTableColumn<ITask,String> donePercentColumn; //столбец процент выполения
+    private TreeTableColumn<ITask, Integer> donePercentColumn; //столбец процент выполения
     @FXML
-    private TreeTableColumn<ITask,PriorityList> priorityColumn; //столбец Приоритет
+    private TreeTableColumn<ITask, PriorityType> priorityColumn; //столбец Приоритет
     @FXML
-    private TreeTableColumn<ITask,Double> costColumn; //столбец Стоимость
-
-
-    @FXML
-    private ScrollPane taskGanttScrollPane;      //здесь должен быть канвас, также возможна с помощью этого скролла получится синхронизировать вертикальные скроллы таблицы задач и ганта
+    private TreeTableColumn<ITask, Double> costColumn; //столбец Стоимость
     @FXML
     private TableView<IResource> resourceTableView;         //таблица ресурсов <Resource>
     @FXML
@@ -69,8 +65,6 @@ public class MainWindow implements IWindow {
     private UIControl UIControl;
     private IController controller;
     private TreeItem<ITask> rootTask = new TreeItem<>(new Task());  //todo исправить new Task на контроллер
-    private ObservableList<ITask> taskTableModel = FXCollections.observableArrayList();             //<Task> модель для задач
-    private ObservableList<IResource> resourceTableModel = FXCollections.observableArrayList();     //<Resource> модель для ресурсов
 
     public MainWindow(IController controller, UIControl UIControl) {
         this.controller = controller;
@@ -94,12 +88,11 @@ public class MainWindow implements IWindow {
         stage.show();
         stage.setTitle(controller.getProject().getName());
 
-        taskGanttChart = new GanttChart(controller, UIControl, this, 70);
+        taskGanttChart = new GanttChart(controller, UIControl, 70);
         taskSplitPane.getItems().add(taskGanttChart);
-//        taskSplitPane.setDividerPositions(0.3);
         taskSplitPane.setDividerPosition(0, 0.3);
 
-        resourceGanttChart = new GanttChart(controller, UIControl, this, 70);
+        resourceGanttChart = new GanttChart(controller, UIControl, 70);
         resourceSplitPane.getItems().add(resourceGanttChart);
         resourceSplitPane.setDividerPosition(0, 0.3);
 
@@ -111,7 +104,7 @@ public class MainWindow implements IWindow {
 //              if (произошли изменения в проекте) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Cachoeira");
-                alert.setHeaderText("Вы хотите сохранить изменения в Имя проекта?");
+                alert.setHeaderText("Вы хотите сохранить изменения в " + controller.getProject().getName() + "?");
 
                 ButtonType saveProjectButtonType = new ButtonType("Сохранить");
                 ButtonType dontSaveProjectButtonType = new ButtonType("Не сохранять");
@@ -136,25 +129,93 @@ public class MainWindow implements IWindow {
         //нужно заполнить таблицы элементами
         taskTreeTableView.setRoot(rootTask); //вешаем корневой TreeItem в TreeTableView. Он в fxml стоит как невидимый (<TreeTableView fx:id="taskTreeTableView" showRoot="false">).
         rootTask.setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
-        refreshTaskTableModel(); //костыль
-        refreshResourceTableModel();
+        controller.getProject().getTaskList().addListener(new ListChangeListener<ITask>() {
+            @Override
+            public void onChanged(Change<? extends ITask> c) {
+                refreshTaskTreeTableView();
+                taskGanttChart.getObjectsLayer().refreshTaskDiagram();
+                resourceGanttChart.getObjectsLayer().refreshResourceDiagram();
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        System.out.println("Main Window Task Added!");
+                    }
+                    if (c.wasRemoved()) {
+                        System.out.println("Main Window Task Removed");
+                    }
+                    if (c.wasReplaced()) {
+                        System.out.println("Main Window Task Replaced");
+                    }
+                    if (c.wasUpdated()) {
+                        System.out.println("Main Window Task Updated");
+                    }
+                }
+            }
+        });
+        controller.getProject().getResourceList().addListener(new ListChangeListener<IResource>() {
+            @Override
+            public void onChanged(Change<? extends IResource> c) {
+                resourceGanttChart.getObjectsLayer().refreshResourceDiagram();
+                taskGanttChart.getObjectsLayer().refreshTaskDiagram();
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        System.out.println("Main Window Resource Added!");
+                    }
+                    if (c.wasRemoved()) {
+                        System.out.println("Main Window Resource Removed");
+                    }
+                    if (c.wasReplaced()) {
+                        System.out.println("Main Window Resource Replaced");
+                    }
+                    if (c.wasUpdated()) {
+                        System.out.println("Main Window Resource Updated");
+                    }
+                }
+            }
+        });
 
-        taskNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getName()));              //столбец задач Наименование
-        startDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getStartDate()));      //Дата начала
-        finishDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getFinishDate()));    //Дата окончания
-        durationColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getDuration()));
-        donePercentColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(String.valueOf(param.getValue().getValue().getDonePercent())+"%"));
+        resourceTableView.setItems(controller.getProject().getResourceList());
 
-        priorityColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getPriorityType()));
-        costColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue().getCost()));
+        taskNameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());              //столбец задач Наименование
+        startDateColumn.setCellValueFactory(param -> param.getValue().getValue().startDateProperty());      //Дата начала
+        startDateColumn.setCellFactory(column -> new TreeTableCell<ITask, Date>() {
+            @Override
+            public void updateItem(Date item, boolean empty) {
+                super.updateItem(item, empty);
+                this.setAlignment(Pos.CENTER);
+                this.setText(null);
+                this.setGraphic(null);
+                if (!empty) {
+                    String dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(item);
+                    this.setText(dateFormatter);
+                }
+            }
+        });
+        finishDateColumn.setCellValueFactory(param -> param.getValue().getValue().finishDateProperty());    //Дата окончания
+        finishDateColumn.setCellFactory(column -> new TreeTableCell<ITask, Date>() {
+            @Override
+            public void updateItem(Date item, boolean empty) {
+                super.updateItem(item, empty);
+                this.setAlignment(Pos.CENTER);
+                this.setText(null);
+                this.setGraphic(null);
+                if (!empty) {
+                    String dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(item);
+                    this.setText(dateFormatter);
+                }
+            }
+        });
+        durationColumn.setCellValueFactory(param -> param.getValue().getValue().durationProperty());
+        donePercentColumn.setCellValueFactory(param -> param.getValue().getValue().donePercentProperty().asObject());
+        priorityColumn.setCellValueFactory(param -> param.getValue().getValue().priorityTypeProperty());
+        costColumn.setCellValueFactory(param -> param.getValue().getValue().costProperty().asObject());
 
-        resourceNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getName()));                     //столбец ресурсов Наименование
-        resourceTypeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getType()));                   //Тип
-        resourceEmailColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getEmail()));                   //Почта
+        resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
+        resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
+        resourceEmailColumn.setCellValueFactory(param -> param.getValue().emailProperty());                   //Почта
 
         //my ContextMenuColumn
         // contextMenuColumn for Task
-        ContextMenuColumn contextMenuColumnTask=new ContextMenuColumn(taskTreeTableView);
+        ContextMenuColumn contextMenuColumnTask = new ContextMenuColumn(taskTreeTableView);
         contextMenuColumnTask.setOnShowing(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -164,9 +225,9 @@ public class MainWindow implements IWindow {
         for (int i = 0; i < taskTreeTableView.getColumns().size(); i++) {
             taskTreeTableView.getColumns().get(i).setContextMenu(contextMenuColumnTask);
         }
-
-        // contextMenuColumn for Resource
-        ContextMenuColumn contextMenuColumnResource=new ContextMenuColumn(resourceTableView);
+//
+//         contextMenuColumn for Resource
+        ContextMenuColumn contextMenuColumnResource = new ContextMenuColumn(resourceTableView);
         contextMenuColumnResource.setOnShowing(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -176,9 +237,6 @@ public class MainWindow implements IWindow {
         for (int i = 0; i < resourceTableView.getColumns().size(); i++) {
             resourceTableView.getColumns().get(i).setContextMenu(contextMenuColumnResource);
         }
-
-
-
 
         //контекстные меню в списках задач и ресурсов
         //контекстное меню на пустом месте таблицы
@@ -205,8 +263,18 @@ public class MainWindow implements IWindow {
         resourceTableMenu.getItems().addAll(addNewResource);   //заполняем меню
         resourceTableView.setContextMenu(resourceTableMenu);
 
-        taskTreeTableView.setRowFactory(new TaskContextMenuRowFactory(this)); //контекстное меню для каждого элемента таблицы задач
-        resourceTableView.setRowFactory(new ResourceContextMenuRowFactory(this)); //контекстное меню для каждого элкмента таблицы ресурсов
+        resourceTableView.setRowFactory(new ResourceTableViewRowFactory(this, controller)); //вешаем драг и дроп, и контекстное меню
+        taskTreeTableView.setRowFactory(new TaskTreeTableViewRowFactory(this, controller));
+    }
+
+    private void refreshTaskTreeTableView() {
+        rootTask.getChildren().clear();
+        controller.getProject().getTaskList().stream().forEach(new Consumer<ITask>() {
+            @Override
+            public void accept(ITask iTask) {
+                rootTask.getChildren().add(new TreeItem<>(iTask));
+            }
+        });
     }
 
     @Override
@@ -214,35 +282,12 @@ public class MainWindow implements IWindow {
         return stage;
     }
 
-    public void refreshTaskTableModel() {
-        taskTableModel.clear(); //очищаем модель перед наполнением
-        rootTask.getChildren().clear(); //отчищаем корневой элемент в таблице
-        taskTableModel.addAll(controller.getProject().getTaskList().stream().collect(Collectors.toList())); //заполняем модель
-        //из модели пихаем корневой элемент таблицы
-        taskTableModel.stream().forEach(new Consumer<ITask>() {
-            @Override
-            public void accept(ITask taskTableModel) {
-                rootTask.getChildren().addAll(new TreeItem<>(taskTableModel));
-            }
-        });
-        taskGanttChart.getGanttChartObjectsLayer().refreshTaskDiagram();
-    }
-
-    public void refreshResourceTableModel() {
-        resourceTableModel.clear();
-        resourceTableView.getItems().clear();
-        resourceTableModel.addAll(controller.getProject().getResourceList().stream().collect(Collectors.toList()));
-        resourceTableView.setItems(resourceTableModel);
-        resourceGanttChart.getGanttChartObjectsLayer().refreshResourceDiagram();
-    }
-
-
     private void onClose() {
         //минимум JDK 8u40
         //if (произошли изменения в проекте) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Cachoeira");
-        alert.setHeaderText("Вы хотите сохранить изменения в Имя проекта?");
+        alert.setHeaderText("Вы хотите сохранить изменения в " + controller.getProject().getName() + "?");
 
         ButtonType saveProjectButtonType = new ButtonType("Сохранить");
         ButtonType dontSaveProjectButtonType = new ButtonType("Не сохранять");
@@ -296,19 +341,19 @@ public class MainWindow implements IWindow {
     }
 
     private void openNewTaskWindow() {
-        UIControl.launchNewTaskWindow(this);
+        UIControl.launchNewTaskWindow();
     }
 
     public void openPropertiesTaskWindow() {
-        UIControl.launchPropertiesTaskWindow(this);
+        UIControl.launchPropertiesTaskWindow();
     }
 
     private void openNewResourceWindow() {
-        UIControl.launchResourceWindow(this);
+        UIControl.launchResourceWindow();
     }
 
     public void openPropertiesResourceWindow() {
-        UIControl.launchPropertiesResourceWindow(this);
+        UIControl.launchPropertiesResourceWindow();
     }
 
     public IController getController() {
@@ -317,5 +362,17 @@ public class MainWindow implements IWindow {
 
     public TreeTableView<ITask> getTaskTreeTableView() {
         return taskTreeTableView;
+    }
+
+    public TableView<IResource> getResourceTableView() {
+        return resourceTableView;
+    }
+
+    public GanttChart getResourceGanttChart() {
+        return resourceGanttChart;
+    }
+
+    public GanttChart getTaskGanttChart() {
+        return taskGanttChart;
     }
 }
