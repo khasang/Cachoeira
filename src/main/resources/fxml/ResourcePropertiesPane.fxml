@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="propertiesPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.ResourcePropertiesPaneController">
+   <children>
+      <TitledPane text="Информация" VBox.vgrow="ALWAYS">
+         <content>
+            <GridPane hgap="10.0" vgap="10.0">
+               <children>
+                  <TextField fx:id="nameField" GridPane.columnIndex="1" />
+                  <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <ComboBox fx:id="resourceTypeComboBox" prefWidth="165.0" promptText="Выберите тип" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label text="Наименование:" />
+                  <Label text="Электронная почта:" GridPane.rowIndex="1" />
+                  <Label text="Тип:" GridPane.rowIndex="2" />
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="222.0" minWidth="10.0" prefWidth="109.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="338.0" minWidth="10.0" prefWidth="159.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+               </rowConstraints>
+            </GridPane>
+         </content>
+      </TitledPane>
+      <TitledPane text="Привязанные задачи" VBox.vgrow="ALWAYS">
+         <content>
+            <TableView fx:id="taskTableView" prefHeight="200.0" prefWidth="200.0">
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+               <columns>
+                  <TableColumn fx:id="taskNameColumn" prefWidth="251.0" text="Наименование" />
+                  <TableColumn fx:id="taskCheckboxColumn" prefWidth="47.0" resizable="false" />
+               </columns>
+            </TableView>
+         </content>
+      </TitledPane>
+   </children>
+</VBox>

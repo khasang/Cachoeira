@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.ProjectPropertiesPaneController">
+   <children>
+      <TitledPane text="Информация" VBox.vgrow="ALWAYS">
+         <content>
+            <GridPane hgap="10.0" prefHeight="297.0" vgap="10.0">
+               <children>
+                  <Label text="Имя проекта:" />
+                  <TextField fx:id="nameField" GridPane.columnIndex="1" />
+                  <Label text="Дата начала:" GridPane.rowIndex="1" />
+                  <Label text="Дата окончания:" GridPane.rowIndex="2" />
+                  <DatePicker fx:id="startDatePicker" prefWidth="334.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                  <DatePicker fx:id="finishDatePicker" prefWidth="336.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+                  <Label text="Описание:" GridPane.rowIndex="3" />
+                  <TextArea fx:id="descriptionTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets bottom="10.0" />
+                     </GridPane.margin>
+                  </TextArea>
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="224.0" minWidth="10.0" prefWidth="109.0" />
+                  <ColumnConstraints hgrow="ALWAYS" maxWidth="321.0" minWidth="10.0" prefWidth="159.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="ALWAYS" />
+               </rowConstraints>
+            </GridPane>
+         </content>
+      </TitledPane>
+   </children>
+</VBox>
