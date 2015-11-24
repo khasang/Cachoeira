@@ -4,6 +4,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.input.DataFormat;
 import ru.khasang.cachoeira.model.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,7 +41,7 @@ public class Controller implements IController {
 
     //добавил:
     @Override
-    public void handleAddTask(String nameOfTask, Date startDate, Date finishDate, Double cost, double donePercent, PriorityType priority, ObservableList<IResource> resources) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
+    public void handleAddTask(String nameOfTask, LocalDate startDate, LocalDate finishDate, Double cost, double donePercent, PriorityType priority, ObservableList<IResource> resources) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
         task = new Task();
         task.setName(nameOfTask);
         task.setStartDate(startDate);
@@ -69,7 +70,7 @@ public class Controller implements IController {
 
     //Добавил:
     @Override
-    public void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, Double taskCost, double taskDonePercent, PriorityType priority, ObservableList<IResource> resources) { //todo тоже подправил
+    public void handleChangeTask(String taskNameField, LocalDate taskStartDate, LocalDate taskFinishDate, Double taskCost, double taskDonePercent, PriorityType priority, ObservableList<IResource> resources) { //todo тоже подправил
         task.setName(taskNameField);
         task.setStartDate(taskStartDate);
         task.setFinishDate(taskFinishDate);
@@ -158,7 +159,7 @@ public class Controller implements IController {
     }
 
     @Override
-    public void notifyAddProject(String projectName, Date startDate, Date finishDate, String description) {
+    public void notifyAddProject(String projectName, LocalDate startDate, LocalDate finishDate, String description) {
         project = new Project();
         project.setName(projectName);
         project.setStartDate(startDate);

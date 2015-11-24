@@ -4,6 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -16,17 +17,17 @@ public interface IProject {
 
     StringProperty nameProperty();
 
-    Date getStartDate();
+    LocalDate getStartDate();
 
-    void setStartDate(Date startDate);
+    void setStartDate(LocalDate startDate);
 
-    ObjectProperty<Date> startDateProperty();
+    ObjectProperty<LocalDate> startDateProperty();
 
-    Date getFinishDate();
+    LocalDate getFinishDate();
 
-    void setFinishDate(Date finishDate);
+    void setFinishDate(LocalDate finishDate);
 
-    ObjectProperty<Date> finishDateProperty();
+    ObjectProperty<LocalDate> finishDateProperty();
 
     ObservableList<ITask> getTaskList();
 
