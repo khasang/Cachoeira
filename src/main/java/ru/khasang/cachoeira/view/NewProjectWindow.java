@@ -97,9 +97,7 @@ public class NewProjectWindow implements IWindow {
 
     @FXML
     private void newProjectCreateButtonHandle(ActionEvent actionEvent) {
-        Date projectStartDate = Date.from(newProjectStartDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());    //LocalDate to Date
-        Date projectFinishDate = Date.from(newProjectFinishDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-        controller.notifyAddProject(newProjectNameField.getText(), projectStartDate, projectFinishDate, newProjectDescriptionArea.getText()); //создаем проект
+        controller.notifyAddProject(newProjectNameField.getText(), newProjectStartDatePicker.getValue(), newProjectFinishDatePicker.getValue(), newProjectDescriptionArea.getText()); //создаем проект
         stage.close(); // закрываем это окошко
         UIControl.getStartWindow().getStage().close(); //закрываем стартовое окно
         UIControl.launchMainWindow(); //запускаем главное окно
