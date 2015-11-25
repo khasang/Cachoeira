@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+
+<TabPane prefHeight="631.0" prefWidth="296.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.PropertiesPanelController">
+   <tabs>
+      <Tab fx:id="projectPropertiesTab" text="Проект" />
+      <Tab fx:id="taskPropertiesTab" text="Задача" />
+      <Tab fx:id="resourcePropertiesTab" text="Ресурс" />
+   </tabs>
+</TabPane>

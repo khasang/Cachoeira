@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="656.0" prefWidth="1359.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.RootLayoutController">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="Проект">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#newProjectMenuItemHandle" text="Создать" />
+                  <MenuItem mnemonicParsing="false" onAction="#openProjectMenuItemHandle" text="Открыть" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveProjectMenuItemHandle" text="Сохранить" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#exitMenuItemHandle" text="Выход" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+</BorderPane>
