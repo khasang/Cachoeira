@@ -34,7 +34,7 @@ public class GanttChart extends VBox {
         verticalScrollPane.vvalueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                uiControl.getMainWindow().getTaskTreeTableView().scrollTo(newValue.intValue()); //говорим таблице куда скроллить
+//                uiControl.getMainWindow().getTaskTreeTableView().scrollTo(newValue.intValue()); //говорим таблице куда скроллить // TODO: 25.11.2015 fix it
             }
         });
 
