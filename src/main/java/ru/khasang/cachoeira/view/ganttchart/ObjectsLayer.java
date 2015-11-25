@@ -40,7 +40,7 @@ public class ObjectsLayer extends Pane {
             for (IResource resource : task.getResourceList()) {
                 int rowIndex = controller.getProject().getResourceList().indexOf(resource);
                 chartObject = new ChartObject(controller, uiControl, task, rowIndex, columnWidth);
-                chartObject.showResourcesOnDiagram();
+//                chartObject.showResourcesOnDiagram();
                 this.getChildren().add(chartObject);
             }
         }
