@@ -1,5 +1,7 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -28,14 +30,21 @@ public class ResourcePaneController {
     private TableColumn<IResource, String> resourceEmailColumn;
 
     private GanttChart resourceGanttChart;
-    private UIControl UIControl;
+    private UIControl uiControl;
     private IController controller;
 
     public ResourcePaneController() {
-        resourceGanttChart = new GanttChart(controller, UIControl, 70);
-        resourceSplitPane.getItems().add(resourceGanttChart);
-        resourceSplitPane.setDividerPosition(0, 0.3);
+    }
 
+    public void initResourceTable() {
+        resourceTableView.setItems(controller.getProject().getResourceList());
+        resourceTableView.setRowFactory(new ResourceTableViewRowFactory(this, controller)); //вешаем драг и дроп, и контекстное меню
+        resourceTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<IResource>() {
+            @Override
+            public void changed(ObservableValue<? extends IResource> observable, IResource oldValue, IResource newValue) {
+                controller.selectedResourceProperty().setValue(newValue);
+            }
+        });
         controller.getProject().getResourceList().addListener(new ListChangeListener<IResource>() {
             @Override
             public void onChanged(Change<? extends IResource> c) {
@@ -56,13 +65,15 @@ public class ResourcePaneController {
                 }
             }
         });
+    }
 
-        resourceTableView.setItems(controller.getProject().getResourceList());
+    public void initGanttChart() {
+        resourceGanttChart = new GanttChart(controller, uiControl, 70);
+        resourceSplitPane.getItems().add(resourceGanttChart);
+        resourceSplitPane.setDividerPosition(0, 0.3);
+    }
 
-        resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
-        resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
-        resourceEmailColumn.setCellValueFactory(param -> param.getValue().emailProperty());                   //Почта
-
+    public void initContextMenus() {
         ContextMenuColumn contextMenuColumnResource = new ContextMenuColumn(resourceTableView);
         contextMenuColumnResource.setOnShowing(new EventHandler<WindowEvent>() {
             @Override
@@ -79,13 +90,18 @@ public class ResourcePaneController {
         addNewResource.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-//                openNewResourceWindow();
+                uiControl.launchResourceWindow();
             }
         });
         resourceTableMenu.getItems().addAll(addNewResource);   //заполняем меню
         resourceTableView.setContextMenu(resourceTableMenu);
+    }
 
-        resourceTableView.setRowFactory(new ResourceTableViewRowFactory(this, controller)); //вешаем драг и дроп, и контекстное меню
+    @FXML
+    private void initialize() {
+        resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
+        resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
+        resourceEmailColumn.setCellValueFactory(param -> param.getValue().emailProperty());                 //Почта
     }
 
     @FXML
@@ -96,5 +112,13 @@ public class ResourcePaneController {
 
     public TableView<IResource> getResourceTableView() {
         return resourceTableView;
+    }
+
+    public void setUIControl(ru.khasang.cachoeira.view.UIControl uiControl) {
+        this.uiControl = uiControl;
+    }
+
+    public void setController(IController controller) {
+        this.controller = controller;
     }
 }

@@ -3,11 +3,9 @@ package ru.khasang.cachoeira.view;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ResourceType;
 
@@ -15,6 +13,13 @@ import ru.khasang.cachoeira.model.ResourceType;
  * Created by truesik on 24.11.2015.
  */
 public class ResourcePropertiesPaneController {
+    @FXML
+    private Label nameLabel;
+    @FXML
+    private Label emailLabel;
+    @FXML
+    private Label resourceTypeLabel;
+
     //Информация
     @FXML
     private VBox propertiesPane;
@@ -34,7 +39,7 @@ public class ResourcePropertiesPaneController {
     private TableColumn taskCheckboxColumn;
 
     private IResource resource;
-    private MainWindow mainWindow;
+    private IController controller;
 
     public ResourcePropertiesPaneController() {
 
@@ -42,6 +47,9 @@ public class ResourcePropertiesPaneController {
 
     @FXML
     private void initialize() {
+        nameLabel.setLabelFor(nameField);
+        emailLabel.setLabelFor(emailField);
+        resourceTypeLabel.setLabelFor(resourceTypeComboBox);
     }
 
     public IResource getResource() {
@@ -52,19 +60,15 @@ public class ResourcePropertiesPaneController {
         this.resource = resource;
     }
 
-    public MainWindow getMainWindow() {
-        return mainWindow;
-    }
-
-    public void setMainWindow(MainWindow mainWindow) {
-        this.mainWindow = mainWindow;
-    }
 
     public void initFields() {
-        mainWindow.getResourceTableView().getSelectionModel().selectedItemProperty().addListener(new ChangeListener<IResource>() {
+        controller.selectedResourceProperty().addListener(new ChangeListener<IResource>() {
             @Override
             public void changed(ObservableValue<? extends IResource> observable, IResource oldValue, IResource newValue) {
-                resource = newValue;
+                propertiesPane.setDisable(false);
+                nameField.textProperty().bindBidirectional(newValue.nameProperty());
+                emailField.textProperty().bindBidirectional(newValue.emailProperty());
+                resourceTypeComboBox.valueProperty().bindBidirectional(newValue.resourceTypeProperty());
             }
         });
         if (resource != null) {
@@ -74,5 +78,9 @@ public class ResourcePropertiesPaneController {
         } else {
             propertiesPane.setDisable(true);
         }
+    }
+
+    public void setController(IController controller) {
+        this.controller = controller;
     }
 }

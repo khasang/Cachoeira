@@ -25,37 +25,51 @@ public class PropertiesPanelController {
     }
 
     public void initTabs() {
+        initProjectPropertiesPane();
+        initTaskPropertiesPane();
+        initResourcePropertiesPane();
+    }
+
+    public void initResourcePropertiesPane() {
         try {
-            FXMLLoader project = new FXMLLoader(getClass().getResource("/fxml/ProjectPropertiesPane.fxml"));
-            VBox projectProperties = project.load();
-            ProjectPropertiesPaneController projectPropertiesController = project.getController();
-            projectPropertiesController.setController(controller);
-            projectPropertiesController.initFields();
-            projectPropertiesTab.setContent(projectProperties);
-
-            FXMLLoader task = new FXMLLoader(getClass().getResource("/fxml/TaskPropertiesPane.fxml"));
-            VBox taskProperties = task.load();
-            TaskPropertiesPaneController taskPropertiesPaneController = task.getController();
-            taskPropertiesPaneController.initFields();
-            taskPropertiesTab.setContent(taskProperties);
-
-            FXMLLoader resource = new FXMLLoader(getClass().getResource("/fxml/ResourcePropertiesPane.fxml"));
-            VBox resourceProperties = resource.load();
-            ResourcePropertiesPaneController resourcePropertiesPaneController = resource.getController();
-            resourcePropertiesPaneController.initFields();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ResourcePropertiesPane.fxml"));
+            VBox resourceProperties = loader.load();
             resourcePropertiesTab.setContent(resourceProperties);
+
+            ResourcePropertiesPaneController resourcePropertiesPaneController = loader.getController();
+            resourcePropertiesPaneController.setController(controller);
+            resourcePropertiesPaneController.initFields();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    @FXML
-    private void init() {
+    public void initTaskPropertiesPane() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TaskPropertiesPane.fxml"));
+            VBox taskProperties = loader.load();
+            taskPropertiesTab.setContent(taskProperties);
 
+            TaskPropertiesPaneController taskPropertiesPaneController = loader.getController();
+            taskPropertiesPaneController.setController(controller);
+            taskPropertiesPaneController.initFields();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public IController getController() {
-        return controller;
+    public void initProjectPropertiesPane() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ProjectPropertiesPane.fxml"));
+            VBox projectProperties = loader.load();
+            projectPropertiesTab.setContent(projectProperties);
+
+            ProjectPropertiesPaneController projectPropertiesController = loader.getController();
+            projectPropertiesController.setController(controller);
+            projectPropertiesController.initFields();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setController(IController controller) {

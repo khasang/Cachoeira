@@ -17,6 +17,19 @@ import ru.khasang.cachoeira.model.PriorityType;
  * Created by truesik on 24.11.2015.
  */
 public class TaskPropertiesPaneController {
+    @FXML
+    private Label nameLabel;
+    @FXML
+    private Label startDateLabel;
+    @FXML
+    private Label finishDateLabel;
+    @FXML
+    private Label donePercentLabel;
+    @FXML
+    private Label priorityTypeLabel;
+    @FXML
+    private Label costLabel;
+
     //Информация
     @FXML
     private VBox propertiesPane;
@@ -42,7 +55,6 @@ public class TaskPropertiesPaneController {
     private TableColumn resourceCheckboxColumn;
 
     private IController controller;
-    private MainWindow mainWindow;
     private ObjectProperty<ITask> task;
 
     public TaskPropertiesPaneController() {
@@ -50,6 +62,12 @@ public class TaskPropertiesPaneController {
 
     @FXML
     private void initialize() {
+        nameLabel.setLabelFor(nameField);
+        startDateLabel.setLabelFor(startDatePicker);
+        finishDateLabel.setLabelFor(finishDatePicker);
+        donePercentLabel.setLabelFor(donePercentSlider);
+        priorityTypeLabel.setLabelFor(priorityTypeComboBox);
+        costLabel.setLabelFor(costField);
     }
 
     @FXML
@@ -83,24 +101,8 @@ public class TaskPropertiesPaneController {
         return true;
     }
 
-    public IController getController() {
-        return controller;
-    }
-
     public void setController(IController controller) {
         this.controller = controller;
-    }
-
-    public MainWindow getMainWindow() {
-        return mainWindow;
-    }
-
-    public void setMainWindow(MainWindow mainWindow) {
-        this.mainWindow = mainWindow;
-    }
-
-    public ITask getTask() {
-        return task.get();
     }
 
     public void setTask(ITask task) {
@@ -108,39 +110,19 @@ public class TaskPropertiesPaneController {
     }
 
     public void initFields() {
-        task.addListener(new ChangeListener<ITask>() {
+        controller.selectedTaskProperty().addListener(new ChangeListener<ITask>() {
             @Override
             public void changed(ObservableValue<? extends ITask> observable, ITask oldValue, ITask newValue) {
-                if (task != null) {
-                    propertiesPane.setDisable(false);
-                    nameField.textProperty().bindBidirectional(task.getValue().nameProperty());
-                    startDatePicker.valueProperty().bindBidirectional(task.getValue().startDateProperty());
-                    finishDatePicker.valueProperty().bindBidirectional(task.getValue().finishDateProperty());
-                    donePercentSlider.valueProperty().bindBidirectional(task.getValue().donePercentProperty());
-                    priorityTypeComboBox.valueProperty().bindBidirectional(task.getValue().priorityTypeProperty());
-                    costField.textProperty().bindBidirectional(task.getValue().costProperty(), new NumberStringConverter());
-                } else {
-                    propertiesPane.setDisable(true);
-                }
+                propertiesPane.setDisable(false);
+                nameField.textProperty().bindBidirectional(newValue.nameProperty());
+                startDatePicker.valueProperty().bindBidirectional(newValue.startDateProperty());
+                finishDatePicker.valueProperty().bindBidirectional(newValue.finishDateProperty());
+                donePercentSlider.valueProperty().bindBidirectional(newValue.donePercentProperty());
+                priorityTypeComboBox.valueProperty().bindBidirectional(newValue.priorityTypeProperty());
+                costField.textProperty().bindBidirectional(newValue.costProperty(), new NumberStringConverter());
             }
         });
-//        mainWindow.getTaskTreeTableView().getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<ITask>>() {
-//            @Override
-//            public void changed(ObservableValue<? extends TreeItem<ITask>> observable, TreeItem<ITask> oldValue, TreeItem<ITask> newValue) {
-//                task.setValue(newValue.getValue());
-//                if (task != null) {
-//                    propertiesPane.setDisable(false);
-//                    nameField.textProperty().bindBidirectional(task.getValue().nameProperty());
-//                    startDatePicker.valueProperty().bindBidirectional(task.getValue().startDateProperty());
-//                    finishDatePicker.valueProperty().bindBidirectional(task.getValue().finishDateProperty());
-//                    donePercentSlider.valueProperty().bindBidirectional(task.getValue().donePercentProperty());
-//                    priorityTypeComboBox.valueProperty().bindBidirectional(task.getValue().priorityTypeProperty());
-//                    costField.textProperty().bindBidirectional(task.getValue().costProperty(), new NumberStringConverter());
-//                } else {
-//                    propertiesPane.setDisable(true);
-//                }
-//            }
-//        });
+
         if (task != null) {
             nameField.textProperty().bindBidirectional(task.getValue().nameProperty());
             startDatePicker.valueProperty().bindBidirectional(task.getValue().startDateProperty());

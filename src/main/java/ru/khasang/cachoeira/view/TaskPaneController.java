@@ -1,13 +1,13 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
@@ -44,17 +44,23 @@ public class TaskPaneController {
     private TreeTableColumn<ITask, Double> costColumn; //столбец Стоимость
 
     private GanttChart taskGanttChart;
-    private UIControl UIControl;
+    private UIControl uiControl;
     private IController controller;
-    private TreeItem<ITask> rootTask = new TreeItem<>(new Task());  //todo исправить new Task на контроллер
+    private TreeItem<ITask> rootTask = new TreeItem<>(new Task());
 
     public TaskPaneController() {
-        taskGanttChart = new GanttChart(controller, UIControl, 70);
-        taskSplitPane.getItems().add(taskGanttChart);
-        taskSplitPane.setDividerPosition(0, 0.3);
+    }
 
+    public void initTaskTable() {
         taskTreeTableView.setRoot(rootTask); //вешаем корневой TreeItem в TreeTableView. Он в fxml стоит как невидимый (<TreeTableView fx:id="taskTreeTableView" showRoot="false">).
         rootTask.setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
+        taskTreeTableView.setRowFactory(new TaskTreeTableViewRowFactory(this, controller));
+        taskTreeTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<ITask>>() {
+            @Override
+            public void changed(ObservableValue<? extends TreeItem<ITask>> observable, TreeItem<ITask> oldValue, TreeItem<ITask> newValue) {
+                controller.selectedTaskProperty().setValue(newValue.getValue());
+            }
+        });
         controller.getProject().getTaskList().addListener(new ListChangeListener<ITask>() {
             @Override
             public void onChanged(Change<? extends ITask> c) {
@@ -77,7 +83,56 @@ public class TaskPaneController {
                 }
             }
         });
+    }
 
+    public void initGanttChart() {
+
+        taskGanttChart = new GanttChart(controller, uiControl, 70);
+        taskSplitPane.getItems().add(taskGanttChart);
+        taskSplitPane.setDividerPosition(0, 0.3);
+    }
+
+    public void initContextMenus() {
+        //my ContextMenuColumn
+        // contextMenuColumn for Task
+        ContextMenuColumn contextMenuColumnTask = new ContextMenuColumn(taskTreeTableView);
+        contextMenuColumnTask.setOnShowing(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                contextMenuColumnTask.updateContextMenuColumnTTV(taskTreeTableView);
+            }
+        });
+        for (int i = 0; i < taskTreeTableView.getColumns().size(); i++) {
+            taskTreeTableView.getColumns().get(i).setContextMenu(contextMenuColumnTask);
+        }
+
+        //контекстные меню в списках задач и ресурсов
+        //контекстное меню на пустом месте таблицы
+        ContextMenu taskTableMenu = new ContextMenu();
+        MenuItem addNewTask = new MenuItem("Новая задача");
+        addNewTask.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                uiControl.launchNewTaskWindow();
+            }
+        });
+        taskTableMenu.getItems().addAll(addNewTask);   //заполняем меню
+        taskTreeTableView.setContextMenu(taskTableMenu);
+    }
+
+    private void refreshTaskTreeTableView() {
+        rootTask.getChildren().clear();
+        controller.getProject().getTaskList().stream().forEach(new Consumer<ITask>() {
+            @Override
+            public void accept(ITask iTask) {
+                rootTask.getChildren().add(new TreeItem<>(iTask));
+            }
+        });
+    }
+
+    @FXML
+    private void initialize() {
+        /** Заполняем столбцы **/
         taskNameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());              //столбец задач Наименование
         startDateColumn.setCellValueFactory(param -> param.getValue().getValue().startDateProperty());      //Дата начала
         startDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
@@ -111,44 +166,6 @@ public class TaskPaneController {
         donePercentColumn.setCellValueFactory(param -> param.getValue().getValue().donePercentProperty().asObject());
         priorityColumn.setCellValueFactory(param -> param.getValue().getValue().priorityTypeProperty());
         costColumn.setCellValueFactory(param -> param.getValue().getValue().costProperty().asObject());
-
-        //my ContextMenuColumn
-        // contextMenuColumn for Task
-        ContextMenuColumn contextMenuColumnTask = new ContextMenuColumn(taskTreeTableView);
-        contextMenuColumnTask.setOnShowing(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                contextMenuColumnTask.updateContextMenuColumnTTV(taskTreeTableView);
-            }
-        });
-        for (int i = 0; i < taskTreeTableView.getColumns().size(); i++) {
-            taskTreeTableView.getColumns().get(i).setContextMenu(contextMenuColumnTask);
-        }
-
-        //контекстные меню в списках задач и ресурсов
-        //контекстное меню на пустом месте таблицы
-        ContextMenu taskTableMenu = new ContextMenu();
-        MenuItem addNewTask = new MenuItem("Новая задача");
-        addNewTask.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-//                openNewTaskWindow();
-            }
-        });
-        taskTableMenu.getItems().addAll(addNewTask);   //заполняем меню
-        taskTreeTableView.setContextMenu(taskTableMenu);
-
-        taskTreeTableView.setRowFactory(new TaskTreeTableViewRowFactory(this, controller));
-    }
-
-    private void refreshTaskTreeTableView() {
-        rootTask.getChildren().clear();
-        controller.getProject().getTaskList().stream().forEach(new Consumer<ITask>() {
-            @Override
-            public void accept(ITask iTask) {
-                rootTask.getChildren().add(new TreeItem<>(iTask));
-            }
-        });
     }
 
     @FXML
@@ -159,5 +176,13 @@ public class TaskPaneController {
 
     public TreeTableView<ITask> getTaskTreeTableView() {
         return taskTreeTableView;
+    }
+
+    public void setUIControl(UIControl uiControl) {
+        this.uiControl = uiControl;
+    }
+
+    public void setController(IController controller) {
+        this.controller = controller;
     }
 }

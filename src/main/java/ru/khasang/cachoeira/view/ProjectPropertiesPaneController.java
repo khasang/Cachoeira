@@ -1,10 +1,7 @@
 package ru.khasang.cachoeira.view;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.DateCell;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.IController;
 
@@ -14,6 +11,15 @@ import java.time.LocalDate;
  * Created by truesik on 24.11.2015.
  */
 public class ProjectPropertiesPaneController {
+    @FXML
+    private Label nameLabel;
+    @FXML
+    private Label startDateLabel;
+    @FXML
+    private Label finishDateLabel;
+    @FXML
+    private Label descriptionLabel;
+
     //Информация
     @FXML
     private TextField nameField;
@@ -31,6 +37,11 @@ public class ProjectPropertiesPaneController {
 
     @FXML
     private void initialize() {
+        nameLabel.setLabelFor(nameField);
+        startDateLabel.setLabelFor(startDatePicker);
+        finishDateLabel.setLabelFor(finishDatePicker);
+        descriptionLabel.setLabelFor(descriptionTextArea);
+
         finishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
             @Override
             public DateCell call(DatePicker param) {

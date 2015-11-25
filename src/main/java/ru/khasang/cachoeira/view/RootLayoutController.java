@@ -63,4 +63,8 @@ public class RootLayoutController {
         }
         //}
     }
+
+    public void setController(IController controller) {
+        this.controller = controller;
+    }
 }
