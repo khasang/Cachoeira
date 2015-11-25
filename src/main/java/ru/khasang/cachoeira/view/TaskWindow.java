@@ -159,8 +159,8 @@ public class TaskWindow implements IWindow {
             resourceList = FXCollections.observableArrayList(controller.getSelectedTask().getResourceList()); //todo пришлось сделалть дополнительный список в который сбрасываются ресурсы с нажатым чекбоксом, т.к. я не понял как вытащить инфу из таблицы
 
             taskNameField.setText(controller.getSelectedTask().getName());
-            taskStartDatePicker.setValue(controller.getSelectedTask().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-            taskFinishDatePicker.setValue(controller.getSelectedTask().getFinishDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            taskStartDatePicker.setValue(controller.getSelectedTask().getStartDate());
+            taskFinishDatePicker.setValue(controller.getSelectedTask().getFinishDate());
             //добавляю:
             taskCostField.setText(String.valueOf(controller.getSelectedTask().getCost()));
             taskDonePercentSlider.setValue(controller.getSelectedTask().getDonePercent());
@@ -249,9 +249,9 @@ public class TaskWindow implements IWindow {
 
         //добавил:
         if (isNewTask) {
-            controller.handleAddTask(taskNameField.getText(), taskStartDate, taskFinishDate, Double.valueOf(taskCostField.getText()), taskDonePercentSlider.getValue(), taskPriorityComboBox.getSelectionModel().getSelectedItem(), resourceList);
+            controller.handleAddTask(taskNameField.getText(), taskStartDatePicker.getValue(), taskFinishDatePicker.getValue(), Double.valueOf(taskCostField.getText()), taskDonePercentSlider.getValue(), taskPriorityComboBox.getSelectionModel().getSelectedItem(), resourceList);
         } else {
-            controller.handleChangeTask(taskNameField.getText(), taskStartDate, taskFinishDate, Double.valueOf(taskCostField.getText()), taskDonePercentSlider.getValue(), taskPriorityComboBox.getSelectionModel().getSelectedItem(), resourceList);
+            controller.handleChangeTask(taskNameField.getText(), taskStartDatePicker.getValue(), taskFinishDatePicker.getValue(), Double.valueOf(taskCostField.getText()), taskDonePercentSlider.getValue(), taskPriorityComboBox.getSelectionModel().getSelectedItem(), resourceList);
         }
         stage.close();
     }
