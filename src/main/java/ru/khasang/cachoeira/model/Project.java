@@ -14,10 +14,10 @@ import java.util.Date;
  */
 public class Project implements IProject {
 
-    private StringProperty name = new SimpleStringProperty();
-    private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>();
-    private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>();
-    private StringProperty description = new SimpleStringProperty();
+    private StringProperty name = new SimpleStringProperty(this, "name");
+    private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
+    private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
+    private StringProperty description = new SimpleStringProperty(this, "description");
     private ObservableList<ITask> tasks = FXCollections.observableArrayList(new Callback<ITask, Observable[]>() {
         @Override
         public Observable[] call(ITask param) {

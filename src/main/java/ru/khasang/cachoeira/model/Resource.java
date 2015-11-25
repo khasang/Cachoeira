@@ -9,9 +9,9 @@ import javafx.beans.property.StringProperty;
  * Created by truesik on 22.10.2015.
  */
 public class Resource implements IResource {
-    private StringProperty name = new SimpleStringProperty();
-    private ObjectProperty<ResourceType> type = new SimpleObjectProperty<>();
-    private StringProperty email = new SimpleStringProperty();
+    private StringProperty name = new SimpleStringProperty(this, "name");
+    private ObjectProperty<ResourceType> type = new SimpleObjectProperty<>(this, "type");
+    private StringProperty email = new SimpleStringProperty(this, "email");
 
     @Override
     public final String getName() {
