@@ -1,5 +1,7 @@
 package ru.khasang.cachoeira.controller;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.input.DataFormat;
 import ru.khasang.cachoeira.model.*;
@@ -16,7 +18,9 @@ public class Controller implements IController {
     private static final DataFormat SERIALIZED_MIME_TYPE = new DataFormat("application/x-java-serialized-object");
     private IProject project;
     private ITask task;
+    private ObjectProperty<ITask> selectedTask = new SimpleObjectProperty<>(this, "selectedTask");
     private IResource resource;
+    private ObjectProperty<IResource> selectedResource = new SimpleObjectProperty<>(this, "selectedResource");
     private List<IProject> projectList = new ArrayList<>(); //по архитектуре не понял где у нас должен храниться список проектов, поэтому пускай пока будет здесь
 
     @Override
@@ -176,5 +180,13 @@ public class Controller implements IController {
 
     public static DataFormat getSerializedMimeType() {
         return SERIALIZED_MIME_TYPE;
+    }
+
+    public ObjectProperty<ITask> selectedTaskProperty() {
+        return selectedTask;
+    }
+
+    public ObjectProperty<IResource> selectedResourceProperty() {
+        return selectedResource;
     }
 }

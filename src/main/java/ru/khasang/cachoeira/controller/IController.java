@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.controller;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import ru.khasang.cachoeira.model.*;
 
@@ -54,4 +55,8 @@ public interface IController {
     void notifyAddProject(String projectName, LocalDate startDate, LocalDate finishDate, String description);
 
     void setProject(IProject project);
+
+    ObjectProperty<ITask> selectedTaskProperty();
+
+    ObjectProperty<IResource> selectedResourceProperty();
 }
