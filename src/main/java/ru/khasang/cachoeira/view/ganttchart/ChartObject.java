@@ -15,6 +15,8 @@ import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
 
+import java.time.temporal.ChronoUnit;
+
 /**
  * Created by truesik on 04.11.2015.
  */
@@ -41,12 +43,15 @@ public class ChartObject extends HBox {
         setMinHeight(24);
         setAlignment(Pos.CENTER);
 
-
-        double startDay = ((task.getStartDate().getTime() - controller.getProject().getStartDate().getTime()) / (24 * 60 * 60 * 1000)) * columnWidth; //координата Х (дата начала задачи минус дата начала проекта получаем разницу в днях и умножаем ее на длину дня в пикселях(MULTIPLIER)
+//        double startDay = ((task.getStartDate().getTime() - controller.getProject().getStartDate().getTime()) / (24 * 60 * 60 * 1000)) * columnWidth; //координата Х (дата начала задачи минус дата начала проекта получаем разницу в днях и умножаем ее на длину дня в пикселях(MULTIPLIER)
+        double startDay = (ChronoUnit.DAYS.between(task.getStartDate(), controller.getProject().getStartDate())) * columnWidth;
+        System.out.println(startDay);
         setLayoutX(startDay - 2); //"2" - подгонка под сетку
         setLayoutY(rowIndex * rowHeight);
 
-        double taskWidth = ((task.getFinishDate().getTime() - task.getStartDate().getTime()) / (24 * 60 * 60 * 1000)) * columnWidth; // длина прямоугольника (разница между
+//        double taskWidth = ((task.getFinishDate().getTime() - task.getStartDate().getTime()) / (24 * 60 * 60 * 1000)) * columnWidth; // длина прямоугольника (разница между
+        double taskWidth = (ChronoUnit.DAYS.between(task.getStartDate(), task.getFinishDate()) * columnWidth);
+        System.out.println(taskWidth);
 
         bar = new Rectangle(0, 0, taskWidth, TASK_HEIGHT); //создаем прямоугольник
         bar.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника

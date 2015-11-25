@@ -25,8 +25,8 @@ public class DateLine extends HBox {
 
         setMaxHeight(24);
         setMinHeight(24);
-        startDate = controller.getProject().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        finishDate = controller.getProject().getFinishDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        startDate = controller.getProject().getStartDate();
+        finishDate = controller.getProject().getFinishDate();
 
         between = ChronoUnit.DAYS.between(startDate, finishDate); //находим разницу между начальной и конечной датой проекта
 //        setAlignment(Pos.CENTER);
