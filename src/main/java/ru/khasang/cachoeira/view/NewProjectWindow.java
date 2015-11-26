@@ -69,6 +69,14 @@ public class NewProjectWindow implements IWindow {
         newProjectNameField.setText("Новый проект"); //дефолтовое название проекта
         newProjectStartDatePicker.setValue(LocalDate.now()); //по дефолту сегодняшняя дата
         newProjectFinishDatePicker.setValue(newProjectStartDatePicker.getValue().plusDays(1));
+        /** Конечная дата всегда после начальной **/
+        newProjectStartDatePicker.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            if (newValue.isEqual(newProjectFinishDatePicker.getValue()) || newValue.isAfter(newProjectFinishDatePicker.getValue())) {
+                newProjectFinishDatePicker.setValue(newValue.plusDays(1));
+            }
+        }
+        ));
+
         newProjectFinishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
             @Override
             public DateCell call(DatePicker param) {
