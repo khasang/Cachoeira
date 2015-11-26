@@ -13,9 +13,9 @@
                   <TextField fx:id="nameField" GridPane.columnIndex="1" />
                   <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <ComboBox fx:id="resourceTypeComboBox" prefWidth="165.0" promptText="Выберите тип" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <Label fx:id="nameLabel" text="Наименование:" />
-                  <Label fx:id="emailLabel" text="Электронная почта:" GridPane.rowIndex="1" />
-                  <Label fx:id="resourceTypeLabel" text="Тип:" GridPane.rowIndex="2" />
+                  <Label text="Наименование:" />
+                  <Label text="Электронная почта:" GridPane.rowIndex="1" />
+                  <Label text="Тип:" GridPane.rowIndex="2" />
                </children>
                <columnConstraints>
                   <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="222.0" minWidth="10.0" prefWidth="109.0" />

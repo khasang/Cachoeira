@@ -11,13 +11,13 @@
          <content>
             <GridPane hgap="10.0" prefHeight="297.0" vgap="10.0">
                <children>
-                  <Label fx:id="nameLabel" text="Имя проекта:" />
+                  <Label text="Имя проекта:" />
                   <TextField fx:id="nameField" GridPane.columnIndex="1" />
-                  <Label fx:id="startDateLabel" text="Дата начала:" GridPane.rowIndex="1" />
-                  <Label fx:id="finishDateLabel" text="Дата окончания:" GridPane.rowIndex="2" />
+                  <Label text="Дата начала:" GridPane.rowIndex="1" />
+                  <Label text="Дата окончания:" GridPane.rowIndex="2" />
                   <DatePicker fx:id="startDatePicker" prefWidth="334.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                   <DatePicker fx:id="finishDatePicker" prefWidth="336.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-                  <Label fx:id="descriptionLabel" text="Описание:" GridPane.rowIndex="3" />
+                  <Label text="Описание:" GridPane.rowIndex="3" />
                   <TextArea fx:id="descriptionTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                      <GridPane.margin>
                         <Insets bottom="10.0" />
