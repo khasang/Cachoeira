@@ -11,7 +11,6 @@ import java.io.IOException;
 /**
  * Created by truesik on 25.11.2015.
  */
-//Здесь
 public class DiagramPaneController {
     @FXML
     private Tab taskTab;
@@ -19,13 +18,11 @@ public class DiagramPaneController {
     private Tab resourceTab;
 
     private IController controller;
-    private UIControl uiControl;
 
     public DiagramPaneController() {
-//        initResourcePane();
-//        initTaskPane();
     }
 
+    /** Метод для инициализации панели с таблицей и диаграммой Ганта ресурсов**/
     public void initResourcePane() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ResourcePane.fxml"));
@@ -34,7 +31,6 @@ public class DiagramPaneController {
 
             ResourcePaneController resourcePaneController = loader.getController();
             resourcePaneController.setController(controller);
-            resourcePaneController.setUIControl(uiControl);
             resourcePaneController.initResourceTable();
             resourcePaneController.initContextMenus();
             resourcePaneController.initGanttChart();
@@ -43,6 +39,7 @@ public class DiagramPaneController {
         }
     }
 
+    /** Метод для инициализации панели с таблицей и диаграммой Ганта задач**/
     public void initTaskPane() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TaskPane.fxml"));
@@ -51,7 +48,6 @@ public class DiagramPaneController {
 
             TaskPaneController taskPaneController = loader.getController();
             taskPaneController.setController(controller);
-            taskPaneController.setUIControl(uiControl);
             taskPaneController.initTaskTable();
             taskPaneController.initContextMenus();
             taskPaneController.initGanttChart();
@@ -62,9 +58,5 @@ public class DiagramPaneController {
 
     public void setController(IController controller) {
         this.controller = controller;
-    }
-
-    public void setUIControl(UIControl uiControl) {
-        this.uiControl = uiControl;
     }
 }

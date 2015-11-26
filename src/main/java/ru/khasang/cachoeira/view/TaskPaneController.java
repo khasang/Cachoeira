@@ -1,14 +1,10 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.stage.WindowEvent;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
@@ -18,7 +14,6 @@ import ru.khasang.cachoeira.view.rowfactories.TaskTreeTableViewRowFactory;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 /**
  * Created by truesik on 25.11.2015.
@@ -44,7 +39,6 @@ public class TaskPaneController {
     private TreeTableColumn<ITask, Double> costColumn; //столбец Стоимость
 
     private GanttChart taskGanttChart;
-    private UIControl uiControl;
     private IController controller;
     private TreeItem<ITask> rootTask = new TreeItem<>(new Task());
 
@@ -55,39 +49,34 @@ public class TaskPaneController {
         taskTreeTableView.setRoot(rootTask); //вешаем корневой TreeItem в TreeTableView. Он в fxml стоит как невидимый (<TreeTableView fx:id="taskTreeTableView" showRoot="false">).
         rootTask.setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
         taskTreeTableView.setRowFactory(new TaskTreeTableViewRowFactory(this, controller));
-        taskTreeTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<ITask>>() {
-            @Override
-            public void changed(ObservableValue<? extends TreeItem<ITask>> observable, TreeItem<ITask> oldValue, TreeItem<ITask> newValue) {
+        taskTreeTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
                 controller.selectedTaskProperty().setValue(newValue.getValue());
             }
         });
-        controller.getProject().getTaskList().addListener(new ListChangeListener<ITask>() {
-            @Override
-            public void onChanged(Change<? extends ITask> c) {
-                taskGanttChart.getObjectsLayer().refreshTaskDiagram();
-                while (c.next()) {
-                    if (c.wasAdded()) {
-                        System.out.println("Main Window Task Added!");
-                        refreshTaskTreeTableView();
-                    }
-                    if (c.wasRemoved()) {
-                        System.out.println("Main Window Task Removed");
-                        refreshTaskTreeTableView();
-                    }
-                    if (c.wasReplaced()) {
-                        System.out.println("Main Window Task Replaced");
-                    }
-                    if (c.wasUpdated()) {
-                        System.out.println("Main Window Task Updated");
-                    }
+        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
+            taskGanttChart.getObjectsLayer().refreshTaskDiagram();
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    System.out.println("Main Window Task Added!");
+                    refreshTaskTreeTableView();
+                }
+                if (c.wasRemoved()) {
+                    System.out.println("Main Window Task Removed");
+                    refreshTaskTreeTableView();
+                }
+                if (c.wasReplaced()) {
+                    System.out.println("Main Window Task Replaced");
+                }
+                if (c.wasUpdated()) {
+                    System.out.println("Main Window Task Updated");
                 }
             }
         });
     }
 
     public void initGanttChart() {
-
-        taskGanttChart = new GanttChart(controller, uiControl, 70);
+        taskGanttChart = new GanttChart(controller, 70);
         taskSplitPane.getItems().add(taskGanttChart);
         taskSplitPane.setDividerPosition(0, 0.3);
     }
@@ -96,12 +85,7 @@ public class TaskPaneController {
         //my ContextMenuColumn
         // contextMenuColumn for Task
         ContextMenuColumn contextMenuColumnTask = new ContextMenuColumn(taskTreeTableView);
-        contextMenuColumnTask.setOnShowing(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                contextMenuColumnTask.updateContextMenuColumnTTV(taskTreeTableView);
-            }
-        });
+        contextMenuColumnTask.setOnShowing(event -> contextMenuColumnTask.updateContextMenuColumnTTV(taskTreeTableView));
         for (int i = 0; i < taskTreeTableView.getColumns().size(); i++) {
             taskTreeTableView.getColumns().get(i).setContextMenu(contextMenuColumnTask);
         }
@@ -110,11 +94,8 @@ public class TaskPaneController {
         //контекстное меню на пустом месте таблицы
         ContextMenu taskTableMenu = new ContextMenu();
         MenuItem addNewTask = new MenuItem("Новая задача");
-        addNewTask.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                uiControl.launchNewTaskWindow();
-            }
+        addNewTask.setOnAction(event -> {
+            controller.handleAddTask(new Task());
         });
         taskTableMenu.getItems().addAll(addNewTask);   //заполняем меню
         taskTreeTableView.setContextMenu(taskTableMenu);
@@ -122,12 +103,8 @@ public class TaskPaneController {
 
     private void refreshTaskTreeTableView() {
         rootTask.getChildren().clear();
-        controller.getProject().getTaskList().stream().forEach(new Consumer<ITask>() {
-            @Override
-            public void accept(ITask iTask) {
-                rootTask.getChildren().add(new TreeItem<>(iTask));
-            }
-        });
+        controller.getProject().getTaskList().stream().forEach(iTask -> rootTask.getChildren().add(new TreeItem<>(iTask)));
+        taskTreeTableView.getSelectionModel().selectLast(); // TODO: 26.11.2015 Не робит
     }
 
     @FXML
@@ -170,16 +147,11 @@ public class TaskPaneController {
 
     @FXML
     private void addNewTaskHandle(ActionEvent actionEvent) {
-        //открытие окошка добавления новой задачи с помощью кнопки +
-//        openNewTaskWindow();
+        controller.handleAddTask(new Task());
     }
 
     public TreeTableView<ITask> getTaskTreeTableView() {
         return taskTreeTableView;
-    }
-
-    public void setUIControl(UIControl uiControl) {
-        this.uiControl = uiControl;
     }
 
     public void setController(IController controller) {

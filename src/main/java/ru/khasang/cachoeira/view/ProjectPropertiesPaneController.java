@@ -1,5 +1,7 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -11,15 +13,6 @@ import java.time.LocalDate;
  * Created by truesik on 24.11.2015.
  */
 public class ProjectPropertiesPaneController {
-    @FXML
-    private Label nameLabel;
-    @FXML
-    private Label startDateLabel;
-    @FXML
-    private Label finishDateLabel;
-    @FXML
-    private Label descriptionLabel;
-
     //Информация
     @FXML
     private TextField nameField;
@@ -35,12 +28,20 @@ public class ProjectPropertiesPaneController {
     public ProjectPropertiesPaneController() {
     }
 
-    @FXML
-    private void initialize() {
-        nameLabel.setLabelFor(nameField);
-        startDateLabel.setLabelFor(startDatePicker);
-        finishDateLabel.setLabelFor(finishDatePicker);
-        descriptionLabel.setLabelFor(descriptionTextArea);
+    /** инциализировать initFields() только после setController() **/
+    public void initFields() {
+        /** Привязываем поля свойств к модели **/
+        nameField.textProperty().bindBidirectional(controller.getProject().nameProperty());
+        startDatePicker.valueProperty().bindBidirectional(controller.getProject().startDateProperty());
+        finishDatePicker.valueProperty().bindBidirectional(controller.getProject().finishDateProperty());
+        descriptionTextArea.textProperty().bindBidirectional(controller.getProject().descriptionProperty());
+
+        /** Конечная дата всегда после начальной **/
+        startDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEqual(finishDatePicker.getValue()) || newValue.isAfter(finishDatePicker.getValue())) {
+                finishDatePicker.setValue(newValue.plusDays(1));
+            }
+        });
 
         finishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
             @Override
@@ -56,17 +57,6 @@ public class ProjectPropertiesPaneController {
                 };
             }
         });
-    }
-
-    public void initFields() {
-        nameField.textProperty().bindBidirectional(controller.getProject().nameProperty());
-        startDatePicker.valueProperty().bindBidirectional(controller.getProject().startDateProperty());
-        finishDatePicker.valueProperty().bindBidirectional(controller.getProject().finishDateProperty());
-        descriptionTextArea.textProperty().bindBidirectional(controller.getProject().descriptionProperty());
-    }
-
-    public IController getController() {
-        return controller;
     }
 
     public void setController(IController controller) {

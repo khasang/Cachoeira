@@ -39,6 +39,7 @@ public class PropertiesPanelController {
             ResourcePropertiesPaneController resourcePropertiesPaneController = loader.getController();
             resourcePropertiesPaneController.setController(controller);
             resourcePropertiesPaneController.initFields();
+            resourcePropertiesPaneController.initTaskTable();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,6 +54,7 @@ public class PropertiesPanelController {
             TaskPropertiesPaneController taskPropertiesPaneController = loader.getController();
             taskPropertiesPaneController.setController(controller);
             taskPropertiesPaneController.initFields();
+            taskPropertiesPaneController.initResourceTable();
         } catch (IOException e) {
             e.printStackTrace();
         }
