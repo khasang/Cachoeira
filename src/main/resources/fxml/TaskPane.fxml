@@ -8,7 +8,7 @@
    <children>
       <SplitPane fx:id="taskSplitPane" VBox.vgrow="ALWAYS">
          <items>
-            <TreeTableView fx:id="taskTreeTableView" showRoot="false" tableMenuButtonVisible="true">
+            <TreeTableView fx:id="taskTreeTableView" showRoot="false">
                <columnResizePolicy>
                   <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>

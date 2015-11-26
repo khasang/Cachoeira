@@ -8,7 +8,7 @@
    <children>
       <SplitPane fx:id="resourceSplitPane" VBox.vgrow="ALWAYS">
          <items>
-            <TableView fx:id="resourceTableView" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
+            <TableView fx:id="resourceTableView" VBox.vgrow="ALWAYS">
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
