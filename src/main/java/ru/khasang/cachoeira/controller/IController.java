@@ -19,7 +19,7 @@ public interface IController {
 
     void notifyChangeProject(IProject project);
     //добавил:
-    void handleAddTask(String nameOfTask, LocalDate startDate, LocalDate finishDate, Double cost, double donePercent, PriorityType priorityType, ObservableList<IResource> resources);
+    void handleAddTask(ITask task);
 
     void notifyAddTask(ITask task);
 
@@ -36,7 +36,7 @@ public interface IController {
 
     void setSelectedTask(ITask task);
 
-    void handleAddResource(String resourceName, String email, ResourceType type, List<ITask> tasks);
+    void handleAddResource(IResource resource);
 
     void notifyAddResource(IResource resource);
 

@@ -45,15 +45,7 @@ public class Controller implements IController {
 
     //добавил:
     @Override
-    public void handleAddTask(String nameOfTask, LocalDate startDate, LocalDate finishDate, Double cost, double donePercent, PriorityType priority, ObservableList<IResource> resources) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
-        task = new Task();
-        task.setName(nameOfTask);
-        task.setStartDate(startDate);
-        task.setFinishDate(finishDate);
-        task.setDonePercent((int) donePercent);
-        task.setCost(cost);
-        task.setPriorityType(priority);
-        task.setResourceList(resources);
+    public void handleAddTask(ITask task) {
         project.getTaskList().add(task);
     }
 
@@ -98,15 +90,8 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleAddResource(String resourceName, String email, ResourceType type, List<ITask> tasks) {
-        resource = new Resource();
-        resource.setName(resourceName);
-        resource.setEmail(email);
-        resource.setType(type);
+    public void handleAddResource(IResource resource) {
         project.getResourceList().add(resource);
-        for (ITask t : tasks) {
-            t.addResource(resource); //присваиваем этот ресурс задаче из списка tasks
-        }
     }
 
     @Override
