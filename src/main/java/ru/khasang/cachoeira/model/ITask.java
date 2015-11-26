@@ -4,12 +4,17 @@ import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * Created by Raenar on 07.10.2015.
  */
 public interface ITask {
+    int getId();
+
+    ReadOnlyIntegerProperty idProperty();
+
+    void setId(int id);
+
     String getName();
 
     void setName(String name);

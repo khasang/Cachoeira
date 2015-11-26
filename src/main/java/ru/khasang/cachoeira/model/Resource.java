@@ -1,17 +1,41 @@
 package ru.khasang.cachoeira.model;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by truesik on 22.10.2015.
  */
 public class Resource implements IResource {
+    private final ReadOnlyIntegerWrapper id = new ReadOnlyIntegerWrapper(this, "id", resourceSequence.incrementAndGet());
     private StringProperty name = new SimpleStringProperty(this, "name");
     private ObjectProperty<ResourceType> type = new SimpleObjectProperty<>(this, "type");
     private StringProperty email = new SimpleStringProperty(this, "email");
+
+    /** Запоминаем количество задач **/
+    private static AtomicInteger resourceSequence = new AtomicInteger(0);
+
+    /** Конструктор с дефолтовыми значениями **/
+    public Resource() {
+        this.name.setValue("Ресурс " + id.getValue());
+        this.type.setValue(ResourceType.STUFF);
+    }
+
+    @Override
+    public int getId() {
+        return id.get();
+    }
+
+    @Override
+    public ReadOnlyIntegerProperty idProperty() {
+        return id.getReadOnlyProperty();
+    }
+
+    @Override
+    public void setId(int id) {
+        this.id.set(id);
+    }
 
     @Override
     public final String getName() {

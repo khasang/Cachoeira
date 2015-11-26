@@ -7,12 +7,13 @@ import javafx.collections.ObservableList;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Raenar on 07.10.2015.
  */
 public class Task implements ITask {
+    private final ReadOnlyIntegerWrapper id = new ReadOnlyIntegerWrapper(this, "id", taskSequence.getAndIncrement());
     private StringProperty name = new SimpleStringProperty(this, "name");
     private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
     private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
@@ -32,6 +33,32 @@ public class Task implements ITask {
             };
         }
     });
+
+    /** Запоминаем количество задач **/
+    private static AtomicInteger taskSequence = new AtomicInteger(0);
+
+    /** Конструктор с дефолтовыми значениями **/
+    public Task() {
+        this.name.setValue("Задача " + id.getValue());
+        this.startDate.setValue(LocalDate.now());
+        this.finishDate.setValue(startDate.getValue().plusDays(1));
+        this.priorityType.setValue(PriorityType.Normal);
+    }
+
+    @Override
+    public final int getId() {
+        return id.get();
+    }
+
+    @Override
+    public final ReadOnlyIntegerProperty idProperty() {
+        return id.getReadOnlyProperty();
+    }
+
+    @Override
+    public final void setId(int id) {
+        this.id.set(id);
+    }
 
     @Override
     public final String getName() {
