@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by Raenar on 07.10.2015.
  */
 public class Task implements ITask {
-    private final ReadOnlyIntegerWrapper id = new ReadOnlyIntegerWrapper(this, "id", taskSequence.getAndIncrement());
+    private final ReadOnlyIntegerWrapper id = new ReadOnlyIntegerWrapper(this, "id", taskSequence.incrementAndGet());
     private StringProperty name = new SimpleStringProperty(this, "name");
     private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
     private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
@@ -35,7 +35,7 @@ public class Task implements ITask {
     });
 
     /** Запоминаем количество задач **/
-    private static AtomicInteger taskSequence = new AtomicInteger(0);
+    private static AtomicInteger taskSequence = new AtomicInteger(-1); // -1, потому что первым идет рутовый элемент в таблице задач (rootTask)
 
     /** Конструктор с дефолтовыми значениями **/
     public Task() {
