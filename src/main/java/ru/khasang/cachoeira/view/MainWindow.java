@@ -51,7 +51,6 @@ public class MainWindow implements IWindow {
 
             DiagramPaneController diagramPaneController = loader.getController();
             diagramPaneController.setController(controller);
-            diagramPaneController.setUIControl(uiControl);
             diagramPaneController.initTaskPane();
             diagramPaneController.initResourcePane();
         } catch (IOException e) {
