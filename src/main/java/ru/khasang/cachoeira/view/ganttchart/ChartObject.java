@@ -1,19 +1,13 @@
 package ru.khasang.cachoeira.view.ganttchart;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.UIControl;
 
 import java.time.temporal.ChronoUnit;
 
@@ -26,16 +20,14 @@ public class ChartObject extends HBox {
     private static final double rowHeight = 24;
 
     private IController controller;
-    private UIControl uiControl;
 
     private ITask task;
     private double rowIndex;                        //координата Y (строка задачи)
     private int columnWidth;
     private Rectangle bar;
 
-    public ChartObject(IController controller, UIControl uiControl, ITask task, double rowIndex, int columnWidth) {
+    public ChartObject(IController controller, ITask task, double rowIndex, int columnWidth) {
         this.controller = controller;
-        this.uiControl = uiControl;
         this.task = task;
         this.rowIndex = rowIndex;
         this.columnWidth = columnWidth;
@@ -54,17 +46,15 @@ public class ChartObject extends HBox {
         bar.setStroke(Color.valueOf("#B3E5FC"));  //цвет окантовки
         bar.setArcHeight(5);                      //сгругление углов
         bar.setArcWidth(5);                       //сгругление углов
+
         //подсветка при наведении
-        bar.hoverProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    bar.setFill(Color.valueOf("#41C2FA"));
-                    bar.setStroke(Color.valueOf("#72D1FA"));
-                } else {
-                    bar.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
-                    bar.setStroke(Color.valueOf("#B3E5FC"));
-                }
+        bar.hoverProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                bar.setFill(Color.valueOf("#41C2FA"));
+                bar.setStroke(Color.valueOf("#72D1FA"));
+            } else {
+                bar.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
+                bar.setStroke(Color.valueOf("#B3E5FC"));
             }
         });
 
@@ -84,28 +74,15 @@ public class ChartObject extends HBox {
     public void setContextMenu(Rectangle taskShape) {
         Menu setResource = new Menu("Назначить ресурс");
         MenuItem getProperties = new MenuItem("Свойства");
-        getProperties.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                controller.setSelectedTask(task);
-                uiControl.launchPropertiesTaskWindow();
-            }
-        });
+        getProperties.setOnAction(event -> controller.selectedTaskProperty().setValue(task));
         MenuItem removeTask = new MenuItem("Удалить задачу");
 
         ContextMenu contextMenu = new ContextMenu(setResource, getProperties, removeTask);
 
-        taskShape.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.isSecondaryButtonDown()) {
-                    contextMenu.show(ChartObject.this, event.getScreenX(), event.getScreenY());
-                }
+        taskShape.setOnMousePressed(event -> {
+            if (event.isSecondaryButtonDown()) {
+                contextMenu.show(ChartObject.this, event.getScreenX(), event.getScreenY());
             }
         });
-    }
-
-    public ITask getTask() {
-        return task;
     }
 }
