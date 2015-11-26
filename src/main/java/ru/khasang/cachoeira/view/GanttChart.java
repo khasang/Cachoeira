@@ -20,11 +20,11 @@ public class GanttChart extends VBox {
     private DateLine dateLine;          //шкала с датами
     private int columnWidth;                                //ширина колонок
 
-    public GanttChart(IController controller, UIControl uiControl, int columnWidth) {
+    public GanttChart(IController controller, int columnWidth) {
         this.columnWidth = columnWidth;
 
         gridLayer = new GridLayer(columnWidth);
-        objectsLayer = new ObjectsLayer(controller, uiControl, columnWidth);
+        objectsLayer = new ObjectsLayer(controller, columnWidth);
         ScrollPane verticalScrollPane = new ScrollPane(objectsLayer);
         verticalScrollPane.setFitToWidth(true);
         verticalScrollPane.getStylesheets().add(this.getClass().getResource("/css/scrollpane.css").toExternalForm()); //делаем вертикальный скроллпэйн прозрачным
