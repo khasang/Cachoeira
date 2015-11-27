@@ -17,8 +17,6 @@ import ru.khasang.cachoeira.controller.IController;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 
 /**
  * Created by truesik on 11.11.2015.
@@ -28,15 +26,15 @@ public class NewProjectWindow implements IWindow {
     private UIControl UIControl;
 
     @FXML
-    private TextField newProjectNameField;
+    private TextField nameField;
     @FXML
-    private TextField newProjectPathField;
+    private TextField projectPathField;
     @FXML
-    private DatePicker newProjectStartDatePicker;
+    private DatePicker startDatePicker;
     @FXML
-    private DatePicker newProjectFinishDatePicker;
+    private DatePicker finishDatePicker;
     @FXML
-    private TextArea newProjectDescriptionArea;
+    private TextArea descriptionArea;
 
     private Parent root = null;
     private Stage stage;
@@ -66,25 +64,28 @@ public class NewProjectWindow implements IWindow {
         stage.show();
         stage.setTitle("Новый проект");
 
-        newProjectNameField.setText("Новый проект"); //дефолтовое название проекта
-        newProjectStartDatePicker.setValue(LocalDate.now()); //по дефолту сегодняшняя дата
-        newProjectFinishDatePicker.setValue(newProjectStartDatePicker.getValue().plusDays(1));
+        startDatePicker.setEditable(false);
+        finishDatePicker.setEditable(false);
+
+        nameField.setText("Новый проект"); //дефолтовое название проекта
+        startDatePicker.setValue(LocalDate.now()); //по дефолту сегодняшняя дата
+        finishDatePicker.setValue(startDatePicker.getValue().plusDays(1));
         /** Конечная дата всегда после начальной **/
-        newProjectStartDatePicker.valueProperty().addListener(((observable, oldValue, newValue) -> {
-            if (newValue.isEqual(newProjectFinishDatePicker.getValue()) || newValue.isAfter(newProjectFinishDatePicker.getValue())) {
-                newProjectFinishDatePicker.setValue(newValue.plusDays(1));
+        startDatePicker.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            if (newValue.isEqual(finishDatePicker.getValue()) || newValue.isAfter(finishDatePicker.getValue())) {
+                finishDatePicker.setValue(newValue.plusDays(1));
             }
         }
         ));
 
-        newProjectFinishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+        finishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
             @Override
             public DateCell call(DatePicker param) {
                 return new DateCell() {
                     @Override
                     public void updateItem(LocalDate item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (item.isBefore(newProjectStartDatePicker.getValue().plusDays(1))) {
+                        if (item.isBefore(startDatePicker.getValue().plusDays(1))) {
                             setDisable(true);
                         }
                     }
@@ -105,7 +106,7 @@ public class NewProjectWindow implements IWindow {
 
     @FXML
     private void newProjectCreateButtonHandle(ActionEvent actionEvent) {
-        controller.notifyAddProject(newProjectNameField.getText(), newProjectStartDatePicker.getValue(), newProjectFinishDatePicker.getValue(), newProjectDescriptionArea.getText()); //создаем проект
+        controller.notifyAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText()); //создаем проект
         stage.close(); // закрываем это окошко
         UIControl.getStartWindow().getStage().close(); //закрываем стартовое окно
         UIControl.launchMainWindow(); //запускаем главное окно
