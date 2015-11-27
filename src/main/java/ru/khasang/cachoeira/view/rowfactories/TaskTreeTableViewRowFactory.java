@@ -58,16 +58,14 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
             Dragboard db = event.getDragboard();
             if (db.hasContent(Controller.getSerializedMimeType())) {
                 int draggedIndex = (Integer) db.getContent(Controller.getSerializedMimeType());
-                TreeItem<ITask> draggedTask = taskPaneController.getTaskTreeTableView().getRoot().getChildren().remove(draggedIndex);
-                controller.getProject().getTaskList().remove(draggedIndex);
+                ITask draggedTask = controller.getProject().getTaskList().remove(draggedIndex);
                 int dropIndex;
                 if (row.isEmpty()) {
                     dropIndex = taskPaneController.getTaskTreeTableView().getRoot().getChildren().size();
                 } else {
                     dropIndex = row.getIndex();
                 }
-                taskPaneController.getTaskTreeTableView().getRoot().getChildren().add(dropIndex, draggedTask);
-                controller.getProject().getTaskList().add(dropIndex, draggedTask.getValue());
+                controller.getProject().getTaskList().add(dropIndex, draggedTask);
                 event.setDropCompleted(true);
                 taskPaneController.getTaskTreeTableView().getSelectionModel().select(dropIndex);
                 event.consume();
