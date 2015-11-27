@@ -1,6 +1,7 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -45,6 +46,7 @@ public class ResourcePropertiesPaneController {
     }
 
     public void initFields() {
+        /** Заполняем выпадающий список **/
         ObservableList<ResourceType> resourceTypesModel = FXCollections.observableArrayList(ResourceType.values());
         resourceTypeComboBox.setItems(resourceTypesModel);
 
@@ -67,8 +69,11 @@ public class ResourcePropertiesPaneController {
         });
     }
 
+    /**
+     * Заполняем таблицу с привязанными задачами
+     */
     public void initTaskTable() {
-        taskTableView.getItems().addAll(controller.getProject().getTaskList());
+        taskTableView.setItems(controller.getProject().getTaskList());
         taskNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
         taskCheckboxColumn.setCellFactory(new Callback<TableColumn<ITask, Boolean>, TableCell<ITask, Boolean>>() {
             @Override
@@ -95,14 +100,16 @@ public class ResourcePropertiesPaneController {
                             });
 
                             /** Расставляем галочки на нужных строках **/
-                            for (IResource resource : currentRow.getItem().getResourceList()) {
-                                if (controller.selectedResourceProperty().getValue().equals(resource)) {
-                                    checkBox.selectedProperty().setValue(Boolean.TRUE);
-                                    break;
-                                } else {
-                                    checkBox.selectedProperty().setValue(Boolean.FALSE);
+
+                            controller.selectedResourceProperty().addListener((observable, oldValue, newValue) -> {
+                                for (IResource resource : currentRow.getItem().getResourceList()) {
+                                    if (controller.selectedResourceProperty().getValue().equals(resource)) {
+                                        checkBox.selectedProperty().setValue(Boolean.TRUE);
+                                        break;
+                                    }
                                 }
-                            }
+                            });
+
                         }
                     }
                 };

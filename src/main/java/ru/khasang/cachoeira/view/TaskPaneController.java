@@ -1,6 +1,8 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -45,25 +47,98 @@ public class TaskPaneController {
     public TaskPaneController() {
     }
 
+    /**
+     * метод initialize исполняется после загрузки fxml файла
+     */
+    @FXML
+    private void initialize() {
+        /** Привязываем столбцы к полям в модели**/
+        taskNameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());              //столбец задач Наименование
+        startDateColumn.setCellValueFactory(param -> param.getValue().getValue().startDateProperty());      //Дата начала
+        finishDateColumn.setCellValueFactory(param -> param.getValue().getValue().finishDateProperty());    //Дата окончания
+        durationColumn.setCellValueFactory(param -> param.getValue().getValue().durationProperty());
+        donePercentColumn.setCellValueFactory(param -> param.getValue().getValue().donePercentProperty().asObject());
+        priorityColumn.setCellValueFactory(param -> param.getValue().getValue().priorityTypeProperty());
+        costColumn.setCellValueFactory(param -> param.getValue().getValue().costProperty().asObject());
+        /** Меняем формат даты в столбцах **/
+        startDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
+            @Override
+            public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                this.setAlignment(Pos.CENTER);
+                this.setText(null);
+                this.setGraphic(null);
+                if (!empty) {
+                    String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(item);
+                    this.setText(dateFormatter);
+                }
+            }
+        });
+        finishDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
+            @Override
+            public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                this.setAlignment(Pos.CENTER);
+                this.setText(null);
+                this.setGraphic(null);
+                if (!empty) {
+                    String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(item);
+                    this.setText(dateFormatter);
+                }
+            }
+        });
+    }
+
+    @FXML
+    private void addNewTaskHandle(ActionEvent actionEvent) {
+        controller.handleAddTask(new Task());
+    }
+
     public void initTaskTable() {
         taskTreeTableView.setRoot(rootTask); //вешаем корневой TreeItem в TreeTableView. Он в fxml стоит как невидимый (<TreeTableView fx:id="taskTreeTableView" showRoot="false">).
-        rootTask.setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
+        taskTreeTableView.getRoot().setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
         taskTreeTableView.setRowFactory(new TaskTreeTableViewRowFactory(this, controller));
+        /** Следим за выделенным элементом в таблице задач **/
         taskTreeTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 controller.selectedTaskProperty().setValue(newValue.getValue());
             }
         });
-        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
-            taskGanttChart.getObjectsLayer().refreshTaskDiagram();
+        /** Если таблица пуста, присваиваем controller.selectedTaskProperty() null **/
+        taskTreeTableView.getRoot().getChildren().addListener((ListChangeListener<TreeItem<ITask>>) c -> {
             while (c.next()) {
+                if (c.getList().isEmpty()) {
+                    controller.selectedTaskProperty().setValue(null);
+                }
+            }
+        });
+        /** Следим за изменениями в модели задач **/
+        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
+            /** При любых изменениях (added, removed, updated) перерисовываем диаграмму Ганта **/
+            taskGanttChart.getObjectsLayer().refreshTaskDiagram();
+            /** При добавлении или удалении элемента их модели обновлям таблицу задач**/
+            while (c.next()) {
+                /** Добавляем **/
+                for (ITask task : c.getAddedSubList()) {
+                    int indexOfTask = controller.getProject().getTaskList().indexOf(task);
+                    TreeItem<ITask> taskTreeItem = new TreeItem<>(task);
+                    taskTreeTableView.getRoot().getChildren().add(indexOfTask, taskTreeItem); //обязательно нужен инжекс элемента, иначе драгндроп не будет работать
+                    taskTreeTableView.getSelectionModel().select(taskTreeItem);
+                }
+                /** Удаляем **/
+                for (ITask task : c.getRemoved()) {
+                    for (TreeItem<ITask> taskTreeItem : taskTreeTableView.getRoot().getChildren()) {
+                        if (taskTreeItem.getValue().equals(task)) {
+                            taskTreeTableView.getRoot().getChildren().remove(taskTreeItem);
+                            break; //Если убрать - будет ConcurrentModificationException
+                        }
+                    }
+                }
                 if (c.wasAdded()) {
                     System.out.println("Main Window Task Added!");
-                    refreshTaskTreeTableView();
                 }
                 if (c.wasRemoved()) {
                     System.out.println("Main Window Task Removed");
-                    refreshTaskTreeTableView();
                 }
                 if (c.wasReplaced()) {
                     System.out.println("Main Window Task Replaced");
@@ -82,72 +157,19 @@ public class TaskPaneController {
     }
 
     public void initContextMenus() {
-        //my ContextMenuColumn
-        // contextMenuColumn for Task
+        /** Инициализируем контекстное меню для выбора нужных столбцов **/
         ContextMenuColumn contextMenuColumnTask = new ContextMenuColumn(taskTreeTableView);
         contextMenuColumnTask.setOnShowing(event -> contextMenuColumnTask.updateContextMenuColumnTTV(taskTreeTableView));
         for (int i = 0; i < taskTreeTableView.getColumns().size(); i++) {
             taskTreeTableView.getColumns().get(i).setContextMenu(contextMenuColumnTask);
         }
 
-        //контекстные меню в списках задач и ресурсов
-        //контекстное меню на пустом месте таблицы
+        /** Инициализирум контекстное меню для таблицы **/
         ContextMenu taskTableMenu = new ContextMenu();
         MenuItem addNewTask = new MenuItem("Новая задача");
-        addNewTask.setOnAction(event -> {
-            controller.handleAddTask(new Task());
-        });
+        addNewTask.setOnAction(event -> controller.handleAddTask(new Task()));
         taskTableMenu.getItems().addAll(addNewTask);   //заполняем меню
         taskTreeTableView.setContextMenu(taskTableMenu);
-    }
-
-    private void refreshTaskTreeTableView() {
-        rootTask.getChildren().clear();
-        controller.getProject().getTaskList().stream().forEach(iTask -> rootTask.getChildren().add(new TreeItem<>(iTask)));
-        taskTreeTableView.getSelectionModel().selectLast(); // TODO: 26.11.2015 Не робит
-    }
-
-    @FXML
-    private void initialize() {
-        /** Заполняем столбцы **/
-        taskNameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());              //столбец задач Наименование
-        startDateColumn.setCellValueFactory(param -> param.getValue().getValue().startDateProperty());      //Дата начала
-        startDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
-            @Override
-            public void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-                this.setAlignment(Pos.CENTER);
-                this.setText(null);
-                this.setGraphic(null);
-                if (!empty) {
-                    String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(item);
-                    this.setText(dateFormatter);
-                }
-            }
-        });
-        finishDateColumn.setCellValueFactory(param -> param.getValue().getValue().finishDateProperty());    //Дата окончания
-        finishDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
-            @Override
-            public void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-                this.setAlignment(Pos.CENTER);
-                this.setText(null);
-                this.setGraphic(null);
-                if (!empty) {
-                    String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(item);
-                    this.setText(dateFormatter);
-                }
-            }
-        });
-        durationColumn.setCellValueFactory(param -> param.getValue().getValue().durationProperty());
-        donePercentColumn.setCellValueFactory(param -> param.getValue().getValue().donePercentProperty().asObject());
-        priorityColumn.setCellValueFactory(param -> param.getValue().getValue().priorityTypeProperty());
-        costColumn.setCellValueFactory(param -> param.getValue().getValue().costProperty().asObject());
-    }
-
-    @FXML
-    private void addNewTaskHandle(ActionEvent actionEvent) {
-        controller.handleAddTask(new Task());
     }
 
     public TreeTableView<ITask> getTaskTreeTableView() {

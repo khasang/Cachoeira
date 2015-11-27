@@ -31,13 +31,31 @@ public class ResourcePaneController {
     public ResourcePaneController() {
     }
 
+    /**
+     * метод initialize исполняется после загрузки fxml файла
+     */
+    @FXML
+    private void initialize() {
+        /** Привязываем столбцы к полям в модели **/
+        resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
+        resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
+        resourceEmailColumn.setCellValueFactory(param -> param.getValue().emailProperty());                 //Почта
+    }
+
+    @FXML
+    private void addNewResourceHandle(ActionEvent actionEvent) {
+        controller.handleAddResource(new Resource());
+    }
+
     public void initResourceTable() {
         resourceTableView.setItems(controller.getProject().getResourceList());
         resourceTableView.setRowFactory(new ResourceTableViewRowFactory(this, controller)); //вешаем драг и дроп, и контекстное меню
         resourceTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             controller.selectedResourceProperty().setValue(newValue);
         });
+        /** Следим за изменениями в модели задач **/
         controller.getProject().getResourceList().addListener((ListChangeListener<IResource>) c -> {
+            /** При любых изменениях (added, removed, updated) перерисовываем диаграмму Ганта **/
             resourceGanttChart.getObjectsLayer().refreshResourceDiagram();
             while (c.next()) {
                 if (c.wasAdded()) {
@@ -64,29 +82,19 @@ public class ResourcePaneController {
     }
 
     public void initContextMenus() {
+        /** Инициализируем контекстное меню для выбора нужных столбцов **/
         ContextMenuColumn contextMenuColumnResource = new ContextMenuColumn(resourceTableView);
         contextMenuColumnResource.setOnShowing(event -> contextMenuColumnResource.updateContextMenuColumnTV(resourceTableView));
         for (int i = 0; i < resourceTableView.getColumns().size(); i++) {
             resourceTableView.getColumns().get(i).setContextMenu(contextMenuColumnResource);
         }
 
+        /** Инициализирум контекстное меню для таблицы **/
         ContextMenu resourceTableMenu = new ContextMenu();
         MenuItem addNewResource = new MenuItem("Новый ресурс");
         addNewResource.setOnAction(event -> controller.handleAddResource(new Resource()));
         resourceTableMenu.getItems().addAll(addNewResource);   //заполняем меню
         resourceTableView.setContextMenu(resourceTableMenu);
-    }
-
-    @FXML
-    private void initialize() {
-        resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
-        resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
-        resourceEmailColumn.setCellValueFactory(param -> param.getValue().emailProperty());                 //Почта
-    }
-
-    @FXML
-    private void addNewResourceHandle(ActionEvent actionEvent) {
-        controller.handleAddResource(new Resource());
     }
 
     public TableView<IResource> getResourceTableView() {

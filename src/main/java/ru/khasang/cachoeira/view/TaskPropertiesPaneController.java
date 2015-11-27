@@ -50,6 +50,13 @@ public class TaskPropertiesPaneController {
     }
 
     @FXML
+    private void initialize() {
+        /** Запрет на изменение полей с датами с помощью клавиатуры **/
+        startDatePicker.setEditable(false);
+        finishDatePicker.setEditable(false);
+    }
+
+    @FXML
     public void onlyNumber(KeyEvent event) {
         if ((isInteger(event.getText()) || event.getText().equals(".") && (countChar(costField.getText(), '.') < 1)) || (event.getCode() == KeyCode.BACK_SPACE)) {
             costField.setEditable(true);
@@ -153,7 +160,7 @@ public class TaskPropertiesPaneController {
     }
 
     public void initResourceTable() {
-        resourceTableView.getItems().addAll(controller.getProject().getResourceList());
+        resourceTableView.setItems(controller.getProject().getResourceList());
         resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
         resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
             @Override
