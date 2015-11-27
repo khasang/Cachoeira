@@ -1,7 +1,5 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -26,6 +24,13 @@ public class ProjectPropertiesPaneController {
     private IController controller;
 
     public ProjectPropertiesPaneController() {
+    }
+
+    @FXML
+    private void initialize() {
+        /** Запрет на изменение полей с датами с помощью клавиатуры **/
+        startDatePicker.setEditable(false);
+        finishDatePicker.setEditable(false);
     }
 
     /** инциализировать initFields() только после setController() **/
