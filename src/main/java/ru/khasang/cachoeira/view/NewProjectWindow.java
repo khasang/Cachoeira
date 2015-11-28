@@ -5,10 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.DateCell;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -24,7 +21,6 @@ import java.time.LocalDate;
 public class NewProjectWindow implements IWindow {
     private IController controller;
     private UIControl UIControl;
-
     @FXML
     private TextField nameField;
     @FXML
@@ -35,6 +31,8 @@ public class NewProjectWindow implements IWindow {
     private DatePicker finishDatePicker;
     @FXML
     private TextArea descriptionArea;
+    @FXML
+    private Button createNewProjectButton;
 
     private Parent root = null;
     private Stage stage;
@@ -64,19 +62,22 @@ public class NewProjectWindow implements IWindow {
         stage.show();
         stage.setTitle("Новый проект");
 
+        createNewProjectButton.disableProperty().bind(nameField.textProperty().isEmpty()); //рубим нажимательность кнопки, если поле с именем пустует
+
+        nameField.setText("Новый проект"); //дефолтовое название проекта
+
+        /** Отрубаем возможность ввода дат с клавиатуры воизбежание пустого поля */
         startDatePicker.setEditable(false);
         finishDatePicker.setEditable(false);
 
-        nameField.setText("Новый проект"); //дефолтовое название проекта
         startDatePicker.setValue(LocalDate.now()); //по дефолту сегодняшняя дата
-        finishDatePicker.setValue(startDatePicker.getValue().plusDays(1));
-        /** Конечная дата всегда после начальной **/
+        finishDatePicker.setValue(startDatePicker.getValue().plusDays(28));
+        /** Конечная дата всегда после начальной */
         startDatePicker.valueProperty().addListener(((observable, oldValue, newValue) -> {
             if (newValue.isEqual(finishDatePicker.getValue()) || newValue.isAfter(finishDatePicker.getValue())) {
                 finishDatePicker.setValue(newValue.plusDays(1));
             }
-        }
-        ));
+        }));
 
         finishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
             @Override
