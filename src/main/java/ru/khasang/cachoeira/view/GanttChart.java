@@ -18,10 +18,12 @@ public class GanttChart extends VBox {
     private GridLayer gridLayer;        //слой с сеткой
     private ObjectsLayer objectsLayer;  //слой с объектами диаграммы (задачи, группы, ...)
     private DateLine dateLine;          //шкала с датами
-    private int columnWidth;                                //ширина колонок
+    private int columnWidth;            //ширина колонок
+    private UIControl uiControl;
 
-    public GanttChart(IController controller, int columnWidth) {
+    public GanttChart(IController controller, UIControl uiControl, int columnWidth) {
         this.columnWidth = columnWidth;
+        this.uiControl = uiControl;
 
         gridLayer = new GridLayer(columnWidth);
         objectsLayer = new ObjectsLayer(controller, columnWidth);
@@ -42,6 +44,8 @@ public class GanttChart extends VBox {
         VBox.setVgrow(diagramPane, Priority.ALWAYS);
 
         dateLine = new DateLine(controller, columnWidth);
+        dateLine.setUiControl(uiControl);
+        dateLine.initDateLine();
         VBox vBox = new VBox(dateLine, diagramPane);
         VBox.setVgrow(dateLine, Priority.NEVER);
 
