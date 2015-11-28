@@ -1,5 +1,7 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,6 +14,7 @@ import javafx.util.Callback;
 import javafx.util.converter.NumberStringConverter;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
+import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
 
 import java.time.LocalDate;
@@ -49,6 +52,9 @@ public class TaskPropertiesPaneController {
     public TaskPropertiesPaneController() {
     }
 
+    /**
+     * метод initialize исполняется после загрузки fxml файла
+     */
     @FXML
     private void initialize() {
         /** Запрет на изменение полей с датами с помощью клавиатуры **/
@@ -138,6 +144,9 @@ public class TaskPropertiesPaneController {
                         if (item.isBefore(controller.getProject().getStartDate())) {
                             setDisable(true);
                         }
+                        if (item.isEqual(controller.getProject().getFinishDate()) || item.isAfter(controller.getProject().getFinishDate())) {
+                            setDisable(true);
+                        }
                     }
                 };
             }
@@ -153,6 +162,9 @@ public class TaskPropertiesPaneController {
                         if (item.isBefore(startDatePicker.getValue().plusDays(1))) {
                             setDisable(true);
                         }
+                        if (item.isEqual(controller.getProject().getFinishDate()) || item.isAfter(controller.getProject().getFinishDate())) {
+                            setDisable(true);
+                        }
                     }
                 };
             }
@@ -162,42 +174,47 @@ public class TaskPropertiesPaneController {
     public void initResourceTable() {
         resourceTableView.setItems(controller.getProject().getResourceList());
         resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
-        resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
+        controller.selectedTaskProperty().addListener(new ChangeListener<ITask>() {
             @Override
-            public TableCell<IResource, Boolean> call(TableColumn<IResource, Boolean> param) {
-                return new TableCell<IResource, Boolean>() {
+            public void changed(ObservableValue<? extends ITask> observable, ITask oldValue, ITask newValue) {
+                resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
                     @Override
-                    public void updateItem(Boolean item, boolean empty) {
-                        super.updateItem(item, empty);
-                        setAlignment(Pos.CENTER);
-                        TableRow<IResource> currentRow = getTableRow();
-                        if (empty) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                            /** Заполняем столбец чек-боксами **/
-                            CheckBox checkBox = new CheckBox();
-                            setGraphic(checkBox);
-                            checkBox.setOnAction(event -> {
-                                if (checkBox.isSelected()) {
-                                    controller.selectedTaskProperty().getValue().addResource(currentRow.getItem());
+                    public TableCell<IResource, Boolean> call(TableColumn<IResource, Boolean> param) {
+                        return new TableCell<IResource, Boolean>() {
+                            @Override
+                            public void updateItem(Boolean item, boolean empty) {
+                                super.updateItem(item, empty);
+                                setAlignment(Pos.CENTER);
+                                TableRow<IResource> currentRow = getTableRow();
+                                if (empty) {
+                                    setText(null);
+                                    setGraphic(null);
                                 } else {
-                                    controller.selectedTaskProperty().getValue().removeResource(currentRow.getItem());
-                                }
-                            });
+                                    /** Заполняем столбец чек-боксами **/
+                                    CheckBox checkBox = new CheckBox();
+                                    setGraphic(checkBox);
+                                    checkBox.setOnAction(event -> {
+                                        if (checkBox.isSelected()) {
+                                            controller.selectedTaskProperty().getValue().addResource(currentRow.getItem());
+                                        } else {
+                                            controller.selectedTaskProperty().getValue().removeResource(currentRow.getItem());
+                                        }
+                                    });
 
-                            /** Расставляем галочки на нужных строках **/
-                            for (IResource resource : controller.selectedTaskProperty().getValue().getResourceList()) {
-                                if (resource.equals(currentRow.getItem())) {
-                                    checkBox.selectedProperty().setValue(Boolean.TRUE);
-                                    break;
-                                } else {
-                                    checkBox.selectedProperty().setValue(Boolean.FALSE);
+                                    /** Расставляем галочки на нужных строках **/
+                                    for (IResource resource : controller.selectedTaskProperty().getValue().getResourceList()) {
+                                        if (resource.equals(currentRow.getItem())) {
+                                            checkBox.selectedProperty().setValue(Boolean.TRUE);
+                                            break;
+                                        } else {
+                                            checkBox.selectedProperty().setValue(Boolean.FALSE);
+                                        }
+                                    }
                                 }
                             }
-                        }
+                        };
                     }
-                };
+                });
             }
         });
     }
