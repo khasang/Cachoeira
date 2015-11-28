@@ -20,6 +20,7 @@ public class PropertiesPanelController {
     private Tab resourcePropertiesTab;
 
     private IController controller;
+    private UIControl uiControl;
 
     public PropertiesPanelController() {
     }
@@ -76,5 +77,9 @@ public class PropertiesPanelController {
 
     public void setController(IController controller) {
         this.controller = controller;
+    }
+
+    public void setUIControl(UIControl uiControl) {
+        this.uiControl = uiControl;
     }
 }
