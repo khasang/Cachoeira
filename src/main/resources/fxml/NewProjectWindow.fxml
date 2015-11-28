@@ -47,7 +47,7 @@
       </GridPane>
       <HBox alignment="TOP_RIGHT" spacing="10.0">
          <children>
-            <Button defaultButton="true" mnemonicParsing="false" onAction="#newProjectCreateButtonHandle" text="Создать" HBox.hgrow="NEVER" />
+            <Button fx:id="createNewProjectButton" defaultButton="true" mnemonicParsing="false" onAction="#newProjectCreateButtonHandle" text="Создать" HBox.hgrow="NEVER" />
             <Button cancelButton="true" mnemonicParsing="false" onAction="#newProjectCancelButtonHandle" text="Отмена" HBox.hgrow="NEVER" />
          </children>
       </HBox>
