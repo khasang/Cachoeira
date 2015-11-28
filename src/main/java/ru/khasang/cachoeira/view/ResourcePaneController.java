@@ -27,6 +27,7 @@ public class ResourcePaneController {
 
     private GanttChart resourceGanttChart;
     private IController controller;
+    private UIControl uiControl;
 
     public ResourcePaneController() {
     }
@@ -76,7 +77,7 @@ public class ResourcePaneController {
     }
 
     public void initGanttChart() {
-        resourceGanttChart = new GanttChart(controller, 70);
+        resourceGanttChart = new GanttChart(controller, uiControl, 70);
         resourceSplitPane.getItems().add(resourceGanttChart);
         resourceSplitPane.setDividerPosition(0, 0.3);
     }
@@ -103,5 +104,13 @@ public class ResourcePaneController {
 
     public void setController(IController controller) {
         this.controller = controller;
+    }
+
+    public void setUIControl(UIControl uiControl) {
+        this.uiControl = uiControl;
+    }
+
+    public GanttChart getResourceGanttChart() {
+        return resourceGanttChart;
     }
 }

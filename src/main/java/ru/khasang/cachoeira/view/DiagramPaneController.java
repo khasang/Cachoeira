@@ -18,6 +18,9 @@ public class DiagramPaneController {
     private Tab resourceTab;
 
     private IController controller;
+    private UIControl uiControl;
+    private ResourcePaneController resourcePaneController;
+    private TaskPaneController taskPaneController;
 
     public DiagramPaneController() {
     }
@@ -29,8 +32,9 @@ public class DiagramPaneController {
             VBox resourcePane = loader.load();
             resourceTab.setContent(resourcePane);
 
-            ResourcePaneController resourcePaneController = loader.getController();
+            resourcePaneController = loader.getController();
             resourcePaneController.setController(controller);
+            resourcePaneController.setUIControl(uiControl);
             resourcePaneController.initResourceTable();
             resourcePaneController.initContextMenus();
             resourcePaneController.initGanttChart();
@@ -46,8 +50,9 @@ public class DiagramPaneController {
             VBox taskPane = loader.load();
             taskTab.setContent(taskPane);
 
-            TaskPaneController taskPaneController = loader.getController();
+            taskPaneController = loader.getController();
             taskPaneController.setController(controller);
+            taskPaneController.setUIControl(uiControl);
             taskPaneController.initTaskTable();
             taskPaneController.initContextMenus();
             taskPaneController.initGanttChart();
@@ -58,5 +63,17 @@ public class DiagramPaneController {
 
     public void setController(IController controller) {
         this.controller = controller;
+    }
+
+    public void setUIControl(UIControl uiControl) {
+        this.uiControl = uiControl;
+    }
+
+    public ResourcePaneController getResourcePaneController() {
+        return resourcePaneController;
+    }
+
+    public TaskPaneController getTaskPaneController() {
+        return taskPaneController;
     }
 }

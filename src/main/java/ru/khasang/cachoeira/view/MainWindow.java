@@ -17,6 +17,10 @@ public class MainWindow implements IWindow {
     private final UIControl uiControl;
     private Stage stage;
     private BorderPane rootLayout;
+    private PropertiesPanelController propertiesPanelController;
+    private DiagramPaneController diagramPaneController;
+    private RootLayoutController rootLayoutController;
+
 
     public MainWindow(IController controller, UIControl uiControl) {
         this.controller = controller;
@@ -35,8 +39,9 @@ public class MainWindow implements IWindow {
             TabPane propertiesPanel = loader.load();
             rootLayout.setRight(propertiesPanel);
 
-            PropertiesPanelController propertiesPanelController = loader.getController();
+            propertiesPanelController = loader.getController();
             propertiesPanelController.setController(controller);
+            propertiesPanelController.setUIControl(uiControl);
             propertiesPanelController.initTabs();
         } catch (IOException e) {
             e.printStackTrace();
@@ -49,8 +54,9 @@ public class MainWindow implements IWindow {
             TabPane diagramPane = loader.load();
             rootLayout.setCenter(diagramPane);
 
-            DiagramPaneController diagramPaneController = loader.getController();
+            diagramPaneController = loader.getController();
             diagramPaneController.setController(controller);
+            diagramPaneController.setUIControl(uiControl);
             diagramPaneController.initTaskPane();
             diagramPaneController.initResourcePane();
         } catch (IOException e) {
@@ -65,7 +71,7 @@ public class MainWindow implements IWindow {
             stage = new Stage();
             stage.setScene(new Scene(rootLayout));
 
-            RootLayoutController rootLayoutController = loader.getController();
+            rootLayoutController = loader.getController();
             rootLayoutController.setController(controller);
             stage.show();
         } catch (IOException e) {
@@ -75,11 +81,26 @@ public class MainWindow implements IWindow {
 
     @Override
     public void launch() {
-
     }
 
     @Override
     public Stage getStage() {
         return stage;
+    }
+
+    public BorderPane getRootLayout() {
+        return rootLayout;
+    }
+
+    public PropertiesPanelController getPropertiesPanelController() {
+        return propertiesPanelController;
+    }
+
+    public DiagramPaneController getDiagramPaneController() {
+        return diagramPaneController;
+    }
+
+    public RootLayoutController getRootLayoutController() {
+        return rootLayoutController;
     }
 }

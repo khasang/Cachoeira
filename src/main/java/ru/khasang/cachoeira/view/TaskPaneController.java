@@ -1,8 +1,6 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -42,6 +40,7 @@ public class TaskPaneController {
 
     private GanttChart taskGanttChart;
     private IController controller;
+    private UIControl uiControl;
     private TreeItem<ITask> rootTask = new TreeItem<>(new Task());
 
     public TaskPaneController() {
@@ -151,7 +150,7 @@ public class TaskPaneController {
     }
 
     public void initGanttChart() {
-        taskGanttChart = new GanttChart(controller, 70);
+        taskGanttChart = new GanttChart(controller, uiControl, 70);
         taskSplitPane.getItems().add(taskGanttChart);
         taskSplitPane.setDividerPosition(0, 0.3);
     }
@@ -178,5 +177,13 @@ public class TaskPaneController {
 
     public void setController(IController controller) {
         this.controller = controller;
+    }
+
+    public void setUIControl(UIControl uiControl) {
+        this.uiControl = uiControl;
+    }
+
+    public GanttChart getTaskGanttChart() {
+        return taskGanttChart;
     }
 }
