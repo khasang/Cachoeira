@@ -3,6 +3,7 @@ package ru.khasang.cachoeira.view;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -174,47 +175,48 @@ public class TaskPropertiesPaneController {
     public void initResourceTable() {
         resourceTableView.setItems(controller.getProject().getResourceList());
         resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
-        controller.selectedTaskProperty().addListener(new ChangeListener<ITask>() {
-            @Override
-            public void changed(ObservableValue<? extends ITask> observable, ITask oldValue, ITask newValue) {
-                resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
-                    @Override
-                    public TableCell<IResource, Boolean> call(TableColumn<IResource, Boolean> param) {
-                        return new TableCell<IResource, Boolean>() {
-                            @Override
-                            public void updateItem(Boolean item, boolean empty) {
-                                super.updateItem(item, empty);
-                                setAlignment(Pos.CENTER);
-                                TableRow<IResource> currentRow = getTableRow();
-                                if (empty) {
-                                    setText(null);
-                                    setGraphic(null);
-                                } else {
-                                    /** Заполняем столбец чек-боксами **/
-                                    CheckBox checkBox = new CheckBox();
-                                    setGraphic(checkBox);
-                                    checkBox.setOnAction(event -> {
-                                        if (checkBox.isSelected()) {
-                                            controller.selectedTaskProperty().getValue().addResource(currentRow.getItem());
-                                        } else {
-                                            controller.selectedTaskProperty().getValue().removeResource(currentRow.getItem());
-                                        }
-                                    });
+        controller.selectedTaskProperty().addListener((observable, oldValue, newValue) -> {
+            initCheckBoxColumn();
+        });
+    }
 
-                                    /** Расставляем галочки на нужных строках **/
-                                    for (IResource resource : controller.selectedTaskProperty().getValue().getResourceList()) {
-                                        if (resource.equals(currentRow.getItem())) {
-                                            checkBox.selectedProperty().setValue(Boolean.TRUE);
-                                            break;
-                                        } else {
-                                            checkBox.selectedProperty().setValue(Boolean.FALSE);
-                                        }
-                                    }
+    public void initCheckBoxColumn() {
+        resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
+            @Override
+            public TableCell<IResource, Boolean> call(TableColumn<IResource, Boolean> param) {
+                return new TableCell<IResource, Boolean>() {
+                    @Override
+                    public void updateItem(Boolean item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setAlignment(Pos.CENTER);
+                        TableRow<IResource> currentRow = getTableRow();
+                        if (empty) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            /** Заполняем столбец чек-боксами **/
+                            CheckBox checkBox = new CheckBox();
+                            setGraphic(checkBox);
+                            checkBox.setOnAction(event -> {
+                                if (checkBox.isSelected()) {
+                                    controller.selectedTaskProperty().getValue().addResource(currentRow.getItem());
+                                } else {
+                                    controller.selectedTaskProperty().getValue().removeResource(currentRow.getItem());
+                                }
+                            });
+
+                            /** Расставляем галочки на нужных строках **/
+                            for (IResource resource : controller.selectedTaskProperty().getValue().getResourceList()) {
+                                if (resource.equals(currentRow.getItem())) {
+                                    checkBox.selectedProperty().setValue(Boolean.TRUE);
+                                    break;
+                                } else {
+                                    checkBox.selectedProperty().setValue(Boolean.FALSE);
                                 }
                             }
-                        };
+                        }
                     }
-                });
+                };
             }
         });
     }

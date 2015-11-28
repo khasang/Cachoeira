@@ -114,7 +114,7 @@ public class TaskPaneController {
         /** Следим за изменениями в модели задач **/
         controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
             /** При любых изменениях (added, removed, updated) перерисовываем диаграмму Ганта **/
-            taskGanttChart.getObjectsLayer().refreshTaskDiagram();
+//            taskGanttChart.getObjectsLayer().refreshTaskDiagram();
             /** При добавлении или удалении элемента их модели обновлям таблицу задач**/
             while (c.next()) {
                 /** Добавляем **/

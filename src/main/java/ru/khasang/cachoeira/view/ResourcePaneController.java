@@ -57,7 +57,7 @@ public class ResourcePaneController {
         /** Следим за изменениями в модели задач **/
         controller.getProject().getResourceList().addListener((ListChangeListener<IResource>) c -> {
             /** При любых изменениях (added, removed, updated) перерисовываем диаграмму Ганта **/
-            resourceGanttChart.getObjectsLayer().refreshResourceDiagram();
+//            resourceGanttChart.getObjectsLayer().refreshResourceDiagram();
             while (c.next()) {
                 if (c.wasAdded()) {
                     System.out.println("Main Window Resource Added!");

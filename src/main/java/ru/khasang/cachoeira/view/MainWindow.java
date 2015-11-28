@@ -1,11 +1,14 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import ru.khasang.cachoeira.controller.IController;
+import ru.khasang.cachoeira.model.IResource;
+import ru.khasang.cachoeira.model.ITask;
 
 import java.io.IOException;
 
@@ -31,6 +34,14 @@ public class MainWindow implements IWindow {
         initPropertiesPanel();
 
         stage.titleProperty().bind(controller.getProject().nameProperty());
+        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
+            diagramPaneController.getTaskPaneController().getTaskGanttChart().getObjectsLayer().refreshTaskDiagram();
+            diagramPaneController.getResourcePaneController().getResourceGanttChart().getObjectsLayer().refreshResourceDiagram();
+        });
+        controller.getProject().getResourceList().addListener((ListChangeListener<IResource>) c -> {
+            diagramPaneController.getTaskPaneController().getTaskGanttChart().getObjectsLayer().refreshTaskDiagram();
+            diagramPaneController.getResourcePaneController().getResourceGanttChart().getObjectsLayer().refreshResourceDiagram();
+        });
     }
 
     private void initPropertiesPanel() {
