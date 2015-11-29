@@ -74,42 +74,50 @@ public class ResourcePropertiesPaneController {
         taskTableView.setItems(controller.getProject().getTaskList());
         taskNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
         controller.selectedResourceProperty().addListener(((observable, oldValue, newValue) -> {
-            taskCheckboxColumn.setCellFactory(new Callback<TableColumn<ITask, Boolean>, TableCell<ITask, Boolean>>() {
-                @Override
-                public TableCell<ITask, Boolean> call(TableColumn<ITask, Boolean> param) {
-                    return new TableCell<ITask, Boolean>() {
-                        @Override
-                        public void updateItem(Boolean item, boolean empty) {
-                            super.updateItem(item, empty);
-                            setAlignment(Pos.CENTER);
-                            TableRow<ITask> currentRow = getTableRow();
-                            if (empty) {
-                                setText(null);
-                                setGraphic(null);
-                            } else {
-                                /** Заполняем столбец чек-боксами **/
-                                CheckBox checkBox = new CheckBox();
-                                setGraphic(checkBox);
-                                checkBox.setOnAction(event -> {
-                                    if (checkBox.isSelected()) {
-                                        currentRow.getItem().addResource(controller.selectedResourceProperty().getValue());
-                                    } else {
-                                        currentRow.getItem().removeResource(controller.selectedResourceProperty().getValue());
-                                    }
-                                });
+            initCheckBoxColumn();
+        }));
+    }
 
-                                /** Расставляем галочки на нужных строках **/
+    public void initCheckBoxColumn() {
+        taskCheckboxColumn.setCellFactory(new Callback<TableColumn<ITask, Boolean>, TableCell<ITask, Boolean>>() {
+            @Override
+            public TableCell<ITask, Boolean> call(TableColumn<ITask, Boolean> param) {
+                return new TableCell<ITask, Boolean>() {
+                    @Override
+                    public void updateItem(Boolean item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setAlignment(Pos.CENTER);
+                        TableRow<ITask> currentRow = getTableRow();
+                        if (empty) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            /** Заполняем столбец чек-боксами **/
+                            CheckBox checkBox = new CheckBox();
+                            setGraphic(checkBox);
+                            checkBox.setOnAction(event -> {
+                                if (checkBox.isSelected()) {
+                                    currentRow.getItem().addResource(controller.selectedResourceProperty().getValue());
+                                } else {
+                                    currentRow.getItem().removeResource(controller.selectedResourceProperty().getValue());
+                                }
+                            });
+
+                            /** Расставляем галочки на нужных строках **/
+                            if (currentRow.getItem() != null) {
                                 for (IResource resource : currentRow.getItem().getResourceList()) {
                                     if (controller.selectedResourceProperty().getValue().equals(resource)) {
                                         checkBox.selectedProperty().setValue(Boolean.TRUE);
                                         break;
+                                    } else {
+                                        checkBox.selectedProperty().setValue(Boolean.FALSE);
                                     }
                                 }
                             }
                         }
-                    };
-                }
-            });
-        }));
+                    }
+                };
+            }
+        });
     }
 }
