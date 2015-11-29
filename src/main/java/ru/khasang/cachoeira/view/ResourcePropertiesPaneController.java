@@ -1,6 +1,7 @@
 package ru.khasang.cachoeira.view;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -73,9 +74,9 @@ public class ResourcePropertiesPaneController {
     public void initTaskTable() {
         taskTableView.setItems(controller.getProject().getTaskList());
         taskNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
-        controller.selectedResourceProperty().addListener(((observable, oldValue, newValue) -> {
-            initCheckBoxColumn();
-        }));
+        controller.selectedResourceProperty().addListener((observable, oldValue, newValue) -> initCheckBoxColumn());
+        /** Не понимаю, что тут происходит, но работает */
+        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> initCheckBoxColumn());
     }
 
     public void initCheckBoxColumn() {

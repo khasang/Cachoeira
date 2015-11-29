@@ -1,7 +1,5 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -175,9 +173,9 @@ public class TaskPropertiesPaneController {
     public void initResourceTable() {
         resourceTableView.setItems(controller.getProject().getResourceList());
         resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
-        controller.selectedTaskProperty().addListener((observable, oldValue, newValue) -> {
-            initCheckBoxColumn();
-        });
+        controller.selectedTaskProperty().addListener((observable, oldValue, newValue) -> initCheckBoxColumn());
+        /** Если список ресурсов в какой либо задаче обновлется, то обновляем список ресурсов в панели свойств задач */
+        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> initCheckBoxColumn());
     }
 
     public void initCheckBoxColumn() {
@@ -206,12 +204,14 @@ public class TaskPropertiesPaneController {
                             });
 
                             /** Расставляем галочки на нужных строках **/
-                            for (IResource resource : controller.selectedTaskProperty().getValue().getResourceList()) {
-                                if (resource.equals(currentRow.getItem())) {
-                                    checkBox.selectedProperty().setValue(Boolean.TRUE);
-                                    break;
-                                } else {
-                                    checkBox.selectedProperty().setValue(Boolean.FALSE);
+                            if (controller.selectedTaskProperty().getValue() != null) {
+                                for (IResource resource : controller.selectedTaskProperty().getValue().getResourceList()) {
+                                    if (resource.equals(currentRow.getItem())) {
+                                        checkBox.selectedProperty().setValue(Boolean.TRUE);
+                                        break;
+                                    } else {
+                                        checkBox.selectedProperty().setValue(Boolean.FALSE);
+                                    }
                                 }
                             }
                         }
