@@ -30,7 +30,24 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
 
     @Override
     public TreeTableRow<ITask> call(TreeTableView<ITask> param) {
-        TreeTableRow<ITask> row = new TreeTableRow<>();
+        TreeTableRow<ITask> row = new TreeTableRow<ITask>() {
+            Tooltip tooltip = new Tooltip();
+            @Override
+            protected void updateItem(ITask task, boolean empty) {
+                super.updateItem(task, empty);
+                if (empty) {
+                    setTooltip(null);
+                } else {
+                    tooltip.textProperty().bind(Bindings
+                            .concat("Описание: ").concat(task.descriptionProperty()).concat("\n")
+                            .concat("Дата начала: ").concat(task.startDateProperty()).concat("\n")
+                            .concat("Дата окончания: ").concat(task.finishDateProperty()).concat("\n")
+                            .concat("Прогресс: ").concat(task.donePercentProperty()).concat("\n")
+                            .concat("Стоимость: ").concat(task.costProperty()));
+                    setTooltip(tooltip);
+                }
+            }
+        };
 
         /**Drag & Drop **/
         row.setOnDragDetected(event -> {
