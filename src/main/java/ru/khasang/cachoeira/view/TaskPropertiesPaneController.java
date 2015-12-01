@@ -35,6 +35,8 @@ public class TaskPropertiesPaneController {
     private Slider donePercentSlider;
     @FXML
     private ComboBox<PriorityType> priorityTypeComboBox;
+    @FXML
+    private TextArea descriptionTextArea;
 
     //Привязанные ресурсы
     @FXML
@@ -113,6 +115,7 @@ public class TaskPropertiesPaneController {
                 donePercentSlider.valueProperty().unbindBidirectional(oldValue.donePercentProperty());
                 priorityTypeComboBox.valueProperty().unbindBidirectional(oldValue.priorityTypeProperty());
                 costField.textProperty().unbindBidirectional(oldValue.costProperty());
+                descriptionTextArea.textProperty().unbindBidirectional(oldValue.descriptionProperty());
             }
 
             /** Привязываем поля свойств к модели **/
@@ -123,6 +126,7 @@ public class TaskPropertiesPaneController {
                 donePercentSlider.valueProperty().bindBidirectional(newValue.donePercentProperty());
                 priorityTypeComboBox.valueProperty().bindBidirectional(newValue.priorityTypeProperty());
                 costField.textProperty().bindBidirectional(newValue.costProperty(), new NumberStringConverter());
+                descriptionTextArea.textProperty().bindBidirectional(newValue.descriptionProperty());
             }
 
             /** Конечная дата всегда после начальной **/
