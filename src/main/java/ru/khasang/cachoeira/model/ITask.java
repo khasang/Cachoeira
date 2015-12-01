@@ -49,6 +49,12 @@ public interface ITask {
 
     DoubleProperty costProperty();
 
+    String getDescription();
+
+    void setDescription(String description);
+
+    StringProperty descriptionProperty();
+
     void addDependentTask(IDependentTask dependentTask);
 
     void removeDependentTask(IDependentTask dependentTask);

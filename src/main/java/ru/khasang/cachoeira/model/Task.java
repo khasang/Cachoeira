@@ -21,6 +21,7 @@ public class Task implements ITask {
     private StringProperty duration = new SimpleStringProperty(this, "duration");
     private ObjectProperty<PriorityType> priorityType = new SimpleObjectProperty<>(this, "priorityType");
     private DoubleProperty cost = new SimpleDoubleProperty(this, "cost");
+    private StringProperty description = new SimpleStringProperty(this, "description");
     private ObservableList<IDependentTask> dependentTasks = FXCollections.observableArrayList();
     private ObjectProperty<ITaskGroup> taskGroup = new SimpleObjectProperty<>(this, "taskGroup");
     private ObservableList<IResource> resources = FXCollections.observableArrayList(new Callback<IResource, Observable[]>() {
@@ -146,6 +147,21 @@ public class Task implements ITask {
     @Override
     public final DoubleProperty costProperty() {
         return cost;
+    }
+
+    @Override
+    public final String getDescription() {
+        return description.get();
+    }
+
+    @Override
+    public final void setDescription(String description) {
+        this.description.set(description);
+    }
+
+    @Override
+    public final StringProperty descriptionProperty() {
+        return description;
     }
 
     @Override
