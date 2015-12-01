@@ -3,29 +3,35 @@ package ru.khasang.cachoeira.model;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Created by Raenar on 07.10.2015.
  */
 public interface ITask {
+    int getId();
+
+    ReadOnlyIntegerProperty idProperty();
+
+    void setId(int id);
+
     String getName();
 
     void setName(String name);
 
     StringProperty nameProperty();
 
-    Date getStartDate();
+    LocalDate getStartDate();
 
-    void setStartDate(Date start);
+    void setStartDate(LocalDate start);
 
-    ObjectProperty<Date> startDateProperty();
+    ObjectProperty<LocalDate> startDateProperty();
 
-    Date getFinishDate();
+    LocalDate getFinishDate();
 
-    void setFinishDate(Date finish);
+    void setFinishDate(LocalDate finish);
 
-    ObjectProperty<Date> finishDateProperty();
+    ObjectProperty<LocalDate> finishDateProperty();
 
     int getDonePercent();
 

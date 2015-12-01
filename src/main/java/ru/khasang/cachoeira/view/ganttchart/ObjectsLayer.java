@@ -4,7 +4,6 @@ import javafx.scene.layout.Pane;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.UIControl;
 
 /**
  * Created by truesik on 08.11.2015.
@@ -12,13 +11,11 @@ import ru.khasang.cachoeira.view.UIControl;
 
 public class ObjectsLayer extends Pane {
     private IController controller;
-    private UIControl uiControl;
     private int columnWidth;
     private ChartObject chartObject;
 
-    public ObjectsLayer(IController controller, UIControl uiControl, int columnWidth) {
+    public ObjectsLayer(IController controller, int columnWidth) {
         this.controller = controller;
-        this.uiControl = uiControl;
         this.columnWidth = columnWidth;
     }
 
@@ -27,7 +24,7 @@ public class ObjectsLayer extends Pane {
 
         for (ITask task : controller.getProject().getTaskList()) {
             int rowIndex = controller.getProject().getTaskList().indexOf(task);
-            chartObject = new ChartObject(controller, uiControl, task, rowIndex, columnWidth);
+            chartObject = new ChartObject(controller, task, rowIndex, columnWidth);
             chartObject.showResourcesOnDiagram();
             this.getChildren().add(chartObject);
         }
@@ -39,8 +36,8 @@ public class ObjectsLayer extends Pane {
         for (ITask task : controller.getProject().getTaskList()) {
             for (IResource resource : task.getResourceList()) {
                 int rowIndex = controller.getProject().getResourceList().indexOf(resource);
-                chartObject = new ChartObject(controller, uiControl, task, rowIndex, columnWidth);
-                chartObject.showResourcesOnDiagram();
+                chartObject = new ChartObject(controller, task, rowIndex, columnWidth);
+//                chartObject.showResourcesOnDiagram();
                 this.getChildren().add(chartObject);
             }
         }

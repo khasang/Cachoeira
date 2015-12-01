@@ -13,17 +13,17 @@ import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.MainWindow;
+import ru.khasang.cachoeira.view.ResourcePaneController;
 
 /**
  * Created by truesik on 25.10.2015.
  */
 public class ResourceTableViewRowFactory implements Callback<TableView<IResource>, TableRow<IResource>> {
-    private final MainWindow mainWindow;
+    private final ResourcePaneController resourcePaneController;
     private IController controller;
 
-    public ResourceTableViewRowFactory(MainWindow mainWindow, IController controller) {
-        this.mainWindow = mainWindow;
+    public ResourceTableViewRowFactory(ResourcePaneController resourcePaneController, IController controller) {
+        this.resourcePaneController = resourcePaneController;
         this.controller = controller;
     }
 
@@ -57,16 +57,16 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
             Dragboard db = event.getDragboard();
             if (db.hasContent(Controller.getSerializedMimeType())) {
                 int draggedIndex = (Integer) db.getContent(Controller.getSerializedMimeType());
-                IResource draggedResource = mainWindow.getResourceTableView().getItems().remove(draggedIndex);
+                IResource draggedResource = resourcePaneController.getResourceTableView().getItems().remove(draggedIndex);
                 int dropIndex;
                 if (row.isEmpty()) {
-                    dropIndex = mainWindow.getResourceTableView().getItems().size();
+                    dropIndex = resourcePaneController.getResourceTableView().getItems().size();
                 } else {
                     dropIndex = row.getIndex();
                 }
-                mainWindow.getResourceTableView().getItems().add(dropIndex, draggedResource);
+                resourcePaneController.getResourceTableView().getItems().add(dropIndex, draggedResource);
                 event.setDropCompleted(true);
-                mainWindow.getResourceTableView().getSelectionModel().select(dropIndex);
+                resourcePaneController.getResourceTableView().getSelectionModel().select(dropIndex);
                 event.consume();
             }
         });
@@ -82,14 +82,14 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
         getProperties.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                mainWindow.getController().setSelectedResource(row.getItem());
-                mainWindow.openPropertiesResourceWindow();
+                controller.setSelectedResource(row.getItem());
+//                resourcePaneController.openPropertiesResourceWindow(); // TODO: 25.11.2015 исправить
             }
         });
         removeResource.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                mainWindow.getController().handleRemoveResource(row.getItem());
+                controller.handleRemoveResource(row.getItem());
             }
         });
         rowMenu.getItems().addAll(setTask, getProperties, removeResource);  //заполняем меню
@@ -110,7 +110,7 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
 
     private void refreshTaskMenu(Menu setTask, TableRow<IResource> row) {
         setTask.getItems().clear();
-        for (ITask task : mainWindow.getController().getProject().getTaskList()) {
+        for (ITask task : controller.getProject().getTaskList()) {
             CheckMenuItem checkMenuItem = new CheckMenuItem(task.getName());
             for (IResource resource : task.getResourceList()) {
                 if (resource.equals(row.getItem())) {

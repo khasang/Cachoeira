@@ -13,18 +13,18 @@ import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.MainWindow;
+import ru.khasang.cachoeira.view.TaskPaneController;
 
 /**
  * Created by truesik on 18.11.2015.
  */
 public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask>, TreeTableRow<ITask>> {
 
-    private MainWindow mainWindow;
+    private TaskPaneController taskPaneController;
     private IController controller;
 
-    public TaskTreeTableViewRowFactory(MainWindow mainWindow, IController controller) {
-        this.mainWindow = mainWindow;
+    public TaskTreeTableViewRowFactory(TaskPaneController taskPaneController, IController controller) {
+        this.taskPaneController = taskPaneController;
         this.controller = controller;
     }
 
@@ -58,18 +58,16 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
             Dragboard db = event.getDragboard();
             if (db.hasContent(Controller.getSerializedMimeType())) {
                 int draggedIndex = (Integer) db.getContent(Controller.getSerializedMimeType());
-                TreeItem<ITask> draggedTask = mainWindow.getTaskTreeTableView().getRoot().getChildren().remove(draggedIndex);
-                controller.getProject().getTaskList().remove(draggedIndex);
+                ITask draggedTask = controller.getProject().getTaskList().remove(draggedIndex);
                 int dropIndex;
                 if (row.isEmpty()) {
-                    dropIndex = mainWindow.getTaskTreeTableView().getRoot().getChildren().size();
+                    dropIndex = taskPaneController.getTaskTreeTableView().getRoot().getChildren().size();
                 } else {
                     dropIndex = row.getIndex();
                 }
-                mainWindow.getTaskTreeTableView().getRoot().getChildren().add(dropIndex, draggedTask);
-                controller.getProject().getTaskList().add(dropIndex, draggedTask.getValue());
+                controller.getProject().getTaskList().add(dropIndex, draggedTask);
                 event.setDropCompleted(true);
-                mainWindow.getTaskTreeTableView().getSelectionModel().select(dropIndex);
+                taskPaneController.getTaskTreeTableView().getSelectionModel().select(dropIndex);
                 event.consume();
             }
         });
@@ -84,14 +82,14 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
         getProperties.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                mainWindow.getController().setSelectedTask(row.getTreeItem().getValue());
-                mainWindow.openPropertiesTaskWindow();
+                controller.setSelectedTask(row.getTreeItem().getValue());
+//                taskPaneController.openPropertiesTaskWindow(); // TODO: 25.11.2015 исправить
             }
         });
         removeTask.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                mainWindow.getController().handleRemoveTask(row.getTreeItem().getValue());
+               controller.handleRemoveTask(row.getTreeItem().getValue());
             }
         });
         rowMenu.getItems().addAll(setResource, getProperties, removeTask);  //заполняем меню
@@ -111,7 +109,7 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
 
     public void refreshResourceMenu(Menu setResource, TreeTableRow<ITask> row) {
         setResource.getItems().clear();
-        for (IResource resource : mainWindow.getController().getProject().getResourceList()) {                  //берем список всех ресурсов
+        for (IResource resource : controller.getProject().getResourceList()) {                  //берем список всех ресурсов
             CheckMenuItem checkMenuItem = new CheckMenuItem(resource.getName());                                //создаем элемент меню для каждого ресурса
             for (IResource resourceOfTask : row.getTreeItem().getValue().getResourceList()) {                   //берем список ресурсов выделенной Задачи
                 if (resource.equals(resourceOfTask)) {                                                          //если ресурс из общего списка равен ресурсу из списка Задачи, то

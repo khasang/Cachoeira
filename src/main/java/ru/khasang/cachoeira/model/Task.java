@@ -6,21 +6,23 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Raenar on 07.10.2015.
  */
 public class Task implements ITask {
-    private StringProperty name = new SimpleStringProperty();
-    private ObjectProperty<Date> startDate = new SimpleObjectProperty<>();
-    private ObjectProperty<Date> finishDate = new SimpleObjectProperty<>();
-    private IntegerProperty donePercent = new SimpleIntegerProperty();
-    private StringProperty duration = new SimpleStringProperty();
-    private ObjectProperty<PriorityType> priorityType = new SimpleObjectProperty<>();
-    private DoubleProperty cost = new SimpleDoubleProperty();
+    private final ReadOnlyIntegerWrapper id = new ReadOnlyIntegerWrapper(this, "id", taskSequence.incrementAndGet());
+    private StringProperty name = new SimpleStringProperty(this, "name");
+    private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
+    private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
+    private IntegerProperty donePercent = new SimpleIntegerProperty(this, "donePercent");
+    private StringProperty duration = new SimpleStringProperty(this, "duration");
+    private ObjectProperty<PriorityType> priorityType = new SimpleObjectProperty<>(this, "priorityType");
+    private DoubleProperty cost = new SimpleDoubleProperty(this, "cost");
     private ObservableList<IDependentTask> dependentTasks = FXCollections.observableArrayList();
-    private ObjectProperty<ITaskGroup> taskGroup = new SimpleObjectProperty<>();
+    private ObjectProperty<ITaskGroup> taskGroup = new SimpleObjectProperty<>(this, "taskGroup");
     private ObservableList<IResource> resources = FXCollections.observableArrayList(new Callback<IResource, Observable[]>() {
         @Override
         public Observable[] call(IResource param) {
@@ -31,6 +33,32 @@ public class Task implements ITask {
             };
         }
     });
+
+    /** Запоминаем количество задач **/
+    private static AtomicInteger taskSequence = new AtomicInteger(-1); // -1, потому что первым идет рутовый элемент в таблице задач (rootTask)
+
+    /** Конструктор с дефолтовыми значениями **/
+    public Task() {
+        this.name.setValue("Задача " + id.getValue());
+        this.startDate.setValue(LocalDate.now());
+        this.finishDate.setValue(startDate.getValue().plusDays(1));
+        this.priorityType.setValue(PriorityType.Normal);
+    }
+
+    @Override
+    public final int getId() {
+        return id.get();
+    }
+
+    @Override
+    public final ReadOnlyIntegerProperty idProperty() {
+        return id.getReadOnlyProperty();
+    }
+
+    @Override
+    public final void setId(int id) {
+        this.id.set(id);
+    }
 
     @Override
     public final String getName() {
@@ -48,32 +76,32 @@ public class Task implements ITask {
     }
 
     @Override
-    public final Date getStartDate() {
+    public final LocalDate getStartDate() {
         return startDate.get();
     }
 
     @Override
-    public final void setStartDate(Date start) {
+    public final void setStartDate(LocalDate start) {
         this.startDate.set(start);
     }
 
     @Override
-    public final ObjectProperty<Date> startDateProperty() {
+    public final ObjectProperty<LocalDate> startDateProperty() {
         return startDate;
     }
 
     @Override
-    public final Date getFinishDate() {
+    public final LocalDate getFinishDate() {
         return finishDate.get();
     }
 
     @Override
-    public final void setFinishDate(Date finish) {
+    public final void setFinishDate(LocalDate finish) {
         this.finishDate.set(finish);
     }
 
     @Override
-    public final ObjectProperty<Date> finishDateProperty() {
+    public final ObjectProperty<LocalDate> finishDateProperty() {
         return finishDate;
     }
 
@@ -94,8 +122,8 @@ public class Task implements ITask {
 
     @Override
     public final String getDuration() {
-        long difference = finishDate.getValue().getTime() - startDate.getValue().getTime();
-        duration.set(String.valueOf(difference / (24 * 60 * 60 * 1000)) + " дн.");
+//        long difference = finishDate.getValue().getTime() - startDate.getValue().getTime();
+//        duration.set(String.valueOf(difference / (24 * 60 * 60 * 1000)) + " дн.");
         return duration.get();
     }
 

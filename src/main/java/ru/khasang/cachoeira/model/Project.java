@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -13,10 +14,10 @@ import java.util.Date;
  */
 public class Project implements IProject {
 
-    private StringProperty name = new SimpleStringProperty();
-    private ObjectProperty<Date> startDate = new SimpleObjectProperty<>();
-    private ObjectProperty<Date> finishDate = new SimpleObjectProperty<>();
-    private StringProperty description = new SimpleStringProperty();
+    private StringProperty name = new SimpleStringProperty(this, "name");
+    private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
+    private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
+    private StringProperty description = new SimpleStringProperty(this, "description");
     private ObservableList<ITask> tasks = FXCollections.observableArrayList(new Callback<ITask, Observable[]>() {
         @Override
         public Observable[] call(ITask param) {
@@ -68,32 +69,32 @@ public class Project implements IProject {
     }
 
     @Override
-    public final Date getStartDate() {
+    public final LocalDate getStartDate() {
         return startDate.get();
     }
 
     @Override
-    public final void setStartDate(Date startDate) {
+    public final void setStartDate(LocalDate startDate) {
         this.startDate.set(startDate);
     }
 
     @Override
-    public final ObjectProperty<Date> startDateProperty() {
+    public final ObjectProperty<LocalDate> startDateProperty() {
         return startDate;
     }
 
     @Override
-    public final Date getFinishDate() {
+    public final LocalDate getFinishDate() {
         return finishDate.get();
     }
 
     @Override
-    public final void setFinishDate(Date finishDate) {
+    public final void setFinishDate(LocalDate finishDate) {
         this.finishDate.set(finishDate);
     }
 
     @Override
-    public final ObjectProperty<Date> finishDateProperty() {
+    public final ObjectProperty<LocalDate> finishDateProperty() {
         return finishDate;
     }
 

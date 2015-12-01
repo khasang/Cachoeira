@@ -25,20 +25,20 @@
         </rowConstraints>
          <children>
             <Label text="Имя проекта:" />
-            <TextField fx:id="newProjectNameField" GridPane.columnIndex="1" />
+            <TextField fx:id="nameField" GridPane.columnIndex="1" />
             <Label disable="true" text="Расположение проекта:" GridPane.rowIndex="1" />
             <Label text="Дата начала:" GridPane.rowIndex="2" />
             <Label text="Дата окончания:" GridPane.rowIndex="3" />
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
-                  <TextField fx:id="newProjectPathField" disable="true" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="projectPathField" disable="true" HBox.hgrow="ALWAYS" />
                   <Button disable="true" mnemonicParsing="false" onAction="#newProjectPathChooserButtonHandle" text="..." HBox.hgrow="NEVER" />
                </children>
             </HBox>
-            <DatePicker fx:id="newProjectStartDatePicker" prefWidth="334.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-            <DatePicker fx:id="newProjectFinishDatePicker" prefWidth="336.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
+            <DatePicker fx:id="startDatePicker" prefWidth="334.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+            <DatePicker fx:id="finishDatePicker" prefWidth="336.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
             <Label text="Описание:" GridPane.rowIndex="4" />
-            <TextArea fx:id="newProjectDescriptionArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <TextArea fx:id="descriptionArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                <GridPane.margin>
                   <Insets bottom="10.0" />
                </GridPane.margin>
@@ -47,7 +47,7 @@
       </GridPane>
       <HBox alignment="TOP_RIGHT" spacing="10.0">
          <children>
-            <Button defaultButton="true" mnemonicParsing="false" onAction="#newProjectCreateButtonHandle" text="Создать" HBox.hgrow="NEVER" />
+            <Button fx:id="createNewProjectButton" defaultButton="true" mnemonicParsing="false" onAction="#newProjectCreateButtonHandle" text="Создать" HBox.hgrow="NEVER" />
             <Button cancelButton="true" mnemonicParsing="false" onAction="#newProjectCancelButtonHandle" text="Отмена" HBox.hgrow="NEVER" />
          </children>
       </HBox>

@@ -18,13 +18,15 @@ public class GanttChart extends VBox {
     private GridLayer gridLayer;        //слой с сеткой
     private ObjectsLayer objectsLayer;  //слой с объектами диаграммы (задачи, группы, ...)
     private DateLine dateLine;          //шкала с датами
-    private int columnWidth;                                //ширина колонок
+    private int columnWidth;            //ширина колонок
+    private UIControl uiControl;
 
     public GanttChart(IController controller, UIControl uiControl, int columnWidth) {
         this.columnWidth = columnWidth;
+        this.uiControl = uiControl;
 
         gridLayer = new GridLayer(columnWidth);
-        objectsLayer = new ObjectsLayer(controller, uiControl, columnWidth);
+        objectsLayer = new ObjectsLayer(controller, columnWidth);
         ScrollPane verticalScrollPane = new ScrollPane(objectsLayer);
         verticalScrollPane.setFitToWidth(true);
         verticalScrollPane.getStylesheets().add(this.getClass().getResource("/css/scrollpane.css").toExternalForm()); //делаем вертикальный скроллпэйн прозрачным
@@ -34,7 +36,7 @@ public class GanttChart extends VBox {
         verticalScrollPane.vvalueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                uiControl.getMainWindow().getTaskTreeTableView().scrollTo(newValue.intValue()); //говорим таблице куда скроллить
+//                uiControl.getMainWindow().getTaskTreeTableView().scrollTo(newValue.intValue()); //говорим таблице куда скроллить // TODO: 25.11.2015 fix it
             }
         });
 
@@ -42,6 +44,8 @@ public class GanttChart extends VBox {
         VBox.setVgrow(diagramPane, Priority.ALWAYS);
 
         dateLine = new DateLine(controller, columnWidth);
+        dateLine.setUiControl(uiControl);
+        dateLine.initDateLine();
         VBox vBox = new VBox(dateLine, diagramPane);
         VBox.setVgrow(dateLine, Priority.NEVER);
 

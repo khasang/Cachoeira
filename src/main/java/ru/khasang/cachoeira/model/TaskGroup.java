@@ -7,7 +7,7 @@ import javafx.beans.property.StringProperty;
  * Created by truesik on 22.10.2015.
  */
 public class TaskGroup implements ITaskGroup {
-    StringProperty name = new SimpleStringProperty();
+    StringProperty name = new SimpleStringProperty(this, "name");
 
     public String getName() {
         return name.get();

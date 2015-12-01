@@ -1,9 +1,12 @@
 package ru.khasang.cachoeira.controller;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.input.DataFormat;
 import ru.khasang.cachoeira.model.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +18,9 @@ public class Controller implements IController {
     private static final DataFormat SERIALIZED_MIME_TYPE = new DataFormat("application/x-java-serialized-object");
     private IProject project;
     private ITask task;
+    private ObjectProperty<ITask> selectedTask = new SimpleObjectProperty<>(this, "selectedTask");
     private IResource resource;
+    private ObjectProperty<IResource> selectedResource = new SimpleObjectProperty<>(this, "selectedResource");
     private List<IProject> projectList = new ArrayList<>(); //по архитектуре не понял где у нас должен храниться список проектов, поэтому пускай пока будет здесь
 
     @Override
@@ -40,15 +45,7 @@ public class Controller implements IController {
 
     //добавил:
     @Override
-    public void handleAddTask(String nameOfTask, Date startDate, Date finishDate, Double cost, double donePercent, PriorityType priority, ObservableList<IResource> resources) { //todo в оригинале параметр был ITask task, но я не понял как так сделать, возможно кто-нибудь поправит
-        task = new Task();
-        task.setName(nameOfTask);
-        task.setStartDate(startDate);
-        task.setFinishDate(finishDate);
-        task.setDonePercent((int) donePercent);
-        task.setCost(cost);
-        task.setPriorityType(priority);
-        task.setResourceList(resources);
+    public void handleAddTask(ITask task) {
         project.getTaskList().add(task);
     }
 
@@ -69,7 +66,7 @@ public class Controller implements IController {
 
     //Добавил:
     @Override
-    public void handleChangeTask(String taskNameField, Date taskStartDate, Date taskFinishDate, Double taskCost, double taskDonePercent, PriorityType priority, ObservableList<IResource> resources) { //todo тоже подправил
+    public void handleChangeTask(String taskNameField, LocalDate taskStartDate, LocalDate taskFinishDate, Double taskCost, double taskDonePercent, PriorityType priority, ObservableList<IResource> resources) { //todo тоже подправил
         task.setName(taskNameField);
         task.setStartDate(taskStartDate);
         task.setFinishDate(taskFinishDate);
@@ -93,15 +90,8 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleAddResource(String resourceName, String email, ResourceType type, List<ITask> tasks) {
-        resource = new Resource();
-        resource.setName(resourceName);
-        resource.setEmail(email);
-        resource.setType(type);
+    public void handleAddResource(IResource resource) {
         project.getResourceList().add(resource);
-        for (ITask t : tasks) {
-            t.addResource(resource); //присваиваем этот ресурс задаче из списка tasks
-        }
     }
 
     @Override
@@ -158,7 +148,7 @@ public class Controller implements IController {
     }
 
     @Override
-    public void notifyAddProject(String projectName, Date startDate, Date finishDate, String description) {
+    public void notifyAddProject(String projectName, LocalDate startDate, LocalDate finishDate, String description) {
         project = new Project();
         project.setName(projectName);
         project.setStartDate(startDate);
@@ -175,5 +165,13 @@ public class Controller implements IController {
 
     public static DataFormat getSerializedMimeType() {
         return SERIALIZED_MIME_TYPE;
+    }
+
+    public ObjectProperty<ITask> selectedTaskProperty() {
+        return selectedTask;
+    }
+
+    public ObjectProperty<IResource> selectedResourceProperty() {
+        return selectedResource;
     }
 }

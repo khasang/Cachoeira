@@ -5,8 +5,6 @@ import ru.khasang.cachoeira.controller.IController;
 
 public class UIControl {
     MainWindow mainWindow;
-    TaskWindow taskWindow;
-    ResourceWindow resourceWindow;
     StartWindow startWindow;
     NewProjectWindow newProjectWindow;
     IController controller = new Controller();
@@ -26,36 +24,8 @@ public class UIControl {
         mainWindow.launch();
     }
 
-    public void launchNewTaskWindow() { //запускаем для добавления новой Задачи
-        taskWindow = new TaskWindow(mainWindow, controller, true);
-        taskWindow.launch();
-    }
-
-    public void launchPropertiesTaskWindow() { //для свойств задачи
-        taskWindow = new TaskWindow(mainWindow, controller, false);
-        taskWindow.launch();
-    }
-
-    public void launchResourceWindow() { //для добавления нового ресурса
-        resourceWindow = new ResourceWindow(mainWindow, controller, true);
-        resourceWindow.launch();
-    }
-
-    public void launchPropertiesResourceWindow() { //для свойств ресурса
-        resourceWindow = new ResourceWindow(mainWindow, controller, false);
-        resourceWindow.launch();
-    }
-
     public MainWindow getMainWindow() {
         return mainWindow;
-    }
-
-    public TaskWindow getTaskWindow() {
-        return taskWindow;
-    }
-
-    public ResourceWindow getResourceWindow() {
-        return resourceWindow;
     }
 
     public StartWindow getStartWindow() {
