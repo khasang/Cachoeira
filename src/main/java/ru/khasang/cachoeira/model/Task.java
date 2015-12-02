@@ -18,7 +18,6 @@ public class Task implements ITask {
     private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
     private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
     private IntegerProperty donePercent = new SimpleIntegerProperty(this, "donePercent");
-    private StringProperty duration = new SimpleStringProperty(this, "duration");
     private ObjectProperty<PriorityType> priorityType = new SimpleObjectProperty<>(this, "priorityType");
     private DoubleProperty cost = new SimpleDoubleProperty(this, "cost");
     private StringProperty description = new SimpleStringProperty(this, "description");
@@ -119,19 +118,6 @@ public class Task implements ITask {
     @Override
     public final IntegerProperty donePercentProperty() {
         return donePercent;
-    }
-
-    @Override
-    public final String getDuration() {
-//        long difference = finishDate.getValue().getTime() - startDate.getValue().getTime();
-//        duration.set(String.valueOf(difference / (24 * 60 * 60 * 1000)) + " дн.");
-        return duration.get();
-    }
-
-    @Override
-    public final StringProperty durationProperty() {
-        getDuration();
-        return duration;
     }
 
     @Override

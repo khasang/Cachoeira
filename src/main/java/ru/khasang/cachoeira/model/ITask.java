@@ -39,10 +39,6 @@ public interface ITask {
 
     IntegerProperty donePercentProperty();
 
-    String getDuration();
-
-    StringProperty durationProperty();
-
     double getCost();
 
     void setCost(double cost);
