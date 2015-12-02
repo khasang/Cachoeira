@@ -1,13 +1,10 @@
 package ru.khasang.cachoeira.view.rowfactories;
 
 import javafx.beans.binding.Bindings;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
@@ -15,7 +12,6 @@ import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.TaskPaneController;
 
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 
 /**
@@ -105,27 +101,14 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
         MenuItem getProperties = new MenuItem("Свойства");
         MenuItem removeTask = new MenuItem("Удалить задачу");
 
-        getProperties.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                controller.setSelectedTask(row.getTreeItem().getValue());
+        getProperties.setOnAction(event -> {
+            controller.setSelectedTask(row.getTreeItem().getValue());
 //                taskPaneController.openPropertiesTaskWindow(); // TODO: 25.11.2015 исправить
-            }
         });
-        removeTask.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-               controller.handleRemoveTask(row.getTreeItem().getValue());
-            }
-        });
+        removeTask.setOnAction(event -> controller.handleRemoveTask(row.getTreeItem().getValue()));
         rowMenu.getItems().addAll(setResource, getProperties, removeTask);  //заполняем меню
 
-        rowMenu.setOnShowing(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                refreshResourceMenu(setResource, row);
-            }
-        });
+        rowMenu.setOnShowing(event -> refreshResourceMenu(setResource, row));
         row.contextMenuProperty().bind(
                 Bindings.when(Bindings.isNotNull(row.itemProperty()))   //если на не пустом месте кликаем,
                         .then(rowMenu)                                  //то выводим одно меню,
@@ -145,14 +128,11 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
                     checkMenuItem.selectedProperty().setValue(Boolean.FALSE);
                 }
             }
-            checkMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    if (checkMenuItem.isSelected()) {
-                        row.getTreeItem().getValue().addResource(resource);
-                    } else {
-                        row.getTreeItem().getValue().removeResource(resource);
-                    }
+            checkMenuItem.setOnAction(event -> {
+                if (checkMenuItem.isSelected()) {
+                    row.getTreeItem().getValue().addResource(resource);
+                } else {
+                    row.getTreeItem().getValue().removeResource(resource);
                 }
             });
             setResource.getItems().add(checkMenuItem);
