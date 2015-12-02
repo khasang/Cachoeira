@@ -26,7 +26,6 @@ public class Project implements IProject {
                     param.startDateProperty(),
                     param.finishDateProperty(),
                     param.donePercentProperty(),
-                    param.durationProperty(),
                     param.priorityTypeProperty(),
                     param.costProperty(),
                     param.getDependentTasks(),
