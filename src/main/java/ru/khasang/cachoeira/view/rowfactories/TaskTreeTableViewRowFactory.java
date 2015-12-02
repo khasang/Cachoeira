@@ -15,6 +15,9 @@ import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.TaskPaneController;
 
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+
 /**
  * Created by truesik on 18.11.2015.
  */
@@ -31,6 +34,7 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
     @Override
     public TreeTableRow<ITask> call(TreeTableView<ITask> param) {
         TreeTableRow<ITask> row = new TreeTableRow<ITask>() {
+            /** Tooltip */
             Tooltip tooltip = new Tooltip();
             @Override
             protected void updateItem(ITask task, boolean empty) {
@@ -39,11 +43,16 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
                     setTooltip(null);
                 } else {
                     tooltip.textProperty().bind(Bindings
-                            .concat("Описание: ").concat(task.descriptionProperty()).concat("\n")
+                            .concat(Bindings
+                                    .when(task.descriptionProperty().isNull())
+                                    .then("")
+                                    .otherwise(Bindings.concat("Описание: ").concat(task.descriptionProperty()).concat("\n")))
                             .concat("Дата начала: ").concat(task.startDateProperty()).concat("\n")
                             .concat("Дата окончания: ").concat(task.finishDateProperty()).concat("\n")
+                            .concat("Продолжительность: ").concat(ChronoUnit.DAYS.between(task.startDateProperty().getValue(), task.finishDateProperty().getValue())).concat("\n")
                             .concat("Прогресс: ").concat(task.donePercentProperty()).concat("\n")
-                            .concat("Стоимость: ").concat(task.costProperty()));
+                            .concat("Стоимость: ").concat(task.costProperty()).concat("\n")
+                            .concat("Приоритет: ").concat(task.priorityTypeProperty()));
                     setTooltip(tooltip);
                 }
             }

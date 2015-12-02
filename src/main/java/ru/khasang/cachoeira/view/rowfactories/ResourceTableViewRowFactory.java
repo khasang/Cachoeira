@@ -36,8 +36,14 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
                     setTooltip(null);
                 } else {
                     tooltip.textProperty().bind(Bindings
-                            .concat("Описание: ").concat(resource.descriptionProperty()).concat("\n")
-                            .concat("Электронная почта: ").concat(resource.emailProperty()).concat("\n")
+                            .concat(Bindings
+                                    .when(resource.descriptionProperty().isNull())
+                                    .then("")
+                                    .otherwise(Bindings.concat("Описание: ").concat(resource.descriptionProperty()).concat("\n")))
+                            .concat(Bindings
+                                    .when(resource.emailProperty().isNull())
+                                    .then("")
+                                    .otherwise(Bindings.concat("Электронная почта: ").concat(resource.emailProperty()).concat("\n")))
                             .concat("Тип ресурса: ").concat(resource.resourceTypeProperty()));
                     setTooltip(tooltip);
                 }
