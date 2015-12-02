@@ -44,7 +44,7 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
                 } else {
                     tooltip.textProperty().bind(Bindings
                             .concat(Bindings
-                                    .when(task.descriptionProperty().isNull())
+                                    .when(task.descriptionProperty().isNull().or(task.descriptionProperty().isEmpty()))
                                     .then("")
                                     .otherwise(Bindings.concat("Описание: ").concat(task.descriptionProperty()).concat("\n")))
                             .concat("Дата начала: ").concat(task.startDateProperty()).concat("\n")

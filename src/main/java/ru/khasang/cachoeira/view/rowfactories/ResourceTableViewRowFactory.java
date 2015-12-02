@@ -37,11 +37,11 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
                 } else {
                     tooltip.textProperty().bind(Bindings
                             .concat(Bindings
-                                    .when(resource.descriptionProperty().isNull())
+                                    .when(resource.descriptionProperty().isNull().or(resource.descriptionProperty().isEmpty()))
                                     .then("")
                                     .otherwise(Bindings.concat("Описание: ").concat(resource.descriptionProperty()).concat("\n")))
                             .concat(Bindings
-                                    .when(resource.emailProperty().isNull())
+                                    .when(resource.emailProperty().isNull().or(resource.emailProperty().isEmpty()))
                                     .then("")
                                     .otherwise(Bindings.concat("Электронная почта: ").concat(resource.emailProperty()).concat("\n")))
                             .concat("Тип ресурса: ").concat(resource.resourceTypeProperty()));
