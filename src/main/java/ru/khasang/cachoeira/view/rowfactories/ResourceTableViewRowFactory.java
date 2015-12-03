@@ -1,13 +1,10 @@
 package ru.khasang.cachoeira.view.rowfactories;
 
 import javafx.beans.binding.Bindings;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
@@ -29,9 +26,31 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
 
     @Override
     public TableRow<IResource> call(TableView<IResource> param) {
-        TableRow<IResource> row = new TableRow<>();
+        TableRow<IResource> row = new TableRow<IResource>() {
+            /** Tooltip */
+            Tooltip tooltip = new Tooltip();
+            @Override
+            protected void updateItem(IResource resource, boolean empty) {
+                super.updateItem(resource, empty);
+                if (empty) {
+                    setTooltip(null);
+                } else {
+                    tooltip.textProperty().bind(Bindings
+                            .concat(Bindings
+                                    .when(resource.descriptionProperty().isNull().or(resource.descriptionProperty().isEmpty()))
+                                    .then("")
+                                    .otherwise(Bindings.concat("Описание: ").concat(resource.descriptionProperty()).concat("\n")))
+                            .concat(Bindings
+                                    .when(resource.emailProperty().isNull().or(resource.emailProperty().isEmpty()))
+                                    .then("")
+                                    .otherwise(Bindings.concat("Электронная почта: ").concat(resource.emailProperty()).concat("\n")))
+                            .concat("Тип ресурса: ").concat(resource.resourceTypeProperty()));
+                    setTooltip(tooltip);
+                }
+            }
+        };
 
-        /** Drag & Drop **/
+        /** Drag & Drop */
         row.setOnDragDetected(event -> {
             if (!row.isEmpty()) {
                 Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
@@ -72,34 +91,21 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
         });
 
 
-        /** Row Context Menu**/
+        /** Row Context Menu */
         ContextMenu rowMenu = new ContextMenu();
         Menu setTask = new Menu("Назначить задачу");
 
         MenuItem getProperties = new MenuItem("Свойства");
         MenuItem removeResource = new MenuItem("Удалить ресурс");
 
-        getProperties.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                controller.setSelectedResource(row.getItem());
+        getProperties.setOnAction(event -> {
+            controller.setSelectedResource(row.getItem());
 //                resourcePaneController.openPropertiesResourceWindow(); // TODO: 25.11.2015 исправить
-            }
         });
-        removeResource.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                controller.handleRemoveResource(row.getItem());
-            }
-        });
+        removeResource.setOnAction(event -> controller.handleRemoveResource(row.getItem()));
         rowMenu.getItems().addAll(setTask, getProperties, removeResource);  //заполняем меню
 
-        rowMenu.setOnShowing(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                refreshTaskMenu(setTask, row);
-            }
-        });
+        rowMenu.setOnShowing(event -> refreshTaskMenu(setTask, row));
 
         row.contextMenuProperty().bind(
                 Bindings.when(Bindings.isNotNull(row.itemProperty()))   //если на не пустом месте кликаем,
@@ -120,14 +126,11 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
                     checkMenuItem.selectedProperty().setValue(Boolean.FALSE);
                 }
             }
-            checkMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    if (checkMenuItem.isSelected()) {
-                        task.addResource(row.getItem());
-                    } else {
-                        task.removeResource(row.getItem());
-                    }
+            checkMenuItem.setOnAction(event -> {
+                if (checkMenuItem.isSelected()) {
+                    task.addResource(row.getItem());
+                } else {
+                    task.removeResource(row.getItem());
                 }
             });
             setTask.getItems().add(checkMenuItem);

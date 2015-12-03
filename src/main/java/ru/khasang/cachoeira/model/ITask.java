@@ -39,15 +39,17 @@ public interface ITask {
 
     IntegerProperty donePercentProperty();
 
-    String getDuration();
-
-    StringProperty durationProperty();
-
     double getCost();
 
     void setCost(double cost);
 
     DoubleProperty costProperty();
+
+    String getDescription();
+
+    void setDescription(String description);
+
+    StringProperty descriptionProperty();
 
     void addDependentTask(IDependentTask dependentTask);
 

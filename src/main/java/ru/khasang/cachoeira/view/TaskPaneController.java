@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +14,7 @@ import ru.khasang.cachoeira.view.rowfactories.TaskTreeTableViewRowFactory;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
 /**
@@ -55,7 +57,9 @@ public class TaskPaneController {
         taskNameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());              //столбец задач Наименование
         startDateColumn.setCellValueFactory(param -> param.getValue().getValue().startDateProperty());      //Дата начала
         finishDateColumn.setCellValueFactory(param -> param.getValue().getValue().finishDateProperty());    //Дата окончания
-        durationColumn.setCellValueFactory(param -> param.getValue().getValue().durationProperty());
+        durationColumn.setCellValueFactory(param -> Bindings.concat(ChronoUnit.DAYS.between(
+                param.getValue().getValue().startDateProperty().getValue(),
+                param.getValue().getValue().finishDateProperty().getValue()))); // TODO: 02.12.2015 не обновляет в рилтайме, нужно править
         donePercentColumn.setCellValueFactory(param -> param.getValue().getValue().donePercentProperty().asObject());
         priorityColumn.setCellValueFactory(param -> param.getValue().getValue().priorityTypeProperty());
         costColumn.setCellValueFactory(param -> param.getValue().getValue().costProperty().asObject());

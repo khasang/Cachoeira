@@ -12,6 +12,7 @@ public class Resource implements IResource {
     private StringProperty name = new SimpleStringProperty(this, "name");
     private ObjectProperty<ResourceType> type = new SimpleObjectProperty<>(this, "type");
     private StringProperty email = new SimpleStringProperty(this, "email");
+    private StringProperty description = new SimpleStringProperty(this, "description");
 
     /** Запоминаем количество задач **/
     private static AtomicInteger resourceSequence = new AtomicInteger(0);
@@ -80,5 +81,20 @@ public class Resource implements IResource {
     @Override
     public final StringProperty emailProperty() {
         return email;
+    }
+
+    @Override
+    public final String getDescription() {
+        return description.get();
+    }
+
+    @Override
+    public final void setDescription(String description) {
+        this.description.set(description);
+    }
+
+    @Override
+    public final StringProperty descriptionProperty() {
+        return description;
     }
 }

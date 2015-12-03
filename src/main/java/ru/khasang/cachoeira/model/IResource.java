@@ -31,4 +31,10 @@ public interface IResource {
     void setEmail(String email);
 
     StringProperty emailProperty();
+
+    String getDescription();
+
+    void setDescription(String description);
+
+    StringProperty descriptionProperty();
 }

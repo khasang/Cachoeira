@@ -26,6 +26,8 @@ public class ResourcePropertiesPaneController {
     private TextField emailField;
     @FXML
     private ComboBox<ResourceType> resourceTypeComboBox;
+    @FXML
+    private TextArea descriptionTextArea;
 
     //Привязанные задачи
     @FXML
@@ -58,12 +60,14 @@ public class ResourcePropertiesPaneController {
                 nameField.textProperty().unbindBidirectional(oldValue.nameProperty());
                 emailField.textProperty().unbindBidirectional(oldValue.emailProperty());
                 resourceTypeComboBox.valueProperty().unbindBidirectional(oldValue.resourceTypeProperty());
+                descriptionTextArea.textProperty().unbindBidirectional(oldValue.descriptionProperty());
             }
             /** Привязываем поля свойств к модели **/
             if (newValue != null) {
                 nameField.textProperty().bindBidirectional(newValue.nameProperty());
                 emailField.textProperty().bindBidirectional(newValue.emailProperty());
                 resourceTypeComboBox.valueProperty().bindBidirectional(newValue.resourceTypeProperty());
+                descriptionTextArea.textProperty().bindBidirectional(newValue.descriptionProperty());
             }
         });
     }
