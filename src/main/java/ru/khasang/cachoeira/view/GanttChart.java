@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ScrollPane;
@@ -30,15 +31,6 @@ public class GanttChart extends VBox {
         ScrollPane verticalScrollPane = new ScrollPane(objectsLayer);
         verticalScrollPane.setFitToWidth(true);
         verticalScrollPane.getStylesheets().add(this.getClass().getResource("/css/scrollpane.css").toExternalForm()); //делаем вертикальный скроллпэйн прозрачным
-
-        //попытка синхронизировать скролл от таблицы и диаграммы (работает хреново)
-        verticalScrollPane.setVmax(10); //10 - рандомное число, по идее должно быть равно количеству строк в таблице
-        verticalScrollPane.vvalueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-//                uiControl.getMainWindow().getTaskTreeTableView().scrollTo(newValue.intValue()); //говорим таблице куда скроллить // TODO: 25.11.2015 fix it
-            }
-        });
 
         StackPane diagramPane = new StackPane(gridLayer, verticalScrollPane); //нижний слой сетка, а над ним располагается слой с задачами
         VBox.setVgrow(diagramPane, Priority.ALWAYS);
