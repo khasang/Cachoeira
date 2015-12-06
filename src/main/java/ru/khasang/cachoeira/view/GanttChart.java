@@ -1,8 +1,5 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -45,7 +42,6 @@ public class GanttChart extends VBox {
         horizontalScrollPane.setFitToHeight(true);
         horizontalScrollPane.getStyleClass().add("edge-to-edge"); //убирает подсветку синюю границу вокруг скроллпэйна
         horizontalScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-//        horizontalScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         horizontalScrollPane.setPannable(true); //дает возможность двигать диаграмму зажав кнопку мышки, но работает только если жать на шкалу времени
 
         this.getChildren().addAll(horizontalScrollPane);
