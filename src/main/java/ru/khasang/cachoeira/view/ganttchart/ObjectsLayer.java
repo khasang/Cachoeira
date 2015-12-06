@@ -5,6 +5,9 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by truesik on 08.11.2015.
  */
@@ -13,6 +16,7 @@ public class ObjectsLayer extends Pane {
     private IController controller;
     private int columnWidth;
     private ChartObject chartObject;
+    private List<ChartObject> chartObjectList = new ArrayList<>();
 
     public ObjectsLayer(IController controller, int columnWidth) {
         this.controller = controller;
@@ -25,7 +29,7 @@ public class ObjectsLayer extends Pane {
         for (ITask task : controller.getProject().getTaskList()) {
             int rowIndex = controller.getProject().getTaskList().indexOf(task);
             chartObject = new ChartObject(controller, task, rowIndex, columnWidth);
-            chartObject.showResourcesOnDiagram();
+//            chartObject.showResourcesOnDiagram();
             this.getChildren().add(chartObject);
         }
     }
@@ -39,6 +43,23 @@ public class ObjectsLayer extends Pane {
                 chartObject = new ChartObject(controller, task, rowIndex, columnWidth);
 //                chartObject.showResourcesOnDiagram();
                 this.getChildren().add(chartObject);
+            }
+        }
+    }
+
+    public void addTaskBar(ITask task) {
+        int rowIndex = controller.getProject().getTaskList().indexOf(task);
+        chartObject = new ChartObject(controller, task, rowIndex, columnWidth);
+        this.getChildren().add(chartObject);
+        chartObjectList.add(chartObject);
+    }
+
+    public void removeTaskBar(ITask task) {
+        for (ChartObject taskBar : chartObjectList) {
+            if (taskBar.getTask().equals(task)) {
+                this.getChildren().remove(taskBar);
+                chartObjectList.remove(taskBar);
+                break;
             }
         }
     }
