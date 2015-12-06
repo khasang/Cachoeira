@@ -127,6 +127,7 @@ public class TaskPaneController {
                     TreeItem<ITask> taskTreeItem = new TreeItem<>(task);
                     taskTreeTableView.getRoot().getChildren().add(indexOfTask, taskTreeItem); //обязательно нужен инжекс элемента, иначе драгндроп не будет работать
                     taskTreeTableView.getSelectionModel().select(taskTreeItem);
+                    taskGanttChart.getObjectsLayer().addTaskBar(task); // Добавляем на диаграмму
                 }
                 /** Удаляем **/
                 for (ITask task : c.getRemoved()) {
@@ -136,6 +137,7 @@ public class TaskPaneController {
                             break; //Если убрать - будет ConcurrentModificationException
                         }
                     }
+                    taskGanttChart.getObjectsLayer().removeTaskBar(task); // Удаляем с диаграммы
                 }
                 if (c.wasAdded()) {
                     System.out.println("Main Window Task Added!");
