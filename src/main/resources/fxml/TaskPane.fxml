@@ -26,7 +26,7 @@
       </SplitPane>
       <HBox VBox.vgrow="NEVER">
          <children>
-            <Button mnemonicParsing="false" onAction="#addNewTaskHandle" text="+" HBox.hgrow="NEVER">
+            <Button fx:id="addNewTaskButton" mnemonicParsing="false" onAction="#addNewTaskHandle" HBox.hgrow="NEVER">
                <tooltip>
                   <Tooltip text="Добавить задачу" />
                </tooltip>
