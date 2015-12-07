@@ -3,6 +3,7 @@ package ru.khasang.cachoeira.view;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import ru.khasang.cachoeira.controller.IController;
 
@@ -23,6 +24,13 @@ public class PropertiesPanelController {
     private UIControl uiControl;
 
     public PropertiesPanelController() {
+    }
+
+    @FXML
+    private void initialize() {
+        projectPropertiesTab.setGraphic(new ImageView(getClass().getResource("/img/ic_project.png").toExternalForm()));
+        taskPropertiesTab.setGraphic(new ImageView(getClass().getResource("/img/ic_task.png").toExternalForm()));
+        resourcePropertiesTab.setGraphic(new ImageView(getClass().getResource("/img/ic_resource.png").toExternalForm()));
     }
 
     public void initTabs() {
