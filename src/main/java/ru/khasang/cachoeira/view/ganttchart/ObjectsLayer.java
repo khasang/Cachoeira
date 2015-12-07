@@ -4,6 +4,7 @@ import javafx.scene.layout.Pane;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.view.UIControl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class ObjectsLayer extends Pane {
     private IController controller;
     private int columnWidth;
     private ChartObject chartObject;
+    private UIControl uiControl;
     private List<ChartObject> chartObjectList = new ArrayList<>();
 
     public ObjectsLayer(IController controller, int columnWidth) {
@@ -27,8 +29,7 @@ public class ObjectsLayer extends Pane {
         this.getChildren().clear();
 
         for (ITask task : controller.getProject().getTaskList()) {
-            int rowIndex = controller.getProject().getTaskList().indexOf(task);
-            chartObject = new ChartObject(controller, task, rowIndex, columnWidth);
+            chartObject = new ChartObject(controller, task, columnWidth, uiControl);
 //            chartObject.showResourcesOnDiagram();
             this.getChildren().add(chartObject);
         }
@@ -39,8 +40,7 @@ public class ObjectsLayer extends Pane {
 
         for (ITask task : controller.getProject().getTaskList()) {
             for (IResource resource : task.getResourceList()) {
-                int rowIndex = controller.getProject().getResourceList().indexOf(resource);
-                chartObject = new ChartObject(controller, task, rowIndex, columnWidth);
+                chartObject = new ChartObject(controller, task, columnWidth, uiControl);
 //                chartObject.showResourcesOnDiagram();
                 this.getChildren().add(chartObject);
             }
@@ -48,8 +48,7 @@ public class ObjectsLayer extends Pane {
     }
 
     public void addTaskBar(ITask task) {
-        int rowIndex = controller.getProject().getTaskList().indexOf(task);
-        chartObject = new ChartObject(controller, task, rowIndex, columnWidth);
+        chartObject = new ChartObject(controller, task, columnWidth, uiControl);
         this.getChildren().add(chartObject);
         chartObjectList.add(chartObject);
     }
@@ -62,5 +61,9 @@ public class ObjectsLayer extends Pane {
                 break;
             }
         }
+    }
+
+    public void setUIControl(UIControl uiControl) {
+        this.uiControl = uiControl;
     }
 }
