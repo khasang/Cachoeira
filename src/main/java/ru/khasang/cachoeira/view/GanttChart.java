@@ -25,6 +25,7 @@ public class GanttChart extends VBox {
 
         gridLayer = new GridLayer(columnWidth);
         objectsLayer = new ObjectsLayer(controller, columnWidth);
+        objectsLayer.setUIControl(uiControl);
         ScrollPane verticalScrollPane = new ScrollPane(objectsLayer);
         verticalScrollPane.setFitToWidth(true);
         verticalScrollPane.getStylesheets().add(this.getClass().getResource("/css/scrollpane.css").toExternalForm()); //делаем вертикальный скроллпэйн прозрачным
