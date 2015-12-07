@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
@@ -21,6 +22,8 @@ import java.util.Locale;
  * Created by truesik on 25.11.2015.
  */
 public class TaskPaneController {
+    @FXML
+    private Button addNewTaskButton;
     @FXML
     private SplitPane taskSplitPane;
     @FXML
@@ -53,6 +56,8 @@ public class TaskPaneController {
      */
     @FXML
     private void initialize() {
+        /** Вешаем иконки на кнопки */
+        addNewTaskButton.setGraphic(new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
         /** Привязываем столбцы к полям в модели**/
         taskNameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());              //столбец задач Наименование
         startDateColumn.setCellValueFactory(param -> param.getValue().getValue().startDateProperty());      //Дата начала
