@@ -23,8 +23,6 @@ import java.util.Locale;
  */
 public class TaskPaneController {
     @FXML
-    private Button addNewTaskButton;
-    @FXML
     private SplitPane taskSplitPane;
     @FXML
     private TreeTableView<ITask> taskTreeTableView;     //таблица задач <Task>
@@ -42,8 +40,10 @@ public class TaskPaneController {
     private TreeTableColumn<ITask, PriorityType> priorityColumn; //столбец Приоритет
     @FXML
     private TreeTableColumn<ITask, Double> costColumn; //столбец Стоимость
+    @FXML
+    private Button addNewTaskButton;
 
-    private GanttChart taskGanttChart;
+    private TaskGanttChart taskGanttChart;
     private IController controller;
     private UIControl uiControl;
     private TreeItem<ITask> rootTask = new TreeItem<>(new Task());
@@ -122,8 +122,6 @@ public class TaskPaneController {
         });
         /** Следим за изменениями в модели задач **/
         controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
-            /** При любых изменениях (added, removed, updated) перерисовываем диаграмму Ганта **/
-//            taskGanttChart.getObjectsLayer().refreshTaskDiagram();
             /** При добавлении или удалении элемента их модели обновлям таблицу задач**/
             while (c.next()) {
                 /** Добавляем **/
@@ -132,7 +130,7 @@ public class TaskPaneController {
                     TreeItem<ITask> taskTreeItem = new TreeItem<>(task);
                     taskTreeTableView.getRoot().getChildren().add(indexOfTask, taskTreeItem); //обязательно нужен инжекс элемента, иначе драгндроп не будет работать
                     taskTreeTableView.getSelectionModel().select(taskTreeItem);
-                    taskGanttChart.getObjectsLayer().addTaskBar(task); // Добавляем на диаграмму
+                    taskGanttChart.getTaskPaneObjectsLayer().addTaskBar(task); // Добавляем на диаграмму
                 }
                 /** Удаляем **/
                 for (ITask task : c.getRemoved()) {
@@ -142,7 +140,7 @@ public class TaskPaneController {
                             break; //Если убрать - будет ConcurrentModificationException
                         }
                     }
-                    taskGanttChart.getObjectsLayer().removeTaskBar(task); // Удаляем с диаграммы
+                    taskGanttChart.getTaskPaneObjectsLayer().removeTaskBar(task); // Удаляем с диаграммы
                 }
                 if (c.wasAdded()) {
                     System.out.println("Main Window Task Added!");
@@ -161,20 +159,20 @@ public class TaskPaneController {
     }
 
     public void initGanttChart() {
-        taskGanttChart = new GanttChart(controller, uiControl, 70);
+        taskGanttChart = new TaskGanttChart(controller, uiControl, 70);
         taskSplitPane.getItems().add(taskGanttChart);
         taskSplitPane.setDividerPosition(0, 0.3);
     }
 
     public void initContextMenus() {
-        /** Инициализируем контекстное меню для выбора нужных столбцов **/
+        /** Контекстное меню для выбора нужных столбцов **/
         ContextMenuColumn contextMenuColumnTask = new ContextMenuColumn(taskTreeTableView);
         contextMenuColumnTask.setOnShowing(event -> contextMenuColumnTask.updateContextMenuColumnTTV(taskTreeTableView));
         for (int i = 0; i < taskTreeTableView.getColumns().size(); i++) {
             taskTreeTableView.getColumns().get(i).setContextMenu(contextMenuColumnTask);
         }
 
-        /** Инициализирум контекстное меню для таблицы **/
+        /** Контекстное меню для таблицы **/
         ContextMenu taskTableMenu = new ContextMenu();
         MenuItem addNewTask = new MenuItem("Новая задача");
         addNewTask.setOnAction(event -> controller.handleAddTask(new Task()));
@@ -194,7 +192,7 @@ public class TaskPaneController {
         this.uiControl = uiControl;
     }
 
-    public GanttChart getTaskGanttChart() {
+    public TaskGanttChart getTaskGanttChart() {
         return taskGanttChart;
     }
 }
