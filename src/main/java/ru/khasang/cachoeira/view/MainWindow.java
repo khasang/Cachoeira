@@ -33,15 +33,8 @@ public class MainWindow implements IWindow {
         initDiagramPane();
         initPropertiesPanel();
 
+        /** Заголовок окна меняется автоматически при изменении имени проекта */
         stage.titleProperty().bind(controller.getProject().nameProperty());
-        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
-            diagramPaneController.getTaskPaneController().getTaskGanttChart().getObjectsLayer().refreshTaskDiagram();
-            diagramPaneController.getResourcePaneController().getResourceGanttChart().getObjectsLayer().refreshResourceDiagram();
-        });
-        controller.getProject().getResourceList().addListener((ListChangeListener<IResource>) c -> {
-            diagramPaneController.getTaskPaneController().getTaskGanttChart().getObjectsLayer().refreshTaskDiagram();
-            diagramPaneController.getResourcePaneController().getResourceGanttChart().getObjectsLayer().refreshResourceDiagram();
-        });
     }
 
     private void initPropertiesPanel() {
