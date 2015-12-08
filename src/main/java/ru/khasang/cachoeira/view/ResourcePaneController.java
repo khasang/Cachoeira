@@ -4,6 +4,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
 import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
@@ -15,7 +16,6 @@ import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
 public class ResourcePaneController {
     @FXML
     private SplitPane resourceSplitPane;
-
     @FXML
     private TableView<IResource> resourceTableView;         //таблица ресурсов <Resource>
     @FXML
@@ -24,8 +24,10 @@ public class ResourcePaneController {
     private TableColumn<IResource, ResourceType> resourceTypeColumn;      //столбец с типом ресурса <Resource, String>
     @FXML
     private TableColumn<IResource, String> resourceEmailColumn;
+    @FXML
+    private Button addNewResourceButton;
 
-    private GanttChart resourceGanttChart;
+    private ResourceGanttChart resourceGanttChart;
     private IController controller;
     private UIControl uiControl;
 
@@ -37,6 +39,8 @@ public class ResourcePaneController {
      */
     @FXML
     private void initialize() {
+        /** Вешаем иконки на кнопки */
+        addNewResourceButton.setGraphic(new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
         /** Привязываем столбцы к полям в модели **/
         resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
         resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
@@ -56,8 +60,6 @@ public class ResourcePaneController {
         });
         /** Следим за изменениями в модели задач **/
         controller.getProject().getResourceList().addListener((ListChangeListener<IResource>) c -> {
-            /** При любых изменениях (added, removed, updated) перерисовываем диаграмму Ганта **/
-//            resourceGanttChart.getObjectsLayer().refreshResourceDiagram();
             while (c.next()) {
                 if (c.wasAdded()) {
                     System.out.println("Main Window Resource Added!");
@@ -77,20 +79,27 @@ public class ResourcePaneController {
     }
 
     public void initGanttChart() {
-        resourceGanttChart = new GanttChart(controller, uiControl, 70);
+        resourceGanttChart = new ResourceGanttChart(controller, uiControl, 70);
         resourceSplitPane.getItems().add(resourceGanttChart);
         resourceSplitPane.setDividerPosition(0, 0.3);
+        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) change -> {
+            while (change.next()) {
+                for (ITask task : change.getRemoved()) {
+                    resourceGanttChart.getResourcePaneObjectsLayer().removeTaskBar(task);
+                }
+            }
+        });
     }
 
     public void initContextMenus() {
-        /** Инициализируем контекстное меню для выбора нужных столбцов **/
+        /** Контекстное меню для выбора нужных столбцов */
         ContextMenuColumn contextMenuColumnResource = new ContextMenuColumn(resourceTableView);
         contextMenuColumnResource.setOnShowing(event -> contextMenuColumnResource.updateContextMenuColumnTV(resourceTableView));
         for (int i = 0; i < resourceTableView.getColumns().size(); i++) {
             resourceTableView.getColumns().get(i).setContextMenu(contextMenuColumnResource);
         }
 
-        /** Инициализирум контекстное меню для таблицы **/
+        /** Контекстное меню для таблицы **/
         ContextMenu resourceTableMenu = new ContextMenu();
         MenuItem addNewResource = new MenuItem("Новый ресурс");
         addNewResource.setOnAction(event -> controller.handleAddResource(new Resource()));
@@ -110,7 +119,7 @@ public class ResourcePaneController {
         this.uiControl = uiControl;
     }
 
-    public GanttChart getResourceGanttChart() {
+    public ResourceGanttChart getResourceGanttChart() {
         return resourceGanttChart;
     }
 }
