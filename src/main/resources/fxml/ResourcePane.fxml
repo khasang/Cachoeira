@@ -22,7 +22,7 @@
       </SplitPane>
       <HBox VBox.vgrow="NEVER">
          <children>
-            <Button mnemonicParsing="false" onAction="#addNewResourceHandle" text="+" HBox.hgrow="NEVER">
+            <Button fx:id="addNewResourceButton" mnemonicParsing="false" onAction="#addNewResourceHandle" HBox.hgrow="NEVER">
                <tooltip>
                   <Tooltip text="Добавить ресурс" />
                </tooltip>
