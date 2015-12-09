@@ -108,7 +108,7 @@ public class TaskPaneController {
     }
 
     @FXML
-    public void removeTaskHandle(ActionEvent actionEvent) {
+    private void removeTaskHandle(ActionEvent actionEvent) {
         controller.handleRemoveTask(taskTreeTableView.getSelectionModel().getSelectedItem().getValue());
     }
 
