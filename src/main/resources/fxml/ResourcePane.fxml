@@ -27,6 +27,11 @@
                   <Tooltip text="Добавить ресурс" />
                </tooltip>
             </Button>
+            <Button fx:id="removeResourceButton" mnemonicParsing="false" onAction="#removeResourceHandle" HBox.hgrow="NEVER">
+               <tooltip>
+                  <Tooltip text="Удалить ресурс" />
+               </tooltip>
+            </Button>
          </children>
       </HBox>
    </children>

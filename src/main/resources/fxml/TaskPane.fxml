@@ -31,6 +31,11 @@
                   <Tooltip text="Добавить задачу" />
                </tooltip>
             </Button>
+            <Button fx:id="removeTaskButton" mnemonicParsing="false" onAction="#removeTaskHandle" HBox.hgrow="NEVER">
+               <tooltip>
+                  <Tooltip text="Удалить задачу" />
+               </tooltip>
+            </Button>
          </children>
       </HBox>
    </children>

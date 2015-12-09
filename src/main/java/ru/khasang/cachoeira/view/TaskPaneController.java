@@ -42,6 +42,8 @@ public class TaskPaneController {
     private TreeTableColumn<ITask, Double> costColumn; //столбец Стоимость
     @FXML
     private Button addNewTaskButton;
+    @FXML
+    private Button removeTaskButton;
 
     private TaskGanttChart taskGanttChart;
     private IController controller;
@@ -56,8 +58,11 @@ public class TaskPaneController {
      */
     @FXML
     private void initialize() {
+        /** Если элемент в таблице не выбран, то кнопка не активна */
+        removeTaskButton.disableProperty().bind(taskTreeTableView.getSelectionModel().selectedItemProperty().isNull());
         /** Вешаем иконки на кнопки */
         addNewTaskButton.setGraphic(new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
+        removeTaskButton.setGraphic(new ImageView(getClass().getResource("/img/ic_remove.png").toExternalForm()));
         /** Привязываем столбцы к полям в модели**/
         taskNameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());              //столбец задач Наименование
         startDateColumn.setCellValueFactory(param -> param.getValue().getValue().startDateProperty());      //Дата начала
@@ -100,6 +105,11 @@ public class TaskPaneController {
     @FXML
     private void addNewTaskHandle(ActionEvent actionEvent) {
         controller.handleAddTask(new Task());
+    }
+
+    @FXML
+    public void removeTaskHandle(ActionEvent actionEvent) {
+        controller.handleRemoveTask(taskTreeTableView.getSelectionModel().getSelectedItem().getValue());
     }
 
     public void initTaskTable() {
@@ -191,7 +201,6 @@ public class TaskPaneController {
     public void setUIControl(UIControl uiControl) {
         this.uiControl = uiControl;
     }
-
     public TaskGanttChart getTaskGanttChart() {
         return taskGanttChart;
     }

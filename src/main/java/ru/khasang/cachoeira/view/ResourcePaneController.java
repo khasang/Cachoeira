@@ -26,6 +26,8 @@ public class ResourcePaneController {
     private TableColumn<IResource, String> resourceEmailColumn;
     @FXML
     private Button addNewResourceButton;
+    @FXML
+    private Button removeResourceButton;
 
     private ResourceGanttChart resourceGanttChart;
     private IController controller;
@@ -39,8 +41,11 @@ public class ResourcePaneController {
      */
     @FXML
     private void initialize() {
+        /** Если элемент в таблице не выбран, то кнопка не активна */
+        removeResourceButton.disableProperty().bind(resourceTableView.getSelectionModel().selectedItemProperty().isNull());
         /** Вешаем иконки на кнопки */
         addNewResourceButton.setGraphic(new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
+        removeResourceButton.setGraphic(new ImageView(getClass().getResource("/img/ic_remove.png").toExternalForm()));
         /** Привязываем столбцы к полям в модели **/
         resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
         resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
@@ -50,6 +55,11 @@ public class ResourcePaneController {
     @FXML
     private void addNewResourceHandle(ActionEvent actionEvent) {
         controller.handleAddResource(new Resource());
+    }
+
+    @FXML
+    private void removeResourceHandle(ActionEvent actionEvent) {
+        controller.handleRemoveResource(resourceTableView.getSelectionModel().getSelectedItem());
     }
 
     public void initResourceTable() {
