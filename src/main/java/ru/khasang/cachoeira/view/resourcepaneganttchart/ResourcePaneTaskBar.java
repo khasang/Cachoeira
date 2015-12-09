@@ -1,6 +1,5 @@
 package ru.khasang.cachoeira.view.resourcepaneganttchart;
 
-import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
