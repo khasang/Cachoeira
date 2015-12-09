@@ -11,6 +11,7 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.ResourcePaneController;
+import ru.khasang.cachoeira.view.tooltips.ResourceTooltip;
 
 /**
  * Created by truesik on 25.10.2015.
@@ -28,24 +29,15 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
     public TableRow<IResource> call(TableView<IResource> param) {
         TableRow<IResource> row = new TableRow<IResource>() {
             /** Tooltip */
-            Tooltip tooltip = new Tooltip();
+            ResourceTooltip resourceTooltip = new ResourceTooltip();
             @Override
             protected void updateItem(IResource resource, boolean empty) {
                 super.updateItem(resource, empty);
                 if (empty) {
                     setTooltip(null);
                 } else {
-                    tooltip.textProperty().bind(Bindings
-                            .concat(Bindings
-                                    .when(resource.descriptionProperty().isNull().or(resource.descriptionProperty().isEmpty()))
-                                    .then("")
-                                    .otherwise(Bindings.concat("Описание: ").concat(resource.descriptionProperty()).concat("\n")))
-                            .concat(Bindings
-                                    .when(resource.emailProperty().isNull().or(resource.emailProperty().isEmpty()))
-                                    .then("")
-                                    .otherwise(Bindings.concat("Электронная почта: ").concat(resource.emailProperty()).concat("\n")))
-                            .concat("Тип ресурса: ").concat(resource.resourceTypeProperty()));
-                    setTooltip(tooltip);
+                    resourceTooltip.initToolTip(resource);
+                    setTooltip(resourceTooltip);
                 }
             }
         };

@@ -10,6 +10,7 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
 
 import java.time.temporal.ChronoUnit;
 
@@ -124,19 +125,9 @@ public class TaskPaneTaskBar extends Rectangle {
     }
 
     private void setTooltip() {
-        Tooltip tooltip = new Tooltip();
-        tooltip.textProperty().bind(Bindings
-                .concat(Bindings
-                        .when(task.descriptionProperty().isNull().or(task.descriptionProperty().isEmpty()))
-                        .then("")
-                        .otherwise(Bindings.concat("Описание: ").concat(task.descriptionProperty()).concat("\n")))
-                .concat("Дата начала: ").concat(task.startDateProperty()).concat("\n")
-                .concat("Дата окончания: ").concat(task.finishDateProperty()).concat("\n")
-                .concat("Продолжительность: ").concat(ChronoUnit.DAYS.between(task.startDateProperty().getValue(), task.finishDateProperty().getValue())).concat("\n")
-                .concat("Прогресс: ").concat(task.donePercentProperty()).concat("\n")
-                .concat("Стоимость: ").concat(task.costProperty()).concat("\n")
-                .concat("Приоритет: ").concat(task.priorityTypeProperty()));
-        Tooltip.install(this, tooltip);
+        TaskTooltip taskTooltip = new TaskTooltip();
+        taskTooltip.initToolTip(task);
+        Tooltip.install(this, taskTooltip);
     }
 
     public ITask getTask() {
