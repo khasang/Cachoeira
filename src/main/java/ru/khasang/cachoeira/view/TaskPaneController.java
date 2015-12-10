@@ -103,8 +103,6 @@ public class TaskPaneController {
         /** Высота строк и выравнивание */
         taskTreeTableView.setFixedCellSize(31);
         taskNameColumn.setStyle("-fx-alignment: CENTER-LEFT");
-        startDateColumn.setStyle("-fx-alignment: CENTER-LEFT");
-        finishDateColumn.setStyle("-fx-alignment: CENTER-LEFT");
         durationColumn.setStyle("-fx-alignment: CENTER-LEFT");
         donePercentColumn.setStyle("-fx-alignment: CENTER-LEFT");
         priorityColumn.setStyle("-fx-alignment: CENTER-LEFT");
