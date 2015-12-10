@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit;
  */
 public class TaskPaneTaskBar extends Rectangle {
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
-    private static final double rowHeight = 24;
+    private static final double rowHeight = 31;
 
     private IController controller;
     private ITask task;
@@ -42,7 +42,7 @@ public class TaskPaneTaskBar extends Rectangle {
         this.setArcWidth(5);                       //сгругление углов
 
         calculateStartPoint();
-        this.setLayoutY((rowIndex * rowHeight) + 3);
+        this.setLayoutY((rowIndex * rowHeight) + 6.5);
         calculateWidth();
         this.setHeight(TASK_HEIGHT);
 
@@ -56,7 +56,7 @@ public class TaskPaneTaskBar extends Rectangle {
                 while (c.next()) {
                     if (c.wasRemoved() || c.wasAdded()) {
                         rowIndex = controller.getProject().getTaskList().indexOf(task);
-                        setLayoutY((rowIndex * rowHeight) + 3);
+                        setLayoutY((rowIndex * rowHeight) + 6.5);
                     }
                 }
             }
