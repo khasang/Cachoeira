@@ -3,8 +3,12 @@ package ru.khasang.cachoeira.view;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxTableCell;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
+import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
 import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
@@ -46,10 +50,20 @@ public class ResourcePaneController {
         /** Вешаем иконки на кнопки */
         addNewResourceButton.setGraphic(new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
         removeResourceButton.setGraphic(new ImageView(getClass().getResource("/img/ic_remove.png").toExternalForm()));
-        /** Привязываем столбцы к полям в модели **/
+        /** Привязываем столбцы к полям в модели */
         resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
         resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
         resourceEmailColumn.setCellValueFactory(param -> param.getValue().emailProperty());                 //Почта
+        /** Делаем поля таблицы редактируемыми */
+        resourceTableView.setEditable(true);
+        resourceNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        resourceTypeColumn.setCellFactory(ComboBoxTableCell.forTableColumn(ResourceType.values()));
+        resourceEmailColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        /** Высота строк и выравнивание */
+        resourceTableView.setFixedCellSize(31);
+        resourceNameColumn.setStyle("-fx-alignment: CENTER-LEFT");
+        resourceTypeColumn.setStyle("-fx-alignment: CENTER-LEFT");
+        resourceEmailColumn.setStyle("-fx-alignment: CENTER-LEFT");
     }
 
     @FXML
