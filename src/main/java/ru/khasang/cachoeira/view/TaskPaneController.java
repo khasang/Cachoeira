@@ -6,7 +6,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxTreeTableCell;
+import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.image.ImageView;
+import javafx.util.Callback;
+import javafx.util.converter.DoubleStringConverter;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
@@ -100,6 +104,94 @@ public class TaskPaneController {
                 }
             }
         });
+        /** Делаем поля таблицы редактируемыми */
+        taskTreeTableView.setEditable(true);
+        taskNameColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
+        donePercentColumn.setCellFactory(new Callback<TreeTableColumn<ITask, Integer>, TreeTableCell<ITask, Integer>>() {
+            @Override
+            public TreeTableCell<ITask, Integer> call(TreeTableColumn<ITask, Integer> param) {
+                return new TreeTableCell<ITask, Integer>() {
+                    Slider slider;
+
+                    @Override
+                    public void startEdit() {
+                        if (!isEmpty()) {
+                            super.startEdit();
+                            createTextField();
+                            setText(null);
+                            setGraphic(slider);
+                        }
+                    }
+
+                    @Override
+                    public void cancelEdit() {
+                        setText(String.valueOf(getItem()));
+                        setGraphic(null);
+                    }
+
+                    @Override
+                    protected void updateItem(Integer item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            if (isEditing()) {
+                                if (slider != null) {
+//                                    textField.setText(getString());
+//                                    slider.setValue(task.getDonePercent());
+                                    slider.setValue(new DoubleStringConverter().fromString(getString()));
+                                }
+                                setText(null);
+                                setGraphic(slider);
+                            } else {
+                                setText(getString());
+                                setGraphic(null);
+                            }
+                        }
+                    }
+
+                    private void createTextField() {
+//                        textField = new TextField(getString());
+                        slider = new Slider();
+//                        slider.valueProperty().bindBidirectional(getTreeTableRow().getTreeItem().getValue().donePercentProperty());
+
+//                        textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+//                        textField.setOnKeyPressed(event -> {
+//                            if (isInteger(event.getText()) || (event.getCode() == KeyCode.BACK_SPACE)) {
+//                                textField.setEditable(true);
+//                            } else {
+////                                textField.setEditable(false);
+//                                textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
+////                                event.consume();
+//                            }
+//                        });
+//                        textField.setOnAction(event -> {
+//                            Integer fromString = new IntegerStringConverter().fromString(textField.getText());
+//                            if (fromString != null) {
+//                                commitEdit(fromString > 100 ? 100 : fromString);
+//                            } else {
+//                                commitEdit(0);
+//                            }
+//                            event.consume();
+//                        });
+//                        textField.setOnKeyReleased(event -> {
+//                            if (event.getCode() == KeyCode.ESCAPE) {
+//                                this.cancelEdit();
+////                                textField.setEditable(false);
+//                                event.consume();
+//                            }
+//                        });
+                    }
+
+                    private String getString() {
+                        return getItem() == null ? "0" : getItem().toString();
+                    }
+                };
+            }
+        });
+        priorityColumn.setCellFactory(ComboBoxTreeTableCell.forTreeTableColumn(PriorityType.values()));
+        costColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new DoubleStringConverter()));
         /** Высота строк и выравнивание */
         taskTreeTableView.setFixedCellSize(31);
         taskNameColumn.setStyle("-fx-alignment: CENTER-LEFT");
@@ -208,6 +300,7 @@ public class TaskPaneController {
     public void setUIControl(UIControl uiControl) {
         this.uiControl = uiControl;
     }
+
     public TaskGanttChart getTaskGanttChart() {
         return taskGanttChart;
     }
