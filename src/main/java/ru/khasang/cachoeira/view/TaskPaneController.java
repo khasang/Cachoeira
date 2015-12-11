@@ -161,6 +161,7 @@ public class TaskPaneController {
                 }
                 if (c.wasAdded()) {
                     System.out.println("Main Window Task Added!");
+                    uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().refreshResourceDiagram();
                 }
                 if (c.wasRemoved()) {
                     System.out.println("Main Window Task Removed");
