@@ -3,7 +3,12 @@ package ru.khasang.cachoeira.view;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxTableCell;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
+import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
 import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
@@ -15,7 +20,6 @@ import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
 public class ResourcePaneController {
     @FXML
     private SplitPane resourceSplitPane;
-
     @FXML
     private TableView<IResource> resourceTableView;         //таблица ресурсов <Resource>
     @FXML
@@ -24,8 +28,12 @@ public class ResourcePaneController {
     private TableColumn<IResource, ResourceType> resourceTypeColumn;      //столбец с типом ресурса <Resource, String>
     @FXML
     private TableColumn<IResource, String> resourceEmailColumn;
+    @FXML
+    private Button addNewResourceButton;
+    @FXML
+    private Button removeResourceButton;
 
-    private GanttChart resourceGanttChart;
+    private ResourceGanttChart resourceGanttChart;
     private IController controller;
     private UIControl uiControl;
 
@@ -37,15 +45,35 @@ public class ResourcePaneController {
      */
     @FXML
     private void initialize() {
-        /** Привязываем столбцы к полям в модели **/
+        /** Если элемент в таблице не выбран, то кнопка не активна */
+        removeResourceButton.disableProperty().bind(resourceTableView.getSelectionModel().selectedItemProperty().isNull());
+        /** Вешаем иконки на кнопки */
+        addNewResourceButton.setGraphic(new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
+        removeResourceButton.setGraphic(new ImageView(getClass().getResource("/img/ic_remove.png").toExternalForm()));
+        /** Привязываем столбцы к полям в модели */
         resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
         resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
         resourceEmailColumn.setCellValueFactory(param -> param.getValue().emailProperty());                 //Почта
+        /** Делаем поля таблицы редактируемыми */
+        resourceTableView.setEditable(true);
+        resourceNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        resourceTypeColumn.setCellFactory(ComboBoxTableCell.forTableColumn(ResourceType.values()));
+        resourceEmailColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        /** Высота строк и выравнивание */
+        resourceTableView.setFixedCellSize(31);
+        resourceNameColumn.setStyle("-fx-alignment: CENTER-LEFT");
+        resourceTypeColumn.setStyle("-fx-alignment: CENTER-LEFT");
+        resourceEmailColumn.setStyle("-fx-alignment: CENTER-LEFT");
     }
 
     @FXML
     private void addNewResourceHandle(ActionEvent actionEvent) {
         controller.handleAddResource(new Resource());
+    }
+
+    @FXML
+    private void removeResourceHandle(ActionEvent actionEvent) {
+        controller.handleRemoveResource(resourceTableView.getSelectionModel().getSelectedItem());
     }
 
     public void initResourceTable() {
@@ -56,8 +84,6 @@ public class ResourcePaneController {
         });
         /** Следим за изменениями в модели задач **/
         controller.getProject().getResourceList().addListener((ListChangeListener<IResource>) c -> {
-            /** При любых изменениях (added, removed, updated) перерисовываем диаграмму Ганта **/
-//            resourceGanttChart.getObjectsLayer().refreshResourceDiagram();
             while (c.next()) {
                 if (c.wasAdded()) {
                     System.out.println("Main Window Resource Added!");
@@ -77,20 +103,27 @@ public class ResourcePaneController {
     }
 
     public void initGanttChart() {
-        resourceGanttChart = new GanttChart(controller, uiControl, 70);
+        resourceGanttChart = new ResourceGanttChart(controller, uiControl, 70);
         resourceSplitPane.getItems().add(resourceGanttChart);
         resourceSplitPane.setDividerPosition(0, 0.3);
+        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) change -> {
+            while (change.next()) {
+                for (ITask task : change.getRemoved()) {
+                    resourceGanttChart.getResourcePaneObjectsLayer().removeTaskBar(task);
+                }
+            }
+        });
     }
 
     public void initContextMenus() {
-        /** Инициализируем контекстное меню для выбора нужных столбцов **/
+        /** Контекстное меню для выбора нужных столбцов */
         ContextMenuColumn contextMenuColumnResource = new ContextMenuColumn(resourceTableView);
         contextMenuColumnResource.setOnShowing(event -> contextMenuColumnResource.updateContextMenuColumnTV(resourceTableView));
         for (int i = 0; i < resourceTableView.getColumns().size(); i++) {
             resourceTableView.getColumns().get(i).setContextMenu(contextMenuColumnResource);
         }
 
-        /** Инициализирум контекстное меню для таблицы **/
+        /** Контекстное меню для таблицы **/
         ContextMenu resourceTableMenu = new ContextMenu();
         MenuItem addNewResource = new MenuItem("Новый ресурс");
         addNewResource.setOnAction(event -> controller.handleAddResource(new Resource()));
@@ -110,7 +143,7 @@ public class ResourcePaneController {
         this.uiControl = uiControl;
     }
 
-    public GanttChart getResourceGanttChart() {
+    public ResourceGanttChart getResourceGanttChart() {
         return resourceGanttChart;
     }
 }

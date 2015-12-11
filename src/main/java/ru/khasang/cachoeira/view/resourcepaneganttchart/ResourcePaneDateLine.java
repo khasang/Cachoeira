@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.ganttchart;
+package ru.khasang.cachoeira.view.resourcepaneganttchart;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -13,13 +13,13 @@ import java.util.Locale;
 /**
  * Created by truesik on 08.11.2015.
  */
-public class DateLine extends HBox {
+public class ResourcePaneDateLine extends HBox {
     private long between;
     private IController controller;
     private UIControl uiControl;
     private int columnWidth;
 
-    public DateLine(IController controller, int columnWidth) {
+    public ResourcePaneDateLine(IController controller, int columnWidth) {
         this.controller = controller;
         this.columnWidth = columnWidth;
 
@@ -32,14 +32,12 @@ public class DateLine extends HBox {
         controller.getProject().startDateProperty().addListener((observable, oldValue, newValue) -> {
             initDateLine();
             /** После изменения временной шкалы обновляем диаграммы */
-            uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskGanttChart().getObjectsLayer().refreshTaskDiagram();
-            uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getObjectsLayer().refreshResourceDiagram();
+            uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().refreshResourceDiagram();
         });
         controller.getProject().finishDateProperty().addListener((observable, oldValue, newValue) -> {
             initDateLine();
             /** После изменения временной шкалы обновляем диаграммы */
-            uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskGanttChart().getObjectsLayer().refreshTaskDiagram();
-            uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getObjectsLayer().refreshResourceDiagram();
+            uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().refreshResourceDiagram();
         });
     }
 
