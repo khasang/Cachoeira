@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTreeTableCell;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.util.Callback;
 import javafx.util.converter.DoubleStringConverter;
 import ru.khasang.cachoeira.controller.IController;
@@ -77,121 +78,274 @@ public class TaskPaneController {
         donePercentColumn.setCellValueFactory(param -> param.getValue().getValue().donePercentProperty().asObject());
         priorityColumn.setCellValueFactory(param -> param.getValue().getValue().priorityTypeProperty());
         costColumn.setCellValueFactory(param -> param.getValue().getValue().costProperty().asObject());
-        /** Меняем формат даты в столбцах **/
-        startDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
-            @Override
-            public void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-                this.setAlignment(Pos.CENTER);
-                this.setText(null);
-                this.setGraphic(null);
-                if (!empty) {
-                    String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(item);
-                    this.setText(dateFormatter);
-                }
-            }
-        });
-        finishDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
-            @Override
-            public void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-                this.setAlignment(Pos.CENTER);
-                this.setText(null);
-                this.setGraphic(null);
-                if (!empty) {
-                    String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(item);
-                    this.setText(dateFormatter);
-                }
-            }
-        });
         /** Делаем поля таблицы редактируемыми */
         taskTreeTableView.setEditable(true);
         taskNameColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
-        donePercentColumn.setCellFactory(new Callback<TreeTableColumn<ITask, Integer>, TreeTableCell<ITask, Integer>>() {
+        startDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
+            DatePicker startDatePicker;
+
             @Override
-            public TreeTableCell<ITask, Integer> call(TreeTableColumn<ITask, Integer> param) {
-                return new TreeTableCell<ITask, Integer>() {
-                    Slider slider;
+            public void startEdit() {
+                super.startEdit();
+                if (startDatePicker == null) {
+                    createDatePicker();
+                }
+                startDatePicker.setValue(getItem());
+                setText(null);
+                setGraphic(startDatePicker);
+                startDatePicker.requestFocus();
+            }
 
-                    @Override
-                    public void startEdit() {
-                        if (!isEmpty()) {
-                            super.startEdit();
-                            createTextField();
-                            setText(null);
-                            setGraphic(slider);
-                        }
-                    }
+            @Override
+            public void cancelEdit() {
+                super.cancelEdit();
+                setText(getString());
+                setGraphic(null);
+            }
 
-                    @Override
-                    public void cancelEdit() {
-                        setText(String.valueOf(getItem()));
-                        setGraphic(null);
-                    }
+            @Override
+            protected void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+                setAlignment(Pos.CENTER);
+            }
 
+            private void createDatePicker() {
+                this.startDatePicker = new DatePicker();
+                startDatePicker.setEditable(false);
+                startDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
                     @Override
-                    protected void updateItem(Integer item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                            if (isEditing()) {
-                                if (slider != null) {
-//                                    textField.setText(getString());
-//                                    slider.setValue(task.getDonePercent());
-                                    slider.setValue(new DoubleStringConverter().fromString(getString()));
+                    public DateCell call(DatePicker param) {
+                        return new DateCell() {
+                            @Override
+                            public void updateItem(LocalDate item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (item.isBefore(controller.getProject().getStartDate())) {
+                                    setDisable(true);
                                 }
-                                setText(null);
-                                setGraphic(slider);
-                            } else {
-                                setText(getString());
-                                setGraphic(null);
+                                if (item.isEqual(controller.getProject().getFinishDate()) || item.isAfter(controller.getProject().getFinishDate())) {
+                                    setDisable(true);
+                                }
                             }
-                        }
+                        };
                     }
+                });
+                startDatePicker.setOnAction(event -> {
+                    commitEdit(startDatePicker.getValue());
+                    event.consume();
+                });
+            }
 
-                    private void createTextField() {
-//                        textField = new TextField(getString());
-                        slider = new Slider();
-//                        slider.valueProperty().bindBidirectional(getTreeTableRow().getTreeItem().getValue().donePercentProperty());
+            private String getString() {
+                return getItem() == null ? "" : DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(getItem());
+            }
+        });
+        finishDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
+            DatePicker finishDatePicker;
 
-//                        textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-//                        textField.setOnKeyPressed(event -> {
-//                            if (isInteger(event.getText()) || (event.getCode() == KeyCode.BACK_SPACE)) {
-//                                textField.setEditable(true);
-//                            } else {
-////                                textField.setEditable(false);
-//                                textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
-////                                event.consume();
-//                            }
-//                        });
-//                        textField.setOnAction(event -> {
-//                            Integer fromString = new IntegerStringConverter().fromString(textField.getText());
-//                            if (fromString != null) {
-//                                commitEdit(fromString > 100 ? 100 : fromString);
-//                            } else {
-//                                commitEdit(0);
-//                            }
-//                            event.consume();
-//                        });
-//                        textField.setOnKeyReleased(event -> {
-//                            if (event.getCode() == KeyCode.ESCAPE) {
-//                                this.cancelEdit();
-////                                textField.setEditable(false);
-//                                event.consume();
-//                            }
-//                        });
+            @Override
+            public void startEdit() {
+                super.startEdit();
+                if (finishDatePicker == null) {
+                    createDatePicker();
+                }
+                finishDatePicker.setValue(getItem());
+                setText(null);
+                setGraphic(finishDatePicker);
+                finishDatePicker.requestFocus();
+            }
+
+            @Override
+            public void cancelEdit() {
+                super.cancelEdit();
+                setText(getString());
+                setGraphic(null);
+            }
+
+            @Override
+            protected void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+                setAlignment(Pos.CENTER);
+            }
+
+            private void createDatePicker() {
+                this.finishDatePicker = new DatePicker();
+                finishDatePicker.setEditable(false);
+                finishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+                    @Override
+                    public DateCell call(DatePicker param) {
+                        return new DateCell() {
+                            @Override
+                            public void updateItem(LocalDate item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (item.isBefore(getTreeTableRow().getTreeItem().getValue().getStartDate().plusDays(1))) {
+                                    setDisable(true);
+                                }
+                                if (item.isEqual(controller.getProject().getFinishDate()) || item.isAfter(controller.getProject().getFinishDate())) {
+                                    setDisable(true);
+                                }
+                            }
+                        };
                     }
+                });
+                finishDatePicker.setOnAction(event -> {
+                    commitEdit(finishDatePicker.getValue());
+                    event.consume();
+                });
+            }
 
-                    private String getString() {
-                        return getItem() == null ? "0" : getItem().toString();
+            private String getString() {
+                return getItem() == null ? "" : DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(getItem());
+            }
+        });
+        donePercentColumn.setCellFactory(column -> new TreeTableCell<ITask, Integer>() {
+            Slider slider;
+
+            @Override
+            public void startEdit() {
+                super.startEdit();
+                if (slider == null) {
+                    createSlider();
+                }
+                slider.setValue(getItem());
+                setText(null);
+                setGraphic(slider);
+                slider.requestFocus();
+            }
+
+            @Override
+            public void cancelEdit() {
+                super.cancelEdit();
+                setText(String.valueOf(getItem()));
+                setGraphic(null);
+            }
+
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+            }
+
+            private void createSlider() {
+                slider = new Slider();
+                slider.setShowTickMarks(true);
+                slider.setOnMouseReleased(event -> {
+                    if (!event.isPrimaryButtonDown()) {
+                        commitEdit(slider.valueProperty().intValue());
+                        event.consume();
                     }
-                };
+                });
+            }
+
+            private String getString() {
+                return getItem() == null ? "0" : getItem().toString();
             }
         });
         priorityColumn.setCellFactory(ComboBoxTreeTableCell.forTreeTableColumn(PriorityType.values()));
-        costColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new DoubleStringConverter()));
+        costColumn.setCellFactory(column -> new TreeTableCell<ITask, Double>() {
+            TextField textField;
+
+            @Override
+            public void startEdit() {
+                super.startEdit();
+                if (textField == null) {
+                    createTextField();
+                }
+                textField.setText(getString());
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+                textField.requestFocus();
+            }
+
+            @Override
+            public void cancelEdit() {
+                super.cancelEdit();
+                setText(getString());
+                setGraphic(null);
+            }
+
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    if (isEditing()) {
+                        if (textField != null) {
+                            textField.setText(getString());
+                        }
+                        setText(null);
+                        setGraphic(textField);
+                    } else {
+                        setText(getString());
+                        setGraphic(null);
+                    }
+                }
+            }
+
+            private void createTextField() {
+                textField = new TextField();
+                textField.setOnKeyPressed(event -> {
+                    if ((isInteger(event.getText()) || event.getText().equals(".") && (countChar(textField.getText(), '.') < 1)) || (event.getCode() == KeyCode.BACK_SPACE)) {
+                        textField.setEditable(true);
+                        if ((textField.getText().length() > 0) && (textField.getText().lastIndexOf(".") != -1)) {
+                            if ((textField.getText().length() > textField.getText().lastIndexOf(".") + 2) && (event.getCode() != KeyCode.BACK_SPACE)) {
+                                textField.setEditable(false);
+                            }
+                        }
+                    } else {
+                        textField.setEditable(false);
+                    }
+                });
+                textField.setOnAction(event -> {
+                    commitEdit(new DoubleStringConverter().fromString(textField.getText()));
+                    event.consume();
+                });
+
+            }
+
+            private String getString() {
+                return getItem() == null ? "0.0" : getItem().toString();
+            }
+
+            private int countChar(String text, char s) {
+                int count = 0;
+                for (char element : text.toCharArray()) {
+                    if (element == s) count++;
+                }
+                return count;
+            }
+
+            private boolean isInteger(String string) {
+                try {
+                    Integer.parseInt(string);
+                } catch (Exception e) {
+                    return false;
+                }
+                return true;
+            }
+        });
         /** Высота строк и выравнивание */
         taskTreeTableView.setFixedCellSize(31);
         taskNameColumn.setStyle("-fx-alignment: CENTER-LEFT");
