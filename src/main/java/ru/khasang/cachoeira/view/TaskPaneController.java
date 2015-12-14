@@ -6,7 +6,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxTreeTableCell;
+import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.util.Callback;
+import javafx.util.converter.DoubleStringConverter;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
@@ -73,31 +78,272 @@ public class TaskPaneController {
         donePercentColumn.setCellValueFactory(param -> param.getValue().getValue().donePercentProperty().asObject());
         priorityColumn.setCellValueFactory(param -> param.getValue().getValue().priorityTypeProperty());
         costColumn.setCellValueFactory(param -> param.getValue().getValue().costProperty().asObject());
-        /** Меняем формат даты в столбцах **/
+        /** Делаем поля таблицы редактируемыми */
+        taskTreeTableView.setEditable(true);
+        taskNameColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
         startDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
+            DatePicker startDatePicker;
+
             @Override
-            public void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-                this.setAlignment(Pos.CENTER);
-                this.setText(null);
-                this.setGraphic(null);
-                if (!empty) {
-                    String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(item);
-                    this.setText(dateFormatter);
+            public void startEdit() {
+                super.startEdit();
+                if (startDatePicker == null) {
+                    createDatePicker();
                 }
+                startDatePicker.setValue(getItem());
+                setText(null);
+                setGraphic(startDatePicker);
+                startDatePicker.requestFocus();
+            }
+
+            @Override
+            public void cancelEdit() {
+                super.cancelEdit();
+                setText(getString());
+                setGraphic(null);
+            }
+
+            @Override
+            protected void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+                setAlignment(Pos.CENTER);
+            }
+
+            private void createDatePicker() {
+                this.startDatePicker = new DatePicker();
+                startDatePicker.setEditable(false);
+                startDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+                    @Override
+                    public DateCell call(DatePicker param) {
+                        return new DateCell() {
+                            @Override
+                            public void updateItem(LocalDate item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (item.isBefore(controller.getProject().getStartDate())) {
+                                    setDisable(true);
+                                }
+                                if (item.isEqual(controller.getProject().getFinishDate()) || item.isAfter(controller.getProject().getFinishDate())) {
+                                    setDisable(true);
+                                }
+                            }
+                        };
+                    }
+                });
+                startDatePicker.setOnAction(event -> {
+                    commitEdit(startDatePicker.getValue());
+                    event.consume();
+                });
+            }
+
+            private String getString() {
+                return getItem() == null ? "" : DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(getItem());
             }
         });
         finishDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
+            DatePicker finishDatePicker;
+
             @Override
-            public void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-                this.setAlignment(Pos.CENTER);
-                this.setText(null);
-                this.setGraphic(null);
-                if (!empty) {
-                    String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(item);
-                    this.setText(dateFormatter);
+            public void startEdit() {
+                super.startEdit();
+                if (finishDatePicker == null) {
+                    createDatePicker();
                 }
+                finishDatePicker.setValue(getItem());
+                setText(null);
+                setGraphic(finishDatePicker);
+                finishDatePicker.requestFocus();
+            }
+
+            @Override
+            public void cancelEdit() {
+                super.cancelEdit();
+                setText(getString());
+                setGraphic(null);
+            }
+
+            @Override
+            protected void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+                setAlignment(Pos.CENTER);
+            }
+
+            private void createDatePicker() {
+                this.finishDatePicker = new DatePicker();
+                finishDatePicker.setEditable(false);
+                finishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+                    @Override
+                    public DateCell call(DatePicker param) {
+                        return new DateCell() {
+                            @Override
+                            public void updateItem(LocalDate item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (item.isBefore(getTreeTableRow().getTreeItem().getValue().getStartDate().plusDays(1))) {
+                                    setDisable(true);
+                                }
+                                if (item.isEqual(controller.getProject().getFinishDate()) || item.isAfter(controller.getProject().getFinishDate())) {
+                                    setDisable(true);
+                                }
+                            }
+                        };
+                    }
+                });
+                finishDatePicker.setOnAction(event -> {
+                    commitEdit(finishDatePicker.getValue());
+                    event.consume();
+                });
+            }
+
+            private String getString() {
+                return getItem() == null ? "" : DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(getItem());
+            }
+        });
+        donePercentColumn.setCellFactory(column -> new TreeTableCell<ITask, Integer>() {
+            Slider slider;
+
+            @Override
+            public void startEdit() {
+                super.startEdit();
+                if (slider == null) {
+                    createSlider();
+                }
+                slider.setValue(getItem());
+                setText(null);
+                setGraphic(slider);
+                slider.requestFocus();
+            }
+
+            @Override
+            public void cancelEdit() {
+                super.cancelEdit();
+                setText(String.valueOf(getItem()));
+                setGraphic(null);
+            }
+
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+            }
+
+            private void createSlider() {
+                slider = new Slider();
+                slider.setShowTickMarks(true);
+                slider.setOnMouseReleased(event -> {
+                    if (!event.isPrimaryButtonDown()) {
+                        commitEdit(slider.valueProperty().intValue());
+                        event.consume();
+                    }
+                });
+            }
+
+            private String getString() {
+                return getItem() == null ? "0" : getItem().toString();
+            }
+        });
+        priorityColumn.setCellFactory(ComboBoxTreeTableCell.forTreeTableColumn(PriorityType.values()));
+        costColumn.setCellFactory(column -> new TreeTableCell<ITask, Double>() {
+            TextField textField;
+
+            @Override
+            public void startEdit() {
+                super.startEdit();
+                if (textField == null) {
+                    createTextField();
+                }
+                textField.setText(getString());
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+                textField.requestFocus();
+            }
+
+            @Override
+            public void cancelEdit() {
+                super.cancelEdit();
+                setText(getString());
+                setGraphic(null);
+            }
+
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    if (isEditing()) {
+                        if (textField != null) {
+                            textField.setText(getString());
+                        }
+                        setText(null);
+                        setGraphic(textField);
+                    } else {
+                        setText(getString());
+                        setGraphic(null);
+                    }
+                }
+            }
+
+            private void createTextField() {
+                textField = new TextField();
+                textField.setOnKeyPressed(event -> {
+                    if ((isInteger(event.getText()) || event.getText().equals(".") && (countChar(textField.getText(), '.') < 1)) || (event.getCode() == KeyCode.BACK_SPACE)) {
+                        textField.setEditable(true);
+                        if ((textField.getText().length() > 0) && (textField.getText().lastIndexOf(".") != -1)) {
+                            if ((textField.getText().length() > textField.getText().lastIndexOf(".") + 2) && (event.getCode() != KeyCode.BACK_SPACE)) {
+                                textField.setEditable(false);
+                            }
+                        }
+                    } else {
+                        textField.setEditable(false);
+                    }
+                });
+                textField.setOnAction(event -> {
+                    commitEdit(new DoubleStringConverter().fromString(textField.getText()));
+                    event.consume();
+                });
+
+            }
+
+            private String getString() {
+                return getItem() == null ? "0.0" : getItem().toString();
+            }
+
+            private int countChar(String text, char s) {
+                int count = 0;
+                for (char element : text.toCharArray()) {
+                    if (element == s) count++;
+                }
+                return count;
+            }
+
+            private boolean isInteger(String string) {
+                try {
+                    Integer.parseInt(string);
+                } catch (Exception e) {
+                    return false;
+                }
+                return true;
             }
         });
         /** Высота строк и выравнивание */
@@ -209,6 +455,7 @@ public class TaskPaneController {
     public void setUIControl(UIControl uiControl) {
         this.uiControl = uiControl;
     }
+
     public TaskGanttChart getTaskGanttChart() {
         return taskGanttChart;
     }

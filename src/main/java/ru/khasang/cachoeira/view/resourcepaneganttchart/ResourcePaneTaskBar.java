@@ -133,6 +133,7 @@ public class ResourcePaneTaskBar extends Rectangle {
      */
     private void enableDrag() {
         final Delta dragDelta = new Delta();
+        final OldRound oldRound = new OldRound();
         setOnMousePressed(event -> {
             /** Выделяем нужный элемент в таблице */
             int i = controller.getProject().getTaskList().indexOf(task);
@@ -155,13 +156,16 @@ public class ResourcePaneTaskBar extends Rectangle {
                 if (newX > 0 && newX < getScene().getWidth()) {
                     /** Хреначим привязку к сетке */
                     double v = newX / columnWidth; // Делим координату на ширину столбца, получаем цифру в днях с десятыми
-                    long round = Math.round(v); // Убираем десятые, чтобы был ровно день
-                    wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                    task.setStartDate(controller.getProject().getStartDate().plusDays(round));
-                    task.setFinishDate(task.getStartDate().plusDays(Math.round(getWidth() / columnWidth)));
-                    long l = round * columnWidth; // Конвертим обратно в пиксели
-                    setX(l - 2);
-                    wasMoved = false; // Когда окончили движение фолз
+                    long newRound = Math.round(v); // Убираем десятые, чтобы был ровно день
+                    if (newRound != oldRound.old) {
+                        oldRound.old = newRound;
+                        wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                        task.setStartDate(controller.getProject().getStartDate().plusDays(newRound));
+                        task.setFinishDate(task.getStartDate().plusDays(Math.round(getWidth() / columnWidth)));
+                        long l = newRound * columnWidth; // Конвертим обратно в пиксели
+                        setX(l - 2);
+                        wasMoved = false; // Когда окончили движение фолз
+                    }
                 }
             }
         });
@@ -175,5 +179,9 @@ public class ResourcePaneTaskBar extends Rectangle {
     // records relative x co-ordinate.
     private class Delta {
         double x;
+    }
+
+    private class OldRound {
+        long old;
     }
 }
