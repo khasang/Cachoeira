@@ -11,6 +11,10 @@ public class ResourceTooltip extends Tooltip {
     public ResourceTooltip() {
     }
 
+    public ResourceTooltip(IResource resource) {
+        initToolTip(resource);
+    }
+
     public void initToolTip(IResource resource) {
         textProperty().bind(Bindings
                 .concat("Наименование: ").concat(resource.nameProperty()).concat("\n")
