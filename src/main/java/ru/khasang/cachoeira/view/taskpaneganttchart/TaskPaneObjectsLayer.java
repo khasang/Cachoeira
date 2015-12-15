@@ -1,9 +1,9 @@
 package ru.khasang.cachoeira.view.taskpaneganttchart;
 
 import javafx.scene.layout.Pane;
-import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,28 +13,35 @@ import java.util.List;
  */
 
 public class TaskPaneObjectsLayer extends Pane {
-    private IController controller;
     private int columnWidth;
     private TaskPaneTaskBar taskPaneTaskBar;
     private UIControl uiControl;
     private List<TaskPaneTaskBar> taskPaneTaskBarList = new ArrayList<>();
 
-    public TaskPaneObjectsLayer(IController controller, int columnWidth) {
-        this.controller = controller;
+    public TaskPaneObjectsLayer(int columnWidth) {
         this.columnWidth = columnWidth;
     }
 
     public void refreshTaskDiagram() {
         this.getChildren().clear();
-        for (ITask task : controller.getProject().getTaskList()) {
-            taskPaneTaskBar = new TaskPaneTaskBar(controller, task, columnWidth, uiControl);
-//            taskPaneTaskBar.showResourcesOnDiagram();
+        for (ITask task : uiControl.getController().getProject().getTaskList()) {
+            taskPaneTaskBar = new TaskPaneTaskBar(columnWidth);
+            taskPaneTaskBar.createTaskRectangle(uiControl, task);
+            taskPaneTaskBar.setTask(task);
+            taskPaneTaskBar.enableDrag(uiControl, task);
+            taskPaneTaskBar.setContextMenu(uiControl, task);
+            taskPaneTaskBar.setTooltip(new TaskTooltip(task));
             this.getChildren().add(taskPaneTaskBar);
         }
     }
 
     public void addTaskBar(ITask task) {
-        taskPaneTaskBar = new TaskPaneTaskBar(controller, task, columnWidth, uiControl);
+        taskPaneTaskBar = new TaskPaneTaskBar(columnWidth);
+        taskPaneTaskBar.createTaskRectangle(uiControl, task);
+        taskPaneTaskBar.setTask(task);
+        taskPaneTaskBar.enableDrag(uiControl, task);
+        taskPaneTaskBar.setContextMenu(uiControl, task);
+        taskPaneTaskBar.setTooltip(new TaskTooltip(task));
         this.getChildren().add(taskPaneTaskBar);
         taskPaneTaskBarList.add(taskPaneTaskBar);
     }
