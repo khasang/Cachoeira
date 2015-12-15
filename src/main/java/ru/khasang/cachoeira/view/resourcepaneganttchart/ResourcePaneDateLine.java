@@ -30,11 +30,11 @@ public class ResourcePaneDateLine extends HBox {
         setMinHeight(24);
     }
 
-    public void initDateLine(LocalDate startDateProject, LocalDate finishDateProject) {
-        long between = ChronoUnit.DAYS.between(startDateProject, finishDateProject);
+    public void initDateLine(LocalDate projectStartDate, LocalDate projectFinishDate) {
+        long between = ChronoUnit.DAYS.between(projectStartDate, projectFinishDate);
         this.getChildren().clear();
         for (int i = 0; i < between; i++) {
-            String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(startDateProject.plusDays(i));
+            String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(projectStartDate.plusDays(i));
             Label dateLabel = new Label(dateFormatter); //фигачим лейбл с датой на борту
             dateLabel.setMinWidth(columnWidth); //ширина столбца
             dateLabel.setMinHeight(24);
