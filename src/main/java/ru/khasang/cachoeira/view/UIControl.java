@@ -4,10 +4,10 @@ import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 
 public class UIControl {
-    MainWindow mainWindow;
-    StartWindow startWindow;
-    NewProjectWindow newProjectWindow;
-    IController controller = new Controller();
+    private MainWindow mainWindow;
+    private StartWindow startWindow;
+    private NewProjectWindow newProjectWindow;
+    private IController controller = new Controller();
 
     public void launchStartWindow() {
         startWindow = new StartWindow(controller, this);
@@ -34,5 +34,9 @@ public class UIControl {
 
     public NewProjectWindow getNewProjectWindow() {
         return newProjectWindow;
+    }
+
+    public IController getController() {
+        return controller;
     }
 }
