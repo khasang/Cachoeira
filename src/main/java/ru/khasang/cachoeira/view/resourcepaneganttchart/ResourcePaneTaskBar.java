@@ -1,122 +1,144 @@
 package ru.khasang.cachoeira.view.resourcepaneganttchart;
 
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 /**
  * Created by truesik on 04.11.2015.
  */
-public class ResourcePaneTaskBar extends Rectangle {
+public class ResourcePaneTaskBar extends StackPane {
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
     private static final double rowHeight = 31;
 
-    private IController controller;
     private ITask task;
-    private int rowIndex;                        //координата Y (строка задачи)
-    private int columnWidth;
-    private UIControl uiControl;
     private IResource resource;
+    private int columnWidth;
     private boolean wasMoved;
     private ContextMenu contextMenu;
 
-    public ResourcePaneTaskBar(IController controller, ITask task, int columnWidth, UIControl uiControl, IResource resource) {
-        this.controller = controller;
-        this.task = task;
+    public ResourcePaneTaskBar(int columnWidth) {
         this.columnWidth = columnWidth;
-        this.uiControl = uiControl;
-        this.resource = resource;
+        setAlignment(Pos.CENTER_LEFT);
+    }
 
-        rowIndex = controller.getProject().getResourceList().indexOf(resource);
+    public void createTaskRectangle(UIControl uiControl,
+                                    ITask task,
+                                    IResource resource) {
+        Rectangle backgroundRectangle = new Rectangle();
+        backgroundRectangle.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
+        backgroundRectangle.setStroke(Color.valueOf("#B3E5FC"));  //цвет окантовки
+        backgroundRectangle.setArcHeight(5);                      //сгругление углов
+        backgroundRectangle.setArcWidth(5);
+        backgroundRectangle.setHeight(TASK_HEIGHT);
 
-        this.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
-        this.setStroke(Color.valueOf("#B3E5FC"));  //цвет окантовки
-        this.setArcHeight(5);                      //сгругление углов
-        this.setArcWidth(5);                       //сгругление углов
+        setParameters(uiControl, task, resource, backgroundRectangle);
 
-        calculateStartPoint();
-        this.setLayoutY((rowIndex * rowHeight) + 6.5);
-        calculateWidth();
-        this.setHeight(TASK_HEIGHT);
+        Rectangle donePercentRectangle = new Rectangle();
+        donePercentRectangle.setFill(Color.valueOf("#0381f4"));
+        donePercentRectangle.arcHeightProperty().bind(backgroundRectangle.arcHeightProperty());
+        donePercentRectangle.arcWidthProperty().bind(backgroundRectangle.arcWidthProperty());
+        donePercentRectangle.heightProperty().bind(backgroundRectangle.heightProperty().subtract(2.5));
+        donePercentRectangle.widthProperty().bind(
+                backgroundRectangle.widthProperty().divide(100).multiply(task.donePercentProperty()));
 
+        this.getChildren().add(backgroundRectangle);
+        this.getChildren().add(donePercentRectangle);
+
+        setListeners(uiControl, task, resource, backgroundRectangle, donePercentRectangle);
+    }
+
+    private void setParameters(UIControl uiControl,
+                               ITask task,
+                               IResource resource,
+                               Rectangle backgroundRectangle) {
+        backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate()));
+        this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate()));
+        this.setLayoutY(taskY(uiControl.getController().getProject().getResourceList().indexOf(resource)));
+    }
+
+    private double taskWidth(LocalDate taskStartDate,
+                             LocalDate taskFinishDate) {
+        return (ChronoUnit.DAYS.between(taskStartDate, taskFinishDate) * columnWidth);
+    }
+
+    private double taskY(int resourceRowIndex) {
+        return (resourceRowIndex * rowHeight) + 6.5;
+    }
+
+    private double taskX(LocalDate taskStartDate,
+                         LocalDate projectStartDate) {
+        return ((ChronoUnit.DAYS.between(projectStartDate, taskStartDate)) * columnWidth) - 1.5;
+    }
+
+    private void setListeners(UIControl uiControl,
+                              ITask task,
+                              IResource resource,
+                              Rectangle backgroundRectangle,
+                              Rectangle donePercentRectangle) {
         /**
          * Следим за изменениями в списке ресурсов, если произошло добавление или удаление элемента в списке,
          * то пересчитываем индексы у элементов на диаграмме
          */
-        controller.getProject().getResourceList().addListener(new ListChangeListener<IResource>() {
-            @Override
-            public void onChanged(Change<? extends IResource> change) {
-                while (change.next()) {
-                    if (change.wasRemoved() || change.wasAdded()) {
-                        rowIndex = controller.getProject().getResourceList().indexOf(resource);
-                        setLayoutY((rowIndex * rowHeight) + 6.5);
-                    }
+        uiControl.getController().getProject().getResourceList().addListener((ListChangeListener<IResource>) change -> {
+            while (change.next()) {
+                if (change.wasRemoved() || change.wasAdded()) {
+                    this.setLayoutY(taskY(uiControl.getController().getProject().getResourceList().indexOf(resource)));
                 }
             }
         });
         /** Следим за изменением начальной и конечной даты */
         task.startDateProperty().addListener((observable, oldValue, newValue) -> {
             if (!wasMoved) {
-                calculateStartPoint();
-                calculateWidth();
+                backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate()));
+                this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate()));
             }
         });
         task.finishDateProperty().addListener((observable, oldValue, newValue) -> {
             if (!wasMoved) {
-                calculateWidth();
+                backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate()));
             }
         });
 
         //подсветка при наведении
         this.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                this.setFill(Color.valueOf("#41C2FA"));
-                this.setStroke(Color.valueOf("#72D1FA"));
+                backgroundRectangle.setFill(Color.valueOf("03bdf4"));
+                backgroundRectangle.setStroke(Color.valueOf("#03d1f4"));
+                donePercentRectangle.setFill(Color.valueOf("#0395f4"));
             } else {
-                this.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
-                this.setStroke(Color.valueOf("#B3E5FC"));
+                backgroundRectangle.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
+                backgroundRectangle.setStroke(Color.valueOf("#03bdf4"));
+                donePercentRectangle.setFill(Color.valueOf("#0381f4"));
             }
         });
-
-        setContextMenu(); //контекстное меню при нажатии на прямоугольник, добавлено для теста (код нужно дописать)
-        setTooltip();
-        enableDrag();
     }
 
-    private void calculateStartPoint() {
-        double startDay = (ChronoUnit.DAYS.between(controller.getProject().getStartDate(), task.getStartDate())) * columnWidth;
-        this.setX(startDay - 2); //"2" - подгонка под сетку
-    }
-
-    private void calculateWidth() {
-        double taskWidth = (ChronoUnit.DAYS.between(task.getStartDate(), task.getFinishDate()) * columnWidth);
-        this.setWidth(taskWidth);
-    }
-
-    public void setContextMenu() {
+    public void setContextMenu(UIControl uiControl,
+                               ITask task) {
         Menu setResource = new Menu("Назначить ресурс");
         MenuItem getProperties = new MenuItem("Свойства");
-        getProperties.setOnAction(event -> controller.selectedTaskProperty().setValue(this.task));
+        getProperties.setOnAction(event -> uiControl.getController().selectedTaskProperty().setValue(task));
         MenuItem removeTask = new MenuItem("Удалить задачу");
 
         contextMenu = new ContextMenu(setResource, getProperties, removeTask);
     }
 
-    private void setTooltip() {
-        TaskTooltip taskTooltip = new TaskTooltip();
-        taskTooltip.initToolTip(task);
+    public void setTooltip(TaskTooltip taskTooltip) {
         Tooltip.install(this, taskTooltip);
     }
 
@@ -131,16 +153,17 @@ public class ResourcePaneTaskBar extends Rectangle {
     /**
      * Drag'n'Drop
      */
-    private void enableDrag() {
+    public void enableDrag(UIControl uiControl,
+                           ITask task) {
         final Delta dragDelta = new Delta();
         final OldRound oldRound = new OldRound();
         setOnMousePressed(event -> {
             /** Выделяем нужный элемент в таблице */
-            int i = controller.getProject().getTaskList().indexOf(task);
+            int i = uiControl.getController().getProject().getTaskList().indexOf(task);
             uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(i);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
-                dragDelta.x = getX() - event.getX();
+                dragDelta.x = getLayoutX() - event.getSceneX();
                 getScene().setCursor(Cursor.MOVE);
             } else {
                 getScene().setCursor(Cursor.DEFAULT);
@@ -152,7 +175,7 @@ public class ResourcePaneTaskBar extends Rectangle {
         });
         setOnMouseDragged(event -> {
             if (event.isPrimaryButtonDown()) {
-                double newX = event.getX() + dragDelta.x;
+                double newX = event.getSceneX() + dragDelta.x;
                 if (newX > 0 && newX < getScene().getWidth()) {
                     /** Хреначим привязку к сетке */
                     double v = newX / columnWidth; // Делим координату на ширину столбца, получаем цифру в днях с десятыми
@@ -160,10 +183,10 @@ public class ResourcePaneTaskBar extends Rectangle {
                     if (newRound != oldRound.old) {
                         oldRound.old = newRound;
                         wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                        task.setStartDate(controller.getProject().getStartDate().plusDays(newRound));
+                        task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays(newRound));
                         task.setFinishDate(task.getStartDate().plusDays(Math.round(getWidth() / columnWidth)));
                         long l = newRound * columnWidth; // Конвертим обратно в пиксели
-                        setX(l - 2);
+                        setLayoutX(l - 2);
                         wasMoved = false; // Когда окончили движение фолз
                     }
                 }
@@ -174,6 +197,14 @@ public class ResourcePaneTaskBar extends Rectangle {
                 getScene().setCursor(Cursor.DEFAULT);
             }
         });
+    }
+
+    public void setTask(ITask task) {
+        this.task = task;
+    }
+
+    public void setResource(IResource resource) {
+        this.resource = resource;
     }
 
     // records relative x co-ordinate.
