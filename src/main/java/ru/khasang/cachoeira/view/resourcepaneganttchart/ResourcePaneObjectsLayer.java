@@ -1,10 +1,10 @@
 package ru.khasang.cachoeira.view.resourcepaneganttchart;
 
 import javafx.scene.layout.Pane;
-import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,19 +15,40 @@ import java.util.List;
  */
 
 public class ResourcePaneObjectsLayer extends Pane {
-    private IController controller;
     private int columnWidth;
     private ResourcePaneTaskBar resourcePaneTaskBar;
     private UIControl uiControl;
     private List<ResourcePaneTaskBar> resourcePaneTaskBarList = new ArrayList<>();
 
-    public ResourcePaneObjectsLayer(IController controller, int columnWidth) {
-        this.controller = controller;
+    public ResourcePaneObjectsLayer(int columnWidth) {
         this.columnWidth = columnWidth;
     }
 
-    public void addTaskBar(ITask task, IResource resource) {
-        resourcePaneTaskBar = new ResourcePaneTaskBar(controller, task, columnWidth, uiControl, resource);
+    public void refreshResourceDiagram() {
+        this.getChildren().clear();
+        for (ITask task : uiControl.getController().getProject().getTaskList()) {
+            for (IResource resource : task.getResourceList()) {
+                resourcePaneTaskBar = new ResourcePaneTaskBar(columnWidth);
+                resourcePaneTaskBar.createTaskRectangle(uiControl, task, resource);
+                resourcePaneTaskBar.setTask(task);
+                resourcePaneTaskBar.setResource(resource);
+                resourcePaneTaskBar.enableDrag(uiControl, task);
+                resourcePaneTaskBar.setContextMenu(uiControl, task);
+                resourcePaneTaskBar.setTooltip(new TaskTooltip(task));
+                this.getChildren().add(resourcePaneTaskBar);
+            }
+        }
+    }
+
+    public void addTaskBar(ITask task,
+                           IResource resource) {
+        resourcePaneTaskBar = new ResourcePaneTaskBar(columnWidth);
+        resourcePaneTaskBar.createTaskRectangle(uiControl, task, resource);
+        resourcePaneTaskBar.setTask(task);
+        resourcePaneTaskBar.setResource(resource);
+        resourcePaneTaskBar.enableDrag(uiControl, task);
+        resourcePaneTaskBar.setContextMenu(uiControl, task);
+        resourcePaneTaskBar.setTooltip(new TaskTooltip(task));
         this.getChildren().add(resourcePaneTaskBar);
         resourcePaneTaskBarList.add(resourcePaneTaskBar);
     }
@@ -43,7 +64,8 @@ public class ResourcePaneObjectsLayer extends Pane {
         }
     }
 
-    public void removeTaskBarByResource(ITask task, IResource resource) {
+    public void removeTaskBarByResource(ITask task,
+                                        IResource resource) {
         Iterator<ResourcePaneTaskBar> taskBarIterator = resourcePaneTaskBarList.iterator();
         while (taskBarIterator.hasNext()) {
             ResourcePaneTaskBar resourcePaneTaskBar = taskBarIterator.next();
@@ -56,16 +78,5 @@ public class ResourcePaneObjectsLayer extends Pane {
 
     public void setUIControl(UIControl uiControl) {
         this.uiControl = uiControl;
-    }
-
-    public void refreshResourceDiagram() {
-        this.getChildren().clear();
-
-        for (ITask task : controller.getProject().getTaskList()) {
-            for (IResource resource : task.getResourceList()) {
-                resourcePaneTaskBar = new ResourcePaneTaskBar(controller, task, columnWidth, uiControl, resource);
-                this.getChildren().add(resourcePaneTaskBar);
-            }
-        }
     }
 }

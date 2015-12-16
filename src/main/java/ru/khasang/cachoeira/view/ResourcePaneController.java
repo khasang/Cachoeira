@@ -3,12 +3,10 @@ package ru.khasang.cachoeira.view;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
-import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
 import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
@@ -103,7 +101,7 @@ public class ResourcePaneController {
     }
 
     public void initGanttChart() {
-        resourceGanttChart = new ResourceGanttChart(controller, uiControl, 70);
+        resourceGanttChart = new ResourceGanttChart(uiControl, 70);
         resourceSplitPane.getItems().add(resourceGanttChart);
         resourceSplitPane.setDividerPosition(0, 0.3);
         controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) change -> {

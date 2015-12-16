@@ -13,6 +13,10 @@ public class TaskTooltip extends Tooltip {
     public TaskTooltip() {
     }
 
+    public TaskTooltip(ITask task) {
+        initToolTip(task);
+    }
+
     public void initToolTip(ITask task) {
         textProperty().bind(Bindings
                 .concat("Наименование: ").concat(task.nameProperty()).concat("\n")

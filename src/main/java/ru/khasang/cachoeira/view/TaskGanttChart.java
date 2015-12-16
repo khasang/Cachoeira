@@ -19,12 +19,13 @@ public class TaskGanttChart extends VBox {
     private int columnWidth;            //ширина колонок
     private UIControl uiControl;
 
-    public TaskGanttChart(IController controller, UIControl uiControl, int columnWidth) {
+    public TaskGanttChart(UIControl uiControl,
+                          int columnWidth) {
         this.columnWidth = columnWidth;
         this.uiControl = uiControl;
 
         taskPaneGridLayer = new TaskPaneGridLayer(columnWidth);
-        taskPaneObjectsLayer = new TaskPaneObjectsLayer(controller, columnWidth);
+        taskPaneObjectsLayer = new TaskPaneObjectsLayer(columnWidth);
         taskPaneObjectsLayer.setUIControl(uiControl);
         ScrollPane verticalScrollPane = new ScrollPane(taskPaneObjectsLayer);
         verticalScrollPane.setFitToWidth(true);
@@ -33,9 +34,10 @@ public class TaskGanttChart extends VBox {
         StackPane diagramPane = new StackPane(taskPaneGridLayer, verticalScrollPane); //нижний слой сетка, а над ним располагается слой с задачами
         VBox.setVgrow(diagramPane, Priority.ALWAYS);
 
-        taskPaneDateLine = new TaskPaneDateLine(controller, columnWidth);
-        taskPaneDateLine.setUiControl(uiControl);
-        taskPaneDateLine.initDateLine();
+        taskPaneDateLine = new TaskPaneDateLine(columnWidth);
+        taskPaneDateLine.setUIControl(uiControl);
+        taskPaneDateLine.initDateLine(uiControl.getController().getProject().getStartDate(), uiControl.getController().getProject().getFinishDate());
+        taskPaneDateLine.setListeners(uiControl.getController().getProject().startDateProperty(), uiControl.getController().getProject().finishDateProperty());
         VBox vBox = new VBox(taskPaneDateLine, diagramPane);
         VBox.setVgrow(taskPaneDateLine, Priority.NEVER);
 
@@ -43,7 +45,7 @@ public class TaskGanttChart extends VBox {
         horizontalScrollPane.setFitToHeight(true);
         horizontalScrollPane.getStyleClass().add("edge-to-edge"); //убирает подсветку синюю границу вокруг скроллпэйна
         horizontalScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        horizontalScrollPane.setPannable(true); //дает возможность двигать диаграмму зажав кнопку мышки, но работает только если жать на шкалу времени
+//        horizontalScrollPane.setPannable(true); //дает возможность двигать диаграмму зажав кнопку мышки, но работает только если жать на шкалу времени
 
         this.getChildren().addAll(horizontalScrollPane);
         VBox.setVgrow(horizontalScrollPane, Priority.ALWAYS);

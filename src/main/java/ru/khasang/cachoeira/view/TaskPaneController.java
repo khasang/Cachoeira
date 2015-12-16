@@ -423,7 +423,7 @@ public class TaskPaneController {
     }
 
     public void initGanttChart() {
-        taskGanttChart = new TaskGanttChart(controller, uiControl, 70);
+        taskGanttChart = new TaskGanttChart(uiControl, 70);
         taskSplitPane.getItems().add(taskGanttChart);
         taskSplitPane.setDividerPosition(0, 0.3);
     }

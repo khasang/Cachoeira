@@ -4,7 +4,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.view.resourcepaneganttchart.ResourcePaneDateLine;
 import ru.khasang.cachoeira.view.resourcepaneganttchart.ResourcePaneGridLayer;
 import ru.khasang.cachoeira.view.resourcepaneganttchart.ResourcePaneObjectsLayer;
@@ -19,12 +18,13 @@ public class ResourceGanttChart extends VBox {
     private int columnWidth;            //ширина колонок
     private UIControl uiControl;
 
-    public ResourceGanttChart(IController controller, UIControl uiControl, int columnWidth) {
+    public ResourceGanttChart(UIControl uiControl,
+                              int columnWidth) {
         this.columnWidth = columnWidth;
         this.uiControl = uiControl;
 
         resourcePaneGridLayer = new ResourcePaneGridLayer(columnWidth);
-        resourcePaneObjectsLayer = new ResourcePaneObjectsLayer(controller, columnWidth);
+        resourcePaneObjectsLayer = new ResourcePaneObjectsLayer(columnWidth);
         resourcePaneObjectsLayer.setUIControl(uiControl);
         ScrollPane verticalScrollPane = new ScrollPane(resourcePaneObjectsLayer);
         verticalScrollPane.setFitToWidth(true);
@@ -33,9 +33,10 @@ public class ResourceGanttChart extends VBox {
         StackPane diagramPane = new StackPane(resourcePaneGridLayer, verticalScrollPane); //нижний слой сетка, а над ним располагается слой с задачами
         VBox.setVgrow(diagramPane, Priority.ALWAYS);
 
-        resourcePaneDateLine = new ResourcePaneDateLine(controller, columnWidth);
-        resourcePaneDateLine.setUiControl(uiControl);
-        resourcePaneDateLine.initDateLine();
+        resourcePaneDateLine = new ResourcePaneDateLine(columnWidth);
+        resourcePaneDateLine.setUIControl(uiControl);
+        resourcePaneDateLine.initDateLine(uiControl.getController().getProject().getStartDate(), uiControl.getController().getProject().getFinishDate());
+        resourcePaneDateLine.setListeners(uiControl.getController().getProject().startDateProperty(), uiControl.getController().getProject().finishDateProperty());
         VBox vBox = new VBox(resourcePaneDateLine, diagramPane);
         VBox.setVgrow(resourcePaneDateLine, Priority.NEVER);
 
@@ -43,7 +44,7 @@ public class ResourceGanttChart extends VBox {
         horizontalScrollPane.setFitToHeight(true);
         horizontalScrollPane.getStyleClass().add("edge-to-edge"); //убирает подсветку синюю границу вокруг скроллпэйна
         horizontalScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        horizontalScrollPane.setPannable(true); //дает возможность двигать диаграмму зажав кнопку мышки, но работает только если жать на шкалу времени
+//        horizontalScrollPane.setPannable(true); //дает возможность двигать диаграмму зажав кнопку мышки, но работает только если жать на шкалу времени
 
         this.getChildren().addAll(horizontalScrollPane);
         VBox.setVgrow(horizontalScrollPane, Priority.ALWAYS);
