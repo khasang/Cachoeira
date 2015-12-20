@@ -31,7 +31,6 @@ public class TaskPaneTaskBar extends Pane {
     private int columnWidth;
     private boolean wasMoved;
     private ContextMenu contextMenu;
-    private Rectangle backgroundRectangle;
 
     public TaskPaneTaskBar(int columnWidth) {
         this.columnWidth = columnWidth;
@@ -41,7 +40,7 @@ public class TaskPaneTaskBar extends Pane {
 
     public void createTaskRectangle(UIControl uiControl,
                                     ITask task) {
-        backgroundRectangle = new Rectangle();
+        Rectangle backgroundRectangle = new Rectangle();
         backgroundRectangle.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
         backgroundRectangle.setStroke(Color.valueOf("#B3E5FC"));  //цвет окантовки
         backgroundRectangle.setArcHeight(5);                      //сгругление углов
@@ -63,6 +62,8 @@ public class TaskPaneTaskBar extends Pane {
 
         this.getChildren().add(backgroundRectangle);
         this.getChildren().add(donePercentRectangle);
+
+        enableDrag(uiControl, task, backgroundRectangle);
         enableResize(uiControl, task, backgroundRectangle);
 
         setListeners(uiControl, task, backgroundRectangle, donePercentRectangle);
@@ -170,7 +171,8 @@ public class TaskPaneTaskBar extends Pane {
      * Drag'n'Drop
      */
     public void enableDrag(UIControl uiControl,
-                           ITask task) {
+                           ITask task,
+                           Rectangle backgroundRectangle) {
         final Delta dragDelta = new Delta();
         final OldRound oldRound = new OldRound();
         backgroundRectangle.setOnMousePressed(event -> {
