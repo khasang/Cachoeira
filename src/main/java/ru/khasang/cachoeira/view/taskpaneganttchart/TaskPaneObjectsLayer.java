@@ -28,7 +28,6 @@ public class TaskPaneObjectsLayer extends Pane {
             taskPaneTaskBar = new TaskPaneTaskBar(columnWidth);
             taskPaneTaskBar.createTaskRectangle(uiControl, task);
             taskPaneTaskBar.setTask(task);
-            taskPaneTaskBar.enableDrag(uiControl, task);
             taskPaneTaskBar.setContextMenu(uiControl, task);
             taskPaneTaskBar.setTooltip(new TaskTooltip(task));
             this.getChildren().add(taskPaneTaskBar);
@@ -39,7 +38,6 @@ public class TaskPaneObjectsLayer extends Pane {
         taskPaneTaskBar = new TaskPaneTaskBar(columnWidth);
         taskPaneTaskBar.createTaskRectangle(uiControl, task);
         taskPaneTaskBar.setTask(task);
-        taskPaneTaskBar.enableDrag(uiControl, task);
         taskPaneTaskBar.setContextMenu(uiControl, task);
         taskPaneTaskBar.setTooltip(new TaskTooltip(task));
         this.getChildren().add(taskPaneTaskBar);
