@@ -63,7 +63,7 @@ public class TaskPaneTaskBar extends Pane {
 
         this.getChildren().add(backgroundRectangle);
         this.getChildren().add(donePercentRectangle);
-        enableResize(uiControl);
+        enableResize(uiControl, task, backgroundRectangle);
 
         setListeners(uiControl, task, backgroundRectangle, donePercentRectangle);
     }
@@ -102,6 +102,7 @@ public class TaskPaneTaskBar extends Pane {
         uiControl.getController().getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
             while (c.next()) {
                 if (c.wasRemoved() || c.wasAdded()) {
+                    /** Анимация при удалиении элемента из таблицы */
                     KeyValue endKeyValue = new KeyValue(this.layoutYProperty(), taskY(uiControl.getController().getProject().getTaskList().indexOf(task)), Interpolator.SPLINE(0.4, 0, 0.2, 1));
                     KeyFrame endKeyFrame = new KeyFrame(Duration.millis((rowIndex + 1) * 150), endKeyValue);
                     Timeline timeline = new Timeline(endKeyFrame);
@@ -179,8 +180,6 @@ public class TaskPaneTaskBar extends Pane {
                 // record a delta distance for the drag and drop operation.
                 dragDelta.x = getLayoutX() - event.getSceneX();
                 getScene().setCursor(Cursor.MOVE);
-            } else {
-                getScene().setCursor(Cursor.DEFAULT);
             }
             /** Условие для контекстного меню */
             if (event.isSecondaryButtonDown()) {
@@ -206,93 +205,120 @@ public class TaskPaneTaskBar extends Pane {
                 }
             }
         });
-        backgroundRectangle.setOnMouseExited(event -> {
+        backgroundRectangle.setOnMouseReleased(event -> {
             if (!event.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.DEFAULT);
             }
         });
     }
 
-    public void enableResize(UIControl uiControl) {
-
-        Rectangle resizeHandleLeft = new Rectangle();
-        this.getChildren().add(resizeHandleLeft);
-        resizeHandleLeft.setFill(Color.GOLD);
-        resizeHandleLeft.setWidth(10);
-        // bind to top left corner of Rectangle:
-        resizeHandleLeft.xProperty().bind(backgroundRectangle.xProperty());
-        resizeHandleLeft.heightProperty().bind(backgroundRectangle.heightProperty());
-        resizeHandleLeft.yProperty().bind(backgroundRectangle.yProperty());
-        resizeHandleLeft.hoverProperty().addListener((observable, oldValue, newValue) -> {
-            if (resizeHandleLeft.isHover()) {
+    public void enableResize(UIControl uiControl,
+                             ITask task,
+                             Rectangle backgroundRectangle) {
+        /** Создаем прозрачный прямоугольник шириной 10 пикселей */
+        Rectangle leftResizeHandle = new Rectangle();
+        this.getChildren().add(leftResizeHandle);
+        leftResizeHandle.setFill(Color.TRANSPARENT);
+        leftResizeHandle.setWidth(10);
+        /** Привязываем этот прямоугольник к левой стороне таскбара */
+        leftResizeHandle.xProperty().bind(backgroundRectangle.xProperty());
+        leftResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
+        leftResizeHandle.yProperty().bind(backgroundRectangle.yProperty());
+        /** При наведении на левую сторону таскбара будет меняться курсор */
+        leftResizeHandle.hoverProperty().addListener((observable, oldValue, newValue) -> {
+            if (leftResizeHandle.isHover()) {
                 getScene().setCursor(Cursor.H_RESIZE);
             } else {
                 getScene().setCursor(Cursor.DEFAULT);
             }
         });
 
-
-        Rectangle resizeHandleRight = new Rectangle();
-        this.getChildren().add(resizeHandleRight);
-        resizeHandleRight.setFill(Color.TRANSPARENT);
-        resizeHandleRight.setWidth(10);
-        // bind to bottom right corner of Rectangle:
-        resizeHandleRight.xProperty().bind(backgroundRectangle.widthProperty().subtract(10));
-        resizeHandleRight.heightProperty().bind(backgroundRectangle.heightProperty());
-        resizeHandleRight.yProperty().bind(backgroundRectangle.yProperty());
-        resizeHandleRight.hoverProperty().addListener((observable, oldValue, newValue) -> {
-            if (resizeHandleRight.isHover()) {
-                getScene().setCursor(Cursor.H_RESIZE);
-            } else {
-                getScene().setCursor(Cursor.DEFAULT);
-            }
-        });
-
-//        resizeHandleLeft.setOnMouseDragged(event -> {
-//            if (mouseLocation.value != null) {
-//                double deltaX = event.getSceneX() - mouseLocation.value.getX();
-//                double newX = backgroundRectangle.getX() + deltaX;
-//                if (newX >= 10
-//                        && newX <= backgroundRectangle.getX() + backgroundRectangle.getWidth() - 10) {
-//                    backgroundRectangle.setX(newX);
-//                    backgroundRectangle.setWidth(backgroundRectangle.getWidth() - deltaX);
-//                }
-//                mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
-//            }
-//        });
-
-        final Delta dragDelta = new Delta();
-        final OldRound oldRound = new OldRound();
-        resizeHandleRight.setOnMousePressed(event -> {
+        final Delta dragDeltaLeft = new Delta();
+        final OldRound oldRoundLeft = new OldRound();
+        /** Ивент при нажатии на прямоугольник */
+        leftResizeHandle.setOnMousePressed(event -> {
             /** Выделяем нужный элемент в таблице */
             uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(rowIndex);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
-                dragDelta.x = backgroundRectangle.getWidth() - event.getSceneX();
+                dragDeltaLeft.x = getLayoutX() - event.getSceneX();
+                getScene().setCursor(Cursor.H_RESIZE);
+            }
+        });
+        /** Ивент при движении прямоугольника */
+        leftResizeHandle.setOnMouseDragged(event -> {
+            if (event.isPrimaryButtonDown()) {
+                double newX = event.getSceneX() + dragDeltaLeft.x;
+                if (newX >= 0 && newX <= getLayoutX() + backgroundRectangle.getWidth()) {
+                    /** Хреначим привязку к сетке */
+                    if (Math.round(newX / columnWidth) != oldRoundLeft.old) {
+                        if (!(Math.round(newX / columnWidth) * columnWidth - 2 == getLayoutX() + backgroundRectangle.getWidth())) { // Условие против нулевой длины тасбара
+                            oldRoundLeft.old = Math.round(newX / columnWidth);
+                            double oldX = getLayoutX();
+                            setLayoutX(Math.round(newX / columnWidth) * columnWidth - 2);
+                            backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (getLayoutX() - oldX));
+                            wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                            task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / columnWidth))));
+                            wasMoved = false; // Когда окончили движение фолз
+                        }
+                    }
+                }
+            }
+        });
+        leftResizeHandle.setOnMouseReleased(event -> {
+            if (!event.isPrimaryButtonDown()) {
+                getScene().setCursor(Cursor.DEFAULT);
+            }
+        });
+
+        /** Создаем прозрачный прямоугольник шириной 10 пикселей */
+        Rectangle rightResizeHandle = new Rectangle();
+        this.getChildren().add(rightResizeHandle);
+        rightResizeHandle.setFill(Color.TRANSPARENT);
+        rightResizeHandle.setWidth(10);
+        /** Привязываем этот прямоугольник к правой стороне таскбара */
+        rightResizeHandle.xProperty().bind(backgroundRectangle.xProperty().add(backgroundRectangle.widthProperty()).subtract(10));
+        rightResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
+        rightResizeHandle.yProperty().bind(backgroundRectangle.yProperty());
+        /** При наведении на левую сторону таскбара будет меняться курсор */
+        rightResizeHandle.hoverProperty().addListener((observable, oldValue, newValue) -> {
+            if (rightResizeHandle.isHover()) {
                 getScene().setCursor(Cursor.H_RESIZE);
             } else {
                 getScene().setCursor(Cursor.DEFAULT);
             }
         });
-        resizeHandleRight.setOnMouseDragged(event -> {
+
+        final Delta dragDeltaRight = new Delta();
+        final OldRound oldRoundRight = new OldRound();
+        /** Ивент при нажатии на прямоугольник */
+        rightResizeHandle.setOnMousePressed(event -> {
+            /** Выделяем нужный элемент в таблице */
+            uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(rowIndex);
             if (event.isPrimaryButtonDown()) {
+                // record a delta distance for the drag and drop operation.
+                dragDeltaRight.x = backgroundRectangle.getWidth() - event.getSceneX();
                 getScene().setCursor(Cursor.H_RESIZE);
-                double newX = event.getSceneX() + dragDelta.x;
-                if (newX >= columnWidth && newX < getScene().getWidth()) {
+            }
+        });
+        /** Ивент при движении прямоугольника */
+        rightResizeHandle.setOnMouseDragged(event -> {
+            if (event.isPrimaryButtonDown()) {
+                double newWidth = event.getSceneX() + dragDeltaRight.x;
+                if (newWidth >= columnWidth && newWidth < getScene().getWidth()) {
                     /** Хреначим привязку к сетке */
-                    double v = newX / columnWidth; // Делим координату на ширину столбца, получаем цифру в днях с десятыми
-                    long newRound = Math.round(v); // Убираем десятые, чтобы был ровно день
-                    if (newRound != oldRound.old) {
-                        oldRound.old = newRound;
-                        long l = newRound * columnWidth; // Конвертим обратно в пиксели
-                        backgroundRectangle.setWidth(l);
+                    if (Math.round(newWidth / columnWidth)!= oldRoundRight.old) {
+                        oldRoundRight.old = Math.round(newWidth / columnWidth);
+                        backgroundRectangle.setWidth(Math.round(newWidth / columnWidth) * columnWidth);
                         wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                        System.out.println(backgroundRectangle.getWidth() / columnWidth);
                         task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / columnWidth)));
                         wasMoved = false; // Когда окончили движение фолз
                     }
                 }
-            } else {
+            }
+        });
+        rightResizeHandle.setOnMouseReleased(event -> {
+            if (!event.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.DEFAULT);
             }
         });
@@ -313,9 +339,5 @@ public class TaskPaneTaskBar extends Pane {
 
     private class OldRound {
         long old;
-    }
-
-    private class Wrapper<T> {
-        T value;
     }
 }
