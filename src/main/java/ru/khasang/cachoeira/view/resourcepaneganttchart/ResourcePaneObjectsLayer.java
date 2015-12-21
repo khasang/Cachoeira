@@ -32,7 +32,6 @@ public class ResourcePaneObjectsLayer extends Pane {
                 resourcePaneTaskBar.createTaskRectangle(uiControl, task, resource);
                 resourcePaneTaskBar.setTask(task);
                 resourcePaneTaskBar.setResource(resource);
-                resourcePaneTaskBar.enableDrag(uiControl, task);
                 resourcePaneTaskBar.setContextMenu(uiControl, task);
                 resourcePaneTaskBar.setTooltip(new TaskTooltip(task));
                 this.getChildren().add(resourcePaneTaskBar);
@@ -46,7 +45,6 @@ public class ResourcePaneObjectsLayer extends Pane {
         resourcePaneTaskBar.createTaskRectangle(uiControl, task, resource);
         resourcePaneTaskBar.setTask(task);
         resourcePaneTaskBar.setResource(resource);
-        resourcePaneTaskBar.enableDrag(uiControl, task);
         resourcePaneTaskBar.setContextMenu(uiControl, task);
         resourcePaneTaskBar.setTooltip(new TaskTooltip(task));
         this.getChildren().add(resourcePaneTaskBar);
