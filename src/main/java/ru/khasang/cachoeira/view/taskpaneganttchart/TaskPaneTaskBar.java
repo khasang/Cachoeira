@@ -11,9 +11,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.contextmenus.TaskContextMenu;
 import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
 
 import java.time.LocalDate;
@@ -30,7 +32,7 @@ public class TaskPaneTaskBar extends Pane {
     private int rowIndex;                        //координата Y (строка задачи)
     private int columnWidth;
     private boolean wasMoved;
-    private ContextMenu contextMenu;
+    private TaskContextMenu taskContextMenu;
 
     public TaskPaneTaskBar(int columnWidth) {
         this.columnWidth = columnWidth;
@@ -153,14 +155,10 @@ public class TaskPaneTaskBar extends Pane {
         });
     }
 
-    public void setContextMenu(UIControl uiControl,
+    public void setContextMenu(IController controller,
                                ITask task) {
-        Menu setResource = new Menu("Назначить ресурс");
-        MenuItem getProperties = new MenuItem("Свойства");
-        getProperties.setOnAction(event -> uiControl.getController().selectedTaskProperty().setValue(task));
-        MenuItem removeTask = new MenuItem("Удалить задачу");
-
-        contextMenu = new ContextMenu(setResource, getProperties, removeTask);
+        taskContextMenu = new TaskContextMenu();
+        taskContextMenu.initMenus(controller, task);
     }
 
     public void setTooltip(TaskTooltip taskTooltip) {
@@ -185,7 +183,7 @@ public class TaskPaneTaskBar extends Pane {
             }
             /** Условие для контекстного меню */
             if (event.isSecondaryButtonDown()) {
-                contextMenu.show(TaskPaneTaskBar.this, event.getScreenX(), event.getScreenY());
+                taskContextMenu.show(TaskPaneTaskBar.this, event.getScreenX(), event.getScreenY());
             }
         });
         backgroundRectangle.setOnMouseDragged(event -> {

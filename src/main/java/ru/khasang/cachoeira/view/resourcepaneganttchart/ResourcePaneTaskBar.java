@@ -6,17 +6,16 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Cursor;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.contextmenus.TaskContextMenu;
 import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
 
 import java.time.LocalDate;
@@ -33,7 +32,7 @@ public class ResourcePaneTaskBar extends Pane {
     private IResource resource;
     private int columnWidth;
     private boolean wasMoved;
-    private ContextMenu contextMenu;
+    private TaskContextMenu taskContextMenu;
 
     public ResourcePaneTaskBar(int columnWidth) {
         this.columnWidth = columnWidth;
@@ -142,14 +141,10 @@ public class ResourcePaneTaskBar extends Pane {
         });
     }
 
-    public void setContextMenu(UIControl uiControl,
+    public void setContextMenu(IController controller,
                                ITask task) {
-        Menu setResource = new Menu("Назначить ресурс");
-        MenuItem getProperties = new MenuItem("Свойства");
-        getProperties.setOnAction(event -> uiControl.getController().selectedTaskProperty().setValue(task));
-        MenuItem removeTask = new MenuItem("Удалить задачу");
-
-        contextMenu = new ContextMenu(setResource, getProperties, removeTask);
+        taskContextMenu = new TaskContextMenu();
+        taskContextMenu.initMenus(controller, task);
     }
 
     public void setTooltip(TaskTooltip taskTooltip) {
@@ -185,7 +180,7 @@ public class ResourcePaneTaskBar extends Pane {
             }
             /** Условие для контекстного меню */
             if (event.isSecondaryButtonDown()) {
-                contextMenu.show(ResourcePaneTaskBar.this, event.getScreenX(), event.getScreenY());
+                taskContextMenu.show(ResourcePaneTaskBar.this, event.getScreenX(), event.getScreenY());
             }
         });
         backgroundRectangle.setOnMouseDragged(event -> {
