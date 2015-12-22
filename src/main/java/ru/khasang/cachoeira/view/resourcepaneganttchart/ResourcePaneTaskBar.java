@@ -186,17 +186,14 @@ public class ResourcePaneTaskBar extends Pane {
         backgroundRectangle.setOnMouseDragged(event -> {
             if (event.isPrimaryButtonDown()) {
                 double newX = event.getSceneX() + dragDelta.x;
-                if (newX > 0 && newX < getScene().getWidth()) {
+                if (newX > 0 && newX + backgroundRectangle.getWidth() <= this.getParent().getBoundsInParent().getWidth()) {
                     /** Хреначим привязку к сетке */
-                    double v = newX / columnWidth; // Делим координату на ширину столбца, получаем цифру в днях с десятыми
-                    long newRound = Math.round(v); // Убираем десятые, чтобы был ровно день
-                    if (newRound != oldRound.old) {
-                        oldRound.old = newRound;
+                    if (Math.round(newX / columnWidth) != oldRound.old) {
+                        oldRound.old = Math.round(newX / columnWidth);
+                        setLayoutX(Math.round(newX / columnWidth) * columnWidth - 2);
                         wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                        task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays(newRound));
-                        task.setFinishDate(task.getStartDate().plusDays(Math.round(getWidth() / columnWidth)));
-                        long l = newRound * columnWidth; // Конвертим обратно в пиксели
-                        setLayoutX(l - 2);
+                        task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays(Math.round(newX / columnWidth)));
+                        task.setFinishDate(task.getStartDate().plusDays(Math.round(this.getWidth() / columnWidth)));
                         wasMoved = false; // Когда окончили движение фолз
                     }
                 }
@@ -304,7 +301,7 @@ public class ResourcePaneTaskBar extends Pane {
         rightResizeHandle.setOnMouseDragged(event -> {
             if (event.isPrimaryButtonDown()) {
                 double newWidth = event.getSceneX() + dragDeltaRight.x;
-                if (newWidth >= columnWidth && newWidth < getScene().getWidth()) {
+                if (newWidth >= columnWidth && this.getLayoutX() + newWidth <= this.getParent().getBoundsInLocal().getWidth()) {
                     /** Хреначим привязку к сетке */
                     if (Math.round(newWidth / columnWidth)!= oldRoundRight.old) {
                         oldRoundRight.old = Math.round(newWidth / columnWidth);
