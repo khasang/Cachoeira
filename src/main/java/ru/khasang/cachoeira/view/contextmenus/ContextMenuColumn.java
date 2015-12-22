@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.contextmenus;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

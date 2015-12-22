@@ -9,6 +9,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
+import ru.khasang.cachoeira.view.contextmenus.ContextMenuColumn;
 import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
 
 

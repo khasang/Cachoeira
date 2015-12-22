@@ -16,6 +16,7 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
 import ru.khasang.cachoeira.model.Task;
+import ru.khasang.cachoeira.view.contextmenus.ContextMenuColumn;
 import ru.khasang.cachoeira.view.rowfactories.TaskTreeTableViewRowFactory;
 
 import java.time.LocalDate;
