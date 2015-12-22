@@ -13,6 +13,10 @@ public class TaskContextMenu extends ContextMenu {
     public TaskContextMenu() {
     }
 
+    public TaskContextMenu(IController controller, ITask task) {
+        initMenus(controller, task);
+    }
+
     public void initMenus(IController controller, ITask task) {
         this.getItems().clear();
         Menu setResource = new Menu("Назначить ресурс");
