@@ -64,7 +64,7 @@ public class TaskPropertiesPaneController {
     }
 
     @FXML
-    public void onlyNumber(KeyEvent event) {
+    private void onlyNumber(KeyEvent event) {
         if ((isInteger(event.getText()) || event.getText().equals(".") && (countChar(costField.getText(), '.') < 1)) || (event.getCode() == KeyCode.BACK_SPACE)) {
             costField.setEditable(true);
             if ((costField.getText().length() > 0) && (costField.getText().lastIndexOf(".") != -1)) {
@@ -165,7 +165,7 @@ public class TaskPropertiesPaneController {
                         if (item.isBefore(startDatePicker.getValue().plusDays(1))) {
                             setDisable(true);
                         }
-                        if (item.isEqual(controller.getProject().getFinishDate()) || item.isAfter(controller.getProject().getFinishDate())) {
+                        if (item.isEqual(controller.getProject().getFinishDate().plusDays(1)) || item.isAfter(controller.getProject().getFinishDate().plusDays(1))) {
                             setDisable(true);
                         }
                     }
