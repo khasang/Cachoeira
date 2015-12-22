@@ -36,8 +36,6 @@ public class TaskPaneTaskBar extends Pane {
 
     public TaskPaneTaskBar(int columnWidth) {
         this.columnWidth = columnWidth;
-//        setAlignment(Pos.CENTER_LEFT);
-
     }
 
     public void createTaskRectangle(UIControl uiControl,
