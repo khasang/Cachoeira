@@ -38,6 +38,7 @@ public class DiagramPaneController {
             resourcePaneController.initResourceTable();
             resourcePaneController.initContextMenus();
             resourcePaneController.initGanttChart();
+            resourcePaneController.initZoom();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,6 +57,7 @@ public class DiagramPaneController {
             taskPaneController.initTaskTable();
             taskPaneController.initContextMenus();
             taskPaneController.initGanttChart();
+            taskPaneController.initZoom();
         } catch (IOException e) {
             e.printStackTrace();
         }
