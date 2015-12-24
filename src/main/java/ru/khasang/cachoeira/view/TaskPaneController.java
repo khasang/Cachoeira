@@ -50,6 +50,8 @@ public class TaskPaneController {
     private Button addNewTaskButton;
     @FXML
     private Button removeTaskButton;
+    @FXML
+    private Slider zoomSlider;
 
     private TaskGanttChart taskGanttChart;
     private IController controller;
@@ -424,7 +426,7 @@ public class TaskPaneController {
     }
 
     public void initGanttChart() {
-        taskGanttChart = new TaskGanttChart(uiControl, 70);
+        taskGanttChart = new TaskGanttChart(uiControl);
         taskSplitPane.getItems().add(taskGanttChart);
         taskSplitPane.setDividerPosition(0, 0.3);
     }
@@ -443,6 +445,10 @@ public class TaskPaneController {
         addNewTask.setOnAction(event -> controller.handleAddTask(new Task()));
         taskTableMenu.getItems().addAll(addNewTask);   //заполняем меню
         taskTreeTableView.setContextMenu(taskTableMenu);
+    }
+
+    public void initZoom() {
+        zoomSlider.valueProperty().bindBidirectional(uiControl.zoomMultiplierProperty());
     }
 
     public TreeTableView<ITask> getTaskTreeTableView() {
