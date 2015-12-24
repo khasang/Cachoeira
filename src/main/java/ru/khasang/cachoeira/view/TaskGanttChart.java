@@ -16,16 +16,13 @@ public class TaskGanttChart extends VBox {
     private TaskPaneGridLayer taskPaneGridLayer;        //слой с сеткой
     private TaskPaneObjectsLayer taskPaneObjectsLayer;  //слой с объектами диаграммы (задачи, группы, ...)
     private TaskPaneDateLine taskPaneDateLine;          //шкала с датами
-    private int columnWidth;            //ширина колонок
     private UIControl uiControl;
 
-    public TaskGanttChart(UIControl uiControl,
-                          int columnWidth) {
-        this.columnWidth = columnWidth;
+    public TaskGanttChart(UIControl uiControl) {
         this.uiControl = uiControl;
 
-        taskPaneGridLayer = new TaskPaneGridLayer(columnWidth);
-        taskPaneObjectsLayer = new TaskPaneObjectsLayer(columnWidth);
+        taskPaneGridLayer = new TaskPaneGridLayer(uiControl);
+        taskPaneObjectsLayer = new TaskPaneObjectsLayer();
         taskPaneObjectsLayer.setUIControl(uiControl);
         ScrollPane verticalScrollPane = new ScrollPane(taskPaneObjectsLayer);
         verticalScrollPane.setFitToWidth(true);
@@ -34,7 +31,7 @@ public class TaskGanttChart extends VBox {
         StackPane diagramPane = new StackPane(taskPaneGridLayer, verticalScrollPane); //нижний слой сетка, а над ним располагается слой с задачами
         VBox.setVgrow(diagramPane, Priority.ALWAYS);
 
-        taskPaneDateLine = new TaskPaneDateLine(columnWidth);
+        taskPaneDateLine = new TaskPaneDateLine();
         taskPaneDateLine.setUIControl(uiControl);
         taskPaneDateLine.initDateLine(uiControl.getController().getProject().getStartDate(), uiControl.getController().getProject().getFinishDate());
         taskPaneDateLine.setListeners(uiControl.getController().getProject().startDateProperty(), uiControl.getController().getProject().finishDateProperty());
