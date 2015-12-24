@@ -33,7 +33,7 @@ public class TaskGanttChart extends VBox {
 
         taskPaneDateLine = new TaskPaneDateLine();
         taskPaneDateLine.setUIControl(uiControl);
-        taskPaneDateLine.initDateLine(uiControl.getController().getProject().getStartDate(), uiControl.getController().getProject().getFinishDate());
+        taskPaneDateLine.initDateLine(uiControl.getController().getProject().getStartDate(), uiControl.getController().getProject().getFinishDate(), uiControl.getZoomMultiplier());
         taskPaneDateLine.setListeners(uiControl.getController().getProject().startDateProperty(), uiControl.getController().getProject().finishDateProperty());
         VBox vBox = new VBox(taskPaneDateLine, diagramPane);
         VBox.setVgrow(taskPaneDateLine, Priority.NEVER);
