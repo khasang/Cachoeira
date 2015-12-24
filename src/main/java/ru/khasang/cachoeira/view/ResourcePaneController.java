@@ -145,4 +145,8 @@ public class ResourcePaneController {
     public ResourceGanttChart getResourceGanttChart() {
         return resourceGanttChart;
     }
+
+    public void initZoom() {
+
+    }
 }
