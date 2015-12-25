@@ -30,12 +30,10 @@ public class TaskPaneTaskBar extends Pane {
 
     private ITask task;
     private int rowIndex;                        //координата Y (строка задачи)
-    private int columnWidth;
     private boolean wasMoved;
     private TaskContextMenu taskContextMenu;
 
-    public TaskPaneTaskBar(int columnWidth) {
-        this.columnWidth = columnWidth;
+    public TaskPaneTaskBar(){
     }
 
     public void createTaskRectangle(UIControl uiControl,
@@ -63,8 +61,8 @@ public class TaskPaneTaskBar extends Pane {
         this.getChildren().add(backgroundRectangle);
         this.getChildren().add(donePercentRectangle);
 
-        enableDrag(uiControl, task, backgroundRectangle);
-        enableResize(uiControl, task, backgroundRectangle);
+        enableDrag(uiControl, task, backgroundRectangle, uiControl.getZoomMultiplier());
+        enableResize(uiControl, task, backgroundRectangle, uiControl.getZoomMultiplier());
 
         setListeners(uiControl, task, backgroundRectangle, donePercentRectangle);
     }
@@ -72,13 +70,14 @@ public class TaskPaneTaskBar extends Pane {
     private void setParameters(UIControl uiControl,
                                ITask task,
                                Rectangle backgroundRectangle) {
-        backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate()));
-        this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate()));
+        backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
+        this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()));
         this.setLayoutY(taskY(uiControl.getController().getProject().getTaskList().indexOf(task)));
     }
 
     private double taskWidth(LocalDate taskStartDate,
-                             LocalDate taskFinishDate) {
+                             LocalDate taskFinishDate,
+                             int columnWidth) {
         return (ChronoUnit.DAYS.between(taskStartDate, taskFinishDate) * columnWidth);
     }
 
@@ -88,7 +87,8 @@ public class TaskPaneTaskBar extends Pane {
     }
 
     private double taskX(LocalDate taskStartDate,
-                         LocalDate projectStartDate) {
+                         LocalDate projectStartDate,
+                         int columnWidth) {
         return ((ChronoUnit.DAYS.between(projectStartDate, taskStartDate)) * columnWidth) - 1.5;
     }
 
@@ -115,13 +115,13 @@ public class TaskPaneTaskBar extends Pane {
         /** Следим за изменением начальной и конечной даты */
         task.startDateProperty().addListener((observable, oldValue, newValue) -> {
             if (!wasMoved) {
-                backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate()));
-                this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate()));
+                backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
+                this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()));
             }
         });
         task.finishDateProperty().addListener((observable, oldValue, newValue) -> {
             if (!wasMoved) {
-                backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate()));
+                backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
             }
         });
 
@@ -168,7 +168,8 @@ public class TaskPaneTaskBar extends Pane {
      */
     public void enableDrag(UIControl uiControl,
                            ITask task,
-                           Rectangle backgroundRectangle) {
+                           Rectangle backgroundRectangle,
+                           int columnWidth) {
         final Delta dragDelta = new Delta();
         final OldRound oldRound = new OldRound();
         backgroundRectangle.setOnMousePressed(event -> {
@@ -209,7 +210,8 @@ public class TaskPaneTaskBar extends Pane {
 
     public void enableResize(UIControl uiControl,
                              ITask task,
-                             Rectangle backgroundRectangle) {
+                             Rectangle backgroundRectangle,
+                             int columnWidth) {
         /** Создаем прозрачный прямоугольник шириной 10 пикселей */
         Rectangle leftResizeHandle = new Rectangle();
         this.getChildren().add(leftResizeHandle);
