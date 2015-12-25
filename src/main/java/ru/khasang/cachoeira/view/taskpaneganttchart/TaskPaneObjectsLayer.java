@@ -3,6 +3,7 @@ package ru.khasang.cachoeira.view.taskpaneganttchart;
 import javafx.scene.layout.Pane;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.contextmenus.TaskContextMenu;
 import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class TaskPaneObjectsLayer extends Pane {
             taskPaneTaskBar = new TaskPaneTaskBar(columnWidth);
             taskPaneTaskBar.createTaskRectangle(uiControl, task);
             taskPaneTaskBar.setTask(task);
-            taskPaneTaskBar.setContextMenu(uiControl, task);
+            taskPaneTaskBar.setContextMenu(uiControl.getController(), task);
             taskPaneTaskBar.setTooltip(new TaskTooltip(task));
             this.getChildren().add(taskPaneTaskBar);
         }
@@ -38,7 +39,7 @@ public class TaskPaneObjectsLayer extends Pane {
         taskPaneTaskBar = new TaskPaneTaskBar(columnWidth);
         taskPaneTaskBar.createTaskRectangle(uiControl, task);
         taskPaneTaskBar.setTask(task);
-        taskPaneTaskBar.setContextMenu(uiControl, task);
+        taskPaneTaskBar.setContextMenu(uiControl.getController(), task);
         taskPaneTaskBar.setTooltip(new TaskTooltip(task));
         this.getChildren().add(taskPaneTaskBar);
         taskPaneTaskBarList.add(taskPaneTaskBar);

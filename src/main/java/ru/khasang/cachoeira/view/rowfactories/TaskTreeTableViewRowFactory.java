@@ -1,6 +1,5 @@
 package ru.khasang.cachoeira.view.rowfactories;
 
-import javafx.beans.binding.Bindings;
 import javafx.scene.control.*;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
@@ -8,12 +7,10 @@ import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
-import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.TaskPaneController;
+import ru.khasang.cachoeira.view.contextmenus.TaskContextMenu;
 import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
-
-import java.time.temporal.ChronoUnit;
 
 /**
  * Created by truesik on 18.11.2015.
@@ -31,16 +28,21 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
     @Override
     public TreeTableRow<ITask> call(TreeTableView<ITask> param) {
         TreeTableRow<ITask> row = new TreeTableRow<ITask>() {
-            /** Tooltip */
+            /** Tooltip & Context Menu */
             TaskTooltip taskTooltip = new TaskTooltip();
+            TaskContextMenu taskContextMenu = new TaskContextMenu();
+
             @Override
             protected void updateItem(ITask task, boolean empty) {
                 super.updateItem(task, empty);
                 if (empty) {
                     setTooltip(null);
+                    setContextMenu(null);
                 } else {
                     taskTooltip.initToolTip(task);
                     setTooltip(taskTooltip);
+                    taskContextMenu.initMenus(controller, task);
+                    setContextMenu(taskContextMenu);
                 }
             }
         };
@@ -84,49 +86,6 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
                 event.consume();
             }
         });
-
-        /** Row Context Menu **/
-        ContextMenu rowMenu = new ContextMenu();
-        Menu setResource = new Menu("Назначить ресурс");
-
-        MenuItem getProperties = new MenuItem("Свойства");
-        MenuItem removeTask = new MenuItem("Удалить задачу");
-
-        getProperties.setOnAction(event -> {
-            controller.setSelectedTask(row.getTreeItem().getValue());
-//                taskPaneController.openPropertiesTaskWindow(); // TODO: 25.11.2015 исправить
-        });
-        removeTask.setOnAction(event -> controller.handleRemoveTask(row.getTreeItem().getValue()));
-        rowMenu.getItems().addAll(setResource, getProperties, removeTask);  //заполняем меню
-
-        rowMenu.setOnShowing(event -> refreshResourceMenu(setResource, row));
-        row.contextMenuProperty().bind(
-                Bindings.when(Bindings.isNotNull(row.itemProperty()))   //если на не пустом месте кликаем,
-                        .then(rowMenu)                                  //то выводим одно меню,
-                        .otherwise((ContextMenu) null));                //а
         return row;
-    }
-
-    public void refreshResourceMenu(Menu setResource, TreeTableRow<ITask> row) {
-        setResource.getItems().clear();
-        for (IResource resource : controller.getProject().getResourceList()) {                  //берем список всех ресурсов
-            CheckMenuItem checkMenuItem = new CheckMenuItem(resource.getName());                                //создаем элемент меню для каждого ресурса
-            for (IResource resourceOfTask : row.getTreeItem().getValue().getResourceList()) {                   //берем список ресурсов выделенной Задачи
-                if (resource.equals(resourceOfTask)) {                                                          //если ресурс из общего списка равен ресурсу из списка Задачи, то
-                    checkMenuItem.selectedProperty().setValue(Boolean.TRUE);                                    //делаем этот элемент выделенным и
-                    break;                                                                                      //прерываем цикл
-                } else {
-                    checkMenuItem.selectedProperty().setValue(Boolean.FALSE);
-                }
-            }
-            checkMenuItem.setOnAction(event -> {
-                if (checkMenuItem.isSelected()) {
-                    row.getTreeItem().getValue().addResource(resource);
-                } else {
-                    row.getTreeItem().getValue().removeResource(resource);
-                }
-            });
-            setResource.getItems().add(checkMenuItem);
-        }
     }
 }

@@ -16,6 +16,7 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
 import ru.khasang.cachoeira.model.Task;
+import ru.khasang.cachoeira.view.contextmenus.ContextMenuColumn;
 import ru.khasang.cachoeira.view.rowfactories.TaskTreeTableViewRowFactory;
 
 import java.time.LocalDate;
@@ -194,7 +195,7 @@ public class TaskPaneController {
                                 if (item.isBefore(getTreeTableRow().getTreeItem().getValue().getStartDate().plusDays(1))) {
                                     setDisable(true);
                                 }
-                                if (item.isEqual(controller.getProject().getFinishDate()) || item.isAfter(controller.getProject().getFinishDate())) {
+                                if (item.isEqual(controller.getProject().getFinishDate().plusDays(1)) || item.isAfter(controller.getProject().getFinishDate().plusDays(1))) {
                                     setDisable(true);
                                 }
                             }
