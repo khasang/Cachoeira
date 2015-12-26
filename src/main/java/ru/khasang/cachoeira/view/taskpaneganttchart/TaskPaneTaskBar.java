@@ -121,7 +121,12 @@ public class TaskPaneTaskBar extends Pane {
         });
         task.finishDateProperty().addListener((observable, oldValue, newValue) -> {
             if (!wasMoved) {
-                backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
+                System.out.println("yes");
+                KeyValue widthKeyValue = new KeyValue(backgroundRectangle.widthProperty(), taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()), Interpolator.SPLINE(0.4, 0, 0.2, 1));
+                KeyFrame widthKeyFrame = new KeyFrame(Duration.millis(400), widthKeyValue);
+                Timeline timeline = new Timeline(widthKeyFrame);
+                timeline.play();
+//                backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
             }
         });
 
