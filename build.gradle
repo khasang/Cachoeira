@@ -13,6 +13,7 @@ repositories {
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.13'
     compile 'org.slf4j:slf4j-simple:1.7.13'
+    compile 'org.xerial:sqlite-jdbc:3.7.2'
     testCompile 'junit:junit:4.11'
 }
 
