@@ -115,13 +115,22 @@ public class TaskPaneTaskBar extends Pane {
         /** Следим за изменением начальной и конечной даты */
         task.startDateProperty().addListener((observable, oldValue, newValue) -> {
             if (!wasMoved) {
-                backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
-                this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()));
+                /** Animation */
+                KeyValue endKeyValue = new KeyValue(this.layoutXProperty(), taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()), Interpolator.SPLINE(0.4, 0, 0.2, 1));
+                KeyFrame endKeyFrame = new KeyFrame(Duration.millis(400), endKeyValue);
+                Timeline timeline = new Timeline(endKeyFrame);
+                timeline.play();
+//                this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()));
+                /** При изменении начальной даты через свойства, также двигаем конечную дату. Длина прямоугольника при изменении начальной даты должна оставаться неизменной.
+                 * Также task.setFinishDate(...) оборачиваем в wasMoved, чтобы не сработал листенер конечной даты */
+                wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())));
+                wasMoved = false; // Когда окончили движение фолз
             }
         });
         task.finishDateProperty().addListener((observable, oldValue, newValue) -> {
             if (!wasMoved) {
-                System.out.println("yes");
+                /** Animation */
                 KeyValue widthKeyValue = new KeyValue(backgroundRectangle.widthProperty(), taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()), Interpolator.SPLINE(0.4, 0, 0.2, 1));
                 KeyFrame widthKeyFrame = new KeyFrame(Duration.millis(400), widthKeyValue);
                 Timeline timeline = new Timeline(widthKeyFrame);
@@ -197,10 +206,10 @@ public class TaskPaneTaskBar extends Pane {
                     /** Хреначим привязку к сетке */
                     if (Math.round(newX / columnWidth) != oldRound.old) {
                         oldRound.old = Math.round(newX / columnWidth);
-                        setLayoutX(Math.round(newX / columnWidth) * columnWidth - 2);
+                        this.setLayoutX(Math.round(newX / columnWidth) * columnWidth - 2);
                         wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                         task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays(Math.round(newX / columnWidth)));
-                        task.setFinishDate(task.getStartDate().plusDays(Math.round(this.getWidth() / columnWidth)));
+                        task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / columnWidth)));
                         wasMoved = false; // Когда окончили движение фолз
                     }
                 }
@@ -257,8 +266,8 @@ public class TaskPaneTaskBar extends Pane {
                         if (!(Math.round(newX / columnWidth) * columnWidth - 2 == getLayoutX() + backgroundRectangle.getWidth())) { // Условие против нулевой длины тасбара
                             oldRoundLeft.old = Math.round(newX / columnWidth);
                             double oldX = getLayoutX();
-                            setLayoutX(Math.round(newX / columnWidth) * columnWidth - 2);
-                            backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (getLayoutX() - oldX));
+                            this.setLayoutX(Math.round(newX / columnWidth) * columnWidth - 2);
+                            backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (this.getLayoutX() - oldX));
                             wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                             task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / columnWidth))));
                             wasMoved = false; // Когда окончили движение фолз
