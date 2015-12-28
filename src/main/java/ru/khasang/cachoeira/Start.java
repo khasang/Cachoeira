@@ -8,7 +8,7 @@ import ru.khasang.cachoeira.view.UIControl;
 
 
 /**
- * Created by truesik on 28.09.2015.
+ * Этот класс является точкой входа
  */
 public class Start extends Application {
     private static final Logger logger = LoggerFactory.getLogger(Start.class.getName());
