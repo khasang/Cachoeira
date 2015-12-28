@@ -25,7 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
 /**
- * Created by truesik on 25.11.2015.
+ * Класс в котором описывается все что находится на вкладке Задачи
  */
 public class TaskPaneController {
     @FXML
@@ -66,12 +66,12 @@ public class TaskPaneController {
      */
     @FXML
     private void initialize() {
-        /** Если элемент в таблице не выбран, то кнопка не активна */
+        // Если элемент в таблице не выбран, то кнопка не активна
         removeTaskButton.disableProperty().bind(taskTreeTableView.getSelectionModel().selectedItemProperty().isNull());
-        /** Вешаем иконки на кнопки */
+        // Вешаем иконки на кнопки
         addNewTaskButton.setGraphic(new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
         removeTaskButton.setGraphic(new ImageView(getClass().getResource("/img/ic_remove.png").toExternalForm()));
-        /** Привязываем столбцы к полям в модели**/
+        // Привязываем столбцы к полям в модели
         taskNameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());              //столбец задач Наименование
         startDateColumn.setCellValueFactory(param -> param.getValue().getValue().startDateProperty());      //Дата начала
         finishDateColumn.setCellValueFactory(param -> param.getValue().getValue().finishDateProperty());    //Дата окончания
@@ -81,7 +81,7 @@ public class TaskPaneController {
         donePercentColumn.setCellValueFactory(param -> param.getValue().getValue().donePercentProperty().asObject());
         priorityColumn.setCellValueFactory(param -> param.getValue().getValue().priorityTypeProperty());
         costColumn.setCellValueFactory(param -> param.getValue().getValue().costProperty().asObject());
-        /** Делаем поля таблицы редактируемыми */
+        // Делаем поля таблицы редактируемыми
         taskTreeTableView.setEditable(true);
         taskNameColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
         startDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
@@ -349,7 +349,7 @@ public class TaskPaneController {
                 return true;
             }
         });
-        /** Высота строк и выравнивание */
+        // Высота строк и выравнивание
         taskTreeTableView.setFixedCellSize(31);
         taskNameColumn.setStyle("-fx-alignment: CENTER-LEFT");
         durationColumn.setStyle("-fx-alignment: CENTER-LEFT");
@@ -426,20 +426,21 @@ public class TaskPaneController {
     }
 
     public void initGanttChart() {
-        taskGanttChart = new TaskGanttChart(uiControl);
+        taskGanttChart = new TaskGanttChart();
+        taskGanttChart.initGanttDiagram(uiControl);
         taskSplitPane.getItems().add(taskGanttChart);
         taskSplitPane.setDividerPosition(0, 0.3);
     }
 
     public void initContextMenus() {
-        /** Контекстное меню для выбора нужных столбцов **/
+        // Контекстное меню для выбора нужных столбцов
         ContextMenuColumn contextMenuColumnTask = new ContextMenuColumn(taskTreeTableView);
         contextMenuColumnTask.setOnShowing(event -> contextMenuColumnTask.updateContextMenuColumnTTV(taskTreeTableView));
         for (int i = 0; i < taskTreeTableView.getColumns().size(); i++) {
             taskTreeTableView.getColumns().get(i).setContextMenu(contextMenuColumnTask);
         }
 
-        /** Контекстное меню для таблицы **/
+        // Контекстное меню для таблицы
         ContextMenu taskTableMenu = new ContextMenu();
         MenuItem addNewTask = new MenuItem("Новая задача");
         addNewTask.setOnAction(event -> controller.handleAddTask(new Task()));
