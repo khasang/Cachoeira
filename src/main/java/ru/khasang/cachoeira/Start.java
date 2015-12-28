@@ -15,7 +15,7 @@ public class Start extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        logger.info("Программа запущена");
+        logger.info("Программа запущена.");
         UIControl UIControl = new UIControl();
         UIControl.launchStartWindow();
     }
