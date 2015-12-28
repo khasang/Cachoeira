@@ -16,8 +16,6 @@ import ru.khasang.cachoeira.controller.IController;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 /**
  * Этот класс является контроллером для вью {@link fxml/NewProjectWindow.fxml}.
@@ -116,12 +114,8 @@ public class NewProjectWindow implements IWindow {
 
     @FXML
     private void newProjectCreateButtonHandle(ActionEvent actionEvent) {
-        logger.info("Нажата кнопка \"Создать\"");
+        logger.info("Нажата кнопка \"Создать\".");
         controller.notifyAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText()); //создаем проект
-        logger.info("Создан проект с именем \"{}\", датой начала: {}, датой окончания: {}.",
-                nameField.getText(),
-                startDatePicker.getValue().format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault())),
-                finishDatePicker.getValue().format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault())));
         stage.close(); // закрываем это окошко
         UIControl.getStartWindow().getStage().close(); //закрываем стартовое окно
         UIControl.launchMainWindow(); //запускаем главное окно
@@ -129,7 +123,7 @@ public class NewProjectWindow implements IWindow {
 
     @FXML
     private void newProjectCancelButtonHandle(ActionEvent actionEvent) {
-        logger.info("Нажата кнопка \"Отмена\"");
+        logger.info("Нажата кнопка \"Отмена\".");
         stage.close();
     }
 }
