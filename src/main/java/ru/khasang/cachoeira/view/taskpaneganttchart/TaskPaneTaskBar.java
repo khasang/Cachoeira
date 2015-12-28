@@ -4,6 +4,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
@@ -22,7 +23,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 /**
- * Created by truesik on 04.11.2015.
+ * Класс в котором описывается поведение метки задачи на диаграмме Ганта на вкладке Задачи
  */
 public class TaskPaneTaskBar extends Pane {
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
@@ -33,7 +34,7 @@ public class TaskPaneTaskBar extends Pane {
     private boolean wasMoved;
     private TaskContextMenu taskContextMenu;
 
-    public TaskPaneTaskBar(){
+    public TaskPaneTaskBar() {
     }
 
     public void createTaskRectangle(UIControl uiControl,
@@ -92,6 +93,20 @@ public class TaskPaneTaskBar extends Pane {
         return ((ChronoUnit.DAYS.between(projectStartDate, taskStartDate)) * columnWidth) - 1.5;
     }
 
+    /**
+     * Метод для анимации движения объекта
+     *
+     * @param target   Параметр который двигаем
+     * @param endValue Параметр который задает конечную точку движения
+     * @param duration Время движения в миллисекундах
+     * @return Возвращает Timeline
+     */
+    private Timeline createTimelineAnimation(DoubleProperty target, double endValue, double duration) {
+        KeyValue endKeyValue = new KeyValue(target, endValue, Interpolator.SPLINE(0.4, 0, 0.2, 1));
+        KeyFrame endKeyFrame = new KeyFrame(Duration.millis(duration), endKeyValue);
+        return new Timeline(endKeyFrame);
+    }
+
     private void setListeners(UIControl uiControl,
                               ITask task,
                               Rectangle backgroundRectangle,
@@ -104,9 +119,10 @@ public class TaskPaneTaskBar extends Pane {
             while (c.next()) {
                 if (c.wasRemoved() || c.wasAdded()) {
                     /** Анимация при удалиении элемента из таблицы */
-                    KeyValue endKeyValue = new KeyValue(this.layoutYProperty(), taskY(uiControl.getController().getProject().getTaskList().indexOf(task)), Interpolator.SPLINE(0.4, 0, 0.2, 1));
-                    KeyFrame endKeyFrame = new KeyFrame(Duration.millis((rowIndex + 1) * 150), endKeyValue);
-                    Timeline timeline = new Timeline(endKeyFrame);
+                    Timeline timeline = createTimelineAnimation(
+                            this.layoutYProperty(),
+                            taskY(uiControl.getController().getProject().getTaskList().indexOf(task)),
+                            (rowIndex + 1) * 150);
                     timeline.play();
 //                    this.setLayoutY(taskY(uiControl.getController().getProject().getTaskList().indexOf(task)));
                 }
@@ -115,10 +131,11 @@ public class TaskPaneTaskBar extends Pane {
         /** Следим за изменением начальной и конечной даты */
         task.startDateProperty().addListener((observable, oldValue, newValue) -> {
             if (!wasMoved) {
-                /** Animation */
-                KeyValue endKeyValue = new KeyValue(this.layoutXProperty(), taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()), Interpolator.SPLINE(0.4, 0, 0.2, 1));
-                KeyFrame endKeyFrame = new KeyFrame(Duration.millis(400), endKeyValue);
-                Timeline timeline = new Timeline(endKeyFrame);
+                // Animation
+                Timeline timeline = createTimelineAnimation(
+                        this.layoutXProperty(),
+                        taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()),
+                        400);
                 timeline.play();
 //                this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()));
                 /** При изменении начальной даты через свойства, также двигаем конечную дату. Длина прямоугольника при изменении начальной даты должна оставаться неизменной.
@@ -130,10 +147,11 @@ public class TaskPaneTaskBar extends Pane {
         });
         task.finishDateProperty().addListener((observable, oldValue, newValue) -> {
             if (!wasMoved) {
-                /** Animation */
-                KeyValue widthKeyValue = new KeyValue(backgroundRectangle.widthProperty(), taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()), Interpolator.SPLINE(0.4, 0, 0.2, 1));
-                KeyFrame widthKeyFrame = new KeyFrame(Duration.millis(400), widthKeyValue);
-                Timeline timeline = new Timeline(widthKeyFrame);
+                // Animation
+                Timeline timeline = createTimelineAnimation(
+                        backgroundRectangle.widthProperty(),
+                        taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()),
+                        400);
                 timeline.play();
 //                backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
             }
@@ -178,23 +196,28 @@ public class TaskPaneTaskBar extends Pane {
     }
 
     /**
-     * Drag'n'Drop
+     * Метод который включает возможность перемещения метки с помощью мышки по оси Х
+     *
+     * @param uiControl           Контроллер интерфейса
+     * @param task                Задача этой метки
+     * @param backgroundRectangle Прямоугольник
+     * @param columnWidth         Ширина дня в пикселях (uiControl.getZoomMultiplier())
      */
-    public void enableDrag(UIControl uiControl,
-                           ITask task,
-                           Rectangle backgroundRectangle,
-                           int columnWidth) {
+    private void enableDrag(UIControl uiControl,
+                            ITask task,
+                            Rectangle backgroundRectangle,
+                            int columnWidth) {
         final Delta dragDelta = new Delta();
         final OldRound oldRound = new OldRound();
         backgroundRectangle.setOnMousePressed(event -> {
-            /** Выделяем нужный элемент в таблице */
+            // Выделяем нужный элемент в таблице
             uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(rowIndex);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
                 dragDelta.x = getLayoutX() - event.getSceneX();
                 getScene().setCursor(Cursor.MOVE);
             }
-            /** Условие для контекстного меню */
+            // Условие для контекстного меню
             if (event.isSecondaryButtonDown()) {
                 taskContextMenu.show(TaskPaneTaskBar.this, event.getScreenX(), event.getScreenY());
             }
@@ -203,7 +226,7 @@ public class TaskPaneTaskBar extends Pane {
             if (event.isPrimaryButtonDown()) {
                 double newX = event.getSceneX() + dragDelta.x;
                 if (newX > 0 && newX + backgroundRectangle.getWidth() <= this.getParent().getBoundsInParent().getWidth()) {
-                    /** Хреначим привязку к сетке */
+                    // Хреначим привязку к сетке
                     if (Math.round(newX / columnWidth) != oldRound.old) {
                         oldRound.old = Math.round(newX / columnWidth);
                         this.setLayoutX(Math.round(newX / columnWidth) * columnWidth - 2);
@@ -222,6 +245,14 @@ public class TaskPaneTaskBar extends Pane {
         });
     }
 
+    /**
+     * Метод который включает возможность изменения размера метки с помощью мышки.
+     *
+     * @param uiControl           Контроллер интерфейса
+     * @param task                Задача этой метки
+     * @param backgroundRectangle Прямоугольник
+     * @param columnWidth         Ширина дня в пикселях (uiControl.getZoomMultiplier())
+     */
     public void enableResize(UIControl uiControl,
                              ITask task,
                              Rectangle backgroundRectangle,
@@ -318,7 +349,7 @@ public class TaskPaneTaskBar extends Pane {
                 double newWidth = event.getSceneX() + dragDeltaRight.x;
                 if (newWidth >= columnWidth && this.getLayoutX() + newWidth <= this.getParent().getBoundsInLocal().getWidth()) {
                     /** Хреначим привязку к сетке */
-                    if (Math.round(newWidth / columnWidth)!= oldRoundRight.old) {
+                    if (Math.round(newWidth / columnWidth) != oldRoundRight.old) {
                         oldRoundRight.old = Math.round(newWidth / columnWidth);
                         backgroundRectangle.setWidth(Math.round(newWidth / columnWidth) * columnWidth);
                         wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
