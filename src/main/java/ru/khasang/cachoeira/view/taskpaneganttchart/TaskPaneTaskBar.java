@@ -38,7 +38,7 @@ import java.time.temporal.ChronoUnit;
  */
 public class TaskPaneTaskBar extends Pane {
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
-    private static final double rowHeight = 31;
+    private static final double ROW_HEIGHT = 31;
 
     private ITask task;
     private int rowIndex;                        //координата Y (строка задачи)
@@ -48,8 +48,8 @@ public class TaskPaneTaskBar extends Pane {
     public TaskPaneTaskBar() {
     }
 
-    public void createTaskRectangle(UIControl uiControl,
-                                    ITask task) {
+    public void initTaskRectangle(UIControl uiControl,
+                                  ITask task) {
         Rectangle backgroundRectangle = new Rectangle();
         backgroundRectangle.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
         backgroundRectangle.setStroke(Color.valueOf("#B3E5FC"));  //цвет окантовки
@@ -84,8 +84,14 @@ public class TaskPaneTaskBar extends Pane {
     private void setParameters(UIControl uiControl,
                                ITask task,
                                Rectangle backgroundRectangle) {
-        backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
-        this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()));
+        backgroundRectangle.setWidth(taskWidth(
+                task.getStartDate(),
+                task.getFinishDate(),
+                uiControl.getZoomMultiplier()));
+        this.setLayoutX(taskX(
+                task.getStartDate(),
+                uiControl.getController().getProject().getStartDate(),
+                uiControl.getZoomMultiplier()));
         this.setLayoutY(taskY(uiControl.getController().getProject().getTaskList().indexOf(task)));
     }
 
@@ -97,7 +103,7 @@ public class TaskPaneTaskBar extends Pane {
 
     private double taskY(int rowIndex) {
         this.rowIndex = rowIndex;
-        return (rowIndex * rowHeight) + 6.5;
+        return (rowIndex * ROW_HEIGHT) + 6.5;
     }
 
     private double taskX(LocalDate taskStartDate,
@@ -124,14 +130,14 @@ public class TaskPaneTaskBar extends Pane {
                               ITask task,
                               Rectangle backgroundRectangle,
                               Rectangle donePercentRectangle) {
-        /**
-         * Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
-         * то пересчитываем индексы у элементов на диаграмме
+        /*
+         Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
+         то пересчитываем индексы у элементов на диаграмме
          */
         uiControl.getController().getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
             while (c.next()) {
                 if (c.wasRemoved() || c.wasAdded()) {
-                    // Анимация при удалиении и добавления элемента на диаграмме
+                    // Анимация при удалении и добавления элемента на диаграмме
                     Timeline timeline = createTimelineAnimation(
                             this.layoutYProperty(),
                             taskY(uiControl.getController().getProject().getTaskList().indexOf(task)),
@@ -146,14 +152,20 @@ public class TaskPaneTaskBar extends Pane {
                 // Animation
                 Timeline timeline = createTimelineAnimation(
                         this.layoutXProperty(),
-                        taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()),
+                        taskX(
+                                task.getStartDate(),
+                                uiControl.getController().getProject().getStartDate(),
+                                uiControl.getZoomMultiplier()),
                         400);
                 timeline.play();
-                /* При изменении начальной даты через свойства, также двигаем конечную дату.
+                /*
+                При изменении начальной даты через свойства, также двигаем конечную дату.
                 Длина прямоугольника при изменении начальной даты должна оставаться неизменной.
-                Также task.setFinishDate(...) оборачиваем в wasMoved, чтобы не сработал листенер конечной даты */
+                Также task.setFinishDate(...) оборачиваем в wasMoved, чтобы не сработал листенер конечной даты
+                */
                 wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())));
+                task.setFinishDate(task.getStartDate().plusDays(
+                        Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())));
                 wasMoved = false; // Когда окончили движение фолз
             }
         });
@@ -168,7 +180,7 @@ public class TaskPaneTaskBar extends Pane {
             }
         });
 
-        /** Следим за списком ресурсов привязанных к данной задаче */
+        // Следим за списком ресурсов привязанных к данной задаче/
         task.getResourceList().addListener((ListChangeListener<IResource>) change -> {
             while (change.next()) {
                 // Если добавился
@@ -278,16 +290,16 @@ public class TaskPaneTaskBar extends Pane {
                              ITask task,
                              Rectangle backgroundRectangle,
                              int columnWidth) {
-        /** Создаем прозрачный прямоугольник шириной 10 пикселей */
+        // Создаем прозрачный прямоугольник шириной 10 пикселей
         Rectangle leftResizeHandle = new Rectangle();
         this.getChildren().add(leftResizeHandle);
         leftResizeHandle.setFill(Color.TRANSPARENT);
         leftResizeHandle.setWidth(10);
-        /** Привязываем этот прямоугольник к левой стороне таскбара */
+        // Привязываем этот прямоугольник к левой стороне таскбара
         leftResizeHandle.xProperty().bind(backgroundRectangle.xProperty());
         leftResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
         leftResizeHandle.yProperty().bind(backgroundRectangle.yProperty());
-        /** При наведении на левую сторону таскбара будет меняться курсор */
+        // При наведении на левую сторону таскбара будет меняться курсор
         leftResizeHandle.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (leftResizeHandle.isHover()) {
                 getScene().setCursor(Cursor.H_RESIZE);
@@ -298,9 +310,9 @@ public class TaskPaneTaskBar extends Pane {
 
         final Delta dragDeltaLeft = new Delta();
         final OldRound oldRoundLeft = new OldRound();
-        /** Ивент при нажатии на прямоугольник */
+        // Ивент при нажатии на прямоугольник
         leftResizeHandle.setOnMousePressed(event -> {
-            /** Выделяем нужный элемент в таблице */
+            // Выделяем нужный элемент в таблице
             uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(rowIndex);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
@@ -308,12 +320,12 @@ public class TaskPaneTaskBar extends Pane {
                 getScene().setCursor(Cursor.H_RESIZE);
             }
         });
-        /** Ивент при движении прямоугольника */
+        // Ивент при движении прямоугольника
         leftResizeHandle.setOnMouseDragged(event -> {
             if (event.isPrimaryButtonDown()) {
                 double newX = event.getSceneX() + dragDeltaLeft.x;
                 if (newX >= 0 && newX <= getLayoutX() + backgroundRectangle.getWidth()) {
-                    /** Хреначим привязку к сетке */
+                    // Хреначим привязку к сетке
                     if (Math.round(newX / columnWidth) != oldRoundLeft.old) {
                         if (!(Math.round(newX / columnWidth) * columnWidth - 2 == getLayoutX() + backgroundRectangle.getWidth())) { // Условие против нулевой длины тасбара
                             oldRoundLeft.old = Math.round(newX / columnWidth);
@@ -334,16 +346,16 @@ public class TaskPaneTaskBar extends Pane {
             }
         });
 
-        /** Создаем прозрачный прямоугольник шириной 10 пикселей */
+        // Создаем прозрачный прямоугольник шириной 10 пикселей
         Rectangle rightResizeHandle = new Rectangle();
         this.getChildren().add(rightResizeHandle);
         rightResizeHandle.setFill(Color.TRANSPARENT);
         rightResizeHandle.setWidth(10);
-        /** Привязываем этот прямоугольник к правой стороне таскбара */
+        // Привязываем этот прямоугольник к правой стороне таскбара
         rightResizeHandle.xProperty().bind(backgroundRectangle.xProperty().add(backgroundRectangle.widthProperty()).subtract(rightResizeHandle.widthProperty()));
         rightResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
         rightResizeHandle.yProperty().bind(backgroundRectangle.yProperty());
-        /** При наведении на левую сторону таскбара будет меняться курсор */
+        // При наведении на левую сторону таскбара будет меняться курсор
         rightResizeHandle.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (rightResizeHandle.isHover()) {
                 getScene().setCursor(Cursor.H_RESIZE);
@@ -354,9 +366,9 @@ public class TaskPaneTaskBar extends Pane {
 
         final Delta dragDeltaRight = new Delta();
         final OldRound oldRoundRight = new OldRound();
-        /** Ивент при нажатии на прямоугольник */
+        // Ивент при нажатии на прямоугольник
         rightResizeHandle.setOnMousePressed(event -> {
-            /** Выделяем нужный элемент в таблице */
+            // Выделяем нужный элемент в таблице
             uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(rowIndex);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
@@ -364,12 +376,12 @@ public class TaskPaneTaskBar extends Pane {
                 getScene().setCursor(Cursor.H_RESIZE);
             }
         });
-        /** Ивент при движении прямоугольника */
+        // Ивент при движении прямоугольника
         rightResizeHandle.setOnMouseDragged(event -> {
             if (event.isPrimaryButtonDown()) {
                 double newWidth = event.getSceneX() + dragDeltaRight.x;
                 if (newWidth >= columnWidth && this.getLayoutX() + newWidth <= this.getParent().getBoundsInLocal().getWidth()) {
-                    /** Хреначим привязку к сетке */
+                    // Хреначим привязку к сетке
                     if (Math.round(newWidth / columnWidth) != oldRoundRight.old) {
                         oldRoundRight.old = Math.round(newWidth / columnWidth);
                         backgroundRectangle.setWidth(Math.round(newWidth / columnWidth) * columnWidth);
