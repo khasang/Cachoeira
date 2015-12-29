@@ -23,7 +23,18 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 /**
- * Класс в котором описывается поведение метки задачи на диаграмме Ганта на вкладке Задачи
+ * Класс в котором описывается поведение метки задачи на диаграмме Ганта на вкладке Задачи.
+ * <p>
+ * Важно понимать, что сам таскбар это панель (Pane), а уже на эту панель накладываются прямоугольники нужной длины.
+ * Сделано так потому что нужна была возможность как то менять цвет прямоугольника в зависимости от процента
+ * выполнения задачи. Ничего другого, как наложить сверху еще один прямоугольник, я не нашел.
+ * Соответвенно главный прямоугольник это backgroundRectangle, а ширина donePercentRectangle меняется в зависимости от
+ * task.getDonePercent().
+ * <p>
+ * Также стоит уяснить, что изменение положения метки на оси Х происходит с помощью this.setLayoutX()
+ * или this.layoutXProperty(). А изменение ширины с помощью backgroundRectangle.setWidth или
+ * backgroundRectangle.widthProperty(). Такие сложности связаны с тем что TaskBar меняет свою ширину в зависимости от
+ * ширины Node'ы, которая в нем (taskBar'е) лежит, т.е. от backgroundRectangle.
  */
 public class TaskPaneTaskBar extends Pane {
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
@@ -54,8 +65,10 @@ public class TaskPaneTaskBar extends Pane {
         donePercentRectangle.arcWidthProperty().bind(backgroundRectangle.arcWidthProperty());
         donePercentRectangle.yProperty().bind(backgroundRectangle.yProperty().add(1.25));
         donePercentRectangle.heightProperty().bind(backgroundRectangle.heightProperty().subtract(2.5));
+        //ширина зависит от ширины backgroundRectangle и task.donePercent
         donePercentRectangle.widthProperty().bind(
                 backgroundRectangle.widthProperty().divide(100).multiply(task.donePercentProperty()));
+        //также привязываем все ивенты от backgroundRectangle
         donePercentRectangle.onMousePressedProperty().bind(backgroundRectangle.onMousePressedProperty());
         donePercentRectangle.onMouseDraggedProperty().bind(backgroundRectangle.onMouseDraggedProperty());
 
@@ -118,17 +131,16 @@ public class TaskPaneTaskBar extends Pane {
         uiControl.getController().getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
             while (c.next()) {
                 if (c.wasRemoved() || c.wasAdded()) {
-                    /** Анимация при удалиении элемента из таблицы */
+                    // Анимация при удалиении и добавления элемента на диаграмме
                     Timeline timeline = createTimelineAnimation(
                             this.layoutYProperty(),
                             taskY(uiControl.getController().getProject().getTaskList().indexOf(task)),
                             (rowIndex + 1) * 150);
                     timeline.play();
-//                    this.setLayoutY(taskY(uiControl.getController().getProject().getTaskList().indexOf(task)));
                 }
             }
         });
-        /** Следим за изменением начальной и конечной даты */
+        // Следим за изменением начальной и конечной даты
         task.startDateProperty().addListener((observable, oldValue, newValue) -> {
             if (!wasMoved) {
                 // Animation
@@ -137,9 +149,9 @@ public class TaskPaneTaskBar extends Pane {
                         taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()),
                         400);
                 timeline.play();
-//                this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()));
-                /** При изменении начальной даты через свойства, также двигаем конечную дату. Длина прямоугольника при изменении начальной даты должна оставаться неизменной.
-                 * Также task.setFinishDate(...) оборачиваем в wasMoved, чтобы не сработал листенер конечной даты */
+                /* При изменении начальной даты через свойства, также двигаем конечную дату.
+                Длина прямоугольника при изменении начальной даты должна оставаться неизменной.
+                Также task.setFinishDate(...) оборачиваем в wasMoved, чтобы не сработал листенер конечной даты */
                 wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                 task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())));
                 wasMoved = false; // Когда окончили движение фолз
@@ -153,7 +165,6 @@ public class TaskPaneTaskBar extends Pane {
                         taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()),
                         400);
                 timeline.play();
-//                backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
             }
         });
 
@@ -247,6 +258,16 @@ public class TaskPaneTaskBar extends Pane {
 
     /**
      * Метод который включает возможность изменения размера метки с помощью мышки.
+     * <p>
+     * Для этого создаем еще два мелких прямоугольника, привязываем их к правой и левой сторонам
+     * того прямоугольника размер которого хотим менять. Далее прописываем драг ивенты, как в enableDrag()
+     * к обоим прямоугольникам. Таким образом получается, что при изменении местоположения левого прямоугольника
+     * меняется начальная координата главного прямоугольника (this.setLayout(x))
+     * и увеличивается ширина на пройденное расстояние (backgroundRectangle.setWidth(x - delta)). А с помощью
+     * правого прямоугольника увеличивается, либо уменьшается ширина главного
+     * прямоугольника (backgroundRectangle.setWidth(x)).
+     * <p>
+     * Проще простого.
      *
      * @param uiControl           Контроллер интерфейса
      * @param task                Задача этой метки
@@ -319,7 +340,7 @@ public class TaskPaneTaskBar extends Pane {
         rightResizeHandle.setFill(Color.TRANSPARENT);
         rightResizeHandle.setWidth(10);
         /** Привязываем этот прямоугольник к правой стороне таскбара */
-        rightResizeHandle.xProperty().bind(backgroundRectangle.xProperty().add(backgroundRectangle.widthProperty()).subtract(10));
+        rightResizeHandle.xProperty().bind(backgroundRectangle.xProperty().add(backgroundRectangle.widthProperty()).subtract(rightResizeHandle.widthProperty()));
         rightResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
         rightResizeHandle.yProperty().bind(backgroundRectangle.yProperty());
         /** При наведении на левую сторону таскбара будет меняться курсор */
