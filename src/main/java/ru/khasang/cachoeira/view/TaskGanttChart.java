@@ -65,6 +65,7 @@ public class TaskGanttChart extends VBox {
     private ScrollPane createObjectsLayer(UIControl uiControl) {
         taskPaneObjectsLayer = new TaskPaneObjectsLayer();
         taskPaneObjectsLayer.setUIControl(uiControl);
+        taskPaneObjectsLayer.setListeners(uiControl);
         ScrollPane verticalScrollPane = new ScrollPane(taskPaneObjectsLayer);
         verticalScrollPane.setFitToWidth(true);
         verticalScrollPane.getStylesheets().add(this.getClass().getResource("/css/scrollpane.css").toExternalForm()); //делаем вертикальный скроллпэйн прозрачным
