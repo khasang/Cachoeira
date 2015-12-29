@@ -40,34 +40,27 @@ public class TaskPaneDateLine extends HBox {
         if (zoomValue <= 130 && zoomValue >= 101) {
             String pattern = "dd MMMM yy";
             createDateLine(projectStartDate, projectFinishDate, 1, pattern);
-        }
-        if (zoomValue <= 100 && zoomValue >= 70) {
+        } else if (zoomValue <= 100 && zoomValue >= 70) {
             String pattern = "dd.MM.yyyy";
             createDateLine(projectStartDate, projectFinishDate, 1, pattern);
-        }
-        if (zoomValue <= 69 && zoomValue >= 55) {
+        } else if (zoomValue <= 69 && zoomValue >= 55) {
             String pattern = "dd.MM.yy";
             createDateLine(projectStartDate, projectFinishDate, 1, pattern);
-        }
-        if (zoomValue <= 54 && zoomValue >= 40) {
+        } else if (zoomValue <= 54 && zoomValue >= 40) {
             String pattern1 = "dd";
             String pattern2 = "dd.MM.yy";
             createDateLine(projectStartDate, projectFinishDate, 2, pattern1, pattern2);
-        }
-        if (zoomValue <= 39 && zoomValue >= 20) {
+        } else if (zoomValue <= 39 && zoomValue >= 20) {
             String pattern1 = "dd";
             String pattern2 = "dd.MM.yy";
             createDateLine(projectStartDate, projectFinishDate, 4, pattern1, pattern2);
-        }
-        if (zoomValue <= 19 && zoomValue >= 8) {
+        } else if (zoomValue <= 19 && zoomValue >= 8) {
             String pattern = "dd.MM.yy";
             createDateLine(projectStartDate, projectFinishDate, 7, pattern);
-        }
-        if (zoomValue <= 7 && zoomValue >= 4) {
+        } else if (zoomValue <= 7 && zoomValue >= 4) {
             String pattern = "dd.MM.yy";
             createDateLine(projectStartDate, projectFinishDate, 14, pattern);
-        }
-        if (zoomValue <= 3 && zoomValue >= 2) {
+        } else if (zoomValue <= 3 && zoomValue >= 2) {
             String pattern = "dd.MM.yy";
             createDateLine(projectStartDate, projectFinishDate, 28, pattern);
         }
