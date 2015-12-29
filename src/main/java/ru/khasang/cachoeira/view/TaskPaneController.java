@@ -25,7 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
 /**
- * Класс в котором описывается все что находится на вкладке Задачи
+ * Класс в котором описывается все что находится на вкладке Задачи.
  */
 public class TaskPaneController {
     @FXML
