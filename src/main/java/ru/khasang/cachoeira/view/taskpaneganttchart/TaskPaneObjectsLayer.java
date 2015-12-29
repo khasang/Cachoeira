@@ -6,10 +6,11 @@ import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
- * Класс - слой на котором располагаются метки задач.
+ * Класс - слой на котором располагаются объекты диаграммы Ганта на вкладке Задачи.
  */
 
 public class TaskPaneObjectsLayer extends Pane {
@@ -49,11 +50,12 @@ public class TaskPaneObjectsLayer extends Pane {
      * @param task Задача которая присвоена к метке.
      */
     public void removeTaskBar(ITask task) {
-        for (TaskPaneTaskBar taskPaneTaskBar : taskPaneTaskBarList) {
+        Iterator<TaskPaneTaskBar> taskBarIterator = taskPaneTaskBarList.iterator();
+        while (taskBarIterator.hasNext()) {
+            TaskPaneTaskBar taskPaneTaskBar = taskBarIterator.next();
             if (taskPaneTaskBar.getTask().equals(task)) {
                 this.getChildren().remove(taskPaneTaskBar);
-                taskPaneTaskBarList.remove(taskPaneTaskBar);
-                break;
+                taskBarIterator.remove();
             }
         }
     }
@@ -65,13 +67,20 @@ public class TaskPaneObjectsLayer extends Pane {
      * @param task      Задача которая присваивается к метке.
      * @return Возвращает taskBar.
      */
-    private TaskPaneTaskBar createTaskBar(UIControl uiControl, ITask task) {
+    private TaskPaneTaskBar createTaskBar(UIControl uiControl,
+                                          ITask task) {
         TaskPaneTaskBar taskPaneTaskBar = new TaskPaneTaskBar();
         taskPaneTaskBar.initTaskRectangle(uiControl, task);
         taskPaneTaskBar.setTask(task);
         taskPaneTaskBar.setContextMenu(uiControl.getController(), task);
         taskPaneTaskBar.setTooltip(new TaskTooltip(task));
         return taskPaneTaskBar;
+    }
+
+    public void setListeners(UIControl uiControl) {
+        uiControl.zoomMultiplierProperty().addListener((observable -> {
+            refreshTaskDiagram();
+        }));
     }
 
     public void setUIControl(UIControl uiControl) {
