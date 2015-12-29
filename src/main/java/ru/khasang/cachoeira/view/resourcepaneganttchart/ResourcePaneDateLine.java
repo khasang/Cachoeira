@@ -138,7 +138,7 @@ public class ResourcePaneDateLine extends HBox {
     }
 
     /**
-     * Метод для обновления строки с датами и диаграммы
+     * Метод для обновления строки с датами.
      *
      * @param projectStartDate  Начальная дата проекта
      * @param projectFinishDate Конечная дата проекта

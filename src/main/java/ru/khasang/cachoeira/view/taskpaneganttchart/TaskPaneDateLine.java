@@ -104,12 +104,13 @@ public class TaskPaneDateLine extends HBox {
      * @param dateFormatter Формат даты
      * @return Лейбл
      **/
-    private Label createDateLabel(int multiplier, String dateFormatter) {
+    private Label createDateLabel(int multiplier,
+                                  String dateFormatter) {
         Label dateLabel = new Label(dateFormatter); //фигачим лейбл с датой на борту
         dateLabel.setTextOverrun(OverrunStyle.CLIP);
         dateLabel.setPrefWidth(uiControl.getZoomMultiplier() * multiplier);
         dateLabel.setMinHeight(24);
-        dateLabel.getStylesheets().add(this.getClass().getResource("/css/header.css").toExternalForm()); //делаем красиво
+        dateLabel.getStylesheets().add(this.getClass().getResource("/css/header.css").toExternalForm()); // делаем красиво
         dateLabel.setAlignment(Pos.CENTER);
         return dateLabel;
     }
@@ -137,15 +138,16 @@ public class TaskPaneDateLine extends HBox {
     }
 
     /**
-     * Метод для обновления строки с датами и диаграммы
+     * Метод для обновления строки с датами.
      *
      * @param projectStartDate  Начальная дата проекта
      * @param projectFinishDate Конечная дата проекта
      * @param zoomMultiplier    Множитель
      */
-    private void refreshDateLine(LocalDate projectStartDate, LocalDate projectFinishDate, int zoomMultiplier) {
+    private void refreshDateLine(LocalDate projectStartDate,
+                                 LocalDate projectFinishDate,
+                                 int zoomMultiplier) {
         initDateLine(projectStartDate, projectFinishDate, zoomMultiplier);
-        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskGanttChart().getTaskPaneObjectsLayer().refreshTaskDiagram();
     }
 
     public void setUIControl(UIControl uiControl) {
