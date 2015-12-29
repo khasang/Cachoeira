@@ -14,7 +14,7 @@ import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
 
 
 /**
- * Created by truesik on 25.11.2015.
+ * Класс в котором описывается все что находится на вкладке Ресурсы.
  */
 public class ResourcePaneController {
     @FXML
@@ -31,6 +31,8 @@ public class ResourcePaneController {
     private Button addNewResourceButton;
     @FXML
     private Button removeResourceButton;
+    @FXML
+    private Slider zoomSlider;
 
     private ResourceGanttChart resourceGanttChart;
     private IController controller;
@@ -44,21 +46,21 @@ public class ResourcePaneController {
      */
     @FXML
     private void initialize() {
-        /** Если элемент в таблице не выбран, то кнопка не активна */
+        // Если элемент в таблице не выбран, то кнопка не активна
         removeResourceButton.disableProperty().bind(resourceTableView.getSelectionModel().selectedItemProperty().isNull());
-        /** Вешаем иконки на кнопки */
+        // Вешаем иконки на кнопки
         addNewResourceButton.setGraphic(new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
         removeResourceButton.setGraphic(new ImageView(getClass().getResource("/img/ic_remove.png").toExternalForm()));
-        /** Привязываем столбцы к полям в модели */
+        // Привязываем столбцы к полям в модели
         resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
         resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
         resourceEmailColumn.setCellValueFactory(param -> param.getValue().emailProperty());                 //Почта
-        /** Делаем поля таблицы редактируемыми */
+        // Делаем поля таблицы редактируемыми
         resourceTableView.setEditable(true);
         resourceNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         resourceTypeColumn.setCellFactory(ComboBoxTableCell.forTableColumn(ResourceType.values()));
         resourceEmailColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        /** Высота строк и выравнивание */
+        // Высота строк и выравнивание
         resourceTableView.setFixedCellSize(31);
         resourceNameColumn.setStyle("-fx-alignment: CENTER-LEFT");
         resourceTypeColumn.setStyle("-fx-alignment: CENTER-LEFT");
@@ -102,7 +104,8 @@ public class ResourcePaneController {
     }
 
     public void initGanttChart() {
-        resourceGanttChart = new ResourceGanttChart(uiControl, 70);
+        resourceGanttChart = new ResourceGanttChart();
+        resourceGanttChart.initGanttDiagram(uiControl);
         resourceSplitPane.getItems().add(resourceGanttChart);
         resourceSplitPane.setDividerPosition(0, 0.3);
         controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) change -> {
@@ -115,19 +118,23 @@ public class ResourcePaneController {
     }
 
     public void initContextMenus() {
-        /** Контекстное меню для выбора нужных столбцов */
+        // Контекстное меню для выбора нужных столбцов
         ContextMenuColumn contextMenuColumnResource = new ContextMenuColumn(resourceTableView);
         contextMenuColumnResource.setOnShowing(event -> contextMenuColumnResource.updateContextMenuColumnTV(resourceTableView));
         for (int i = 0; i < resourceTableView.getColumns().size(); i++) {
             resourceTableView.getColumns().get(i).setContextMenu(contextMenuColumnResource);
         }
 
-        /** Контекстное меню для таблицы **/
+        // Контекстное меню для таблицы
         ContextMenu resourceTableMenu = new ContextMenu();
         MenuItem addNewResource = new MenuItem("Новый ресурс");
         addNewResource.setOnAction(event -> controller.handleAddResource(new Resource()));
         resourceTableMenu.getItems().addAll(addNewResource);   //заполняем меню
         resourceTableView.setContextMenu(resourceTableMenu);
+    }
+
+    public void initZoom() {
+        zoomSlider.valueProperty().bindBidirectional(uiControl.zoomMultiplierProperty());
     }
 
     public TableView<IResource> getResourceTableView() {
@@ -144,9 +151,5 @@ public class ResourcePaneController {
 
     public ResourceGanttChart getResourceGanttChart() {
         return resourceGanttChart;
-    }
-
-    public void initZoom() {
-
     }
 }
