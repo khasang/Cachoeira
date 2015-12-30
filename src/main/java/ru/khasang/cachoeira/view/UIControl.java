@@ -1,6 +1,8 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
@@ -11,6 +13,7 @@ public class UIControl {
     private NewProjectWindow newProjectWindow;
     private IController controller = new Controller();
     private IntegerProperty zoomMultiplier = new SimpleIntegerProperty(this, "zoomMultiplier", 70);
+    private DoubleProperty horizontalScroll = new SimpleDoubleProperty(this, "horizontalScroll", 0);
 
     public void launchStartWindow() {
         startWindow = new StartWindow(controller, this);
@@ -53,5 +56,17 @@ public class UIControl {
 
     public void setZoomMultiplier(int zoomMultiplier) {
         this.zoomMultiplier.set(zoomMultiplier);
+    }
+
+    public double getHorizontalScroll() {
+        return horizontalScroll.get();
+    }
+
+    public DoubleProperty horizontalScrollProperty() {
+        return horizontalScroll;
+    }
+
+    public void setHorizontalScroll(double horizontalScroll) {
+        this.horizontalScroll.set(horizontalScroll);
     }
 }

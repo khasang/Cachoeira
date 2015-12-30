@@ -21,7 +21,8 @@ public class TaskGanttChart extends VBox {
         this.getChildren().addAll(createGanttDiagram(
                 createDateLine(uiControl),
                 createGridLayer(uiControl),
-                createObjectsLayer(uiControl)));
+                createObjectsLayer(uiControl),
+                uiControl));
     }
 
     /**
@@ -34,7 +35,8 @@ public class TaskGanttChart extends VBox {
      */
     private ScrollPane createGanttDiagram(TaskPaneDateLine dateLine,
                                           TaskPaneGridLayer gridLayer,
-                                          ScrollPane objectsLayer) {
+                                          ScrollPane objectsLayer,
+                                          UIControl uiControl) {
         StackPane stackPane = new StackPane(gridLayer, objectsLayer);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
         VBox vBox = new VBox(dateLine, stackPane);
@@ -45,6 +47,8 @@ public class TaskGanttChart extends VBox {
         horizontalScrollPane.getStyleClass().add("edge-to-edge"); //убирает синюю границу вокруг скроллпэйна
         horizontalScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         VBox.setVgrow(horizontalScrollPane, Priority.ALWAYS);
+        // Связываем горизонтальные скроллы с вкладок Задачи и Ресурсы
+        horizontalScrollPane.hvalueProperty().bindBidirectional(uiControl.horizontalScrollProperty());
         return horizontalScrollPane;
     }
 
