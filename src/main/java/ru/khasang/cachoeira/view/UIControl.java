@@ -14,6 +14,8 @@ public class UIControl {
     private IController controller = new Controller();
     private IntegerProperty zoomMultiplier = new SimpleIntegerProperty(this, "zoomMultiplier", 70);
     private DoubleProperty horizontalScroll = new SimpleDoubleProperty(this, "horizontalScroll", 0);
+    private DoubleProperty taskVerticalScroll = new SimpleDoubleProperty(this, "taskVerticalScroll", 0);
+    private DoubleProperty resourceVerticalScroll = new SimpleDoubleProperty(this, "resourceVerticalScroll", 0);
 
     public void launchStartWindow() {
         startWindow = new StartWindow(controller, this);
@@ -68,5 +70,29 @@ public class UIControl {
 
     public void setHorizontalScroll(double horizontalScroll) {
         this.horizontalScroll.set(horizontalScroll);
+    }
+
+    public double getTaskVerticalScroll() {
+        return taskVerticalScroll.get();
+    }
+
+    public DoubleProperty taskVerticalScrollProperty() {
+        return taskVerticalScroll;
+    }
+
+    public void setTaskVerticalScroll(double taskVerticalScroll) {
+        this.taskVerticalScroll.set(taskVerticalScroll);
+    }
+
+    public double getResourceVerticalScroll() {
+        return resourceVerticalScroll.get();
+    }
+
+    public DoubleProperty resourceVerticalScrollProperty() {
+        return resourceVerticalScroll;
+    }
+
+    public void setResourceVerticalScroll(double resourceVerticalScroll) {
+        this.resourceVerticalScroll.set(resourceVerticalScroll);
     }
 }
