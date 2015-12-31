@@ -1,44 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.TaskPaneController">
-   <children>
-      <SplitPane fx:id="taskSplitPane" VBox.vgrow="ALWAYS">
-         <items>
-            <TreeTableView fx:id="taskTreeTableView" showRoot="false">
-               <columnResizePolicy>
-                  <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-               </columnResizePolicy>
-               <columns>
-                  <TreeTableColumn fx:id="taskNameColumn" prefWidth="75.0" sortable="false" text="Наименование" />
-                  <TreeTableColumn fx:id="startDateColumn" prefWidth="75.0" sortable="false" text="Дата начала" />
-                  <TreeTableColumn fx:id="finishDateColumn" prefWidth="75.0" sortable="false" text="Дата окончания" />
-                  <TreeTableColumn fx:id="durationColumn" prefWidth="75.0" sortable="false" text="Продолжительность" visible="false" />
-                  <TreeTableColumn fx:id="donePercentColumn" prefWidth="75.0" sortable="false" text="Прогресс" visible="false" />
-                  <TreeTableColumn fx:id="priorityColumn" prefWidth="75.0" sortable="false" text="Приоритет" visible="false" />
-                  <TreeTableColumn fx:id="costColumn" prefWidth="75.0" sortable="false" text="Стоимость" visible="false" />
-               </columns>
-            </TreeTableView>
-         </items>
-      </SplitPane>
-      <HBox VBox.vgrow="NEVER">
-         <children>
-            <Button fx:id="addNewTaskButton" mnemonicParsing="false" onAction="#addNewTaskHandle" HBox.hgrow="NEVER">
-               <tooltip>
-                  <Tooltip text="Добавить задачу" />
-               </tooltip>
-            </Button>
-            <Button fx:id="removeTaskButton" mnemonicParsing="false" onAction="#removeTaskHandle" HBox.hgrow="NEVER">
-               <tooltip>
-                  <Tooltip text="Удалить задачу" />
-               </tooltip>
-            </Button>
-            <Region HBox.hgrow="ALWAYS" />
-            <Slider fx:id="zoomSlider" max="130.0" min="2.0" showTickMarks="true" HBox.hgrow="NEVER" />
-         </children>
-      </HBox>
-   </children>
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ru.khasang.cachoeira.view.TaskPaneController">
+    <SplitPane fx:id="taskSplitPane" VBox.vgrow="ALWAYS"/>
+    <HBox VBox.vgrow="NEVER">
+        <Button fx:id="addNewTaskButton" mnemonicParsing="false" onAction="#addNewTaskHandle" HBox.hgrow="NEVER">
+            <tooltip>
+                <Tooltip text="Добавить задачу"/>
+            </tooltip>
+        </Button>
+        <Button fx:id="removeTaskButton" mnemonicParsing="false" onAction="#removeTaskHandle" HBox.hgrow="NEVER">
+            <tooltip>
+                <Tooltip text="Удалить задачу"/>
+            </tooltip>
+        </Button>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Slider fx:id="zoomSlider" max="130.0" min="2.0" showTickMarks="true" HBox.hgrow="NEVER"/>
+    </HBox>
 </VBox>
