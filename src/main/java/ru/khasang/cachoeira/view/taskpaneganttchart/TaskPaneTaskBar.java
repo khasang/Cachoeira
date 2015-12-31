@@ -6,6 +6,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
@@ -28,7 +29,7 @@ import java.time.temporal.ChronoUnit;
  * Важно понимать, что сам таскбар это панель (Pane), а уже на эту панель накладываются прямоугольники нужной длины.
  * Сделано так потому что нужна была возможность как то менять цвет прямоугольника в зависимости от процента
  * выполнения задачи. Ничего другого, как наложить сверху еще один прямоугольник, я не нашел.
- * Соответвенно главный прямоугольник это backgroundRectangle, а ширина donePercentRectangle меняется в зависимости от
+ * Соответственно главный прямоугольник это backgroundRectangle, а ширина donePercentRectangle меняется в зависимости от
  * task.getDonePercent().
  * <p>
  * Также стоит уяснить, что изменение положения метки на оси Х происходит с помощью this.setLayoutX()
@@ -46,6 +47,7 @@ public class TaskPaneTaskBar extends Pane {
     private TaskContextMenu taskContextMenu;
 
     public TaskPaneTaskBar() {
+        this.setPadding(new Insets(0, 0, 5, 0));
     }
 
     public void initTaskRectangle(UIControl uiControl,
@@ -53,7 +55,7 @@ public class TaskPaneTaskBar extends Pane {
         Rectangle backgroundRectangle = new Rectangle();
         backgroundRectangle.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
         backgroundRectangle.setStroke(Color.valueOf("#B3E5FC"));  //цвет окантовки
-        backgroundRectangle.setArcHeight(5);                      //сгругление углов
+        backgroundRectangle.setArcHeight(5);                      //скругление углов
         backgroundRectangle.setArcWidth(5);
         backgroundRectangle.setHeight(TASK_HEIGHT);
 
@@ -88,6 +90,7 @@ public class TaskPaneTaskBar extends Pane {
                 task.getStartDate(),
                 task.getFinishDate(),
                 uiControl.getZoomMultiplier()));
+        backgroundRectangle.setLayoutY(6);
         this.setLayoutX(taskX(
                 task.getStartDate(),
                 uiControl.getController().getProject().getStartDate(),
@@ -103,7 +106,7 @@ public class TaskPaneTaskBar extends Pane {
 
     private double taskY(int rowIndex) {
         this.rowIndex = rowIndex;
-        return (rowIndex * ROW_HEIGHT) + 6.5;
+        return (rowIndex * ROW_HEIGHT);
     }
 
     private double taskX(LocalDate taskStartDate,
