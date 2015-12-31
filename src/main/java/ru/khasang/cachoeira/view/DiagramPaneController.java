@@ -52,7 +52,6 @@ public class DiagramPaneController {
             taskTab.setContent(taskPane);
 
             taskPaneController = loader.getController();
-            taskPaneController.setController(controller);
             taskPaneController.setUIControl(uiControl);
             taskPaneController.initTaskTable();
             taskPaneController.initContextMenus();
