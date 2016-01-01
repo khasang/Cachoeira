@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.tables;
 
 import com.sun.javafx.scene.control.skin.*;
 import javafx.geometry.Orientation;
@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.khasang.cachoeira.view.UIControl;
 
 /**
  * Пришлось сделать свою таблицу, чтобы вытащить вертикальный скролл и синхронизировать его с диаграммой Ганта.
@@ -28,6 +29,7 @@ public class TaskTreeTableView<S> extends TreeTableView<S> {
     private class TaskTreeTableViewSkin<T> extends TreeTableViewSkin<T> {
         public TaskTreeTableViewSkin(TreeTableView<T> tableView, UIControl uiControl) {
             super(tableView);
+            // Выцепляем вертикальный скролл
             VirtualScrollBar verticalScrollBar = null;
             for (Node child : flow.getChildrenUnmodifiable()) {
                 if (child instanceof VirtualScrollBar) {
