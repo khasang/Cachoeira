@@ -10,16 +10,20 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.controller.IController;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
 /**
- * Created by truesik on 11.11.2015.
+ * Этот класс является контроллером для вью {@link fxml/NewProjectWindow.fxml}.
+ * С помощью этого класса задаются параметры и создается новый проект.
  */
 public class NewProjectWindow implements IWindow {
-    private IController controller;
+    private static final Logger logger = LoggerFactory.getLogger(NewProjectWindow.class.getName());
+
     private UIControl UIControl;
     @FXML
     private TextField nameField;
@@ -34,6 +38,7 @@ public class NewProjectWindow implements IWindow {
     @FXML
     private Button createNewProjectButton;
 
+    private IController controller;
     private Parent root = null;
     private Stage stage;
 
@@ -61,6 +66,8 @@ public class NewProjectWindow implements IWindow {
         stage.initModality(Modality.WINDOW_MODAL);
         stage.show();
         stage.setTitle("Новый проект");
+
+        logger.info("Открыто окно создания нового проекта.");
 
         createNewProjectButton.disableProperty().bind(nameField.textProperty().isEmpty()); //рубим нажимательность кнопки, если поле с именем пустует
 
@@ -107,6 +114,7 @@ public class NewProjectWindow implements IWindow {
 
     @FXML
     private void newProjectCreateButtonHandle(ActionEvent actionEvent) {
+        logger.info("Нажата кнопка \"Создать\".");
         controller.notifyAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText()); //создаем проект
         stage.close(); // закрываем это окошко
         UIControl.getStartWindow().getStage().close(); //закрываем стартовое окно
@@ -115,6 +123,7 @@ public class NewProjectWindow implements IWindow {
 
     @FXML
     private void newProjectCancelButtonHandle(ActionEvent actionEvent) {
+        logger.info("Нажата кнопка \"Отмена\".");
         stage.close();
     }
 }

@@ -5,37 +5,43 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.controller.IController;
 
 import java.util.Optional;
 
 /**
- * Created by truesik on 25.11.2015.
+ * Класс-контроллер для {@link /fxml/RootLayout.fxml}
  */
 public class RootLayoutController {
+    private static final Logger logger = LoggerFactory.getLogger(RootLayoutController.class.getName());
     IController controller;
 
     public RootLayoutController() {
-
     }
 
     @FXML
     private void newProjectMenuItemHandle(ActionEvent actionEvent) {
+        logger.info("Нажата кнопка меню \"Создать\".");
         //открытие окошка создания нового проекта
     }
 
     @FXML
     private void openProjectMenuItemHandle(ActionEvent actionEvent) {
+        logger.info("Нажата кнопка меню \"Открыть\".");
         //открытие окошка выбора файла проекта (см. доки по FileChooser'у)
     }
 
     @FXML
     private void saveProjectMenuItemHandle(ActionEvent actionEvent) {
+        logger.info("Нажата кнопка меню \"Сохранить\".");
         //сохранение проекта
     }
 
     @FXML
     private void exitMenuItemHandle(ActionEvent actionEvent) {
+        logger.info("Нажата кнопка меню \"Выход\".");
         //если произошли изменения в проекте: открытие диалогового окошка "Сохранить проект? Да Нет Отмена"
         onClose();
     }

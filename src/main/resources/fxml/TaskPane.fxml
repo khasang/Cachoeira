@@ -36,6 +36,8 @@
                   <Tooltip text="Удалить задачу" />
                </tooltip>
             </Button>
+            <Region HBox.hgrow="ALWAYS" />
+            <Slider fx:id="zoomSlider" max="130.0" min="2.0" showTickMarks="true" HBox.hgrow="NEVER" />
          </children>
       </HBox>
    </children>

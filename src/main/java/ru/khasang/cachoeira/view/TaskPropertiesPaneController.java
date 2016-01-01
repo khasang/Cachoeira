@@ -128,13 +128,6 @@ public class TaskPropertiesPaneController {
                 costField.textProperty().bindBidirectional(newValue.costProperty(), new NumberStringConverter());
                 descriptionTextArea.textProperty().bindBidirectional(newValue.descriptionProperty());
             }
-
-            /** Конечная дата всегда после начальной **/
-            startDatePicker.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-                if (newValue1.isAfter(finishDatePicker.getValue()) || newValue1.isEqual(finishDatePicker.getValue())) {
-                    finishDatePicker.setValue(newValue1.plusDays(1));
-                }
-            });
         });
 
         startDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
