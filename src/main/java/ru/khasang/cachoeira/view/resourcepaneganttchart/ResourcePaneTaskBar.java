@@ -55,7 +55,7 @@ public class ResourcePaneTaskBar extends Pane {
                                   IResource resource) {
         Rectangle backgroundRectangle = new Rectangle();
         backgroundRectangle.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
-        backgroundRectangle.setStroke(Color.valueOf("#B3E5FC"));  //цвет окантовки
+        backgroundRectangle.setStroke(Color.valueOf("#03bdf4"));  //цвет окантовки
         backgroundRectangle.setArcHeight(5);                      //скругление углов
         backgroundRectangle.setArcWidth(5);
         backgroundRectangle.setHeight(TASK_HEIGHT);
@@ -185,9 +185,9 @@ public class ResourcePaneTaskBar extends Pane {
             }
         });
 
-        //подсветка при наведении
+//        подсветка при наведении
         this.hoverProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
+            if (this.isHover()) {
                 backgroundRectangle.setFill(Color.valueOf("03bdf4"));
                 backgroundRectangle.setStroke(Color.valueOf("#03d1f4"));
                 donePercentRectangle.setFill(Color.valueOf("#0395f4"));
