@@ -92,7 +92,7 @@ public class ResourcePaneTaskBar extends Pane {
                 task.getStartDate(),
                 task.getFinishDate(),
                 uiControl.getZoomMultiplier()));
-        backgroundRectangle.setLayoutY(5);
+        backgroundRectangle.setLayoutY(6);
         this.setLayoutX(taskX(
                 task.getStartDate(),
                 uiControl.getController().getProject().getStartDate(),
@@ -252,7 +252,7 @@ public class ResourcePaneTaskBar extends Pane {
                     // Хреначим привязку к сетке
                     if (Math.round(newX / columnWidth) != oldRound.old) {
                         oldRound.old = Math.round(newX / columnWidth);
-                        setLayoutX(Math.round(newX / columnWidth) * columnWidth - 2);
+                        setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
                         wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                         task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays(Math.round(newX / columnWidth)));
                         task.setFinishDate(task.getStartDate().plusDays(Math.round(this.getWidth() / columnWidth)));
@@ -328,10 +328,10 @@ public class ResourcePaneTaskBar extends Pane {
                 if (newX >= 0 && newX <= getLayoutX() + backgroundRectangle.getWidth()) {
                     // Хреначим привязку к сетке
                     if (Math.round(newX / columnWidth) != oldRoundLeft.old) {
-                        if (!(Math.round(newX / columnWidth) * columnWidth - 2 == getLayoutX() + backgroundRectangle.getWidth())) { // Условие против нулевой длины тасбара
+                        if (!(Math.round(newX / columnWidth) * columnWidth - 1.5 == getLayoutX() + backgroundRectangle.getWidth())) { // Условие против нулевой длины тасбара
                             oldRoundLeft.old = Math.round(newX / columnWidth);
                             double oldX = getLayoutX();
-                            setLayoutX(Math.round(newX / columnWidth) * columnWidth - 2);
+                            setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
                             backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (getLayoutX() - oldX));
                             wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                             task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / columnWidth))));
