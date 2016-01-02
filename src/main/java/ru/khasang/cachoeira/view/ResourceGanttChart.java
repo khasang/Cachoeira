@@ -48,7 +48,7 @@ public class ResourceGanttChart extends VBox {
         horizontalScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         VBox.setVgrow(horizontalScrollPane, Priority.ALWAYS);
         // Связываем горизонтальные скроллы с вкладок Задачи и Ресурсы
-        horizontalScrollPane.hvalueProperty().bindBidirectional(uiControl.horizontalScrollProperty());
+        horizontalScrollPane.hvalueProperty().bindBidirectional(uiControl.horizontalScrollValueProperty());
         return horizontalScrollPane;
     }
 
