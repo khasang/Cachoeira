@@ -51,6 +51,8 @@ public class ResourcePaneController {
         // Вешаем иконки на кнопки
         addNewResourceButton.setGraphic(new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
         removeResourceButton.setGraphic(new ImageView(getClass().getResource("/img/ic_remove.png").toExternalForm()));
+        // Уменьшаем толщину разделителя
+        resourceSplitPane.getStylesheets().add(this.getClass().getResource("/css/split-pane.css").toExternalForm());
         // Привязываем столбцы к полям в модели
         resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
         resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
@@ -108,6 +110,9 @@ public class ResourcePaneController {
         resourceGanttChart.initGanttDiagram(uiControl);
         resourceSplitPane.getItems().add(resourceGanttChart);
         resourceSplitPane.setDividerPosition(0, 0.3);
+        //Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
+        resourceSplitPane.getDividers().get(0).positionProperty().bindBidirectional(uiControl.splitPaneDividerValueProperty());
+
         controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) change -> {
             while (change.next()) {
                 for (ITask task : change.getRemoved()) {

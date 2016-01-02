@@ -67,6 +67,8 @@ public class TaskPaneController {
         // Вешаем иконки на кнопки
         addNewTaskButton.setGraphic(new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
         removeTaskButton.setGraphic(new ImageView(getClass().getResource("/img/ic_remove.png").toExternalForm()));
+        // Уменьшаем толщину разделителя
+        taskSplitPane.getStylesheets().add(this.getClass().getResource("/css/split-pane.css").toExternalForm());
     }
 
     @FXML
@@ -486,6 +488,8 @@ public class TaskPaneController {
         taskGanttChart.initGanttDiagram(uiControl);
         taskSplitPane.getItems().add(taskGanttChart);
         taskSplitPane.setDividerPosition(0, 0.3);
+        //Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
+        taskSplitPane.getDividers().get(0).positionProperty().bindBidirectional(uiControl.splitPaneDividerValueProperty());
         logger.debug("Диаграмма Ганта проинициализирована");
     }
 
