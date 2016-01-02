@@ -18,6 +18,7 @@ public class UIControl {
     private DoubleProperty resourceVerticalScrollValue = new SimpleDoubleProperty(this, "resourceVerticalScrollValue", 0);
     private DoubleProperty taskHorizontalScrollValue = new SimpleDoubleProperty(this, "taskHorizontalScrollValue", 0);
     private DoubleProperty resourceHorizontalScrollValue = new SimpleDoubleProperty(this, "resourceHorizontalScrollValue", 0);
+    private DoubleProperty splitPaneDividerValue = new SimpleDoubleProperty(this, "splitPaneDividerValue", 0.3);
 
     public void launchStartWindow() {
         startWindow = new StartWindow(controller, this);
@@ -76,5 +77,9 @@ public class UIControl {
 
     public DoubleProperty resourceHorizontalScrollValueProperty() {
         return resourceHorizontalScrollValue;
+    }
+
+    public DoubleProperty splitPaneDividerValueProperty() {
+        return splitPaneDividerValue;
     }
 }
