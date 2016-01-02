@@ -123,10 +123,9 @@ public class TaskPaneController {
         // чтобы он был всегда видимый, пока не придумаю более изящное решение.
         ScrollBar scrollBar = new ScrollBar();
         scrollBar.setOrientation(Orientation.HORIZONTAL);
-        scrollBar.setMax(1);
-        scrollBar.setVisibleAmount(1);
+        scrollBar.visibleAmountProperty().bind(taskTreeTableView.widthProperty());
         scrollBar.valueProperty().bindBidirectional(uiControl.taskHorizontalScrollValueProperty());
-        VBox vBox = new VBox(taskTreeTableView);
+        VBox vBox = new VBox(taskTreeTableView, scrollBar);
         VBox.setVgrow(taskTreeTableView, Priority.ALWAYS);
         taskSplitPane.getItems().add(vBox);
 
