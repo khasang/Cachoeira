@@ -51,9 +51,10 @@ public class TaskGanttChart extends VBox {
         horizontalScrollPane.setFitToHeight(true);
         horizontalScrollPane.getStyleClass().add("edge-to-edge"); //убирает синюю границу вокруг скроллпэйна
         horizontalScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        horizontalScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         VBox.setVgrow(horizontalScrollPane, Priority.ALWAYS);
         // Связываем горизонтальные скроллы с вкладок Задачи и Ресурсы
-        horizontalScrollPane.hvalueProperty().bindBidirectional(uiControl.horizontalScrollProperty());
+        horizontalScrollPane.hvalueProperty().bindBidirectional(uiControl.horizontalScrollValueProperty());
 
         logger.debug("Диаграмма создана.");
         return horizontalScrollPane;
@@ -78,12 +79,12 @@ public class TaskGanttChart extends VBox {
         taskPaneObjectsLayer = new TaskPaneObjectsLayer();
         taskPaneObjectsLayer.setUIControl(uiControl);
         taskPaneObjectsLayer.setListeners(uiControl);
-        /** Запихиваем слой объектов в скролл пэйн */
+        // Запихиваем слой объектов в скролл пэйн
         ScrollPane verticalScrollPane = new ScrollPane(taskPaneObjectsLayer);
         verticalScrollPane.setFitToWidth(true);
         verticalScrollPane.getStylesheets().add(this.getClass().getResource("/css/scrollpane.css").toExternalForm()); //делаем вертикальный скроллпэйн прозрачным
-        /** Синхронизируем вертикальный скролл слоя объектов cо скроллом таблицы задач */
-        verticalScrollPane.vvalueProperty().bindBidirectional(uiControl.taskVerticalScrollProperty());
+        // Синхронизируем вертикальный скролл слоя объектов cо скроллом таблицы задач
+        verticalScrollPane.vvalueProperty().bindBidirectional(uiControl.taskVerticalScrollValueProperty());
 
         logger.debug("Создан слой для объектов диаграммы.");
         return verticalScrollPane;
