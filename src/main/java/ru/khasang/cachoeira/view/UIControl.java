@@ -13,9 +13,11 @@ public class UIControl {
     private NewProjectWindow newProjectWindow;
     private IController controller = new Controller();
     private IntegerProperty zoomMultiplier = new SimpleIntegerProperty(this, "zoomMultiplier", 70);
-    private DoubleProperty horizontalScroll = new SimpleDoubleProperty(this, "horizontalScroll", 0);
-    private DoubleProperty taskVerticalScroll = new SimpleDoubleProperty(this, "taskVerticalScroll", 0);
-    private DoubleProperty resourceVerticalScroll = new SimpleDoubleProperty(this, "resourceVerticalScroll", 0);
+    private DoubleProperty horizontalScrollValue = new SimpleDoubleProperty(this, "horizontalScrollValue", 0);
+    private DoubleProperty taskVerticalScrollValue = new SimpleDoubleProperty(this, "taskVerticalScrollValue", 0);
+    private DoubleProperty resourceVerticalScrollValue = new SimpleDoubleProperty(this, "resourceVerticalScrollValue", 0);
+    private DoubleProperty taskHorizontalScrollValue = new SimpleDoubleProperty(this, "taskHorizontalScrollValue", 0);
+    private DoubleProperty resourceHorizontalScrollValue = new SimpleDoubleProperty(this, "resourceHorizontalScrollValue", 0);
 
     public void launchStartWindow() {
         startWindow = new StartWindow(controller, this);
@@ -56,43 +58,23 @@ public class UIControl {
         return zoomMultiplier;
     }
 
-    public void setZoomMultiplier(int zoomMultiplier) {
-        this.zoomMultiplier.set(zoomMultiplier);
+    public DoubleProperty horizontalScrollValueProperty() {
+        return horizontalScrollValue;
     }
 
-    public double getHorizontalScroll() {
-        return horizontalScroll.get();
+    public DoubleProperty taskVerticalScrollValueProperty() {
+        return taskVerticalScrollValue;
     }
 
-    public DoubleProperty horizontalScrollProperty() {
-        return horizontalScroll;
+    public DoubleProperty resourceVerticalScrollValueProperty() {
+        return resourceVerticalScrollValue;
     }
 
-    public void setHorizontalScroll(double horizontalScroll) {
-        this.horizontalScroll.set(horizontalScroll);
+    public DoubleProperty taskHorizontalScrollValueProperty() {
+        return taskHorizontalScrollValue;
     }
 
-    public double getTaskVerticalScroll() {
-        return taskVerticalScroll.get();
-    }
-
-    public DoubleProperty taskVerticalScrollProperty() {
-        return taskVerticalScroll;
-    }
-
-    public void setTaskVerticalScroll(double taskVerticalScroll) {
-        this.taskVerticalScroll.set(taskVerticalScroll);
-    }
-
-    public double getResourceVerticalScroll() {
-        return resourceVerticalScroll.get();
-    }
-
-    public DoubleProperty resourceVerticalScrollProperty() {
-        return resourceVerticalScroll;
-    }
-
-    public void setResourceVerticalScroll(double resourceVerticalScroll) {
-        this.resourceVerticalScroll.set(resourceVerticalScroll);
+    public DoubleProperty resourceHorizontalScrollValueProperty() {
+        return resourceHorizontalScrollValue;
     }
 }
