@@ -4,12 +4,15 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTreeTableCell;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.converter.DoubleStringConverter;
 import org.slf4j.Logger;
@@ -115,7 +118,17 @@ public class TaskPaneController {
 
         taskTreeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
 
-        taskSplitPane.getItems().add(taskTreeTableView);
+        // Временное решение для синхронизации таблицы и диаграммы.
+        // Добавил собственный горизонтальный скролл за вместо скролла таблицы (который скрыл, см. TaskTreeTableView),
+        // чтобы он был всегда видимый, пока не придумаю более изящное решение.
+        ScrollBar scrollBar = new ScrollBar();
+        scrollBar.setOrientation(Orientation.HORIZONTAL);
+        scrollBar.setMax(1);
+        scrollBar.setVisibleAmount(1);
+        scrollBar.valueProperty().bindBidirectional(uiControl.taskHorizontalScrollValueProperty());
+        VBox vBox = new VBox(taskTreeTableView);
+        VBox.setVgrow(taskTreeTableView, Priority.ALWAYS);
+        taskSplitPane.getItems().add(vBox);
 
         // Если элемент в таблице не выбран, то кнопка не активна
         removeTaskButton.disableProperty().bind(taskTreeTableView.getSelectionModel().selectedItemProperty().isNull());
