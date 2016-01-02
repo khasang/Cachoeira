@@ -1,21 +1,22 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.controller.IController;
-import ru.khasang.cachoeira.model.IResource;
-import ru.khasang.cachoeira.model.ITask;
 
 import java.io.IOException;
 
 /**
- * Created by truesik on 28.09.2015.
+ * Класс в котором "собирается" главное окно
  */
 public class MainWindow implements IWindow {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainWindow.class.getName());
+
     private final IController controller;
     private final UIControl uiControl;
     private Stage stage;
@@ -33,7 +34,7 @@ public class MainWindow implements IWindow {
         initDiagramPane();
         initPropertiesPanel();
 
-        /** Заголовок окна меняется автоматически при изменении имени проекта */
+        // Заголовок окна меняется автоматически при изменении имени проекта
         stage.titleProperty().bind(controller.getProject().nameProperty());
     }
 
@@ -48,7 +49,7 @@ public class MainWindow implements IWindow {
             propertiesPanelController.setUIControl(uiControl);
             propertiesPanelController.initTabs();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.debug("Ошибка загрузки: {}", e);
         }
     }
 
@@ -64,7 +65,7 @@ public class MainWindow implements IWindow {
             diagramPaneController.initTaskPane();
             diagramPaneController.initResourcePane();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.debug("Ошибка загрузки: {}", e);
         }
     }
 
@@ -79,7 +80,7 @@ public class MainWindow implements IWindow {
             rootLayoutController.setController(controller);
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.debug("Ошибка загрузки: {}", e);
         }
     }
 
