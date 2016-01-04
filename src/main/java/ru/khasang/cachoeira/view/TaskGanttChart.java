@@ -14,7 +14,7 @@ import ru.khasang.cachoeira.view.taskpaneganttchart.TaskPaneObjectsLayer;
  * Класс в котором определяется порядок расстановки слоев диаграммы Ганта.
  */
 public class TaskGanttChart extends VBox {
-    private static final Logger logger = LoggerFactory.getLogger(TaskGanttChart.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskGanttChart.class.getName());
 
     private TaskPaneObjectsLayer taskPaneObjectsLayer;  //слой с объектами диаграммы (задачи, группы, ...)
 
@@ -27,7 +27,7 @@ public class TaskGanttChart extends VBox {
                 createGridLayer(uiControl),
                 createObjectsLayer(uiControl),
                 uiControl));
-        logger.debug("Инициализация диаграммы Ганта на вкладке \"Задачи\" прошла успешно.");
+        LOGGER.debug("Инициализация диаграммы Ганта на вкладке \"Задачи\" прошла успешно.");
     }
 
     /**
@@ -56,7 +56,7 @@ public class TaskGanttChart extends VBox {
         // Связываем горизонтальные скроллы с вкладок Задачи и Ресурсы
         horizontalScrollPane.hvalueProperty().bindBidirectional(uiControl.horizontalScrollValueProperty());
 
-        logger.debug("Диаграмма создана.");
+        LOGGER.debug("Диаграмма создана.");
         return horizontalScrollPane;
     }
 
@@ -66,7 +66,7 @@ public class TaskGanttChart extends VBox {
      * @param uiControl Контроллер вьюхи
      */
     private TaskPaneGridLayer createGridLayer(UIControl uiControl) {
-        logger.debug("Создан слой с сеткой.");
+        LOGGER.debug("Создан слой с сеткой.");
         return new TaskPaneGridLayer(uiControl);
     }
 
@@ -86,7 +86,7 @@ public class TaskGanttChart extends VBox {
         // Синхронизируем вертикальный скролл слоя объектов cо скроллом таблицы задач
         verticalScrollPane.vvalueProperty().bindBidirectional(uiControl.taskVerticalScrollValueProperty());
 
-        logger.debug("Создан слой для объектов диаграммы.");
+        LOGGER.debug("Создан слой для объектов диаграммы.");
         return verticalScrollPane;
     }
 
@@ -106,7 +106,7 @@ public class TaskGanttChart extends VBox {
                 uiControl.getController().getProject().startDateProperty(),
                 uiControl.getController().getProject().finishDateProperty(),
                 uiControl.zoomMultiplierProperty());
-        logger.debug("Создана шкала с датами.");
+        LOGGER.debug("Создана шкала с датами.");
         return taskPaneDateLine;
     }
 
