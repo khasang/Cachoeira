@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 public class TaskPaneObjectsLayer extends Pane {
-    private static final Logger logger = LoggerFactory.getLogger(TaskPaneObjectsLayer.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskPaneObjectsLayer.class.getName());
 
     private UIControl uiControl;
     private List<TaskPaneTaskBar> taskPaneTaskBarList = new ArrayList<>();
@@ -34,8 +34,8 @@ public class TaskPaneObjectsLayer extends Pane {
             TaskPaneTaskBar taskPaneTaskBar = createTaskBar(uiControl, task);
             this.getChildren().add(taskPaneTaskBar);
             taskPaneTaskBarList.add(taskPaneTaskBar);
-            logger.debug("Диаграмма задач обновлена.");
         }
+        LOGGER.debug("Диаграмма задач обновлена.");
     }
 
     /**
@@ -47,7 +47,7 @@ public class TaskPaneObjectsLayer extends Pane {
         TaskPaneTaskBar taskPaneTaskBar = createTaskBar(uiControl, task);
         this.getChildren().add(taskPaneTaskBar);
         taskPaneTaskBarList.add(taskPaneTaskBar);
-        logger.debug("Задача с именем \"{}\" добавлена.", task.getName());
+        LOGGER.debug("Задача с именем \"{}\" добавлена.", task.getName());
     }
 
     /**
@@ -62,7 +62,7 @@ public class TaskPaneObjectsLayer extends Pane {
             if (taskPaneTaskBar.getTask().equals(task)) {
                 this.getChildren().remove(taskPaneTaskBar);
                 taskBarIterator.remove();
-                logger.debug("Задача с именем \"{}\" удалена.", task.getName());
+                LOGGER.debug("Задача с именем \"{}\" удалена.", task.getName());
             }
         }
     }
