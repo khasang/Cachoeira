@@ -4,6 +4,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTreeTableCell;
@@ -12,12 +13,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.util.Callback;
 import javafx.util.converter.DoubleStringConverter;
-import ru.khasang.cachoeira.controller.IController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
 import ru.khasang.cachoeira.model.Task;
 import ru.khasang.cachoeira.view.contextmenus.ContextMenuColumn;
 import ru.khasang.cachoeira.view.rowfactories.TaskTreeTableViewRowFactory;
+import ru.khasang.cachoeira.view.tables.TaskTreeTableView;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,24 +31,28 @@ import java.util.Locale;
  * Класс в котором описывается все что находится на вкладке Задачи.
  */
 public class TaskPaneController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskPaneController.class.getName());
+
     @FXML
     private SplitPane taskSplitPane;
     @FXML
-    private TreeTableView<ITask> taskTreeTableView;     //таблица задач <Task>
+    private TaskTreeTableView<ITask> taskTreeTableView;     //таблица задач <Task>
     @FXML
-    private TreeTableColumn<ITask, String> taskNameColumn;      //столбец с наименованием задачи <Task, String>
-    @FXML
-    private TreeTableColumn<ITask, LocalDate> finishDateColumn;    //столбец с датой окончания задачи <Task, Date>
+    private TreeTableColumn<ITask, String> nameColumn;      //столбец с наименованием задачи <Task, String>
     @FXML
     private TreeTableColumn<ITask, LocalDate> startDateColumn;     //столбец с датой начала задачи <Task, Date>
     @FXML
+    private TreeTableColumn<ITask, LocalDate> finishDateColumn;    //столбец с датой окончания задачи <Task, Date>
+    @FXML
     private TreeTableColumn<ITask, String> durationColumn; //столбец Продолжительность
     @FXML
-    private TreeTableColumn<ITask, Integer> donePercentColumn; //столбец процент выполения
+    private TreeTableColumn<ITask, Integer> donePercentColumn; //столбец процент выполнения
     @FXML
     private TreeTableColumn<ITask, PriorityType> priorityColumn; //столбец Приоритет
     @FXML
     private TreeTableColumn<ITask, Double> costColumn; //столбец Стоимость
+    @FXML
+    private ScrollBar taskTreeTableViewHorizontalScrollBar;
     @FXML
     private Button addNewTaskButton;
     @FXML
@@ -54,9 +61,7 @@ public class TaskPaneController {
     private Slider zoomSlider;
 
     private TaskGanttChart taskGanttChart;
-    private IController controller;
     private UIControl uiControl;
-    private TreeItem<ITask> rootTask = new TreeItem<>(new Task());
 
     public TaskPaneController() {
     }
@@ -71,8 +76,10 @@ public class TaskPaneController {
         // Вешаем иконки на кнопки
         addNewTaskButton.setGraphic(new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
         removeTaskButton.setGraphic(new ImageView(getClass().getResource("/img/ic_remove.png").toExternalForm()));
+        // Уменьшаем толщину разделителя
+        taskSplitPane.getStylesheets().add(this.getClass().getResource("/css/split-pane.css").toExternalForm());
         // Привязываем столбцы к полям в модели
-        taskNameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());              //столбец задач Наименование
+        nameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());              //столбец задач Наименование
         startDateColumn.setCellValueFactory(param -> param.getValue().getValue().startDateProperty());      //Дата начала
         finishDateColumn.setCellValueFactory(param -> param.getValue().getValue().finishDateProperty());    //Дата окончания
         durationColumn.setCellValueFactory(param -> Bindings.concat(ChronoUnit.DAYS.between(
@@ -81,9 +88,82 @@ public class TaskPaneController {
         donePercentColumn.setCellValueFactory(param -> param.getValue().getValue().donePercentProperty().asObject());
         priorityColumn.setCellValueFactory(param -> param.getValue().getValue().priorityTypeProperty());
         costColumn.setCellValueFactory(param -> param.getValue().getValue().costProperty().asObject());
+        // Высота строк и выравнивание
+        taskTreeTableView.setFixedCellSize(31);
+        nameColumn.setStyle("-fx-alignment: CENTER-LEFT");
+        durationColumn.setStyle("-fx-alignment: CENTER-LEFT");
+        donePercentColumn.setStyle("-fx-alignment: CENTER-LEFT");
+        priorityColumn.setStyle("-fx-alignment: CENTER-LEFT");
+        costColumn.setStyle("-fx-alignment: CENTER-LEFT");
+    }
+
+    @FXML
+    private void addNewTaskHandle(ActionEvent actionEvent) {
+        uiControl.getController().handleAddTask(new Task());
+    }
+
+    @FXML
+    private void removeTaskHandle(ActionEvent actionEvent) {
+        uiControl.getController().handleRemoveTask(taskTreeTableView.getSelectionModel().getSelectedItem().getValue());
+    }
+
+    public void initTaskTable() {
+        taskTreeTableView.bindScrollsToController(uiControl);
+        taskTreeTableView.setRoot(new TreeItem<>(new Task()));
+        taskTreeTableView.getRoot().setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
+        taskTreeTableView.setRowFactory(new TaskTreeTableViewRowFactory(this, uiControl.getController()));
         // Делаем поля таблицы редактируемыми
+        setTableEditable();
+        // Временное решение для синхронизации таблицы и диаграммы.
+        // Добавил собственный горизонтальный скролл за вместо скролла таблицы (который скрыл, см. TaskTreeTableView),
+        // чтобы он был всегда видимый, пока не придумаю более изящное решение.
+        taskTreeTableViewHorizontalScrollBar.setOrientation(Orientation.HORIZONTAL);
+        taskTreeTableViewHorizontalScrollBar.visibleAmountProperty().bind(taskTreeTableView.widthProperty());
+        taskTreeTableViewHorizontalScrollBar.valueProperty().bindBidirectional(uiControl.taskHorizontalScrollValueProperty());
+        // Следим за выделенным элементом в таблице задач
+        taskTreeTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                uiControl.getController().selectedTaskProperty().setValue(newValue.getValue());
+            }
+        });
+        // Если таблица пуста, присваиваем controller.selectedTaskProperty() null
+        taskTreeTableView.getRoot().getChildren().addListener((ListChangeListener<TreeItem<ITask>>) change -> {
+            while (change.next()) {
+                if (change.getList().isEmpty()) {
+                    uiControl.getController().selectedTaskProperty().setValue(null);
+                }
+            }
+        });
+        // Следим за изменениями в модели задач
+        uiControl.getController().getProject().getTaskList().addListener((ListChangeListener<ITask>) change -> {
+            // При добавлении или удалении элемента из модели обновляем таблицу задач
+            while (change.next()) {
+                // Добавляем
+                for (ITask task : change.getAddedSubList()) {
+                    int indexOfTask = uiControl.getController().getProject().getTaskList().indexOf(task);
+                    TreeItem<ITask> taskTreeItem = new TreeItem<>(task);
+                    taskTreeTableView.getRoot().getChildren().add(indexOfTask, taskTreeItem); //обязательно нужен индекс элемента, иначе драгндроп не будет работать
+                    taskTreeTableView.getSelectionModel().select(taskTreeItem);
+                    taskGanttChart.getTaskPaneObjectsLayer().addTaskBar(task); // Добавляем на диаграмму
+                }
+                // Удаляем
+                for (ITask task : change.getRemoved()) {
+                    for (TreeItem<ITask> taskTreeItem : taskTreeTableView.getRoot().getChildren()) {
+                        if (taskTreeItem.getValue().equals(task)) {
+                            taskTreeTableView.getRoot().getChildren().remove(taskTreeItem);
+                            break; //Если убрать - будет ConcurrentModificationException
+                        }
+                    }
+                    taskGanttChart.getTaskPaneObjectsLayer().removeTaskBar(task); // Удаляем с диаграммы
+                }
+            }
+        });
+        LOGGER.debug("Таблица задач проинициализирована.");
+    }
+
+    private void setTableEditable() {
         taskTreeTableView.setEditable(true);
-        taskNameColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
+        nameColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
         startDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
             DatePicker startDatePicker;
 
@@ -129,10 +209,10 @@ public class TaskPaneController {
                             @Override
                             public void updateItem(LocalDate item, boolean empty) {
                                 super.updateItem(item, empty);
-                                if (item.isBefore(controller.getProject().getStartDate())) {
+                                if (item.isBefore(uiControl.getController().getProject().getStartDate())) {
                                     setDisable(true);
                                 }
-                                if (item.isEqual(controller.getProject().getFinishDate()) || item.isAfter(controller.getProject().getFinishDate())) {
+                                if (item.isEqual(uiControl.getController().getProject().getFinishDate()) || item.isAfter(uiControl.getController().getProject().getFinishDate())) {
                                     setDisable(true);
                                 }
                             }
@@ -197,7 +277,7 @@ public class TaskPaneController {
                                 if (item.isBefore(getTreeTableRow().getTreeItem().getValue().getStartDate().plusDays(1))) {
                                     setDisable(true);
                                 }
-                                if (item.isEqual(controller.getProject().getFinishDate().plusDays(1)) || item.isAfter(controller.getProject().getFinishDate().plusDays(1))) {
+                                if (item.isEqual(uiControl.getController().getProject().getFinishDate().plusDays(1)) || item.isAfter(uiControl.getController().getProject().getFinishDate().plusDays(1))) {
                                     setDisable(true);
                                 }
                             }
@@ -364,80 +444,7 @@ public class TaskPaneController {
                 return true;
             }
         });
-        // Высота строк и выравнивание
-        taskTreeTableView.setFixedCellSize(31);
-        taskNameColumn.setStyle("-fx-alignment: CENTER-LEFT");
-        durationColumn.setStyle("-fx-alignment: CENTER-LEFT");
-        donePercentColumn.setStyle("-fx-alignment: CENTER-LEFT");
-        priorityColumn.setStyle("-fx-alignment: CENTER-LEFT");
-        costColumn.setStyle("-fx-alignment: CENTER-LEFT");
-    }
-
-    @FXML
-    private void addNewTaskHandle(ActionEvent actionEvent) {
-        controller.handleAddTask(new Task());
-    }
-
-    @FXML
-    private void removeTaskHandle(ActionEvent actionEvent) {
-        controller.handleRemoveTask(taskTreeTableView.getSelectionModel().getSelectedItem().getValue());
-    }
-
-    public void initTaskTable() {
-        taskTreeTableView.setRoot(rootTask); //вешаем корневой TreeItem в TreeTableView. Он в fxml стоит как невидимый (<TreeTableView fx:id="taskTreeTableView" showRoot="false">).
-        taskTreeTableView.getRoot().setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
-        taskTreeTableView.setRowFactory(new TaskTreeTableViewRowFactory(this, controller));
-        /** Следим за выделенным элементом в таблице задач **/
-        taskTreeTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                controller.selectedTaskProperty().setValue(newValue.getValue());
-            }
-        });
-        /** Если таблица пуста, присваиваем controller.selectedTaskProperty() null **/
-        taskTreeTableView.getRoot().getChildren().addListener((ListChangeListener<TreeItem<ITask>>) c -> {
-            while (c.next()) {
-                if (c.getList().isEmpty()) {
-                    controller.selectedTaskProperty().setValue(null);
-                }
-            }
-        });
-        /** Следим за изменениями в модели задач **/
-        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
-            /** При добавлении или удалении элемента их модели обновлям таблицу задач**/
-            while (c.next()) {
-                /** Добавляем **/
-                for (ITask task : c.getAddedSubList()) {
-                    int indexOfTask = controller.getProject().getTaskList().indexOf(task);
-                    TreeItem<ITask> taskTreeItem = new TreeItem<>(task);
-                    taskTreeTableView.getRoot().getChildren().add(indexOfTask, taskTreeItem); //обязательно нужен инжекс элемента, иначе драгндроп не будет работать
-                    taskTreeTableView.getSelectionModel().select(taskTreeItem);
-                    taskGanttChart.getTaskPaneObjectsLayer().addTaskBar(task); // Добавляем на диаграмму
-                }
-                /** Удаляем **/
-                for (ITask task : c.getRemoved()) {
-                    for (TreeItem<ITask> taskTreeItem : taskTreeTableView.getRoot().getChildren()) {
-                        if (taskTreeItem.getValue().equals(task)) {
-                            taskTreeTableView.getRoot().getChildren().remove(taskTreeItem);
-                            break; //Если убрать - будет ConcurrentModificationException
-                        }
-                    }
-                    taskGanttChart.getTaskPaneObjectsLayer().removeTaskBar(task); // Удаляем с диаграммы
-                }
-                if (c.wasAdded()) {
-                    System.out.println("Main Window Task Added!");
-                    uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().refreshResourceDiagram();
-                }
-                if (c.wasRemoved()) {
-                    System.out.println("Main Window Task Removed");
-                }
-                if (c.wasReplaced()) {
-                    System.out.println("Main Window Task Replaced");
-                }
-                if (c.wasUpdated()) {
-                    System.out.println("Main Window Task Updated");
-                }
-            }
-        });
+        LOGGER.debug("Поля таблицы сделаны редактируемыми.");
     }
 
     public void initGanttChart() {
@@ -445,6 +452,9 @@ public class TaskPaneController {
         taskGanttChart.initGanttDiagram(uiControl);
         taskSplitPane.getItems().add(taskGanttChart);
         taskSplitPane.setDividerPosition(0, 0.3);
+        //Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
+        taskSplitPane.getDividers().get(0).positionProperty().bindBidirectional(uiControl.splitPaneDividerValueProperty());
+        LOGGER.debug("Диаграмма Ганта проинициализирована.");
     }
 
     public void initContextMenus() {
@@ -458,7 +468,7 @@ public class TaskPaneController {
         // Контекстное меню для таблицы
         ContextMenu taskTableMenu = new ContextMenu();
         MenuItem addNewTask = new MenuItem("Новая задача");
-        addNewTask.setOnAction(event -> controller.handleAddTask(new Task()));
+        addNewTask.setOnAction(event -> uiControl.getController().handleAddTask(new Task()));
         taskTableMenu.getItems().addAll(addNewTask);   //заполняем меню
         taskTreeTableView.setContextMenu(taskTableMenu);
     }
@@ -471,15 +481,7 @@ public class TaskPaneController {
         return taskTreeTableView;
     }
 
-    public void setController(IController controller) {
-        this.controller = controller;
-    }
-
     public void setUIControl(UIControl uiControl) {
         this.uiControl = uiControl;
-    }
-
-    public TaskGanttChart getTaskGanttChart() {
-        return taskGanttChart;
     }
 }

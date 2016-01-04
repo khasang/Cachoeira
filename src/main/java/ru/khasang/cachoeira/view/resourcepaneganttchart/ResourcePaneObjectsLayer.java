@@ -1,6 +1,8 @@
 package ru.khasang.cachoeira.view.resourcepaneganttchart;
 
 import javafx.scene.layout.Pane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
@@ -15,6 +17,8 @@ import java.util.List;
  */
 
 public class ResourcePaneObjectsLayer extends Pane {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourcePaneObjectsLayer.class.getName());
+
     private UIControl uiControl;
     private List<ResourcePaneTaskBar> resourcePaneTaskBarList = new ArrayList<>();
 
@@ -34,6 +38,7 @@ public class ResourcePaneObjectsLayer extends Pane {
                 resourcePaneTaskBarList.add(resourcePaneTaskBar);
             }
         }
+        LOGGER.debug("Диаграмма ресурсов обновлена.");
     }
 
     /**
@@ -47,6 +52,7 @@ public class ResourcePaneObjectsLayer extends Pane {
         ResourcePaneTaskBar resourcePaneTaskBar = createTaskBar(uiControl, task, resource);
         this.getChildren().add(resourcePaneTaskBar);
         resourcePaneTaskBarList.add(resourcePaneTaskBar);
+        LOGGER.debug("Задача с именем \"{}\" добавлена к ресурсу \"{}\".", task.getName(), resource.getName());
     }
 
     /**
@@ -61,6 +67,7 @@ public class ResourcePaneObjectsLayer extends Pane {
             if (resourcePaneTaskBar.getTask().equals(task)) {
                 this.getChildren().remove(resourcePaneTaskBar);
                 taskBarIterator.remove();
+                LOGGER.debug("Задача с именем \"{}\" удалена.", task.getName());
             }
         }
     }
@@ -79,6 +86,7 @@ public class ResourcePaneObjectsLayer extends Pane {
             if (resourcePaneTaskBar.getTask().equals(task) && resourcePaneTaskBar.getResource().equals(resource)) {
                 this.getChildren().remove(resourcePaneTaskBar);
                 taskBarIterator.remove();
+                LOGGER.debug("Задача с именем \"{}\" удалена с диаграммы.", task.getName());
             }
         }
     }
@@ -103,6 +111,11 @@ public class ResourcePaneObjectsLayer extends Pane {
         return resourcePaneTaskBar;
     }
 
+    /**
+     * Если переменная зума меняется то обновляем диаграмму
+     *
+     * @param uiControl Контроллер вью
+     */
     public void setListeners(UIControl uiControl) {
         uiControl.zoomMultiplierProperty().addListener((observable -> {
             refreshResourceDiagram();

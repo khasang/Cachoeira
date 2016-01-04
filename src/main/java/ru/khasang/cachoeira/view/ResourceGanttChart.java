@@ -4,6 +4,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.view.resourcepaneganttchart.ResourcePaneDateLine;
 import ru.khasang.cachoeira.view.resourcepaneganttchart.ResourcePaneGridLayer;
 import ru.khasang.cachoeira.view.resourcepaneganttchart.ResourcePaneObjectsLayer;
@@ -12,6 +14,8 @@ import ru.khasang.cachoeira.view.resourcepaneganttchart.ResourcePaneObjectsLayer
  * Класс в котором опеределяется порядок расстановки слоев диаграммы Ганта.
  */
 public class ResourceGanttChart extends VBox {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceGanttChart.class.getName());
+
     private ResourcePaneObjectsLayer resourcePaneObjectsLayer;  //слой с объектами диаграммы (задачи, группы, ...)
 
     public ResourceGanttChart() {
@@ -21,7 +25,9 @@ public class ResourceGanttChart extends VBox {
         this.getChildren().addAll(createGanttDiagram(
                 createDateLine(uiControl),
                 createGridLayer(uiControl),
-                createObjectsLayer(uiControl)));
+                createObjectsLayer(uiControl),
+                uiControl));
+        LOGGER.debug("Инициализация диаграммы Ганта на вкладке \"Ресурсы\" прошла успешно.");
     }
 
     /**
@@ -34,7 +40,8 @@ public class ResourceGanttChart extends VBox {
      */
     private ScrollPane createGanttDiagram(ResourcePaneDateLine dateLine,
                                           ResourcePaneGridLayer gridLayer,
-                                          ScrollPane objectsLayer) {
+                                          ScrollPane objectsLayer,
+                                          UIControl uiControl) {
         StackPane stackPane = new StackPane(gridLayer, objectsLayer);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
         VBox vBox = new VBox(dateLine, stackPane);
@@ -44,7 +51,12 @@ public class ResourceGanttChart extends VBox {
         horizontalScrollPane.setFitToHeight(true);
         horizontalScrollPane.getStyleClass().add("edge-to-edge"); //убирает синюю границу вокруг скроллпэйна
         horizontalScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        horizontalScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         VBox.setVgrow(horizontalScrollPane, Priority.ALWAYS);
+        // Связываем горизонтальные скроллы с вкладок Задачи и Ресурсы
+        horizontalScrollPane.hvalueProperty().bindBidirectional(uiControl.horizontalScrollValueProperty());
+
+        LOGGER.debug("Диаграмма создана.");
         return horizontalScrollPane;
     }
 
@@ -57,9 +69,14 @@ public class ResourceGanttChart extends VBox {
         resourcePaneObjectsLayer = new ResourcePaneObjectsLayer();
         resourcePaneObjectsLayer.setUIControl(uiControl);
         resourcePaneObjectsLayer.setListeners(uiControl);
+        // Запихиваем слой объектов в скролл пэйн
         ScrollPane verticalScrollPane = new ScrollPane(resourcePaneObjectsLayer);
         verticalScrollPane.setFitToWidth(true);
         verticalScrollPane.getStylesheets().add(this.getClass().getResource("/css/scrollpane.css").toExternalForm()); //делаем вертикальный скроллпэйн прозрачным
+        // Синхронизируем вертикальный скролл слоя объектов cо скроллом таблицы задач
+        verticalScrollPane.vvalueProperty().bindBidirectional(uiControl.resourceVerticalScrollValueProperty());
+
+        LOGGER.debug("Создан слой для объектов диаграммы.");
         return verticalScrollPane;
     }
 
@@ -69,6 +86,7 @@ public class ResourceGanttChart extends VBox {
      * @param uiControl Контроллер вьюхи
      */
     private ResourcePaneGridLayer createGridLayer(UIControl uiControl) {
+        LOGGER.debug("Создан слой с сеткой.");
         return new ResourcePaneGridLayer(uiControl);
     }
 
@@ -88,6 +106,7 @@ public class ResourceGanttChart extends VBox {
                 uiControl.getController().getProject().startDateProperty(),
                 uiControl.getController().getProject().finishDateProperty(),
                 uiControl.zoomMultiplierProperty());
+        LOGGER.debug("Создана шкала с датами.");
         return resourcePaneDateLine;
     }
 
