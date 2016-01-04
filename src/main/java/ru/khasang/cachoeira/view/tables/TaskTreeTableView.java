@@ -1,6 +1,7 @@
 package ru.khasang.cachoeira.view.tables;
 
 import com.sun.javafx.scene.control.skin.*;
+import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -14,24 +15,53 @@ import ru.khasang.cachoeira.view.UIControl;
 public class TaskTreeTableView<S> extends TreeTableView<S> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskTreeTableView.class.getName());
 
-    private final UIControl uiControl;
+    VirtualScrollBar verticalScrollBar;
+    VirtualScrollBar horizontalScrollBar;
 
-    public TaskTreeTableView(TreeItem<S> root, UIControl uiControl) {
+    public TaskTreeTableView() {
+    }
+
+    public TaskTreeTableView(TreeItem<S> root) {
         super(root);
-        this.uiControl = uiControl;
+    }
+
+    /**
+     * Метод для связывания горизонтального и вертикального скролла с переменными контроллера.
+     *
+     * @param uiControl Контроллер вью
+     */
+    public void bindScrollsToController(UIControl uiControl) {
+        Platform.runLater(() -> {
+            if (verticalScrollBar != null) {
+                // Синхронизируем вертикальный скролл таблицы и диаграммы
+                verticalScrollBar.valueProperty().bindBidirectional(uiControl.taskVerticalScrollValueProperty());
+//                verticalScrollBar.visibleProperty().addListener(observable -> {
+//                    verticalScrollBar.setVisible(false);
+//                });
+                LOGGER.debug("Вертикальный скролл таблицы привязан к {} вью контроллера.",
+                        uiControl.taskVerticalScrollValueProperty().getName());
+            }
+            if (horizontalScrollBar != null) {
+                horizontalScrollBar.valueProperty().bindBidirectional(uiControl.taskHorizontalScrollValueProperty());
+                horizontalScrollBar.setVisible(false);
+                horizontalScrollBar.visibleProperty().addListener(observable -> {
+                    horizontalScrollBar.setVisible(false);
+                });
+                LOGGER.debug("Горизонтальный скродл таблицы привязан к {} вью контроллера.",
+                        uiControl.taskHorizontalScrollValueProperty().getName());
+            }
+        });
     }
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        return new TaskTreeTableViewSkin<>(this, uiControl);
+        return new TaskTreeTableViewSkin<>(this);
     }
 
     private class TaskTreeTableViewSkin<T> extends TreeTableViewSkin<T> {
-        public TaskTreeTableViewSkin(TreeTableView<T> tableView, UIControl uiControl) {
+        public TaskTreeTableViewSkin(TreeTableView<T> tableView) {
             super(tableView);
             // Выцепляем скроллы
-            VirtualScrollBar verticalScrollBar = null;
-            VirtualScrollBar horizontalScrollBar = null;
             for (Node child : flow.getChildrenUnmodifiable()) {
                 if (child instanceof VirtualScrollBar) {
                     if (((VirtualScrollBar) child).getOrientation() == Orientation.VERTICAL) {
@@ -44,23 +74,6 @@ public class TaskTreeTableView<S> extends TreeTableView<S> {
                     }
                 }
             }
-            if (verticalScrollBar == null) {
-                return;
-            }
-            // Синхронизируем вертикальный скролл таблицы и диаграммы
-            verticalScrollBar.valueProperty().bindBidirectional(uiControl.taskVerticalScrollValueProperty());
-            LOGGER.debug("Вертикальный скролл таблицы привязан к {} вью контроллера.", uiControl.taskVerticalScrollValueProperty().getName());
-
-            if (horizontalScrollBar == null) {
-                return;
-            }
-            horizontalScrollBar.valueProperty().bindBidirectional(uiControl.taskHorizontalScrollValueProperty());
-            horizontalScrollBar.setVisible(false);
-            final VirtualScrollBar finalHorizontalScrollBar = horizontalScrollBar;
-            horizontalScrollBar.visibleProperty().addListener((observable, oldValue, newValue) -> {
-                finalHorizontalScrollBar.setVisible(false);
-            });
-            LOGGER.debug("Горизонтальный скродл таблицы привязан к {} вью контроллера.", uiControl.taskHorizontalScrollValueProperty().getName());
         }
     }
 }
