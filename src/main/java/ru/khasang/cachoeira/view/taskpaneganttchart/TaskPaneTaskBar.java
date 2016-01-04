@@ -40,7 +40,7 @@ import java.time.temporal.ChronoUnit;
  * ширины Node'ы, которая в нем (taskBar'е) лежит, т.е. от backgroundRectangle.
  */
 public class TaskPaneTaskBar extends Pane {
-    private static final Logger logger = LoggerFactory.getLogger(TaskPaneTaskBar.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskPaneTaskBar.class.getName());
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
     private static final double ROW_HEIGHT = 31;
 
@@ -263,7 +263,7 @@ public class TaskPaneTaskBar extends Pane {
                         task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays(Math.round(newX / columnWidth)));
                         task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / columnWidth)));
                         wasMoved = false; // Когда окончили движение фолз
-                        logger.debug("Задача с именем \"{}\" изменила дату начала на {} и дату окончания на {}.", task.getName(), task.getStartDate(), task.getFinishDate());
+                        LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {} и дату окончания на {}.", task.getName(), task.getStartDate(), task.getFinishDate());
                     }
                 }
             }
@@ -342,7 +342,7 @@ public class TaskPaneTaskBar extends Pane {
                             wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                             task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / columnWidth))));
                             wasMoved = false; // Когда окончили движение фолз
-                            logger.debug("Задача с именем \"{}\" изменила дату начала на {}.", task.getName(), task.getStartDate());
+                            LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {}.", task.getName(), task.getStartDate());
                         }
                     }
                 }
@@ -396,7 +396,7 @@ public class TaskPaneTaskBar extends Pane {
                         wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                         task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / columnWidth)));
                         wasMoved = false; // Когда окончили движение фолз
-                        logger.debug("Задача с именем \"{}\" изменила дату окончания на {}.", task.getName(), task.getFinishDate());
+                        LOGGER.debug("Задача с именем \"{}\" изменила дату окончания на {}.", task.getName(), task.getFinishDate());
                     }
                 }
             }
