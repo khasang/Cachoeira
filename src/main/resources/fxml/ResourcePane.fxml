@@ -1,40 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.ResourcePaneController">
-   <children>
-      <SplitPane fx:id="resourceSplitPane" VBox.vgrow="ALWAYS">
-         <items>
-            <TableView fx:id="resourceTableView" VBox.vgrow="ALWAYS">
-               <columnResizePolicy>
-                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-               </columnResizePolicy>
-               <columns>
-                  <TableColumn fx:id="resourceNameColumn" prefWidth="150.0" sortable="false" text="Наименование" />
-                  <TableColumn fx:id="resourceTypeColumn" prefWidth="150.0" sortable="false" text="Тип" />
-                  <TableColumn fx:id="resourceEmailColumn" prefWidth="150.0" sortable="false" text="Почта" visible="false" />
-               </columns>
-            </TableView>
-         </items>
-      </SplitPane>
-      <HBox VBox.vgrow="NEVER">
-         <children>
-            <Button fx:id="addNewResourceButton" mnemonicParsing="false" onAction="#addNewResourceHandle" HBox.hgrow="NEVER">
-               <tooltip>
-                  <Tooltip text="Добавить ресурс" />
-               </tooltip>
-            </Button>
-            <Button fx:id="removeResourceButton" mnemonicParsing="false" onAction="#removeResourceHandle" HBox.hgrow="NEVER">
-               <tooltip>
-                  <Tooltip text="Удалить ресурс" />
-               </tooltip>
-            </Button>
-            <Region HBox.hgrow="ALWAYS" />
-            <Slider fx:id="zoomSlider" max="130.0" min="2.0" showTickMarks="true" HBox.hgrow="NEVER" />
-         </children>
-      </HBox>
-   </children>
+<?import ru.khasang.cachoeira.view.tables.ResourceTableView?>
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ru.khasang.cachoeira.view.ResourcePaneController">
+    <SplitPane fx:id="resourceSplitPane" VBox.vgrow="ALWAYS">
+        <VBox>
+            <ResourceTableView fx:id="resourceTableView" VBox.vgrow="ALWAYS">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+                <columns>
+                    <TableColumn fx:id="resourceNameColumn" prefWidth="150.0" sortable="false" text="Наименование"/>
+                    <TableColumn fx:id="resourceTypeColumn" prefWidth="150.0" sortable="false" text="Тип"/>
+                    <TableColumn fx:id="resourceEmailColumn" prefWidth="150.0" sortable="false" text="Почта"
+                                 visible="false"/>
+                </columns>
+            </ResourceTableView>
+            <ScrollBar fx:id="resourceTableViewHorizontalScrollBar"/>
+        </VBox>
+    </SplitPane>
+    <HBox VBox.vgrow="NEVER">
+        <Button fx:id="addNewResourceButton" mnemonicParsing="false" onAction="#addNewResourceHandle"
+                HBox.hgrow="NEVER">
+            <tooltip>
+                <Tooltip text="Добавить ресурс"/>
+            </tooltip>
+        </Button>
+        <Button fx:id="removeResourceButton" mnemonicParsing="false" onAction="#removeResourceHandle"
+                HBox.hgrow="NEVER">
+            <tooltip>
+                <Tooltip text="Удалить ресурс"/>
+            </tooltip>
+        </Button>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Slider fx:id="zoomSlider" max="130.0" min="2.0" showTickMarks="true" HBox.hgrow="NEVER"/>
+    </HBox>
 </VBox>
