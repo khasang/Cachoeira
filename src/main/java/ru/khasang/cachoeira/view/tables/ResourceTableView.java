@@ -1,9 +1,12 @@
 package ru.khasang.cachoeira.view.tables;
 
-import com.sun.javafx.scene.control.skin.*;
+import com.sun.javafx.scene.control.skin.TableViewSkin;
+import com.sun.javafx.scene.control.skin.VirtualScrollBar;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Skin;
+import javafx.scene.control.TableView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.view.UIControl;
@@ -11,23 +14,23 @@ import ru.khasang.cachoeira.view.UIControl;
 /**
  * Пришлось сделать свою таблицу, чтобы вытащить вертикальный скролл и синхронизировать его с диаграммой Ганта.
  */
-public class TaskTreeTableView<S> extends TreeTableView<S> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TaskTreeTableView.class.getName());
+public class ResourceTableView<S> extends TableView<S> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceTableView.class.getName());
 
     private final UIControl uiControl;
 
-    public TaskTreeTableView(TreeItem<S> root, UIControl uiControl) {
-        super(root);
+    public ResourceTableView(ObservableList<S> items, UIControl uiControl) {
+        super(items);
         this.uiControl = uiControl;
     }
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        return new TaskTreeTableViewSkin<>(this, uiControl);
+        return new ResourceTableViewSkin<>(this, uiControl);
     }
 
-    private class TaskTreeTableViewSkin<T> extends TreeTableViewSkin<T> {
-        public TaskTreeTableViewSkin(TreeTableView<T> tableView, UIControl uiControl) {
+    private class ResourceTableViewSkin<T> extends TableViewSkin<T> {
+        public ResourceTableViewSkin(TableView<T> tableView, UIControl uiControl) {
             super(tableView);
             // Выцепляем скроллы
             VirtualScrollBar verticalScrollBar = null;
@@ -47,20 +50,19 @@ public class TaskTreeTableView<S> extends TreeTableView<S> {
             if (verticalScrollBar == null) {
                 return;
             }
-            // Синхронизируем вертикальный скролл таблицы и диаграммы
-            verticalScrollBar.valueProperty().bindBidirectional(uiControl.taskVerticalScrollValueProperty());
-            LOGGER.debug("Вертикальный скролл таблицы привязан к {} вью контроллера.", uiControl.taskVerticalScrollValueProperty().getName());
+            verticalScrollBar.valueProperty().bindBidirectional(uiControl.resourceVerticalScrollValueProperty());
+            LOGGER.debug("Вертикальный скролл таблицы привязан к {} вью контроллера.", uiControl.resourceVerticalScrollValueProperty());
 
             if (horizontalScrollBar == null) {
                 return;
             }
-            horizontalScrollBar.valueProperty().bindBidirectional(uiControl.taskHorizontalScrollValueProperty());
+            horizontalScrollBar.valueProperty().bindBidirectional(uiControl.resourceHorizontalScrollValueProperty());
             horizontalScrollBar.setVisible(false);
             final VirtualScrollBar finalHorizontalScrollBar = horizontalScrollBar;
             horizontalScrollBar.visibleProperty().addListener((observable, oldValue, newValue) -> {
                 finalHorizontalScrollBar.setVisible(false);
             });
-            LOGGER.debug("Горизонтальный скродл таблицы привязан к {} вью контроллера.", uiControl.taskHorizontalScrollValueProperty().getName());
+            LOGGER.debug("Горизонтальный скролл таблицы привязан к {} вью контроллера.", uiControl.resourceHorizontalScrollValueProperty());
         }
     }
 }
