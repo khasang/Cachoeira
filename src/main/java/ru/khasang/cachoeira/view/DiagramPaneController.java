@@ -33,7 +33,6 @@ public class DiagramPaneController {
             resourceTab.setContent(resourcePane);
 
             resourcePaneController = loader.getController();
-            resourcePaneController.setController(controller);
             resourcePaneController.setUIControl(uiControl);
             resourcePaneController.initResourceTable();
             resourcePaneController.initContextMenus();
