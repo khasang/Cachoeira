@@ -21,12 +21,12 @@ public class UIControl {
     private DoubleProperty splitPaneDividerValue = new SimpleDoubleProperty(this, "splitPaneDividerValue", 0.3);
 
     public void launchStartWindow() {
-        startWindow = new StartWindow(controller, this);
+        startWindow = new StartWindow(this);
         startWindow.launch();
     }
 
     public void launchNewProjectWindow() {
-        newProjectWindow = new NewProjectWindow(controller, this);
+        newProjectWindow = new NewProjectWindow(this);
         newProjectWindow.launch();
     }
 
