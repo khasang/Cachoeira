@@ -8,16 +8,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-import ru.khasang.cachoeira.controller.IController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 /**
- * Created by truesik on 11.11.2015.
+ * Класс-контроллер для StartWindow.fxml.
  */
 public class StartWindow implements IWindow {
-    private IController controller;
-    private UIControl UIControl;
+    private static final Logger LOGGER = LoggerFactory.getLogger(StartWindow.class.getName());
+    private UIControl uiControl;
 
     @FXML
     private TableView recentProjectsTableVIew;
@@ -29,9 +30,8 @@ public class StartWindow implements IWindow {
     private Parent root = null;
     private Stage stage;
 
-    public StartWindow(IController controller, UIControl UIControl) {
-        this.controller = controller;
-        this.UIControl = UIControl;
+    public StartWindow(UIControl uiControl) {
+        this.uiControl = uiControl;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StartWindow.fxml"));    //грузим макет окна
         fxmlLoader.setController(this);                                                             //говорим макету, что этот класс является его контроллером
@@ -51,6 +51,7 @@ public class StartWindow implements IWindow {
         stage.setResizable(false);
         stage.show();
         stage.setTitle("Cachoeira");
+        LOGGER.debug("Открыто стартовое окно.");
     }
 
     @Override
@@ -60,7 +61,8 @@ public class StartWindow implements IWindow {
 
     @FXML
     private void openNewProjectWindowHandle(ActionEvent actionEvent) {
-        UIControl.launchNewProjectWindow();
+        uiControl.launchNewProjectWindow();
+        LOGGER.debug("Нажата кнопка создания нового проекта.");
     }
 
     @FXML
