@@ -61,8 +61,8 @@ public class StartWindow implements IWindow {
 
     @FXML
     private void openNewProjectWindowHandle(ActionEvent actionEvent) {
-        uiControl.launchNewProjectWindow();
         LOGGER.debug("Нажата кнопка создания нового проекта.");
+        uiControl.launchNewProjectWindow();
     }
 
     @FXML
