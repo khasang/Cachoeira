@@ -7,21 +7,16 @@ import javafx.scene.input.DataFormat;
 import ru.khasang.cachoeira.model.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
- * Created by truesik on 22.10.2015.
+ * Класс-контроллер между вью и моделью.
  */
 public class Controller implements IController {
     private static final DataFormat SERIALIZED_MIME_TYPE = new DataFormat("application/x-java-serialized-object");
     private IProject project;
-    private ITask task;
     private ObjectProperty<ITask> selectedTask = new SimpleObjectProperty<>(this, "selectedTask");
-    private IResource resource;
     private ObjectProperty<IResource> selectedResource = new SimpleObjectProperty<>(this, "selectedResource");
-    private List<IProject> projectList = new ArrayList<>(); //по архитектуре не понял где у нас должен храниться список проектов, поэтому пускай пока будет здесь
 
     @Override
     public IProject getDefaultProject() {
@@ -39,19 +34,8 @@ public class Controller implements IController {
     }
 
     @Override
-    public void notifyChangeProject(IProject project) {
-
-    }
-
-    //добавил:
-    @Override
     public void handleAddTask(ITask task) {
         project.getTaskList().add(task);
-    }
-
-    @Override
-    public void notifyAddTask(ITask task) {
-
     }
 
     @Override
@@ -60,13 +44,14 @@ public class Controller implements IController {
     }
 
     @Override
-    public void notifyRemoveTask(ITask task) {
-
-    }
-
-    //Добавил:
-    @Override
-    public void handleChangeTask(String taskNameField, LocalDate taskStartDate, LocalDate taskFinishDate, Double taskCost, double taskDonePercent, PriorityType priority, ObservableList<IResource> resources) { //todo тоже подправил
+    public void handleChangeTask(ITask task,
+                                 String taskNameField,
+                                 LocalDate taskStartDate,
+                                 LocalDate taskFinishDate,
+                                 Double taskCost,
+                                 double taskDonePercent,
+                                 PriorityType priority,
+                                 ObservableList<IResource> resources) {
         task.setName(taskNameField);
         task.setStartDate(taskStartDate);
         task.setFinishDate(taskFinishDate);
@@ -76,17 +61,16 @@ public class Controller implements IController {
         task.setResourceList(resources);
     }
 
-    @Override
-    public void notifyChangeTask(ITask task) {
-
-    }
-
     public ITask getSelectedTask() {
-        return task;
+        return selectedTask.get();
     }
 
     public void setSelectedTask(ITask task) {
-        this.task = task;
+        this.selectedTask.set(task);
+    }
+
+    public ObjectProperty<ITask> selectedTaskProperty() {
+        return selectedTask;
     }
 
     @Override
@@ -95,37 +79,31 @@ public class Controller implements IController {
     }
 
     @Override
-    public void notifyAddResource(IResource resource) {
-
-    }
-
-    @Override
     public void handleRemoveResource(IResource resource) {
-        /** Удаляем этот ресурс из всех привязанных к нему задач */
-        for (ITask iTask : getProject().getTaskList()) {
-            if (iTask.getResourceList().contains(resource)) {
-                iTask.getResourceList().remove(resource);
+        // Удаляем этот ресурс из всех привязанных к нему задач
+        for (ITask task : getProject().getTaskList()) {
+            if (task.getResourceList().contains(resource)) {
+                task.getResourceList().remove(resource);
             }
         }
-        /** Удялем этот ресурс из проекта */
+        // Удаляем этот ресурс из проекта
         project.getResourceList().remove(resource);
     }
 
     @Override
-    public void notifyRemoveResource(IResource resource) {
-
-    }
-
-    @Override
-    public void handleChangeResource(String resourceName, String email, ResourceType type, List<ITask> tasks) {
+    public void handleChangeResource(IResource resource,
+                                     String resourceName,
+                                     String email,
+                                     ResourceType type,
+                                     List<ITask> tasks) {
         resource.setName(resourceName);
         resource.setEmail(email);
         resource.setType(type);
 
-        for (ITask t : project.getTaskList()) {
+        for (ITask task : project.getTaskList()) {
             for (ITask tas : tasks) {
-                if (!t.equals(tas) && t.getResourceList().contains(resource)) {
-                    t.removeResource(resource);
+                if (!task.equals(tas) && task.getResourceList().contains(resource)) {
+                    task.removeResource(resource);
                 }
                 if (!tas.getResourceList().contains(resource)) {
                     tas.addResource(resource);
@@ -135,28 +113,26 @@ public class Controller implements IController {
     }
 
     @Override
-    public void notifyChangeResource(IResource resource) {
-
-    }
-
-    @Override
     public IResource getSelectedResource() {
-        return resource;
+        return selectedResource.get();
     }
 
     @Override
     public void setSelectedResource(IResource resource) {
-        this.resource = resource;
+        selectedResource.set(resource);
+    }
+
+    public ObjectProperty<IResource> selectedResourceProperty() {
+        return selectedResource;
     }
 
     @Override
-    public void notifyAddProject(String projectName, LocalDate startDate, LocalDate finishDate, String description) {
+    public void handleAddProject(String projectName, LocalDate startDate, LocalDate finishDate, String description) {
         project = new Project();
         project.setName(projectName);
         project.setStartDate(startDate);
         project.setFinishDate(finishDate);
         project.setDescription(description);
-        projectList.add(project);
         setProject(project);
     }
 
@@ -167,13 +143,5 @@ public class Controller implements IController {
 
     public static DataFormat getSerializedMimeType() {
         return SERIALIZED_MIME_TYPE;
-    }
-
-    public ObjectProperty<ITask> selectedTaskProperty() {
-        return selectedTask;
-    }
-
-    public ObjectProperty<IResource> selectedResourceProperty() {
-        return selectedResource;
     }
 }
