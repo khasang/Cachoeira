@@ -7,7 +7,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.khasang.cachoeira.controller.IController;
 
 import java.io.IOException;
 
@@ -17,7 +16,6 @@ import java.io.IOException;
 public class MainWindow implements IWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainWindow.class.getName());
 
-    private final IController controller;
     private final UIControl uiControl;
     private Stage stage;
     private BorderPane rootLayout;
@@ -26,8 +24,7 @@ public class MainWindow implements IWindow {
     private RootLayoutController rootLayoutController;
 
 
-    public MainWindow(IController controller, UIControl uiControl) {
-        this.controller = controller;
+    public MainWindow(UIControl uiControl) {
         this.uiControl = uiControl;
 
         initRootLayout();
@@ -35,7 +32,7 @@ public class MainWindow implements IWindow {
         initPropertiesPanel();
 
         // Заголовок окна меняется автоматически при изменении имени проекта
-        stage.titleProperty().bind(controller.getProject().nameProperty());
+        stage.titleProperty().bind(uiControl.getController().getProject().nameProperty());
     }
 
     private void initPropertiesPanel() {
@@ -45,7 +42,6 @@ public class MainWindow implements IWindow {
             rootLayout.setRight(propertiesPanel);
 
             propertiesPanelController = loader.getController();
-            propertiesPanelController.setController(controller);
             propertiesPanelController.setUIControl(uiControl);
             propertiesPanelController.initTabs();
         } catch (IOException e) {
@@ -60,7 +56,6 @@ public class MainWindow implements IWindow {
             rootLayout.setCenter(diagramPane);
 
             diagramPaneController = loader.getController();
-            diagramPaneController.setController(controller);
             diagramPaneController.setUIControl(uiControl);
             diagramPaneController.initTaskPane();
             diagramPaneController.initResourcePane();
@@ -77,7 +72,7 @@ public class MainWindow implements IWindow {
             stage.setScene(new Scene(rootLayout));
 
             rootLayoutController = loader.getController();
-            rootLayoutController.setController(controller);
+            rootLayoutController.setController(uiControl.getController());
             stage.show();
         } catch (IOException e) {
             LOGGER.debug("Ошибка загрузки: {}", e);
@@ -93,19 +88,7 @@ public class MainWindow implements IWindow {
         return stage;
     }
 
-    public BorderPane getRootLayout() {
-        return rootLayout;
-    }
-
-    public PropertiesPanelController getPropertiesPanelController() {
-        return propertiesPanelController;
-    }
-
     public DiagramPaneController getDiagramPaneController() {
         return diagramPaneController;
-    }
-
-    public RootLayoutController getRootLayoutController() {
-        return rootLayoutController;
     }
 }
