@@ -112,7 +112,7 @@ public class NewProjectWindow implements IWindow {
     @FXML
     private void newProjectCreateButtonHandle(ActionEvent actionEvent) {
         LOGGER.debug("Нажата кнопка \"Создать\".");
-        UIControl.getController().notifyAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText()); //создаем проект
+        UIControl.getController().handleAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText()); //создаем проект
         stage.close(); // закрываем это окошко
         if (UIControl.getStartWindow().getStage().isShowing()) {
             UIControl.getStartWindow().getStage().close(); //закрываем стартовое окно
