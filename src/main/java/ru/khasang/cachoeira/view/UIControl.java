@@ -31,7 +31,7 @@ public class UIControl {
     }
 
     public void launchMainWindow() {
-        mainWindow = new MainWindow(controller, this);
+        mainWindow = new MainWindow(this);
         mainWindow.launch();
     }
 
