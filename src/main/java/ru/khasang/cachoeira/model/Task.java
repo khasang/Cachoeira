@@ -7,16 +7,18 @@ import javafx.collections.ObservableList;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by Raenar on 07.10.2015.
+ * Класс описывающий задачу.
  */
 public class Task implements ITask {
     private final ReadOnlyIntegerWrapper id = new ReadOnlyIntegerWrapper(this, "id", taskSequence.incrementAndGet());
     private StringProperty name = new SimpleStringProperty(this, "name");
     private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
     private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
+    private IntegerProperty duration = new SimpleIntegerProperty(this, "duration");
     private IntegerProperty donePercent = new SimpleIntegerProperty(this, "donePercent");
     private ObjectProperty<PriorityType> priorityType = new SimpleObjectProperty<>(this, "priorityType");
     private DoubleProperty cost = new SimpleDoubleProperty(this, "cost");
@@ -37,11 +39,14 @@ public class Task implements ITask {
     /** Запоминаем количество задач **/
     private static AtomicInteger taskSequence = new AtomicInteger(-1); // -1, потому что первым идет рутовый элемент в таблице задач (rootTask)
 
-    /** Конструктор с дефолтовыми значениями **/
+    /**
+     * Конструктор с дефолтовыми значениями.
+     */
     public Task() {
         this.name.setValue("Задача " + id.getValue());
         this.startDate.setValue(LocalDate.now());
         this.finishDate.setValue(startDate.getValue().plusDays(1));
+        this.duration.setValue(1);
         this.priorityType.setValue(PriorityType.Normal);
     }
 
@@ -83,6 +88,7 @@ public class Task implements ITask {
     @Override
     public final void setStartDate(LocalDate start) {
         this.startDate.set(start);
+        this.duration.setValue(ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue()));
     }
 
     @Override
@@ -98,11 +104,25 @@ public class Task implements ITask {
     @Override
     public final void setFinishDate(LocalDate finish) {
         this.finishDate.set(finish);
+        this.duration.setValue(ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue()));
     }
 
     @Override
     public final ObjectProperty<LocalDate> finishDateProperty() {
         return finishDate;
+    }
+
+    public int getDuration() {
+        return duration.get();
+    }
+
+    public IntegerProperty durationProperty() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration.set(duration);
+        this.finishDate.setValue(startDate.getValue().plusDays(duration));
     }
 
     @Override
@@ -219,4 +239,6 @@ public class Task implements ITask {
     public final void setResourceList(ObservableList<IResource> resources) {
         this.resources = resources;
     }
+
+
 }

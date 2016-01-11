@@ -33,6 +33,12 @@ public interface ITask {
 
     ObjectProperty<LocalDate> finishDateProperty();
 
+    public int getDuration();
+
+    public IntegerProperty durationProperty();
+
+    public void setDuration(int duration);
+
     int getDonePercent();
 
     void setDonePercent(int donePercent);
