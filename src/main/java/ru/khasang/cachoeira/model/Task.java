@@ -87,8 +87,9 @@ public class Task implements ITask {
 
     @Override
     public final void setStartDate(LocalDate start) {
+        long between = ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue());
         this.startDate.set(start);
-        this.duration.setValue(ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue()));
+        this.duration.setValue(between);
     }
 
     @Override
