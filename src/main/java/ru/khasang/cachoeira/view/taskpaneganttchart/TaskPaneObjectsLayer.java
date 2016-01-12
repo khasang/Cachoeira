@@ -42,7 +42,7 @@ public class TaskPaneObjectsLayer extends Pane {
     public void addTaskBar(ITask task) {
         TaskPaneTaskBar taskPaneTaskBar = createTaskBar(uiControl, task);
         this.getChildren().add(taskPaneTaskBar);
-        LOGGER.debug("Задача с именем \"{}\" добавлена.", task.getName());
+        LOGGER.debug("Задача с именем \"{}\" добавлена на диаграмму.", task.getName());
     }
 
     /**
@@ -56,7 +56,7 @@ public class TaskPaneObjectsLayer extends Pane {
             TaskPaneTaskBar taskPaneTaskBar = (TaskPaneTaskBar) taskBarIterator.next();
             if (taskPaneTaskBar.getTask().equals(task)) {
                 taskBarIterator.remove();
-                LOGGER.debug("Задача с именем \"{}\" удалена.", task.getName());
+                LOGGER.debug("Задача с именем \"{}\" удалена с диаграммы.", task.getName());
             }
         }
     }
