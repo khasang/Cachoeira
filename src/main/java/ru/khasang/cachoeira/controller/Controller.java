@@ -48,6 +48,7 @@ public class Controller implements IController {
                                  String taskNameField,
                                  LocalDate taskStartDate,
                                  LocalDate taskFinishDate,
+                                 int duration,
                                  Double taskCost,
                                  double taskDonePercent,
                                  PriorityType priority,
@@ -127,7 +128,10 @@ public class Controller implements IController {
     }
 
     @Override
-    public void handleAddProject(String projectName, LocalDate startDate, LocalDate finishDate, String description) {
+    public void handleAddProject(String projectName,
+                                 LocalDate startDate,
+                                 LocalDate finishDate,
+                                 String description) {
         project = new Project();
         project.setName(projectName);
         project.setStartDate(startDate);

@@ -25,6 +25,7 @@ public interface IController {
                           String taskNameField,
                           LocalDate taskStartDate,
                           LocalDate taskFinishDate,
+                          int duration,
                           Double taskCost,
                           double taskDonePercent,
                           PriorityType taskPriorityType,
