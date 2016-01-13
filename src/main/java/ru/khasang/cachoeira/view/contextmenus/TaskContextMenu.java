@@ -7,7 +7,7 @@ import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 
 /**
- * Created by truesik on 22.12.2015.
+ * Класс описывает контекстное меню всплывающее при нажатии правой кнопкой на задаче.
  */
 public class TaskContextMenu extends ContextMenu {
     public TaskContextMenu() {
@@ -19,7 +19,7 @@ public class TaskContextMenu extends ContextMenu {
 
     public void initMenus(IController controller, ITask task) {
         this.getItems().clear();
-        Menu setResource = new Menu("Назначить ресурс");
+        Menu assignTaskMenu = new Menu("Назначить ресурс");
         MenuItem getProperties = new MenuItem("Свойства");
         MenuItem removeTask = new MenuItem("Удалить задачу");
 
@@ -28,13 +28,13 @@ public class TaskContextMenu extends ContextMenu {
 //                taskPaneController.openPropertiesTaskWindow(); // TODO: 25.11.2015 исправить
         });
         removeTask.setOnAction(event -> controller.handleRemoveTask(task));
-        this.getItems().addAll(setResource, getProperties, removeTask);  //заполняем меню
+        this.getItems().addAll(assignTaskMenu, getProperties, removeTask);  //заполняем меню
 
-        this.setOnShowing(event -> refreshResourceMenu(setResource, task, controller.getProject().getResourceList()));
+        this.setOnShowing(event -> refreshResourceMenu(assignTaskMenu.getItems(), task, controller.getProject().getResourceList()));
     }
 
-    private void refreshResourceMenu(Menu setResource, ITask task, ObservableList<IResource> resources) {
-        setResource.getItems().clear();
+    private void refreshResourceMenu(ObservableList<MenuItem> menuItemList, ITask task, ObservableList<IResource> resources) {
+        menuItemList.clear();
         for (IResource resource : resources) {                                                                  //берем список всех ресурсов
             CheckMenuItem checkMenuItem = new CheckMenuItem(resource.getName());                                //создаем элемент меню для каждого ресурса
             for (IResource resourceOfTask : task.getResourceList()) {                   //берем список ресурсов выделенной Задачи
@@ -52,7 +52,7 @@ public class TaskContextMenu extends ContextMenu {
                     task.removeResource(resource);
                 }
             });
-            setResource.getItems().add(checkMenuItem);
+            menuItemList.add(checkMenuItem);
         }
     }
 }

@@ -1,6 +1,7 @@
 package ru.khasang.cachoeira.view.rowfactories;
 
 import javafx.beans.binding.Bindings;
+import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
@@ -14,7 +15,8 @@ import ru.khasang.cachoeira.view.ResourcePaneController;
 import ru.khasang.cachoeira.view.tooltips.ResourceTooltip;
 
 /**
- * Created by truesik on 25.10.2015.
+ * Класс отвечающий за дополнительные фичи (контекстное меню, всплывающие подсказки, изменение порядка элементов с
+ * помощью мышки) для каждой строки таблицы Ресурсов.
  */
 public class ResourceTableViewRowFactory implements Callback<TableView<IResource>, TableRow<IResource>> {
     private final ResourcePaneController resourcePaneController;
@@ -28,7 +30,7 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
     @Override
     public TableRow<IResource> call(TableView<IResource> param) {
         TableRow<IResource> row = new TableRow<IResource>() {
-            /** Tooltip */
+            /* Tooltip */
             ResourceTooltip resourceTooltip = new ResourceTooltip();
             @Override
             protected void updateItem(IResource resource, boolean empty) {
@@ -42,7 +44,7 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
             }
         };
 
-        /** Drag & Drop */
+        /* Drag & Drop */
         row.setOnDragDetected(event -> {
             if (!row.isEmpty()) {
                 Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
@@ -83,21 +85,21 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
         });
 
 
-        /** Row Context Menu */
+        /* Row Context Menu */
         ContextMenu rowMenu = new ContextMenu();
-        Menu setTask = new Menu("Назначить задачу");
+        Menu assignTaskMenu = new Menu("Назначить задачу");
 
-        MenuItem getProperties = new MenuItem("Свойства");
-        MenuItem removeResource = new MenuItem("Удалить ресурс");
+        MenuItem getPropertiesMenuItem = new MenuItem("Свойства");
+        MenuItem removeResourceMenuItem = new MenuItem("Удалить ресурс");
 
-        getProperties.setOnAction(event -> {
+        getPropertiesMenuItem.setOnAction(event -> {
             controller.setSelectedResource(row.getItem());
 //                resourcePaneController.openPropertiesResourceWindow(); // TODO: 25.11.2015 исправить
         });
-        removeResource.setOnAction(event -> controller.handleRemoveResource(row.getItem()));
-        rowMenu.getItems().addAll(setTask, getProperties, removeResource);  //заполняем меню
+        removeResourceMenuItem.setOnAction(event -> controller.handleRemoveResource(row.getItem()));
+        rowMenu.getItems().addAll(assignTaskMenu, getPropertiesMenuItem, removeResourceMenuItem);  //заполняем меню
 
-        rowMenu.setOnShowing(event -> refreshTaskMenu(setTask, row));
+        rowMenu.setOnShowing(event -> refreshTaskMenu(assignTaskMenu.getItems(), row.getItem()));
 
         row.contextMenuProperty().bind(
                 Bindings.when(Bindings.isNotNull(row.itemProperty()))   //если на не пустом месте кликаем,
@@ -106,12 +108,12 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
         return row;
     }
 
-    private void refreshTaskMenu(Menu setTask, TableRow<IResource> row) {
-        setTask.getItems().clear();
+    private void refreshTaskMenu(ObservableList<MenuItem> menuItemList, IResource currentRowResource) {
+        menuItemList.clear();
         for (ITask task : controller.getProject().getTaskList()) {
             CheckMenuItem checkMenuItem = new CheckMenuItem(task.getName());
             for (IResource resource : task.getResourceList()) {
-                if (resource.equals(row.getItem())) {
+                if (resource.equals(currentRowResource)) {
                     checkMenuItem.selectedProperty().setValue(Boolean.TRUE);
                     break;
                 } else {
@@ -120,12 +122,12 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
             }
             checkMenuItem.setOnAction(event -> {
                 if (checkMenuItem.isSelected()) {
-                    task.addResource(row.getItem());
+                    task.addResource(currentRowResource);
                 } else {
-                    task.removeResource(row.getItem());
+                    task.removeResource(currentRowResource);
                 }
             });
-            setTask.getItems().add(checkMenuItem);
+            menuItemList.add(checkMenuItem);
         }
     }
 }
