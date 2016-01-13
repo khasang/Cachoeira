@@ -10,13 +10,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Класс-контроллер между вью и моделью.
+ * Класс-контроллер между представлением и моделью.
  */
 public class Controller implements IController {
     private static final DataFormat SERIALIZED_MIME_TYPE = new DataFormat("application/x-java-serialized-object");
     private IProject project;
-    private ObjectProperty<ITask> selectedTask = new SimpleObjectProperty<>(this, "selectedTask");
-    private ObjectProperty<IResource> selectedResource = new SimpleObjectProperty<>(this, "selectedResource");
+    private ObjectProperty<ITask> selectedTask = new SimpleObjectProperty<>(this, "selectedTask", null);
+    private ObjectProperty<IResource> selectedResource = new SimpleObjectProperty<>(this, "selectedResource", null);
 
     @Override
     public IProject getDefaultProject() {
