@@ -8,13 +8,12 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.ResourceType;
 
 /**
- * Created by truesik on 24.11.2015.
+ * Класс-контроллер для ResourcePropertiesPane.fxml
  */
 public class ResourcePropertiesPaneController {
     //Информация
@@ -37,32 +36,27 @@ public class ResourcePropertiesPaneController {
     @FXML
     private TableColumn<ITask, Boolean> taskCheckboxColumn;
 
-    private IController controller;
-
     public ResourcePropertiesPaneController() {
     }
 
-    public void setController(IController controller) {
-        this.controller = controller;
-    }
-
-    public void initFields() {
-        /** Заполняем выпадающий список **/
+    public void initFields(UIControl uiControl) {
+        // Заполняем выпадающий список
         ObservableList<ResourceType> resourceTypesModel = FXCollections.observableArrayList(ResourceType.values());
         resourceTypeComboBox.setItems(resourceTypesModel);
 
-        /** Делаем панель не активной, если ресурс не выбран **/
-        propertiesPane.disableProperty().bind(controller.selectedResourceProperty().isNull());
+        // Делаем панель не активной, если ресурс не выбран
+        propertiesPane.disableProperty().bind(uiControl.getController().selectedResourceProperty().isNull());
 
-        controller.selectedResourceProperty().addListener((observable, oldValue, newValue) -> {
-            /** Прежде чем привязать поля свойств нового ресурса необходимо отвязать поля предыдущего ресурса (если такой был) **/
+        uiControl.getController().selectedResourceProperty().addListener((observable, oldValue, newValue) -> {
+            // Прежде чем привязать поля свойств нового ресурса необходимо отвязать поля предыдущего ресурса
+            // (если такой был)
             if (oldValue != null) {
                 nameField.textProperty().unbindBidirectional(oldValue.nameProperty());
                 emailField.textProperty().unbindBidirectional(oldValue.emailProperty());
                 resourceTypeComboBox.valueProperty().unbindBidirectional(oldValue.resourceTypeProperty());
                 descriptionTextArea.textProperty().unbindBidirectional(oldValue.descriptionProperty());
             }
-            /** Привязываем поля свойств к модели **/
+            // Привязываем поля свойств к модели
             if (newValue != null) {
                 nameField.textProperty().bindBidirectional(newValue.nameProperty());
                 emailField.textProperty().bindBidirectional(newValue.emailProperty());
@@ -75,15 +69,15 @@ public class ResourcePropertiesPaneController {
     /**
      * Заполняем таблицу с привязанными задачами
      */
-    public void initTaskTable() {
-        taskTableView.setItems(controller.getProject().getTaskList());
+    public void initTaskTable(UIControl uiControl) {
+        taskTableView.setItems(uiControl.getController().getProject().getTaskList());
         taskNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
-        controller.selectedResourceProperty().addListener((observable, oldValue, newValue) -> initCheckBoxColumn());
-        /** Не понимаю, что тут происходит, но работает */
-        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> initCheckBoxColumn());
+        uiControl.getController().selectedResourceProperty().addListener((observable, oldValue, newValue) -> initCheckBoxColumn(uiControl.getController().getSelectedResource()));
+        // Не понимаю, что тут происходит, но работает
+        uiControl.getController().getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> initCheckBoxColumn(uiControl.getController().getSelectedResource()));
     }
 
-    public void initCheckBoxColumn() {
+    public void initCheckBoxColumn(IResource selectedResource) {
         taskCheckboxColumn.setCellFactory(new Callback<TableColumn<ITask, Boolean>, TableCell<ITask, Boolean>>() {
             @Override
             public TableCell<ITask, Boolean> call(TableColumn<ITask, Boolean> param) {
@@ -92,30 +86,30 @@ public class ResourcePropertiesPaneController {
                     public void updateItem(Boolean item, boolean empty) {
                         super.updateItem(item, empty);
                         setAlignment(Pos.CENTER);
-                        TableRow<ITask> currentRow = getTableRow();
+                        ITask currentRowTask = (ITask) getTableRow().getItem();
                         if (empty) {
                             setText(null);
                             setGraphic(null);
                         } else {
-                            /** Заполняем столбец чек-боксами **/
+                            // Заполняем столбец чек-боксами
                             CheckBox checkBox = new CheckBox();
                             setGraphic(checkBox);
                             checkBox.setOnAction(event -> {
                                 if (checkBox.isSelected()) {
-                                    currentRow.getItem().addResource(controller.selectedResourceProperty().getValue());
+                                    currentRowTask.addResource(selectedResource);
                                 } else {
-                                    currentRow.getItem().removeResource(controller.selectedResourceProperty().getValue());
+                                    currentRowTask.removeResource(selectedResource);
                                 }
                             });
 
-                            /** Расставляем галочки на нужных строках **/
-                            if (currentRow.getItem() != null) {
-                                for (IResource resource : currentRow.getItem().getResourceList()) {
-                                    if (controller.selectedResourceProperty().getValue().equals(resource)) {
-                                        checkBox.selectedProperty().setValue(Boolean.TRUE);
+                            // Расставляем галочки на нужных строках
+                            if (currentRowTask != null) {
+                                for (IResource resource : currentRowTask.getResourceList()) {
+                                    if (selectedResource.equals(resource)) {
+                                        checkBox.setSelected(true);
                                         break;
                                     } else {
-                                        checkBox.selectedProperty().setValue(Boolean.FALSE);
+                                        checkBox.setSelected(false);
                                     }
                                 }
                             }
