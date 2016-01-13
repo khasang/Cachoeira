@@ -85,8 +85,6 @@ public class ResourcePaneController {
         resourceTableView.bindScrollsToController(uiControl);
         resourceTableView.setItems(uiControl.getController().getProject().getResourceList());
         resourceTableView.setRowFactory(new ResourceTableViewRowFactory(this, uiControl.getController())); //вешаем драг и дроп, и контекстное меню
-        // Делаем поля таблицы редактируемыми
-        setTableEditable();
         // Временное решение для синхронизации таблицы и диаграммы.
         // Добавил собственный горизонтальный скролл за вместо скролла таблицы (который скрыл, см. ResourceTableView),
         // чтобы он был всегда видимый, пока не придумаю более изящное решение.
@@ -106,14 +104,6 @@ public class ResourcePaneController {
             }
         });
         LOGGER.debug("Таблица ресурсов проинициализирована.");
-    }
-
-    private void setTableEditable() {
-        resourceTableView.setEditable(true);
-        resourceNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        resourceTypeColumn.setCellFactory(ComboBoxTableCell.forTableColumn(ResourceType.values()));
-        resourceEmailColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        LOGGER.debug("Поля таблицы сделаны редактируемыми.");
     }
 
     public void initGanttChart() {
