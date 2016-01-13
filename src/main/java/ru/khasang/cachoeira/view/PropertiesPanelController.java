@@ -51,9 +51,8 @@ public class PropertiesPanelController {
             resourcePropertiesTab.setContent(resourceProperties);
 
             ResourcePropertiesPaneController resourcePropertiesPaneController = loader.getController();
-            resourcePropertiesPaneController.setController(uiControl.getController());
-            resourcePropertiesPaneController.initFields();
-            resourcePropertiesPaneController.initTaskTable();
+            resourcePropertiesPaneController.initFields(uiControl);
+            resourcePropertiesPaneController.initAssignmentTaskTable(uiControl);
             LOGGER.debug("Вкладка \"Ресурс\" загружена.");
         } catch (IOException e) {
             LOGGER.debug("IOException ", e);
@@ -68,7 +67,7 @@ public class PropertiesPanelController {
 
             TaskPropertiesPaneController taskPropertiesPaneController = loader.getController();
             taskPropertiesPaneController.initFields(uiControl);
-            taskPropertiesPaneController.initResourceTable(uiControl);
+            taskPropertiesPaneController.initAssignmentResourceTable(uiControl);
             LOGGER.debug("Вкладка \"Задача\" загружена.");
         } catch (IOException e) {
             LOGGER.debug("IOException ", e);

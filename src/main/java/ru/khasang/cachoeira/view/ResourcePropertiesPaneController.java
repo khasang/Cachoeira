@@ -69,7 +69,7 @@ public class ResourcePropertiesPaneController {
     /**
      * Заполняем таблицу с привязанными задачами
      */
-    public void initTaskTable(UIControl uiControl) {
+    public void initAssignmentTaskTable(UIControl uiControl) {
         taskTableView.setItems(uiControl.getController().getProject().getTaskList());
         taskNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
         uiControl.getController().selectedResourceProperty().addListener((observable, oldValue, newValue) -> initCheckBoxColumn(uiControl.getController().getSelectedResource()));
