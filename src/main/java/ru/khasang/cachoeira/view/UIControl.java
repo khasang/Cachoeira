@@ -1,9 +1,6 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 
@@ -12,6 +9,7 @@ public class UIControl {
     private StartWindow startWindow;
     private NewProjectWindow newProjectWindow;
     private IController controller = new Controller();
+
     private IntegerProperty zoomMultiplier = new SimpleIntegerProperty(this, "zoomMultiplier", 70);
     private DoubleProperty horizontalScrollValue = new SimpleDoubleProperty(this, "horizontalScrollValue", 0);
     private DoubleProperty taskVerticalScrollValue = new SimpleDoubleProperty(this, "taskVerticalScrollValue", 0);
@@ -19,6 +17,8 @@ public class UIControl {
     private DoubleProperty taskHorizontalScrollValue = new SimpleDoubleProperty(this, "taskHorizontalScrollValue", 0);
     private DoubleProperty resourceHorizontalScrollValue = new SimpleDoubleProperty(this, "resourceHorizontalScrollValue", 0);
     private DoubleProperty splitPaneDividerValue = new SimpleDoubleProperty(this, "splitPaneDividerValue", 0.3);
+
+    public static boolean wasMovedByMouse = false;
 
     public void launchStartWindow() {
         startWindow = new StartWindow(this);
