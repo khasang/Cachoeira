@@ -73,50 +73,52 @@ public class ResourcePropertiesPaneController {
         taskTableView.setItems(uiControl.getController().getProject().getTaskList());
         taskNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
         uiControl.getController().selectedResourceProperty().addListener((observable, oldValue, newValue) -> initCheckBoxColumn(uiControl.getController().getSelectedResource()));
-        // Не понимаю, что тут происходит, но работает
+        // Если обновляется список задач, то обновляем таблицу
         uiControl.getController().getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> initCheckBoxColumn(uiControl.getController().getSelectedResource()));
     }
 
     public void initCheckBoxColumn(IResource selectedResource) {
-        taskCheckboxColumn.setCellFactory(new Callback<TableColumn<ITask, Boolean>, TableCell<ITask, Boolean>>() {
-            @Override
-            public TableCell<ITask, Boolean> call(TableColumn<ITask, Boolean> param) {
-                return new TableCell<ITask, Boolean>() {
-                    @Override
-                    public void updateItem(Boolean item, boolean empty) {
-                        super.updateItem(item, empty);
-                        setAlignment(Pos.CENTER);
-                        ITask currentRowTask = (ITask) getTableRow().getItem();
-                        if (empty) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                            // Заполняем столбец чек-боксами
-                            CheckBox checkBox = new CheckBox();
-                            setGraphic(checkBox);
-                            checkBox.setOnAction(event -> {
-                                if (checkBox.isSelected()) {
-                                    currentRowTask.addResource(selectedResource);
-                                } else {
-                                    currentRowTask.removeResource(selectedResource);
-                                }
-                            });
-
-                            // Расставляем галочки на нужных строках
-                            if (currentRowTask != null) {
-                                for (IResource resource : currentRowTask.getResourceList()) {
-                                    if (selectedResource.equals(resource)) {
-                                        checkBox.setSelected(true);
-                                        break;
+        if (selectedResource != null) {
+            taskCheckboxColumn.setCellFactory(new Callback<TableColumn<ITask, Boolean>, TableCell<ITask, Boolean>>() {
+                @Override
+                public TableCell<ITask, Boolean> call(TableColumn<ITask, Boolean> param) {
+                    return new TableCell<ITask, Boolean>() {
+                        @Override
+                        public void updateItem(Boolean item, boolean empty) {
+                            super.updateItem(item, empty);
+                            setAlignment(Pos.CENTER);
+                            ITask currentRowTask = (ITask) getTableRow().getItem();
+                            if (empty) {
+                                setText(null);
+                                setGraphic(null);
+                            } else {
+                                // Заполняем столбец чек-боксами
+                                CheckBox checkBox = new CheckBox();
+                                setGraphic(checkBox);
+                                checkBox.setOnAction(event -> {
+                                    if (checkBox.isSelected()) {
+                                        currentRowTask.addResource(selectedResource);
                                     } else {
-                                        checkBox.setSelected(false);
+                                        currentRowTask.removeResource(selectedResource);
+                                    }
+                                });
+
+                                // Расставляем галочки на нужных строках
+                                if (currentRowTask != null) {
+                                    for (IResource resource : currentRowTask.getResourceList()) {
+                                        if (selectedResource.equals(resource)) {
+                                            checkBox.setSelected(true);
+                                            break;
+                                        } else {
+                                            checkBox.setSelected(false);
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                };
-            }
-        });
+                    };
+                }
+            });
+        }
     }
 }
