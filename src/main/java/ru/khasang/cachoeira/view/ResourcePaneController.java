@@ -5,8 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.ComboBoxTableCell;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +91,7 @@ public class ResourcePaneController {
         resourceTableViewHorizontalScrollBar.valueProperty().bindBidirectional(uiControl.resourceHorizontalScrollValueProperty());
         // Следим за выделенным элементом в таблице задач
         resourceTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            uiControl.getController().selectedResourceProperty().setValue(newValue);
+            uiControl.getController().setSelectedResource(newValue);
         });
         // Следим за изменениями в модели задач
         uiControl.getController().getProject().getResourceList().addListener((ListChangeListener<IResource>) change -> {
