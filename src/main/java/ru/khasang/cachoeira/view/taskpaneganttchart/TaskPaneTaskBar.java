@@ -46,7 +46,6 @@ public class TaskPaneTaskBar extends Pane {
 
     private ITask task;
     private int rowIndex;                        //координата Y (строка задачи)
-    private boolean wasMoved;
     private TaskContextMenu taskContextMenu;
 
     public TaskPaneTaskBar() {
@@ -152,36 +151,37 @@ public class TaskPaneTaskBar extends Pane {
                 }
             }
         });
-        // Следим за изменением начальной и конечной даты
+        // Если начальная дата изменилась, то...
         task.startDateProperty().addListener((observable, oldValue, newValue) -> {
-            if (!wasMoved) {
+            // ... если эти изменения произошли не спомощью мышки, то...
+            if (!UIControl.wasMovedByMouse) {
+                // ... меняем положение метки на диаграмме...
                 // Animation
                 Timeline timeline = createTimelineAnimation(
                         this.layoutXProperty(),
                         taskX(
                                 task.getStartDate(),
                                 uiControl.getController().getProject().getStartDate(),
-                                uiControl.getZoomMultiplier()),
-                        400);
+                                uiControl.getZoomMultiplier()
+                        ),
+                        400
+                );
                 timeline.play();
-                /*
-                При изменении начальной даты через свойства, также двигаем конечную дату.
-                Длина прямоугольника при изменении начальной даты должна оставаться неизменной.
-                Также task.setFinishDate(...) оборачиваем в wasMoved, чтобы не сработал листенер конечной даты
-                */
-                wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                task.setFinishDate(task.getStartDate().plusDays(
-                        Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())));
-                wasMoved = false; // Когда окончили движение фолз
             }
         });
+        // Если конечная дата изменилась, то...
         task.finishDateProperty().addListener((observable, oldValue, newValue) -> {
-            if (!wasMoved) {
+            if (!UIControl.wasMovedByMouse) {
                 // Animation
                 Timeline timeline = createTimelineAnimation(
                         backgroundRectangle.widthProperty(),
-                        taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()),
-                        400);
+                        taskWidth(
+                                task.getStartDate(),
+                                task.getFinishDate(),
+                                uiControl.getZoomMultiplier()
+                        ),
+                        400
+                );
                 timeline.play();
             }
         });
@@ -200,7 +200,7 @@ public class TaskPaneTaskBar extends Pane {
             }
         });
 
-        //подсветка при наведении
+        //подсветка при наведении // TODO: 15.01.2016 Сделать анимацию
         this.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (this.isHover()) {
                 backgroundRectangle.setFill(Color.valueOf("03bdf4"));
@@ -259,11 +259,25 @@ public class TaskPaneTaskBar extends Pane {
                     if (Math.round(newX / columnWidth) != oldRound.old) {
                         oldRound.old = Math.round(newX / columnWidth);
                         this.setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
-                        wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                        task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays(Math.round(newX / columnWidth)));
-                        task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / columnWidth)));
-                        wasMoved = false; // Когда окончили движение фолз
-                        LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {} и дату окончания на {}.", task.getName(), task.getStartDate(), task.getFinishDate());
+                        UIControl.wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                        task.setStartDate(
+                                uiControl.getController().getProject().getStartDate().plusDays(
+                                        Math.round(newX / columnWidth)
+                                )
+                        );
+                        task.setFinishDate(
+                                task.getStartDate().plusDays(
+                                        Math.round(backgroundRectangle.getWidth() / columnWidth)
+                                )
+                        );
+                        UIControl.wasMovedByMouse = false; // Когда окончили движение фолз
+                        // После изменения перерисовываем диаграмму на вкладке Ресурсы
+                        uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().refreshResourceDiagram();
+                        LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {} и дату окончания на {}.",
+                                task.getName(),
+                                task.getStartDate(),
+                                task.getFinishDate()
+                        );
                     }
                 }
             }
@@ -339,9 +353,11 @@ public class TaskPaneTaskBar extends Pane {
                             double oldX = getLayoutX();
                             this.setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
                             backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (this.getLayoutX() - oldX));
-                            wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                            UIControl.wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                             task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / columnWidth))));
-                            wasMoved = false; // Когда окончили движение фолз
+                            UIControl.wasMovedByMouse = false; // Когда окончили движение фолз
+                            // После изменения перерисовываем диаграмму на вкладке Ресурсы
+                            uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().refreshResourceDiagram();
                             LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {}.", task.getName(), task.getStartDate());
                         }
                     }
@@ -393,9 +409,11 @@ public class TaskPaneTaskBar extends Pane {
                     if (Math.round(newWidth / columnWidth) != oldRoundRight.old) {
                         oldRoundRight.old = Math.round(newWidth / columnWidth);
                         backgroundRectangle.setWidth(Math.round(newWidth / columnWidth) * columnWidth);
-                        wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                        UIControl.wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                         task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / columnWidth)));
-                        wasMoved = false; // Когда окончили движение фолз
+                        UIControl.wasMovedByMouse = false; // Когда окончили движение фолз
+                        // После изменения перерисовываем диаграмму на вкладке Ресурсы
+                        uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().refreshResourceDiagram();
                         LOGGER.debug("Задача с именем \"{}\" изменила дату окончания на {}.", task.getName(), task.getFinishDate());
                     }
                 }
