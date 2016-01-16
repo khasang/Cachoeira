@@ -18,8 +18,6 @@ public class UIControl {
     private DoubleProperty resourceHorizontalScrollValue = new SimpleDoubleProperty(this, "resourceHorizontalScrollValue", 0);
     private DoubleProperty splitPaneDividerValue = new SimpleDoubleProperty(this, "splitPaneDividerValue", 0.3);
 
-    public static boolean wasMovedByMouse = false;
-
     public void launchStartWindow() {
         startWindow = new StartWindow(this);
         startWindow.launch();
