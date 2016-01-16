@@ -14,29 +14,42 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Класс описывающий задачу.
  */
 public class Task implements ITask {
+    // Айди (изменить нельзя)
     private final ReadOnlyIntegerWrapper id = new ReadOnlyIntegerWrapper(this, "id", taskSequence.incrementAndGet());
+    // Имя задачи
     private StringProperty name = new SimpleStringProperty(this, "name");
+    // Начальная дата
     private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
+    // Конечная дата
     private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
+    // Продолжительность (начальная дата минус конечная)
     private IntegerProperty duration = new SimpleIntegerProperty(this, "duration");
+    // Процент выполнения задачи
     private IntegerProperty donePercent = new SimpleIntegerProperty(this, "donePercent");
+    // Приоритет задачи
     private ObjectProperty<PriorityType> priorityType = new SimpleObjectProperty<>(this, "priorityType");
+    // Стоимость задачи
     private DoubleProperty cost = new SimpleDoubleProperty(this, "cost");
+    // Описание задачи (комментарий)
     private StringProperty description = new SimpleStringProperty(this, "description");
+    // Список задач после завершения которых начинает выполнение эта задача (наверное)
     private ObservableList<IDependentTask> dependentTasks = FXCollections.observableArrayList();
+    // Группа задач в которой находится эта задача
     private ObjectProperty<ITaskGroup> taskGroup = new SimpleObjectProperty<>(this, "taskGroup");
+    // Список ресурсов к которым привязана эта задача
     private ObservableList<IResource> resources = FXCollections.observableArrayList(new Callback<IResource, Observable[]>() {
         @Override
-        public Observable[] call(IResource param) {
-            return new Observable[] {
-                    param.nameProperty(),
-                    param.resourceTypeProperty(),
-                    param.emailProperty()
+        public Observable[] call(IResource resource) {
+            return new Observable[]{
+                    resource.nameProperty(),
+                    resource.resourceTypeProperty(),
+                    resource.emailProperty(),
+                    resource.descriptionProperty()
             };
         }
     });
 
-    /** Запоминаем количество задач **/
+    // Запоминаем количество задач
     private static AtomicInteger taskSequence = new AtomicInteger(-1); // -1, потому что первым идет рутовый элемент в таблице задач (rootTask)
 
     /**
@@ -48,6 +61,16 @@ public class Task implements ITask {
         this.finishDate.setValue(startDate.getValue().plusDays(1));
         this.duration.setValue(1);
         this.priorityType.setValue(PriorityType.Normal);
+
+        // В случае изменения дат пересчитываем duration
+        this.startDate.addListener((observable, oldValue, newValue) -> {
+            long between = ChronoUnit.DAYS.between(newValue, this.finishDate.getValue());
+            this.duration.setValue(between);
+        });
+        this.finishDate.addListener((observable, oldValue, newValue) -> {
+            long between = ChronoUnit.DAYS.between(this.startDate.getValue(), newValue);
+            this.duration.setValue(between);
+        });
     }
 
     @Override
@@ -86,10 +109,8 @@ public class Task implements ITask {
     }
 
     @Override
-    public final void setStartDate(LocalDate start) {
-        long between = ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue());
-        this.startDate.set(start);
-        this.duration.setValue(between);
+    public final void setStartDate(LocalDate startDate) {
+        this.startDate.set(startDate);
     }
 
     @Override
@@ -103,27 +124,13 @@ public class Task implements ITask {
     }
 
     @Override
-    public final void setFinishDate(LocalDate finish) {
-        this.finishDate.set(finish);
-        this.duration.setValue(ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue()));
+    public final void setFinishDate(LocalDate finishDate) {
+        this.finishDate.set(finishDate);
     }
 
     @Override
     public final ObjectProperty<LocalDate> finishDateProperty() {
         return finishDate;
-    }
-
-    public int getDuration() {
-        return duration.get();
-    }
-
-    public IntegerProperty durationProperty() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration.set(duration);
-        this.finishDate.setValue(startDate.getValue().plusDays(duration));
     }
 
     @Override
@@ -241,5 +248,18 @@ public class Task implements ITask {
         this.resources = resources;
     }
 
+    @Override
+    public int getDuration() {
+        return duration.get();
+    }
 
+    @Override
+    public IntegerProperty durationProperty() {
+        return duration;
+    }
+
+    @Override
+    public void setDuration(int duration) {
+        this.duration.set(duration);
+    }
 }
