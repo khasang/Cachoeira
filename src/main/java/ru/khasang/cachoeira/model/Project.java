@@ -20,27 +20,29 @@ public class Project implements IProject {
     private StringProperty description = new SimpleStringProperty(this, "description");
     private ObservableList<ITask> tasks = FXCollections.observableArrayList(new Callback<ITask, Observable[]>() {
         @Override
-        public Observable[] call(ITask param) {
+        public Observable[] call(ITask task) {
             return new Observable[] {
-                    param.nameProperty(),
-                    param.startDateProperty(),
-                    param.finishDateProperty(),
-                    param.donePercentProperty(),
-                    param.priorityTypeProperty(),
-                    param.costProperty(),
-                    param.getDependentTasks(),
-                    param.groupProperty(),
-                    param.getResourceList()
+                    task.nameProperty(),
+                    task.startDateProperty(),
+                    task.finishDateProperty(),
+                    task.donePercentProperty(),
+                    task.priorityTypeProperty(),
+                    task.costProperty(),
+                    task.getDependentTasks(),
+                    task.groupProperty(),
+                    task.getResourceList(),
+                    task.descriptionProperty()
             };
         }
     });
     private ObservableList<IResource> resources = FXCollections.observableArrayList(new Callback<IResource, Observable[]>() {
         @Override
-        public Observable[] call(IResource param) {
+        public Observable[] call(IResource resource) {
             return new Observable[] {
-                    param.nameProperty(),
-                    param.resourceTypeProperty(),
-                    param.emailProperty()
+                    resource.nameProperty(),
+                    resource.resourceTypeProperty(),
+                    resource.emailProperty(),
+                    resource.descriptionProperty()
             };
         }
     });
