@@ -16,7 +16,6 @@ import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 /**
  * Класс-контроллер для TaskPropertiesPane.fxml
@@ -68,10 +67,10 @@ public class TaskPropertiesPaneController {
      */
     @FXML
     private void onlyNumber(KeyEvent event) {
-        if ((isInteger(event.getText()) || event.getText().equals(".") && (countChar(costField.getText(), '.') < 1)) || (event.getCode() == KeyCode.BACK_SPACE)) {
+        if ((isInteger(event.getText()) || event.getText().equals(".") && (countChar(costField.getText(), '.') < 1)) || (event.getCode() == KeyCode.BACK_SPACE) || (event.getCode() == KeyCode.DELETE)) {
             costField.setEditable(true);
             if ((costField.getText().length() > 0) && (costField.getText().lastIndexOf(".") != -1)) {
-                if ((costField.getText().length() > costField.getText().lastIndexOf(".") + 2) && (event.getCode() != KeyCode.BACK_SPACE)) {
+                if ((costField.getText().length() > costField.getText().lastIndexOf(".") + 2) && (event.getCode() != KeyCode.BACK_SPACE) && (event.getCode() != KeyCode.DELETE)) {
                     costField.setEditable(false);
                 }
             }
@@ -80,10 +79,17 @@ public class TaskPropertiesPaneController {
         }
     }
 
-    private int countChar(String text, char s) {
+    /**
+     * Считает количество дублей заданного символа в строке.
+     *
+     * @param text Строка.
+     * @param c    Символ.
+     * @return Возвращает количество (int).
+     */
+    private int countChar(String text, char c) {
         int count = 0;
         for (char element : text.toCharArray()) {
-            if (element == s) count++;
+            if (element == c) count++;
         }
         return count;
     }
@@ -148,14 +154,6 @@ public class TaskPropertiesPaneController {
                 priorityTypeComboBox.valueProperty().bindBidirectional(newSelectedTask.priorityTypeProperty());
                 costField.textProperty().bindBidirectional(newSelectedTask.costProperty(), new NumberStringConverter());
                 descriptionTextArea.textProperty().bindBidirectional(newSelectedTask.descriptionProperty());
-
-                // При изменении начальной даты через свойства длительность задачи не должна меняться!
-                newSelectedTask.startDateProperty().addListener(((observable1, oldStartDate, newStartDate) -> {
-                    if (!UIControl.wasMovedByMouse && oldStartDate != null) {
-                        long between = ChronoUnit.DAYS.between(oldStartDate, finishDatePicker.getValue());
-                        finishDatePicker.setValue(newStartDate.plusDays(between));
-                    }
-                }));
             }
         });
 
