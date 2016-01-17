@@ -53,6 +53,7 @@ public class Task implements ITask {
 
     // Запоминаем количество задач
     private static AtomicInteger taskSequence = new AtomicInteger(-1); // -1, потому что первым идет рутовый элемент в таблице задач (rootTask)
+
     @SuppressWarnings("FieldCanBeLocal")
     private ChangeListener<LocalDate> startDateChangeListener;
     @SuppressWarnings("FieldCanBeLocal")
