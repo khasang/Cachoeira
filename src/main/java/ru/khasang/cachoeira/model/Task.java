@@ -2,6 +2,8 @@ package ru.khasang.cachoeira.model;
 
 import javafx.beans.Observable;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
@@ -51,6 +53,10 @@ public class Task implements ITask {
 
     // Запоминаем количество задач
     private static AtomicInteger taskSequence = new AtomicInteger(-1); // -1, потому что первым идет рутовый элемент в таблице задач (rootTask)
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChangeListener<LocalDate> startDateChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChangeListener<LocalDate> finishDateChangeListener;
 
     /**
      * Конструктор с дефолтовыми значениями.
@@ -63,14 +69,16 @@ public class Task implements ITask {
         this.priorityType.setValue(PriorityType.Normal);
 
         // В случае изменения дат пересчитываем duration
-        this.startDate.addListener((observable, oldValue, newValue) -> {
+        startDateChangeListener = (observable, oldValue, newValue) -> {
             long between = ChronoUnit.DAYS.between(newValue, this.finishDate.getValue());
             this.duration.setValue(between);
-        });
-        this.finishDate.addListener((observable, oldValue, newValue) -> {
+        };
+        finishDateChangeListener = (observable, oldValue, newValue) -> {
             long between = ChronoUnit.DAYS.between(this.startDate.getValue(), newValue);
             this.duration.setValue(between);
-        });
+        };
+        this.startDate.addListener(new WeakChangeListener<>(startDateChangeListener));
+        this.finishDate.addListener(new WeakChangeListener<>(finishDateChangeListener));
     }
 
     @Override
