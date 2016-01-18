@@ -11,7 +11,7 @@ import ru.khasang.cachoeira.view.resourcepaneganttchart.ResourcePaneGridLayer;
 import ru.khasang.cachoeira.view.resourcepaneganttchart.ResourcePaneObjectsLayer;
 
 /**
- * Класс в котором опеределяется порядок расстановки слоев диаграммы Ганта.
+ * Класс в котором определяется порядок расстановки слоев диаграммы Ганта.
  */
 public class ResourceGanttChart extends VBox {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceGanttChart.class.getName());
