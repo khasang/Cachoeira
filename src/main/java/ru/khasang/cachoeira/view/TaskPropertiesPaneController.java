@@ -1,15 +1,19 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.WeakListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import javafx.util.converter.NumberStringConverter;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
@@ -21,7 +25,7 @@ import java.time.LocalDate;
  * Класс-контроллер для TaskPropertiesPane.fxml
  */
 public class TaskPropertiesPaneController {
-    //Информация
+    // Информация
     @FXML
     private VBox propertiesPane;
     @FXML
@@ -39,13 +43,21 @@ public class TaskPropertiesPaneController {
     @FXML
     private TextArea descriptionTextArea;
 
-    //Привязанные ресурсы
+    // Привязанные ресурсы
     @FXML
     private TableView<IResource> resourceTableView;
     @FXML
     private TableColumn<IResource, String> resourceNameColumn;
     @FXML
     private TableColumn<IResource, Boolean> resourceCheckboxColumn;
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChangeListener<ITask> selectedTaskListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ListChangeListener<ITask> taskListListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener nameFieldFocusListener;
+
 
     public TaskPropertiesPaneController() {
     }
@@ -128,11 +140,78 @@ public class TaskPropertiesPaneController {
         // Заполняем комбобокс
         ObservableList<PriorityType> taskPriorityTypes = FXCollections.observableArrayList(PriorityType.values());
         priorityTypeComboBox.setItems(taskPriorityTypes);
-
         // Делаем панель не активной, если задача не выбрана
         propertiesPane.disableProperty().bind(uiControl.getController().selectedTaskProperty().isNull());
 
-        uiControl.getController().selectedTaskProperty().addListener((observable, oldSelectedTask, newSelectedTask) -> {
+        /* Поле наименование */
+        nameField.setOnKeyPressed(keyEvent -> {
+            // Изменения применяем только при нажатии на ENTER...
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                // Если поле не пустое
+                if (!nameField.getText().trim().isEmpty()) {
+                    uiControl.getController().getSelectedTask().setName(nameField.getText());
+                    // Убираем фокусировку с поля наименования задачи
+                    nameField.getParent().requestFocus();
+                }
+            }
+            // Если нажали ESC,
+            if (keyEvent.getCode() == KeyCode.ESCAPE) {
+                // то возвращаем предыдущее название
+                nameField.setText(uiControl.getController().getSelectedTask().getName());
+                // Убираем фокусировку с поля наименования задачи
+                nameField.getParent().requestFocus();
+            }
+        });
+        // ... или при потере фокуса.
+        nameFieldFocusListener = observable -> {
+            if (!nameField.isFocused()) {
+                // Если поле не пустое, то
+                if (!nameField.getText().trim().isEmpty()) {
+                    // применяем изменения
+                    uiControl.getController().getSelectedTask().setName(nameField.getText());
+                } else {
+                    // либо возвращаем предыдущее название
+                    nameField.setText(uiControl.getController().getSelectedTask().getName());
+                }
+            }
+        };
+        nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
+
+        startDatePicker.setDayCellFactory(datePicker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate startDate, boolean empty) {
+                super.updateItem(startDate, empty);
+                if (startDate.isBefore(uiControl.getController().getProject().getStartDate())) {
+                    setDisable(true);
+                }
+                if (startDate.isEqual(uiControl.getController().getProject().getFinishDate()) || startDate.isAfter(uiControl.getController().getProject().getFinishDate())) {
+                    setDisable(true);
+                }
+            }
+        });
+        // Отключает возможность в Дате окончания выбрать дату предыдущую Начальной даты
+        finishDatePicker.setDayCellFactory(datePicker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate finishDate, boolean empty) {
+                super.updateItem(finishDate, empty);
+                if (finishDate.isBefore(startDatePicker.getValue().plusDays(1))) {
+                    setDisable(true);
+                }
+                if (finishDate.isEqual(uiControl.getController().getProject().getFinishDate().plusDays(1)) || finishDate.isAfter(uiControl.getController().getProject().getFinishDate().plusDays(1))) {
+                    setDisable(true);
+                }
+            }
+        });
+    }
+
+    public void initAssignmentResourceTable(UIControl uiControl) {
+        resourceTableView.setItems(uiControl.getController().getProject().getResourceList());
+        resourceNameColumn.setCellValueFactory(cell -> cell.getValue().nameProperty());
+    }
+
+    public void setListeners(UIControl uiControl) {
+        taskListListener = change -> initCheckBoxColumn(uiControl.getController().getSelectedTask());
+        selectedTaskListener = (observable, oldSelectedTask, newSelectedTask) -> {
             // Прежде чем привязать поля свойств новой задачи необходимо отвязать поля предыдущей задачи (если такая была)
             if (oldSelectedTask != null) {
 //                nameField.textProperty().unbindBidirectional(oldSelectedTask.nameProperty());
@@ -155,124 +234,48 @@ public class TaskPropertiesPaneController {
                 costField.textProperty().bindBidirectional(newSelectedTask.costProperty(), new NumberStringConverter());
                 descriptionTextArea.textProperty().bindBidirectional(newSelectedTask.descriptionProperty());
             }
-        });
+            // Если выбрали другую задачу перерисовываем таблицу привязанных ресурсов
+            initCheckBoxColumn(uiControl.getController().getSelectedTask());
+        };
 
-        /* Поле наименование */
-        nameField.setOnKeyPressed(keyEvent -> {
-            // Изменения применяем только при нажатии на ENTER...
-            if (keyEvent.getCode() == KeyCode.ENTER) {
-                // Если поле не пустое
-                if (!nameField.getText().trim().isEmpty()) {
-                    uiControl.getController().getSelectedTask().setName(nameField.getText());
-                    // Убираем фокусировку с поля наименования задачи
-                    nameField.getParent().requestFocus();
-                }
-            }
-            // Если нажали ESC,
-            if (keyEvent.getCode() == KeyCode.ESCAPE) {
-                // то возвращаем предыдущее название
-                nameField.setText(uiControl.getController().getSelectedTask().getName());
-                // Убираем фокусировку с поля наименования задачи
-                nameField.getParent().requestFocus();
-            }
-        });
-        // ... или при потере фокуса.
-        nameField.focusedProperty().addListener(observable -> {
-            if (!nameField.isFocused()) {
-                // Если поле не пустое, то
-                if (!nameField.getText().trim().isEmpty()) {
-                    // применяем изменения
-                    uiControl.getController().getSelectedTask().setName(nameField.getText());
-                } else {
-                    // либо возвращаем предыдущее название
-                    nameField.setText(uiControl.getController().getSelectedTask().getName());
-                }
-            }
-        });
-
-        startDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
-            @Override
-            public DateCell call(DatePicker param) {
-                return new DateCell() {
-                    @Override
-                    public void updateItem(LocalDate item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item.isBefore(uiControl.getController().getProject().getStartDate())) {
-                            setDisable(true);
-                        }
-                        if (item.isEqual(uiControl.getController().getProject().getFinishDate()) || item.isAfter(uiControl.getController().getProject().getFinishDate())) {
-                            setDisable(true);
-                        }
-                    }
-                };
-            }
-        });
-        // Отключает возможность в Дате окончания выбрать дату предыдущую Начальной даты
-        finishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
-            @Override
-            public DateCell call(DatePicker param) {
-                return new DateCell() {
-                    @Override
-                    public void updateItem(LocalDate item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item.isBefore(startDatePicker.getValue().plusDays(1))) {
-                            setDisable(true);
-                        }
-                        if (item.isEqual(uiControl.getController().getProject().getFinishDate().plusDays(1)) || item.isAfter(uiControl.getController().getProject().getFinishDate().plusDays(1))) {
-                            setDisable(true);
-                        }
-                    }
-                };
-            }
-        });
-    }
-
-    public void initAssignmentResourceTable(UIControl uiControl) {
-        resourceTableView.setItems(uiControl.getController().getProject().getResourceList());
-        resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
-        uiControl.getController().selectedTaskProperty().addListener(observable -> initCheckBoxColumn(uiControl.getController().getSelectedTask()));
+        uiControl.getController().selectedTaskProperty().addListener(new WeakChangeListener<>(selectedTaskListener));
         // Если список ресурсов в какой либо задаче обновляется, то обновляем список ресурсов в панели свойств задач
-        uiControl.getController().getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> initCheckBoxColumn(uiControl.getController().getSelectedTask()));
+        uiControl.getController().getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListListener));
     }
 
     private void initCheckBoxColumn(ITask selectedTask) {
         if (selectedTask != null) {
-            resourceCheckboxColumn.setCellFactory(new Callback<TableColumn<IResource, Boolean>, TableCell<IResource, Boolean>>() {
+            resourceCheckboxColumn.setCellFactory(column -> new TableCell<IResource, Boolean>() {
                 @Override
-                public TableCell<IResource, Boolean> call(TableColumn<IResource, Boolean> param) {
-                    return new TableCell<IResource, Boolean>() {
-                        @Override
-                        public void updateItem(Boolean item, boolean empty) {
-                            super.updateItem(item, empty);
-                            setAlignment(Pos.CENTER);
-                            IResource currentRowResource = (IResource) getTableRow().getItem();
-                            if (empty) {
-                                setText(null);
-                                setGraphic(null);
+                protected void updateItem(Boolean item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setAlignment(Pos.CENTER);
+                    IResource currentRowResource = (IResource) getTableRow().getItem();
+                    if (empty) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        // Заполняем столбец чек-боксами
+                        CheckBox checkBox = new CheckBox();
+                        setGraphic(checkBox);
+                        checkBox.setOnAction(event -> {
+                            if (checkBox.isSelected()) {
+                                selectedTask.addResource(currentRowResource);
                             } else {
-                                // Заполняем столбец чек-боксами
-                                CheckBox checkBox = new CheckBox();
-                                setGraphic(checkBox);
-                                checkBox.setOnAction(event -> {
-                                    if (checkBox.isSelected()) {
-                                        selectedTask.addResource(currentRowResource);
-                                    } else {
-                                        selectedTask.removeResource(currentRowResource);
-                                    }
-                                });
+                                selectedTask.removeResource(currentRowResource);
+                            }
+                        });
 
-                                // Расставляем галочки на нужных строках
-                                for (IResource resource : selectedTask.getResourceList()) {
-                                    if (resource.equals(currentRowResource)) {
-                                        checkBox.setSelected(true);
-                                        break;
-                                    } else {
-                                        checkBox.setSelected(false);
-                                    }
-                                }
+                        // Расставляем галочки на нужных строках
+                        for (IResource resource : selectedTask.getResourceList()) {
+                            if (resource.equals(currentRowResource)) {
+                                checkBox.setSelected(true);
+                                break;
+                            } else {
+                                checkBox.setSelected(false);
                             }
                         }
-                    };
+                    }
                 }
             });
         }
