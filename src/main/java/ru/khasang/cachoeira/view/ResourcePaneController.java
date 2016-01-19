@@ -1,6 +1,9 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.ListChangeListener;
+import javafx.collections.WeakListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
@@ -42,6 +45,10 @@ public class ResourcePaneController {
     private ResourceGanttChart resourceGanttChart;
     private UIControl uiControl;
 
+    ChangeListener<IResource> selectedItemChangeListener;
+    ListChangeListener<IResource> resourceListChangeListener;
+    ListChangeListener<ITask> taskListChangeListener;
+
     public ResourcePaneController() {
     }
 
@@ -58,9 +65,9 @@ public class ResourcePaneController {
         // Уменьшаем толщину разделителя
         resourceSplitPane.getStylesheets().add(this.getClass().getResource("/css/split-pane.css").toExternalForm());
         // Привязываем столбцы к полям в модели
-        resourceNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());                     //столбец ресурсов Наименование
-        resourceTypeColumn.setCellValueFactory(param -> param.getValue().resourceTypeProperty());                   //Тип
-        resourceEmailColumn.setCellValueFactory(param -> param.getValue().emailProperty());                 //Почта
+        resourceNameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());                     //столбец ресурсов Наименование
+        resourceTypeColumn.setCellValueFactory(cellData -> cellData.getValue().resourceTypeProperty());                   //Тип
+        resourceEmailColumn.setCellValueFactory(cellData -> cellData.getValue().emailProperty());                 //Почта
         // Высота строк и выравнивание
         resourceTableView.setFixedCellSize(31);
         resourceNameColumn.setStyle("-fx-alignment: CENTER-LEFT");
@@ -79,7 +86,7 @@ public class ResourcePaneController {
         uiControl.getController().handleRemoveResource(resourceTableView.getSelectionModel().getSelectedItem());
     }
 
-    public void initResourceTable() {
+    public void initResourceTable(UIControl uiControl) {
         resourceTableView.bindScrollsToController(uiControl);
         resourceTableView.setItems(uiControl.getController().getProject().getResourceList());
         resourceTableView.setRowFactory(new ResourceTableViewRowFactory(this, uiControl.getController())); //вешаем драг и дроп, и контекстное меню
@@ -89,49 +96,51 @@ public class ResourcePaneController {
         resourceTableViewHorizontalScrollBar.setOrientation(Orientation.HORIZONTAL);
         resourceTableViewHorizontalScrollBar.visibleAmountProperty().bind(resourceTableView.widthProperty());
         resourceTableViewHorizontalScrollBar.valueProperty().bindBidirectional(uiControl.resourceHorizontalScrollValueProperty());
-        // Следим за выделенным элементом в таблице задач
-        resourceTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            uiControl.getController().setSelectedResource(newValue);
-        });
-        // Следим за изменениями в модели задач
-        uiControl.getController().getProject().getResourceList().addListener((ListChangeListener<IResource>) change -> {
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    resourceTableView.getSelectionModel().selectLast();
-                }
-            }
-        });
         LOGGER.debug("Таблица ресурсов проинициализирована.");
     }
 
-    public void initGanttChart() {
+    public void setListeners(UIControl uiControl) {
+        selectedItemChangeListener = (observable, oldValue, newValue) -> uiControl.getController().setSelectedResource(newValue);
+        resourceListChangeListener = change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    change.getAddedSubList().forEach(resource -> resourceTableView.getSelectionModel().select(resource));
+                }
+            }
+        };
+        taskListChangeListener = change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    resourceGanttChart.getResourcePaneObjectsLayer().refreshResourceDiagram();
+                }
+                if (change.wasRemoved()) {
+                    change.getRemoved().forEach(task -> resourceGanttChart.getResourcePaneObjectsLayer().removeTaskBar(task));
+                }
+            }
+        };
+
+        // Следим за выделенным элементом в таблице задач
+        resourceTableView.getSelectionModel().selectedItemProperty().addListener(new WeakChangeListener<>(selectedItemChangeListener));
+        uiControl.getController().getProject().getResourceList().addListener(new WeakListChangeListener<>(resourceListChangeListener));
+        // Следим за изменениями в модели задач
+        uiControl.getController().getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListChangeListener));
+    }
+
+    public void initGanttChart(UIControl uiControl) {
         resourceGanttChart = new ResourceGanttChart();
         resourceGanttChart.initGanttDiagram(uiControl);
         resourceSplitPane.getItems().add(resourceGanttChart);
         resourceSplitPane.setDividerPosition(0, 0.3);
         //Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
         resourceSplitPane.getDividers().get(0).positionProperty().bindBidirectional(uiControl.splitPaneDividerValueProperty());
-
-        uiControl.getController().getProject().getTaskList().addListener((ListChangeListener<ITask>) change -> {
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    resourceGanttChart.getResourcePaneObjectsLayer().refreshResourceDiagram();
-                }
-                for (ITask task : change.getRemoved()) {
-                    resourceGanttChart.getResourcePaneObjectsLayer().removeTaskBar(task);
-                }
-            }
-        });
         LOGGER.debug("Диаграмма Ганта проинициализирована.");
     }
 
-    public void initContextMenus() {
+    public void initContextMenus(UIControl uiControl) {
         // Контекстное меню для выбора нужных столбцов
         ContextMenuColumn contextMenuColumnResource = new ContextMenuColumn(resourceTableView);
         contextMenuColumnResource.setOnShowing(event -> contextMenuColumnResource.updateContextMenuColumnTV(resourceTableView));
-        for (int i = 0; i < resourceTableView.getColumns().size(); i++) {
-            resourceTableView.getColumns().get(i).setContextMenu(contextMenuColumnResource);
-        }
+        resourceTableView.getColumns().forEach(column -> column.setContextMenu(contextMenuColumnResource));
 
         // Контекстное меню для таблицы
         ContextMenu resourceTableMenu = new ContextMenu();
@@ -141,7 +150,7 @@ public class ResourcePaneController {
         resourceTableView.setContextMenu(resourceTableMenu);
     }
 
-    public void initZoom() {
+    public void initZoom(UIControl uiControl) {
         zoomSlider.valueProperty().bindBidirectional(uiControl.zoomMultiplierProperty());
     }
 
