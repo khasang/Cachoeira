@@ -45,9 +45,12 @@ public class ResourcePaneController {
     private ResourceGanttChart resourceGanttChart;
     private UIControl uiControl;
 
-    ChangeListener<IResource> selectedItemChangeListener;
-    ListChangeListener<IResource> resourceListChangeListener;
-    ListChangeListener<ITask> taskListChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChangeListener<IResource> selectedItemChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ListChangeListener<IResource> resourceListChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ListChangeListener<ITask> taskListChangeListener;
 
     public ResourcePaneController() {
     }
