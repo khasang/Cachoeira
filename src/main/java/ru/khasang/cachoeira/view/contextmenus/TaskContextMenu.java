@@ -20,22 +20,24 @@ public class TaskContextMenu extends ContextMenu {
     public void initMenus(IController controller, ITask task) {
         this.getItems().clear();
         Menu assignTaskMenu = new Menu("Назначить ресурс");
-        MenuItem getProperties = new MenuItem("Свойства");
-        MenuItem removeTask = new MenuItem("Удалить задачу");
+        MenuItem getPropertiesMenuItem = new MenuItem("Свойства");
+        MenuItem removeTaskMenuItem = new MenuItem("Удалить задачу");
 
-        getProperties.setOnAction(event -> {
+        getPropertiesMenuItem.setOnAction(event -> {
             controller.setSelectedTask(task);
 //                taskPaneController.openPropertiesTaskWindow(); // TODO: 25.11.2015 исправить
         });
-        removeTask.setOnAction(event -> controller.handleRemoveTask(task));
-        this.getItems().addAll(assignTaskMenu, getProperties, removeTask);  //заполняем меню
+        removeTaskMenuItem.setOnAction(event -> controller.handleRemoveTask(task));
+        this.getItems().addAll(assignTaskMenu, getPropertiesMenuItem, removeTaskMenuItem);  //заполняем меню
 
         this.setOnShowing(event -> refreshResourceMenu(assignTaskMenu.getItems(), task, controller.getProject().getResourceList()));
     }
 
-    private void refreshResourceMenu(ObservableList<MenuItem> menuItemList, ITask task, ObservableList<IResource> resources) {
+    private void refreshResourceMenu(ObservableList<MenuItem> menuItemList,
+                                     ITask task,
+                                     ObservableList<IResource> resourceList) {
         menuItemList.clear();
-        for (IResource resource : resources) {                                                                  //берем список всех ресурсов
+        for (IResource resource : resourceList) {                                                                  //берем список всех ресурсов
             CheckMenuItem checkMenuItem = new CheckMenuItem(resource.getName());                                //создаем элемент меню для каждого ресурса
             for (IResource resourceOfTask : task.getResourceList()) {                   //берем список ресурсов выделенной Задачи
                 if (resource.equals(resourceOfTask)) {                                                          //если ресурс из общего списка равен ресурсу из списка Задачи, то

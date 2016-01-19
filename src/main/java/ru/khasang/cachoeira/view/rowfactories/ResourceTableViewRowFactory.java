@@ -1,7 +1,5 @@
 package ru.khasang.cachoeira.view.rowfactories;
 
-import javafx.beans.binding.Bindings;
-import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
@@ -10,8 +8,8 @@ import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
-import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.ResourcePaneController;
+import ru.khasang.cachoeira.view.contextmenus.ResourceContextMenu;
 import ru.khasang.cachoeira.view.tooltips.ResourceTooltip;
 
 /**
@@ -30,8 +28,10 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
     @Override
     public TableRow<IResource> call(TableView<IResource> param) {
         TableRow<IResource> row = new TableRow<IResource>() {
-            /* Tooltip */
+            /* Tooltip & Context Menu */
             ResourceTooltip resourceTooltip = new ResourceTooltip();
+            ResourceContextMenu resourceContextMenu = new ResourceContextMenu();
+
             @Override
             protected void updateItem(IResource resource, boolean empty) {
                 super.updateItem(resource, empty);
@@ -40,6 +40,8 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
                 } else {
                     resourceTooltip.initToolTip(resource);
                     setTooltip(resourceTooltip);
+                    resourceContextMenu.initMenus(controller, resource);
+                    setContextMenu(resourceContextMenu);
                 }
             }
         };
@@ -83,51 +85,6 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
                 event.consume();
             }
         });
-
-
-        /* Row Context Menu */
-        ContextMenu rowMenu = new ContextMenu();
-        Menu assignTaskMenu = new Menu("Назначить задачу");
-
-        MenuItem getPropertiesMenuItem = new MenuItem("Свойства");
-        MenuItem removeResourceMenuItem = new MenuItem("Удалить ресурс");
-
-        getPropertiesMenuItem.setOnAction(event -> {
-            controller.setSelectedResource(row.getItem());
-//                resourcePaneController.openPropertiesResourceWindow(); // TODO: 25.11.2015 исправить
-        });
-        removeResourceMenuItem.setOnAction(event -> controller.handleRemoveResource(row.getItem()));
-        rowMenu.getItems().addAll(assignTaskMenu, getPropertiesMenuItem, removeResourceMenuItem);  //заполняем меню
-
-        rowMenu.setOnShowing(event -> refreshTaskMenu(assignTaskMenu.getItems(), row.getItem()));
-
-        row.contextMenuProperty().bind(
-                Bindings.when(Bindings.isNotNull(row.itemProperty()))   //если на не пустом месте кликаем,
-                        .then(rowMenu)                                  //то выводим одно меню,
-                        .otherwise((ContextMenu) null));                //а если на пустом, то другое
         return row;
-    }
-
-    private void refreshTaskMenu(ObservableList<MenuItem> menuItemList, IResource currentRowResource) {
-        menuItemList.clear();
-        for (ITask task : controller.getProject().getTaskList()) {
-            CheckMenuItem checkMenuItem = new CheckMenuItem(task.getName());
-            for (IResource resource : task.getResourceList()) {
-                if (resource.equals(currentRowResource)) {
-                    checkMenuItem.selectedProperty().setValue(Boolean.TRUE);
-                    break;
-                } else {
-                    checkMenuItem.selectedProperty().setValue(Boolean.FALSE);
-                }
-            }
-            checkMenuItem.setOnAction(event -> {
-                if (checkMenuItem.isSelected()) {
-                    task.addResource(currentRowResource);
-                } else {
-                    task.removeResource(currentRowResource);
-                }
-            });
-            menuItemList.add(checkMenuItem);
-        }
     }
 }
