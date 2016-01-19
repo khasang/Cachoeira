@@ -19,7 +19,8 @@ public class ResourcePaneObjectsLayer extends Pane {
 
     private UIControl uiControl;
 
-    InvalidationListener zoomMultiplierListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener zoomMultiplierListener;
 
     public ResourcePaneObjectsLayer() {
     }

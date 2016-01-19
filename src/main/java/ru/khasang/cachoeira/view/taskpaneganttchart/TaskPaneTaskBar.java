@@ -4,8 +4,12 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.ListChangeListener;
+import javafx.collections.WeakListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
@@ -48,6 +52,17 @@ public class TaskPaneTaskBar extends Pane {
     private int rowIndex;                        //координата Y (строка задачи)
     private TaskContextMenu taskContextMenu;
     private boolean wasMovedByMouse = false;
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private ListChangeListener<ITask> taskListChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChangeListener<LocalDate> startDateChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChangeListener<LocalDate> finishDateChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ListChangeListener<IResource> resourceListChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener hoverListener;
 
     public TaskPaneTaskBar() {
         this.setPadding(new Insets(0, 0, 5, 0));
@@ -136,13 +151,9 @@ public class TaskPaneTaskBar extends Pane {
                               ITask task,
                               Rectangle backgroundRectangle,
                               Rectangle donePercentRectangle) {
-        /*
-         Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
-         то пересчитываем индексы у элементов на диаграмме
-         */
-        uiControl.getController().getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
-            while (c.next()) {
-                if (c.wasRemoved() || c.wasAdded()) {
+        taskListChangeListener = change -> {
+            while (change.next()) {
+                if (change.wasRemoved() || change.wasAdded()) {
                     // Анимация при удалении и добавления элемента на диаграмме
                     Timeline timeline = createTimelineAnimation(
                             this.layoutYProperty(),
@@ -151,9 +162,8 @@ public class TaskPaneTaskBar extends Pane {
                     timeline.play();
                 }
             }
-        });
-        // Если начальная дата изменилась, то...
-        task.startDateProperty().addListener((observable, oldValue, newValue) -> {
+        };
+        startDateChangeListener = (observable, oldValue, newValue) -> {
             // ... если эти изменения произошли не спомощью мышки, то...
             if (!wasMovedByMouse) {
                 // ... меняем положение метки на диаграмме...
@@ -179,9 +189,8 @@ public class TaskPaneTaskBar extends Pane {
                 timeline.play();
                 timeline1.play();
             }
-        });
-        // Если конечная дата изменилась, то...
-        task.finishDateProperty().addListener((observable, oldValue, newValue) -> {
+        };
+        finishDateChangeListener = (observable, oldValue, newValue) -> {
             if (!wasMovedByMouse) {
                 // Animation
                 Timeline timeline = createTimelineAnimation(
@@ -195,24 +204,24 @@ public class TaskPaneTaskBar extends Pane {
                 );
                 timeline.play();
             }
-        });
-
-        // Следим за списком ресурсов привязанных к данной задаче/
-        task.getResourceList().addListener((ListChangeListener<IResource>) change -> {
+        };
+        resourceListChangeListener = change -> {
             while (change.next()) {
                 // Если добавился
-                for (IResource resource : change.getAddedSubList()) {
-                    uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().addTaskBar(task, resource);
+                if (change.wasAdded()) {
+                    for (IResource resource : change.getAddedSubList()) {
+                        uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().addTaskBar(task, resource);
+                    }
                 }
                 // Если удалился
-                for (IResource resource : change.getRemoved()) {
-                    uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().removeTaskBarByResource(task, resource);
+                if (change.wasRemoved()) {
+                    for (IResource resource : change.getRemoved()) {
+                        uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().removeTaskBarByResource(task, resource);
+                    }
                 }
             }
-        });
-
-        //подсветка при наведении // TODO: 15.01.2016 Сделать анимацию
-        this.hoverProperty().addListener(observable -> {
+        };
+        hoverListener = observable -> {
             if (this.isHover()) {
                 backgroundRectangle.setFill(Color.valueOf("03bdf4"));
                 backgroundRectangle.setStroke(Color.valueOf("#03d1f4"));
@@ -222,7 +231,20 @@ public class TaskPaneTaskBar extends Pane {
                 backgroundRectangle.setStroke(Color.valueOf("#03bdf4"));
                 donePercentRectangle.setFill(Color.valueOf("#0381f4"));
             }
-        });
+        };
+        /*
+         Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
+         то пересчитываем индексы у элементов на диаграмме
+         */
+        uiControl.getController().getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListChangeListener));
+        // Если начальная дата изменилась, то...
+        task.startDateProperty().addListener(new WeakChangeListener<>(startDateChangeListener));
+        // Если конечная дата изменилась, то...
+        task.finishDateProperty().addListener(new WeakChangeListener<>(finishDateChangeListener));
+        // Следим за списком ресурсов привязанных к данной задаче/
+        task.getResourceList().addListener(new WeakListChangeListener<>(resourceListChangeListener));
+        //подсветка при наведении // TODO: 15.01.2016 Сделать анимацию
+        this.hoverProperty().addListener(hoverListener);
     }
 
     public void setContextMenu(IController controller,

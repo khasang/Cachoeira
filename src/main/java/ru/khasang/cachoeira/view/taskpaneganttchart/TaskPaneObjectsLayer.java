@@ -18,7 +18,8 @@ public class TaskPaneObjectsLayer extends Pane {
 
     private UIControl uiControl;
 
-    InvalidationListener zoomMultiplierListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener zoomMultiplierListener;
 
     public TaskPaneObjectsLayer() {
     }
