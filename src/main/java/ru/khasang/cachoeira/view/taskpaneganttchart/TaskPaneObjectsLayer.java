@@ -1,14 +1,13 @@
 package ru.khasang.cachoeira.view.taskpaneganttchart;
 
-import javafx.scene.Node;
+import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
-
-import java.util.Iterator;
 
 /**
  * Класс - слой на котором располагаются объекты диаграммы Ганта на вкладке Задачи.
@@ -19,6 +18,8 @@ public class TaskPaneObjectsLayer extends Pane {
 
     private UIControl uiControl;
 
+    InvalidationListener zoomMultiplierListener;
+
     public TaskPaneObjectsLayer() {
     }
 
@@ -27,10 +28,14 @@ public class TaskPaneObjectsLayer extends Pane {
      */
     public void refreshTaskDiagram() {
         this.getChildren().clear();
-        for (ITask task : uiControl.getController().getProject().getTaskList()) {
+        uiControl.getController().getProject().getTaskList().forEach(task -> {
             TaskPaneTaskBar taskPaneTaskBar = createTaskBar(uiControl, task);
             this.getChildren().add(taskPaneTaskBar);
-        }
+        });
+//        for (ITask task : uiControl.getController().getProject().getTaskList()) {
+//            TaskPaneTaskBar taskPaneTaskBar = createTaskBar(uiControl, task);
+//            this.getChildren().add(taskPaneTaskBar);
+//        }
         LOGGER.debug("Диаграмма задач обновлена.");
     }
 
@@ -51,14 +56,11 @@ public class TaskPaneObjectsLayer extends Pane {
      * @param task Задача которая присвоена к метке.
      */
     public void removeTaskBar(ITask task) {
-        Iterator<Node> taskBarIterator = this.getChildren().iterator();
-        while (taskBarIterator.hasNext()) {
-            TaskPaneTaskBar taskPaneTaskBar = (TaskPaneTaskBar) taskBarIterator.next();
-            if (taskPaneTaskBar.getTask().equals(task)) {
-                taskBarIterator.remove();
-                LOGGER.debug("Задача с именем \"{}\" удалена с диаграммы.", task.getName());
-            }
-        }
+        this.getChildren().removeIf(node -> {
+            TaskPaneTaskBar taskBar = (TaskPaneTaskBar) node;
+            return taskBar.getTask().equals(task);
+        });
+        LOGGER.debug("Задача с именем \"{}\" удалена с диаграммы.", task.getName());
     }
 
     /**
@@ -84,9 +86,8 @@ public class TaskPaneObjectsLayer extends Pane {
      * @param uiControl Контроллер вью
      */
     public void setListeners(UIControl uiControl) {
-        uiControl.zoomMultiplierProperty().addListener((observable -> {
-            refreshTaskDiagram();
-        }));
+        zoomMultiplierListener = observable -> refreshTaskDiagram();
+        uiControl.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomMultiplierListener));
     }
 
     public void setUIControl(UIControl uiControl) {
