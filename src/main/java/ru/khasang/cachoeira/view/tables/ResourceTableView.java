@@ -64,18 +64,19 @@ public class ResourceTableView<S> extends TableView<S> {
         public ResourceTableViewSkin(TableView<T> tableView) {
             super(tableView);
             // Выцепляем скроллы
-            for (Node child : flow.getChildrenUnmodifiable()) {
-                if (child instanceof VirtualScrollBar) {
-                    if (((VirtualScrollBar) child).getOrientation() == Orientation.VERTICAL) {
-                        verticalScrollBar = (VirtualScrollBar) child;
-                        LOGGER.debug("Найден вертикальный скролл таблицы.");
-                    }
-                    if (((VirtualScrollBar) child).getOrientation() == Orientation.HORIZONTAL) {
-                        horizontalScrollBar = (VirtualScrollBar) child;
-                        LOGGER.debug("Найден горизонтальный скролл таблицы.");
-                    }
-                }
-            }
+            flow.getChildrenUnmodifiable()
+                    .parallelStream()
+                    .filter(child -> child instanceof VirtualScrollBar)
+                    .forEach(child -> {
+                        if (((VirtualScrollBar) child).getOrientation() == Orientation.VERTICAL) {
+                            verticalScrollBar = (VirtualScrollBar) child;
+                            LOGGER.debug("Найден вертикальный скролл таблицы.");
+                        }
+                        if (((VirtualScrollBar) child).getOrientation() == Orientation.HORIZONTAL) {
+                            horizontalScrollBar = (VirtualScrollBar) child;
+                            LOGGER.debug("Найден горизонтальный скролл таблицы.");
+                        }
+                    });
         }
     }
 }
