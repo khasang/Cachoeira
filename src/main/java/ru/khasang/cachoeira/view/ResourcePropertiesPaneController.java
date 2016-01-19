@@ -120,8 +120,6 @@ public class ResourcePropertiesPaneController {
                                 if (selectedResource.equals(resource)) {
                                     checkBox.setSelected(true);
                                     break;
-                                } else {
-                                    checkBox.setSelected(false);
                                 }
                             }
                         }

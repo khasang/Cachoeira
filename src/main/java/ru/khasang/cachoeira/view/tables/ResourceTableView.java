@@ -5,7 +5,6 @@ import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TableView;
 import org.slf4j.Logger;

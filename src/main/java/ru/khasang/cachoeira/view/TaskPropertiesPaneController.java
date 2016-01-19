@@ -271,8 +271,6 @@ public class TaskPropertiesPaneController {
                             if (resource.equals(currentRowResource)) {
                                 checkBox.setSelected(true);
                                 break;
-                            } else {
-                                checkBox.setSelected(false);
                             }
                         }
                     }

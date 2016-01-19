@@ -1,6 +1,7 @@
 package ru.khasang.cachoeira.view.rowfactories;
 
-import javafx.scene.control.*;
+import javafx.scene.control.TreeTableRow;
+import javafx.scene.control.TreeTableView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;

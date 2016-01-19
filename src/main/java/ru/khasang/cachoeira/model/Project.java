@@ -1,13 +1,15 @@
 package ru.khasang.cachoeira.model;
 
 import javafx.beans.Observable;
-import javafx.beans.property.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * Created by nadezhda on 07.10.2015.

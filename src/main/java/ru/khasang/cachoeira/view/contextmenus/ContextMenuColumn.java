@@ -1,6 +1,9 @@
 package ru.khasang.cachoeira.view.contextmenus;
 
-import javafx.scene.control.*;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TreeTableView;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,10 @@
 package ru.khasang.cachoeira.view;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 
 import java.time.LocalDate;
 
