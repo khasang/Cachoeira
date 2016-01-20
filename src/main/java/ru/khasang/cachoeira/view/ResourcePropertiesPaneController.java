@@ -116,12 +116,10 @@ public class ResourcePropertiesPaneController {
 
                         // Расставляем галочки на нужных строках
                         if (currentRowTask != null) {
-                            for (IResource resource : currentRowTask.getResourceList()) {
-                                if (selectedResource.equals(resource)) {
-                                    checkBox.setSelected(true);
-                                    break;
-                                }
-                            }
+                            currentRowTask.getResourceList()
+                                    .stream()
+                                    .filter(resource -> selectedResource.equals(resource) && !checkBox.isSelected())
+                                    .forEach(resource -> checkBox.setSelected(true));
                         }
                     }
                 }

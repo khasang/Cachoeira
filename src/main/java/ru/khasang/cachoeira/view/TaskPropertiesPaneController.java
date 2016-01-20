@@ -267,12 +267,10 @@ public class TaskPropertiesPaneController {
                         });
 
                         // Расставляем галочки на нужных строках
-                        for (IResource resource : selectedTask.getResourceList()) {
-                            if (resource.equals(currentRowResource)) {
-                                checkBox.setSelected(true);
-                                break;
-                            }
-                        }
+                        selectedTask.getResourceList()
+                                .stream()
+                                .filter(resource -> resource.equals(currentRowResource) && !checkBox.isSelected())
+                                .forEach(resource -> checkBox.setSelected(true));
                     }
                 }
             });
