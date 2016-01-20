@@ -83,7 +83,7 @@ public class ResourcePaneTaskBar extends Pane {
         donePercentRectangle.setFill(Color.valueOf("#0381f4"));
         donePercentRectangle.arcHeightProperty().bind(backgroundRectangle.arcHeightProperty());
         donePercentRectangle.arcWidthProperty().bind(backgroundRectangle.arcWidthProperty());
-        donePercentRectangle.yProperty().bind(backgroundRectangle.yProperty().add(1.25));
+        donePercentRectangle.layoutYProperty().bind(backgroundRectangle.layoutYProperty().add(1.25));
         donePercentRectangle.heightProperty().bind(backgroundRectangle.heightProperty().subtract(2.5));
         //ширина зависит от ширины backgroundRectangle и task.donePercent
         donePercentRectangle.widthProperty().bind(
