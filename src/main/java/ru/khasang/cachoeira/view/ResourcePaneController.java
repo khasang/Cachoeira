@@ -15,7 +15,7 @@ import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.Resource;
 import ru.khasang.cachoeira.model.ResourceType;
-import ru.khasang.cachoeira.view.contextmenus.ContextMenuColumn;
+import ru.khasang.cachoeira.view.contextmenus.ColumnContextMenu;
 import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
 import ru.khasang.cachoeira.view.tables.ResourceTableView;
 
@@ -144,9 +144,9 @@ public class ResourcePaneController {
 
     public void initContextMenus(UIControl uiControl) {
         // Контекстное меню для выбора нужных столбцов
-        ContextMenuColumn contextMenuColumnResource = new ContextMenuColumn(resourceTableView);
-        contextMenuColumnResource.setOnShowing(event -> contextMenuColumnResource.updateContextMenuColumnTV(resourceTableView));
-        resourceTableView.getColumns().forEach(column -> column.setContextMenu(contextMenuColumnResource));
+        ColumnContextMenu columnContextMenuResource = new ColumnContextMenu(resourceTableView);
+        columnContextMenuResource.setOnShowing(event -> columnContextMenuResource.updateContextMenuColumnTV(resourceTableView));
+        resourceTableView.getColumns().forEach(column -> column.setContextMenu(columnContextMenuResource));
 
         // Контекстное меню для таблицы
         ContextMenu resourceTableMenu = new ContextMenu();

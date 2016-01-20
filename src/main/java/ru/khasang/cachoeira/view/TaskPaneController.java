@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
 import ru.khasang.cachoeira.model.Task;
-import ru.khasang.cachoeira.view.contextmenus.ContextMenuColumn;
+import ru.khasang.cachoeira.view.contextmenus.ColumnContextMenu;
 import ru.khasang.cachoeira.view.rowfactories.TaskTreeTableViewRowFactory;
 import ru.khasang.cachoeira.view.tables.TaskTreeTableView;
 
@@ -231,9 +231,9 @@ public class TaskPaneController {
 
     public void initContextMenus(UIControl uiControl) {
         // Контекстное меню для выбора нужных столбцов
-        ContextMenuColumn contextMenuColumnTask = new ContextMenuColumn(taskTreeTableView);
-        contextMenuColumnTask.setOnShowing(event -> contextMenuColumnTask.updateContextMenuColumnTTV(taskTreeTableView));
-        taskTreeTableView.getColumns().forEach(column -> column.setContextMenu(contextMenuColumnTask));
+        ColumnContextMenu columnContextMenuTask = new ColumnContextMenu(taskTreeTableView);
+        columnContextMenuTask.setOnShowing(event -> columnContextMenuTask.updateContextMenuColumnTTV(taskTreeTableView));
+        taskTreeTableView.getColumns().forEach(column -> column.setContextMenu(columnContextMenuTask));
 
         // Контекстное меню для таблицы
         ContextMenu taskTableMenu = new ContextMenu();
