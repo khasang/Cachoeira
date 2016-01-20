@@ -1,10 +1,13 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 
 import java.time.LocalDate;
 
@@ -22,6 +25,9 @@ public class ProjectPropertiesPaneController {
     @FXML
     private TextArea descriptionTextArea;
 
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener nameFieldFocusListener;
+
     public ProjectPropertiesPaneController() {
     }
 
@@ -34,10 +40,45 @@ public class ProjectPropertiesPaneController {
 
     public void initFields(UIControl uiControl) {
         // Привязываем поля свойств к модели
-        nameField.textProperty().bindBidirectional(uiControl.getController().getProject().nameProperty());
+//        nameField.textProperty().bindBidirectional(uiControl.getController().getProject().nameProperty());
+        nameField.setText(uiControl.getController().getProject().getName());
         startDatePicker.valueProperty().bindBidirectional(uiControl.getController().getProject().startDateProperty());
         finishDatePicker.valueProperty().bindBidirectional(uiControl.getController().getProject().finishDateProperty());
         descriptionTextArea.textProperty().bindBidirectional(uiControl.getController().getProject().descriptionProperty());
+
+        /* Поле наименование */
+        nameField.setOnKeyPressed(keyEvent -> {
+            // Изменения применяем только при нажатии на ENTER...
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                // Если поле не пустое
+                if (!nameField.getText().trim().isEmpty()) {
+                    uiControl.getController().getProject().setName(nameField.getText());
+                    // Убираем фокусировку с поля наименования задачи
+                    nameField.getParent().requestFocus();
+                }
+            }
+            // Если нажали ESC,
+            if (keyEvent.getCode() == KeyCode.ESCAPE) {
+                // то возвращаем предыдущее название
+                nameField.setText(uiControl.getController().getProject().getName());
+                // Убираем фокусировку с поля наименования задачи
+                nameField.getParent().requestFocus();
+            }
+        });
+        // ... или при потере фокуса.
+        nameFieldFocusListener = observable -> {
+            if (!nameField.isFocused()) {
+                // Если поле не пустое, то
+                if (!nameField.getText().trim().isEmpty()) {
+                    // применяем изменения
+                    uiControl.getController().getProject().setName(nameField.getText());
+                } else {
+                    // либо возвращаем предыдущее название
+                    nameField.setText(uiControl.getController().getProject().getName());
+                }
+            }
+        };
+        nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
 
         // Конечная дата всегда после начальной
         startDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {

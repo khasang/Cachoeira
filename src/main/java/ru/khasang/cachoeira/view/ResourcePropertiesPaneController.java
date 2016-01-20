@@ -1,7 +1,8 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -9,6 +10,7 @@ import javafx.collections.WeakListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
@@ -42,6 +44,8 @@ public class ResourcePropertiesPaneController {
     private ChangeListener<IResource> selectedResourceListener;
     @SuppressWarnings("FieldCanBeLocal")
     private ListChangeListener<ITask> taskListListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener nameFieldFocusListener;
 
     public ResourcePropertiesPaneController() {
     }
@@ -52,6 +56,40 @@ public class ResourcePropertiesPaneController {
         resourceTypeComboBox.setItems(resourceTypesModel);
         // Делаем панель не активной, если ресурс не выбран
         propertiesPane.disableProperty().bind(uiControl.getController().selectedResourceProperty().isNull());
+
+        /* Поле наименование */
+        nameField.setOnKeyPressed(keyEvent -> {
+            // Изменения применяем только при нажатии на ENTER...
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                // Если поле не пустое
+                if (!nameField.getText().trim().isEmpty()) {
+                    uiControl.getController().getSelectedResource().setName(nameField.getText());
+                    // Убираем фокусировку с поля наименования задачи
+                    nameField.getParent().requestFocus();
+                }
+            }
+            // Если нажали ESC,
+            if (keyEvent.getCode() == KeyCode.ESCAPE) {
+                // то возвращаем предыдущее название
+                nameField.setText(uiControl.getController().getSelectedResource().getName());
+                // Убираем фокусировку с поля наименования задачи
+                nameField.getParent().requestFocus();
+            }
+        });
+        // ... или при потере фокуса.
+        nameFieldFocusListener = observable -> {
+            if (!nameField.isFocused()) {
+                // Если поле не пустое, то
+                if (!nameField.getText().trim().isEmpty()) {
+                    // применяем изменения
+                    uiControl.getController().getSelectedResource().setName(nameField.getText());
+                } else {
+                    // либо возвращаем предыдущее название
+                    nameField.setText(uiControl.getController().getSelectedResource().getName());
+                }
+            }
+        };
+        nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
     }
 
     /**
@@ -68,14 +106,15 @@ public class ResourcePropertiesPaneController {
             // Прежде чем привязать поля свойств нового ресурса необходимо отвязать поля предыдущего ресурса
             // (если такой был)
             if (oldSelectedResource != null) {
-                nameField.textProperty().unbindBidirectional(oldSelectedResource.nameProperty());
+//                nameField.textProperty().unbindBidirectional(oldSelectedResource.nameProperty());
                 emailField.textProperty().unbindBidirectional(oldSelectedResource.emailProperty());
                 resourceTypeComboBox.valueProperty().unbindBidirectional(oldSelectedResource.resourceTypeProperty());
                 descriptionTextArea.textProperty().unbindBidirectional(oldSelectedResource.descriptionProperty());
             }
             // Привязываем поля свойств к модели
             if (newSelectedResource != null) {
-                nameField.textProperty().bindBidirectional(newSelectedResource.nameProperty());
+//                nameField.textProperty().bindBidirectional(newSelectedResource.nameProperty());
+                nameField.setText(newSelectedResource.getName());
                 emailField.textProperty().bindBidirectional(newSelectedResource.emailProperty());
                 resourceTypeComboBox.valueProperty().bindBidirectional(newSelectedResource.resourceTypeProperty());
                 descriptionTextArea.textProperty().bindBidirectional(newSelectedResource.descriptionProperty());

@@ -176,7 +176,7 @@ public class TaskPropertiesPaneController {
             }
         };
         nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
-
+        /* Поле дата начала*/
         startDatePicker.setDayCellFactory(datePicker -> new DateCell() {
             @Override
             public void updateItem(LocalDate startDate, boolean empty) {
@@ -189,6 +189,7 @@ public class TaskPropertiesPaneController {
                 }
             }
         });
+        /* Поле дата окончания */
         // Отключает возможность в Дате окончания выбрать дату предыдущую Начальной даты
         finishDatePicker.setDayCellFactory(datePicker -> new DateCell() {
             @Override
@@ -202,6 +203,9 @@ public class TaskPropertiesPaneController {
                 }
             }
         });
+        /* Слайдер изменения прогресса */
+        donePercentSlider.setSnapToTicks(true);
+        donePercentSlider.setOnMouseReleased(event -> uiControl.getController().getSelectedTask().setDonePercent((int) donePercentSlider.getValue()));
     }
 
     public void initAssignmentResourceTable(UIControl uiControl) {
@@ -217,7 +221,7 @@ public class TaskPropertiesPaneController {
 //                nameField.textProperty().unbindBidirectional(oldSelectedTask.nameProperty());
                 startDatePicker.valueProperty().unbindBidirectional(oldSelectedTask.startDateProperty());
                 finishDatePicker.valueProperty().unbindBidirectional(oldSelectedTask.finishDateProperty());
-                donePercentSlider.valueProperty().unbindBidirectional(oldSelectedTask.donePercentProperty());
+//                donePercentSlider.valueProperty().unbindBidirectional(oldSelectedTask.donePercentProperty());
                 priorityTypeComboBox.valueProperty().unbindBidirectional(oldSelectedTask.priorityTypeProperty());
                 costField.textProperty().unbindBidirectional(oldSelectedTask.costProperty());
                 descriptionTextArea.textProperty().unbindBidirectional(oldSelectedTask.descriptionProperty());
@@ -229,7 +233,8 @@ public class TaskPropertiesPaneController {
                 nameField.setText(newSelectedTask.getName());
                 startDatePicker.valueProperty().bindBidirectional(newSelectedTask.startDateProperty());
                 finishDatePicker.valueProperty().bindBidirectional(newSelectedTask.finishDateProperty());
-                donePercentSlider.valueProperty().bindBidirectional(newSelectedTask.donePercentProperty());
+//                donePercentSlider.valueProperty().bindBidirectional(newSelectedTask.donePercentProperty());
+                donePercentSlider.setValue(newSelectedTask.getDonePercent());
                 priorityTypeComboBox.valueProperty().bindBidirectional(newSelectedTask.priorityTypeProperty());
                 costField.textProperty().bindBidirectional(newSelectedTask.costProperty(), new NumberStringConverter());
                 descriptionTextArea.textProperty().bindBidirectional(newSelectedTask.descriptionProperty());
