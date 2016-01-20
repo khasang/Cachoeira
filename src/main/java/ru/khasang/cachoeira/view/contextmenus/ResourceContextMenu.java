@@ -42,14 +42,10 @@ public class ResourceContextMenu extends ContextMenu {
         menuItemList.clear();
         for (ITask task : taskList) {
             CheckMenuItem checkMenuItem = new CheckMenuItem(task.getName());
-            for (IResource resource : task.getResourceList()) {
-                if (resource.equals(currentRowResource)) {
-                    checkMenuItem.selectedProperty().setValue(Boolean.TRUE);
-                    break;
-                } else {
-                    checkMenuItem.selectedProperty().setValue(Boolean.FALSE);
-                }
-            }
+            task.getResourceList()
+                    .stream()
+                    .filter(resource -> resource.equals(currentRowResource) && !checkMenuItem.isSelected())
+                    .forEach(resource -> checkMenuItem.setSelected(true));
             checkMenuItem.setOnAction(event -> {
                 if (checkMenuItem.isSelected()) {
                     task.addResource(currentRowResource);

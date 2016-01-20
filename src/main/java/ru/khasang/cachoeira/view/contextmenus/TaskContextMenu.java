@@ -42,14 +42,10 @@ public class TaskContextMenu extends ContextMenu {
         menuItemList.clear();
         for (IResource resource : resourceList) {                                                                  //берем список всех ресурсов
             CheckMenuItem checkMenuItem = new CheckMenuItem(resource.getName());                                //создаем элемент меню для каждого ресурса
-            for (IResource resourceOfTask : task.getResourceList()) {                   //берем список ресурсов выделенной Задачи
-                if (resource.equals(resourceOfTask)) {                                                          //если ресурс из общего списка равен ресурсу из списка Задачи, то
-                    checkMenuItem.selectedProperty().setValue(Boolean.TRUE);                                    //делаем этот элемент выделенным и
-                    break;                                                                                      //прерываем цикл
-                } else {
-                    checkMenuItem.selectedProperty().setValue(Boolean.FALSE);
-                }
-            }
+            task.getResourceList()
+                    .stream()
+                    .filter(resourceOfTask -> resource.equals(resourceOfTask) && !checkMenuItem.isSelected())
+                    .forEach(resourceOfTask -> checkMenuItem.setSelected(true));
             checkMenuItem.setOnAction(event -> {
                 if (checkMenuItem.isSelected()) {
                     task.addResource(resource);
