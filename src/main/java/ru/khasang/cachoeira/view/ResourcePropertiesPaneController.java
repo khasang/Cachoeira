@@ -63,12 +63,10 @@ public class ResourcePropertiesPaneController {
     }
 
     public void setListeners(UIControl uiControl) {
-        // TODO: 18.01.2016 Заставить эту хрень работать
         taskListListener = change -> initCheckBoxColumn(uiControl.getController().getSelectedResource());
         selectedResourceListener = (observable, oldSelectedResource, newSelectedResource) -> {
             // Прежде чем привязать поля свойств нового ресурса необходимо отвязать поля предыдущего ресурса
             // (если такой был)
-            System.out.println("yes");
             if (oldSelectedResource != null) {
                 nameField.textProperty().unbindBidirectional(oldSelectedResource.nameProperty());
                 emailField.textProperty().unbindBidirectional(oldSelectedResource.emailProperty());
@@ -86,7 +84,8 @@ public class ResourcePropertiesPaneController {
             initCheckBoxColumn(uiControl.getController().getSelectedResource());
         };
 
-        uiControl.getController().selectedResourceProperty().addListener(new WeakChangeListener<>(selectedResourceListener));
+        // TODO: 18.01.2016 Разобраться почему не работает с WeakChangeListener'ом, при том что абсолютно такая же хрень в TaskPropertiesPaneController работает как часы.
+        uiControl.getController().selectedResourceProperty().addListener((selectedResourceListener));
         // Если обновляется список задач, то обновляем таблицу
         uiControl.getController().getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListListener));
     }
