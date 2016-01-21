@@ -1,5 +1,7 @@
 package ru.khasang.cachoeira.view.taskpaneganttchart;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;
@@ -18,11 +20,13 @@ import java.util.Locale;
  */
 public class TaskPaneDateLine extends HBox {
     private UIControl uiControl;
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener listener; // Если листенер объявить локально, то GC прибьет его раньше времени
 
     public TaskPaneDateLine() {
         setAlignment(Pos.CENTER_LEFT);
 
-        //Высота строки с датами
+        // Высота строки с датами
         setMaxHeight(24);
         setMinHeight(24);
     }
@@ -119,22 +123,21 @@ public class TaskPaneDateLine extends HBox {
      * Метод в котором определяются "слушатели" на заданные параметры,
      * при изменении которых происходит перерисовка строки с датами и диаграммы.
      *
-     * @param startDateProperty      Проперти начальной даты проекта
-     * @param finishDateProperty     Проперти конечной даты проекта
-     * @param zoomMultiplierProperty Проперти множителя
+     * @param projectStartDateProperty  Проперти начальной даты проекта
+     * @param projectFinishDateProperty Проперти конечной даты проекта
+     * @param zoomMultiplierProperty    Проперти множителя
      */
-    public void setListeners(ObjectProperty<LocalDate> startDateProperty,
-                             ObjectProperty<LocalDate> finishDateProperty,
+    public void setListeners(ObjectProperty<LocalDate> projectStartDateProperty,
+                             ObjectProperty<LocalDate> projectFinishDateProperty,
                              IntegerProperty zoomMultiplierProperty) {
-        startDateProperty.addListener((observable -> {
-            refreshDateLine(startDateProperty.getValue(), finishDateProperty.getValue(), zoomMultiplierProperty.get());
-        }));
-        finishDateProperty.addListener((observable -> {
-            refreshDateLine(startDateProperty.getValue(), finishDateProperty.getValue(), zoomMultiplierProperty.get());
-        }));
-        zoomMultiplierProperty.addListener((observable -> {
-            refreshDateLine(startDateProperty.getValue(), finishDateProperty.getValue(), zoomMultiplierProperty.get());
-        }));
+        listener = observable -> refreshDateLine(
+                projectStartDateProperty.getValue(),
+                projectFinishDateProperty.getValue(),
+                zoomMultiplierProperty.getValue());
+
+        projectStartDateProperty.addListener(new WeakInvalidationListener(listener));
+        projectFinishDateProperty.addListener(new WeakInvalidationListener(listener));
+        zoomMultiplierProperty.addListener(new WeakInvalidationListener(listener));
     }
 
     /**

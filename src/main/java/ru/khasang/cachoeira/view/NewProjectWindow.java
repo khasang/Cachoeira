@@ -12,7 +12,6 @@ import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.khasang.cachoeira.controller.IController;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -22,7 +21,7 @@ import java.time.LocalDate;
  * С помощью этого класса задаются параметры и создается новый проект.
  */
 public class NewProjectWindow implements IWindow {
-    private static final Logger logger = LoggerFactory.getLogger(NewProjectWindow.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(NewProjectWindow.class.getName());
 
     private UIControl UIControl;
     @FXML
@@ -38,12 +37,10 @@ public class NewProjectWindow implements IWindow {
     @FXML
     private Button createNewProjectButton;
 
-    private IController controller;
     private Parent root = null;
     private Stage stage;
 
-    public NewProjectWindow(IController controller, UIControl UIControl) {
-        this.controller = controller;
+    public NewProjectWindow(UIControl UIControl) {
         this.UIControl = UIControl;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/NewProjectWindow.fxml"));    //грузим макет окна
@@ -67,7 +64,7 @@ public class NewProjectWindow implements IWindow {
         stage.show();
         stage.setTitle("Новый проект");
 
-        logger.info("Открыто окно создания нового проекта.");
+        LOGGER.debug("Открыто окно создания нового проекта.");
 
         createNewProjectButton.disableProperty().bind(nameField.textProperty().isEmpty()); //рубим нажимательность кнопки, если поле с именем пустует
 
@@ -114,16 +111,18 @@ public class NewProjectWindow implements IWindow {
 
     @FXML
     private void newProjectCreateButtonHandle(ActionEvent actionEvent) {
-        logger.info("Нажата кнопка \"Создать\".");
-        controller.notifyAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText()); //создаем проект
+        LOGGER.debug("Нажата кнопка \"Создать\".");
+        UIControl.getController().handleAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText()); //создаем проект
         stage.close(); // закрываем это окошко
-        UIControl.getStartWindow().getStage().close(); //закрываем стартовое окно
+        if (UIControl.getStartWindow().getStage().isShowing()) {
+            UIControl.getStartWindow().getStage().close(); //закрываем стартовое окно
+        }
         UIControl.launchMainWindow(); //запускаем главное окно
     }
 
     @FXML
     private void newProjectCancelButtonHandle(ActionEvent actionEvent) {
-        logger.info("Нажата кнопка \"Отмена\".");
+        LOGGER.debug("Нажата кнопка \"Отмена\".");
         stage.close();
     }
 }

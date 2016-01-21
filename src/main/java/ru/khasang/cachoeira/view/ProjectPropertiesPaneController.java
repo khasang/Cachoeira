@@ -1,17 +1,21 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.util.Callback;
-import ru.khasang.cachoeira.controller.IController;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 
 import java.time.LocalDate;
 
 /**
- * Created by truesik on 24.11.2015.
+ * Класс-контроллер для ProjectPropertiesPane.fxml
  */
 public class ProjectPropertiesPaneController {
-    //Информация
+    // Информация
     @FXML
     private TextField nameField;
     @FXML
@@ -21,50 +25,76 @@ public class ProjectPropertiesPaneController {
     @FXML
     private TextArea descriptionTextArea;
 
-    private IController controller;
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener nameFieldFocusListener;
 
     public ProjectPropertiesPaneController() {
     }
 
     @FXML
     private void initialize() {
-        /** Запрет на изменение полей с датами с помощью клавиатуры **/
+        // Запрет на изменение полей с датами с помощью клавиатуры
         startDatePicker.setEditable(false);
         finishDatePicker.setEditable(false);
     }
 
-    /** инциализировать initFields() только после setController() **/
-    public void initFields() {
-        /** Привязываем поля свойств к модели **/
-        nameField.textProperty().bindBidirectional(controller.getProject().nameProperty());
-        startDatePicker.valueProperty().bindBidirectional(controller.getProject().startDateProperty());
-        finishDatePicker.valueProperty().bindBidirectional(controller.getProject().finishDateProperty());
-        descriptionTextArea.textProperty().bindBidirectional(controller.getProject().descriptionProperty());
+    public void initFields(UIControl uiControl) {
+        // Привязываем поля свойств к модели
+//        nameField.textProperty().bindBidirectional(uiControl.getController().getProject().nameProperty());
+        nameField.setText(uiControl.getController().getProject().getName());
+        startDatePicker.valueProperty().bindBidirectional(uiControl.getController().getProject().startDateProperty());
+        finishDatePicker.valueProperty().bindBidirectional(uiControl.getController().getProject().finishDateProperty());
+        descriptionTextArea.textProperty().bindBidirectional(uiControl.getController().getProject().descriptionProperty());
 
-        /** Конечная дата всегда после начальной **/
+        /* Поле наименование */
+        nameField.setOnKeyPressed(keyEvent -> {
+            // Изменения применяем только при нажатии на ENTER...
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                // Если поле не пустое
+                if (!nameField.getText().trim().isEmpty()) {
+                    uiControl.getController().getProject().setName(nameField.getText());
+                    // Убираем фокусировку с поля наименования задачи
+                    nameField.getParent().requestFocus();
+                }
+            }
+            // Если нажали ESC,
+            if (keyEvent.getCode() == KeyCode.ESCAPE) {
+                // то возвращаем предыдущее название
+                nameField.setText(uiControl.getController().getProject().getName());
+                // Убираем фокусировку с поля наименования задачи
+                nameField.getParent().requestFocus();
+            }
+        });
+        // ... или при потере фокуса.
+        nameFieldFocusListener = observable -> {
+            if (!nameField.isFocused()) {
+                // Если поле не пустое, то
+                if (!nameField.getText().trim().isEmpty()) {
+                    // применяем изменения
+                    uiControl.getController().getProject().setName(nameField.getText());
+                } else {
+                    // либо возвращаем предыдущее название
+                    nameField.setText(uiControl.getController().getProject().getName());
+                }
+            }
+        };
+        nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
+
+        // Конечная дата всегда после начальной
         startDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.isEqual(finishDatePicker.getValue()) || newValue.isAfter(finishDatePicker.getValue())) {
                 finishDatePicker.setValue(newValue.plusDays(1));
             }
         });
 
-        finishDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+        finishDatePicker.setDayCellFactory(datePicker -> new DateCell() {
             @Override
-            public DateCell call(DatePicker param) {
-                return new DateCell() {
-                    @Override
-                    public void updateItem(LocalDate item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item.isBefore(startDatePicker.getValue().plusDays(1))) {
-                            setDisable(true);
-                        }
-                    }
-                };
+            public void updateItem(LocalDate finishDate, boolean empty) {
+                super.updateItem(finishDate, empty);
+                if (finishDate.isBefore(startDatePicker.getValue().plusDays(1))) {
+                    setDisable(true);
+                }
             }
         });
-    }
-
-    public void setController(IController controller) {
-        this.controller = controller;
     }
 }

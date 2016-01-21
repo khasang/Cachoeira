@@ -1,14 +1,6 @@
 package ru.khasang.cachoeira.model;
 
 import junit.framework.TestCase;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import ru.khasang.cachoeira.model.Project;
-
-import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by nadezhda on 07.10.2015.

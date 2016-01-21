@@ -11,16 +11,16 @@ import ru.khasang.cachoeira.view.UIControl;
  * Этот класс является точкой входа
  */
 public class Start extends Application {
-    private static final Logger logger = LoggerFactory.getLogger(Start.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Start.class.getName());
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        logger.info("Программа запущена.");
+        LOGGER.debug("Программа запущена.");
         UIControl UIControl = new UIControl();
         UIControl.launchStartWindow();
     }
 
     public static void main(String[] args) {
-        launch(args);
+        Application.launch(args);
     }
 }

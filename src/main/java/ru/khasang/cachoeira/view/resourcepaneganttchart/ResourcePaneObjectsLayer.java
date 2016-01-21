@@ -1,5 +1,7 @@
 package ru.khasang.cachoeira.view.resourcepaneganttchart;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,10 +9,6 @@ import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Класс - слой на котором располагаются объекты диаграммы Ганта на вкладке Ресурсы.
@@ -20,7 +18,9 @@ public class ResourcePaneObjectsLayer extends Pane {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourcePaneObjectsLayer.class.getName());
 
     private UIControl uiControl;
-    private List<ResourcePaneTaskBar> resourcePaneTaskBarList = new ArrayList<>();
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener zoomMultiplierListener;
 
     public ResourcePaneObjectsLayer() {
     }
@@ -30,12 +30,10 @@ public class ResourcePaneObjectsLayer extends Pane {
      */
     public void refreshResourceDiagram() {
         this.getChildren().clear();
-        resourcePaneTaskBarList.clear();
         for (ITask task : uiControl.getController().getProject().getTaskList()) {
             for (IResource resource : task.getResourceList()) {
                 ResourcePaneTaskBar resourcePaneTaskBar = createTaskBar(uiControl, task, resource);
                 this.getChildren().add(resourcePaneTaskBar);
-                resourcePaneTaskBarList.add(resourcePaneTaskBar);
             }
         }
         LOGGER.debug("Диаграмма ресурсов обновлена.");
@@ -51,7 +49,6 @@ public class ResourcePaneObjectsLayer extends Pane {
                            IResource resource) {
         ResourcePaneTaskBar resourcePaneTaskBar = createTaskBar(uiControl, task, resource);
         this.getChildren().add(resourcePaneTaskBar);
-        resourcePaneTaskBarList.add(resourcePaneTaskBar);
         LOGGER.debug("Задача с именем \"{}\" добавлена к ресурсу \"{}\".", task.getName(), resource.getName());
     }
 
@@ -61,15 +58,19 @@ public class ResourcePaneObjectsLayer extends Pane {
      * @param task Задача которая присвоена к метке.
      */
     public void removeTaskBar(ITask task) {
-        Iterator<ResourcePaneTaskBar> taskBarIterator = resourcePaneTaskBarList.iterator();
-        while (taskBarIterator.hasNext()) {
-            ResourcePaneTaskBar resourcePaneTaskBar = taskBarIterator.next();
-            if (resourcePaneTaskBar.getTask().equals(task)) {
-                this.getChildren().remove(resourcePaneTaskBar);
-                taskBarIterator.remove();
-                LOGGER.debug("Задача с именем \"{}\" удалена.", task.getName());
-            }
-        }
+        this.getChildren().removeIf(node -> {
+            ResourcePaneTaskBar taskBar = (ResourcePaneTaskBar) node;
+            return taskBar.getTask().equals(task);
+        });
+        LOGGER.debug("Задача с именем \"{}\" удалена.", task.getName());
+//        Iterator<Node> taskBarIterator = this.getChildren().iterator();
+//        while (taskBarIterator.hasNext()) {
+//            ResourcePaneTaskBar resourcePaneTaskBar = (ResourcePaneTaskBar) taskBarIterator.next();
+//            if (resourcePaneTaskBar.getTask().equals(task)) {
+//                taskBarIterator.remove();
+//                LOGGER.debug("Задача с именем \"{}\" удалена.", task.getName());
+//            }
+//        }
     }
 
     /**
@@ -80,15 +81,11 @@ public class ResourcePaneObjectsLayer extends Pane {
      */
     public void removeTaskBarByResource(ITask task,
                                         IResource resource) {
-        Iterator<ResourcePaneTaskBar> taskBarIterator = resourcePaneTaskBarList.iterator();
-        while (taskBarIterator.hasNext()) {
-            ResourcePaneTaskBar resourcePaneTaskBar = taskBarIterator.next();
-            if (resourcePaneTaskBar.getTask().equals(task) && resourcePaneTaskBar.getResource().equals(resource)) {
-                this.getChildren().remove(resourcePaneTaskBar);
-                taskBarIterator.remove();
-                LOGGER.debug("Задача с именем \"{}\" удалена с диаграммы.", task.getName());
-            }
-        }
+        this.getChildren().removeIf(node -> {
+            ResourcePaneTaskBar resourcePaneTaskBar = (ResourcePaneTaskBar) node;
+            return resourcePaneTaskBar.getTask().equals(task) && resourcePaneTaskBar.getResource().equals(resource);
+        });
+        LOGGER.debug("Задача с именем \"{}\" удалена с диаграммы.", task.getName());
     }
 
     /**
@@ -117,9 +114,8 @@ public class ResourcePaneObjectsLayer extends Pane {
      * @param uiControl Контроллер вью
      */
     public void setListeners(UIControl uiControl) {
-        uiControl.zoomMultiplierProperty().addListener((observable -> {
-            refreshResourceDiagram();
-        }));
+        zoomMultiplierListener = observable -> refreshResourceDiagram();
+        uiControl.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomMultiplierListener));
     }
 
     public void setUIControl(UIControl uiControl) {

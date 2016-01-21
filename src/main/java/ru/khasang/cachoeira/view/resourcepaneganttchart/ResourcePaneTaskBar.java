@@ -4,8 +4,13 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.ListChangeListener;
+import javafx.collections.WeakListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.control.Tooltip;
@@ -46,8 +51,17 @@ public class ResourcePaneTaskBar extends Pane {
 
     private ITask task;
     private IResource resource;
-    private boolean wasMoved;
     private TaskContextMenu taskContextMenu;
+    private boolean wasMovedByMouse = false;
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private ListChangeListener<IResource> resourceListChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChangeListener<LocalDate> startDateChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChangeListener<LocalDate> finishDateChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener hoverListener;
 
     public ResourcePaneTaskBar() {
         this.setPadding(new Insets(0, 0, 5, 0));
@@ -69,7 +83,7 @@ public class ResourcePaneTaskBar extends Pane {
         donePercentRectangle.setFill(Color.valueOf("#0381f4"));
         donePercentRectangle.arcHeightProperty().bind(backgroundRectangle.arcHeightProperty());
         donePercentRectangle.arcWidthProperty().bind(backgroundRectangle.arcWidthProperty());
-        donePercentRectangle.yProperty().bind(backgroundRectangle.yProperty().add(1.25));
+        donePercentRectangle.layoutYProperty().bind(backgroundRectangle.layoutYProperty().add(1.25));
         donePercentRectangle.heightProperty().bind(backgroundRectangle.heightProperty().subtract(2.5));
         //ширина зависит от ширины backgroundRectangle и task.donePercent
         donePercentRectangle.widthProperty().bind(
@@ -138,11 +152,9 @@ public class ResourcePaneTaskBar extends Pane {
                               IResource resource,
                               Rectangle backgroundRectangle,
                               Rectangle donePercentRectangle) {
-        /*
-         Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
-         то пересчитываем индексы у элементов на диаграмме
-         */
-        uiControl.getController().getProject().getResourceList().addListener((ListChangeListener<IResource>) change -> {
+
+
+        resourceListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasRemoved() || change.wasAdded()) {
                     // Анимация при удалении и добавления элемента на диаграмме
@@ -153,43 +165,49 @@ public class ResourcePaneTaskBar extends Pane {
                     timeline.play();
                 }
             }
-        });
-        // Следим за изменением начальной и конечной даты
-        task.startDateProperty().addListener((observable, oldValue, newValue) -> {
-            if (!wasMoved) {
+        };
+        startDateChangeListener = (observable1, oldValue1, newValue1) -> {
+            // ... если эти изменения произошли не спомощью мышки, то...
+            if (!wasMovedByMouse) {
+                // ... меняем положение метки на диаграмме...
                 // Animation
                 Timeline timeline = createTimelineAnimation(
                         this.layoutXProperty(),
                         taskX(
                                 task.getStartDate(),
                                 uiControl.getController().getProject().getStartDate(),
-                                uiControl.getZoomMultiplier()),
-                        400);
+                                uiControl.getZoomMultiplier()
+                        ),
+                        400
+                );
+                Timeline timeline1 = createTimelineAnimation(
+                        backgroundRectangle.widthProperty(),
+                        taskWidth(
+                                task.getStartDate(),
+                                task.getFinishDate(),
+                                uiControl.getZoomMultiplier()
+                        ),
+                        400
+                );
                 timeline.play();
-                /*
-                При изменении начальной даты через свойства, также двигаем конечную дату.
-                Длина прямоугольника при изменении начальной даты должна оставаться неизменной.
-                Также task.setFinishDate(...) оборачиваем в wasMoved, чтобы не сработал листенер конечной даты
-                */
-                wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                task.setFinishDate(task.getStartDate().plusDays(
-                        Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())));
-                wasMoved = false; // Когда окончили движение фолз
+                timeline1.play();
             }
-        });
-        task.finishDateProperty().addListener((observable, oldValue, newValue) -> {
-            if (!wasMoved) {
+        };
+        finishDateChangeListener = (observable, oldValue, newValue) -> {
+            if (!wasMovedByMouse) {
                 // Animation
                 Timeline timeline = createTimelineAnimation(
                         backgroundRectangle.widthProperty(),
-                        taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()),
+                        taskWidth(
+                                task.getStartDate(),
+                                task.getFinishDate(),
+                                uiControl.getZoomMultiplier()
+                        ),
                         400);
                 timeline.play();
             }
-        });
-
-//        подсветка при наведении
-        this.hoverProperty().addListener((observable, oldValue, newValue) -> {
+        };
+        hoverListener = observable -> {
             if (this.isHover()) {
                 backgroundRectangle.setFill(Color.valueOf("03bdf4"));
                 backgroundRectangle.setStroke(Color.valueOf("#03d1f4"));
@@ -199,7 +217,19 @@ public class ResourcePaneTaskBar extends Pane {
                 backgroundRectangle.setStroke(Color.valueOf("#03bdf4"));
                 donePercentRectangle.setFill(Color.valueOf("#0381f4"));
             }
-        });
+        };
+        /*
+         Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
+         то пересчитываем индексы у элементов на диаграмме
+         */
+        uiControl.getController().getProject().getResourceList().addListener(new WeakListChangeListener<>(resourceListChangeListener));
+        // Если начальная дата изменилась, то...
+        task.startDateProperty().addListener(new WeakChangeListener<>(startDateChangeListener));
+        // Если конечная дата изменилась, то...
+        task.finishDateProperty().addListener(new WeakChangeListener<>(finishDateChangeListener));
+
+        // подсветка при наведении // TODO: 15.01.2016 Сделать анимацию
+        this.hoverProperty().addListener(new WeakInvalidationListener(hoverListener));
     }
 
     public void setContextMenu(IController controller,
@@ -229,9 +259,9 @@ public class ResourcePaneTaskBar extends Pane {
      * @param columnWidth         Ширина дня в пикселях (uiControl.getZoomMultiplier())
      */
     private void enableDrag(UIControl uiControl,
-                           ITask task,
-                           Rectangle backgroundRectangle,
-                           int columnWidth) {
+                            ITask task,
+                            Rectangle backgroundRectangle,
+                            int columnWidth) {
         final Delta dragDelta = new Delta();
         final OldRound oldRound = new OldRound();
         backgroundRectangle.setOnMousePressed(event -> {
@@ -240,8 +270,8 @@ public class ResourcePaneTaskBar extends Pane {
             uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(i);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
-                dragDelta.x = getLayoutX() - event.getSceneX();
-                getScene().setCursor(Cursor.MOVE);
+                dragDelta.x = this.getLayoutX() - event.getSceneX();
+                this.getScene().setCursor(Cursor.MOVE);
             }
             // Условие для контекстного меню
             if (event.isSecondaryButtonDown()) {
@@ -255,12 +285,16 @@ public class ResourcePaneTaskBar extends Pane {
                     // Хреначим привязку к сетке
                     if (Math.round(newX / columnWidth) != oldRound.old) {
                         oldRound.old = Math.round(newX / columnWidth);
-                        setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
-                        wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                        this.setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
+                        wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                         task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays(Math.round(newX / columnWidth)));
                         task.setFinishDate(task.getStartDate().plusDays(Math.round(this.getWidth() / columnWidth)));
-                        wasMoved = false; // Когда окончили движение фолз
-                        LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {} и дату окончания на {}.", task.getName(), task.getStartDate(), task.getFinishDate());
+                        wasMovedByMouse = false; // Когда окончили движение фолз
+                        LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {} и дату окончания на {}.",
+                                task.getName(),
+                                task.getStartDate(),
+                                task.getFinishDate()
+                        );
                     }
                 }
             }
@@ -291,9 +325,9 @@ public class ResourcePaneTaskBar extends Pane {
      * @param columnWidth         Ширина дня в пикселях (uiControl.getZoomMultiplier())
      */
     private void enableResize(UIControl uiControl,
-                             ITask task,
-                             Rectangle backgroundRectangle,
-                             int columnWidth) {
+                              ITask task,
+                              Rectangle backgroundRectangle,
+                              int columnWidth) {
         // Создаем прозрачный прямоугольник шириной 10 пикселей
         Rectangle leftResizeHandle = new Rectangle();
         this.getChildren().add(leftResizeHandle);
@@ -304,7 +338,7 @@ public class ResourcePaneTaskBar extends Pane {
         leftResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
         leftResizeHandle.yProperty().bind(backgroundRectangle.yProperty());
         // При наведении на левую сторону таскбара будет меняться курсор
-        leftResizeHandle.hoverProperty().addListener((observable, oldValue, newValue) -> {
+        leftResizeHandle.hoverProperty().addListener(observable -> {
             if (leftResizeHandle.isHover()) {
                 getScene().setCursor(Cursor.H_RESIZE);
             } else {
@@ -321,8 +355,8 @@ public class ResourcePaneTaskBar extends Pane {
             uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(i);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
-                dragDeltaLeft.x = getLayoutX() - event.getSceneX();
-                getScene().setCursor(Cursor.H_RESIZE);
+                dragDeltaLeft.x = this.getLayoutX() - event.getSceneX();
+                this.getScene().setCursor(Cursor.H_RESIZE);
             }
         });
         // Ивент при движении прямоугольника
@@ -335,12 +369,15 @@ public class ResourcePaneTaskBar extends Pane {
                         if (!(Math.round(newX / columnWidth) * columnWidth - 1.5 == getLayoutX() + backgroundRectangle.getWidth())) { // Условие против нулевой длины тасбара
                             oldRoundLeft.old = Math.round(newX / columnWidth);
                             double oldX = getLayoutX();
-                            setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
+                            this.setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
                             backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (getLayoutX() - oldX));
-                            wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                            wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                             task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / columnWidth))));
-                            wasMoved = false; // Когда окончили движение фолз
-                            LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {}.", task.getName(), task.getStartDate());
+                            wasMovedByMouse = false; // Когда окончили движение фолз
+                            LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {}.",
+                                    task.getName(),
+                                    task.getStartDate()
+                            );
                         }
                     }
                 }
@@ -348,7 +385,7 @@ public class ResourcePaneTaskBar extends Pane {
         });
         leftResizeHandle.setOnMouseReleased(event -> {
             if (!event.isPrimaryButtonDown()) {
-                getScene().setCursor(Cursor.DEFAULT);
+                this.getScene().setCursor(Cursor.DEFAULT);
             }
         });
 
@@ -358,11 +395,15 @@ public class ResourcePaneTaskBar extends Pane {
         rightResizeHandle.setFill(Color.TRANSPARENT);
         rightResizeHandle.setWidth(10);
         // Привязываем этот прямоугольник к правой стороне таскбара
-        rightResizeHandle.xProperty().bind(backgroundRectangle.xProperty().add(backgroundRectangle.widthProperty()).subtract(10));
+        rightResizeHandle.xProperty().bind(
+                backgroundRectangle.xProperty()
+                        .add(backgroundRectangle.widthProperty())
+                        .subtract(rightResizeHandle.widthProperty())
+        );
         rightResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
         rightResizeHandle.yProperty().bind(backgroundRectangle.yProperty());
         // При наведении на левую сторону таскбара будет меняться курсор
-        rightResizeHandle.hoverProperty().addListener((observable, oldValue, newValue) -> {
+        rightResizeHandle.hoverProperty().addListener(observable -> {
             if (rightResizeHandle.isHover()) {
                 getScene().setCursor(Cursor.H_RESIZE);
             } else {
@@ -389,13 +430,16 @@ public class ResourcePaneTaskBar extends Pane {
                 double newWidth = event.getSceneX() + dragDeltaRight.x;
                 if (newWidth >= columnWidth && this.getLayoutX() + newWidth <= this.getParent().getBoundsInLocal().getWidth()) {
                     // Хреначим привязку к сетке
-                    if (Math.round(newWidth / columnWidth)!= oldRoundRight.old) {
+                    if (Math.round(newWidth / columnWidth) != oldRoundRight.old) {
                         oldRoundRight.old = Math.round(newWidth / columnWidth);
                         backgroundRectangle.setWidth(Math.round(newWidth / columnWidth) * columnWidth);
-                        wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                        wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                         task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / columnWidth)));
-                        wasMoved = false; // Когда окончили движение фолз
-                        LOGGER.debug("Задача с именем \"{}\" изменила дату окончания на {}.", task.getName(), task.getFinishDate());
+                        wasMovedByMouse = false; // Когда окончили движение фолз
+                        LOGGER.debug("Задача с именем \"{}\" изменила дату окончания на {}.",
+                                task.getName(),
+                                task.getFinishDate()
+                        );
                     }
                 }
             }

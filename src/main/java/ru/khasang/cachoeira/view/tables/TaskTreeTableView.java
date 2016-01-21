@@ -1,10 +1,12 @@
 package ru.khasang.cachoeira.view.tables;
 
-import com.sun.javafx.scene.control.skin.*;
+import com.sun.javafx.scene.control.skin.TreeTableViewSkin;
+import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Skin;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.view.UIControl;
@@ -62,18 +64,19 @@ public class TaskTreeTableView<S> extends TreeTableView<S> {
         public TaskTreeTableViewSkin(TreeTableView<T> tableView) {
             super(tableView);
             // Выцепляем скроллы
-            for (Node child : flow.getChildrenUnmodifiable()) {
-                if (child instanceof VirtualScrollBar) {
-                    if (((VirtualScrollBar) child).getOrientation() == Orientation.VERTICAL) {
-                        verticalScrollBar = (VirtualScrollBar) child;
-                        LOGGER.debug("Найден вертикальный скролл таблицы.");
-                    }
-                    if (((VirtualScrollBar) child).getOrientation() == Orientation.HORIZONTAL) {
-                        horizontalScrollBar = (VirtualScrollBar) child;
-                        LOGGER.debug("Найден горизонтальный скролл таблицы.");
-                    }
-                }
-            }
+            flow.getChildrenUnmodifiable()
+                    .parallelStream()
+                    .filter(child -> child instanceof VirtualScrollBar)
+                    .forEach(child -> {
+                        if (((VirtualScrollBar) child).getOrientation() == Orientation.VERTICAL) {
+                            verticalScrollBar = (VirtualScrollBar) child;
+                            LOGGER.debug("Найден вертикальный скролл таблицы.");
+                        }
+                        if (((VirtualScrollBar) child).getOrientation() == Orientation.HORIZONTAL) {
+                            horizontalScrollBar = (VirtualScrollBar) child;
+                            LOGGER.debug("Найден горизонтальный скролл таблицы.");
+                        }
+                    });
         }
     }
 }

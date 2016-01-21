@@ -4,11 +4,15 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.ListChangeListener;
+import javafx.collections.WeakListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
-import javafx.scene.control.*;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -46,8 +50,19 @@ public class TaskPaneTaskBar extends Pane {
 
     private ITask task;
     private int rowIndex;                        //координата Y (строка задачи)
-    private boolean wasMoved;
     private TaskContextMenu taskContextMenu;
+    private boolean wasMovedByMouse = false;
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private ListChangeListener<ITask> taskListChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChangeListener<LocalDate> startDateChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChangeListener<LocalDate> finishDateChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ListChangeListener<IResource> resourceListChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener hoverListener;
 
     public TaskPaneTaskBar() {
         this.setPadding(new Insets(0, 0, 5, 0));
@@ -68,7 +83,7 @@ public class TaskPaneTaskBar extends Pane {
         donePercentRectangle.setFill(Color.valueOf("#0381f4"));
         donePercentRectangle.arcHeightProperty().bind(backgroundRectangle.arcHeightProperty());
         donePercentRectangle.arcWidthProperty().bind(backgroundRectangle.arcWidthProperty());
-        donePercentRectangle.yProperty().bind(backgroundRectangle.yProperty().add(1.25));
+        donePercentRectangle.layoutYProperty().bind(backgroundRectangle.layoutYProperty().add(1.25));
         donePercentRectangle.heightProperty().bind(backgroundRectangle.heightProperty().subtract(2.5));
         //ширина зависит от ширины backgroundRectangle и task.donePercent
         donePercentRectangle.widthProperty().bind(
@@ -136,13 +151,9 @@ public class TaskPaneTaskBar extends Pane {
                               ITask task,
                               Rectangle backgroundRectangle,
                               Rectangle donePercentRectangle) {
-        /*
-         Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
-         то пересчитываем индексы у элементов на диаграмме
-         */
-        uiControl.getController().getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> {
-            while (c.next()) {
-                if (c.wasRemoved() || c.wasAdded()) {
+        taskListChangeListener = change -> {
+            while (change.next()) {
+                if (change.wasRemoved() || change.wasAdded()) {
                     // Анимация при удалении и добавления элемента на диаграмме
                     Timeline timeline = createTimelineAnimation(
                             this.layoutYProperty(),
@@ -151,57 +162,66 @@ public class TaskPaneTaskBar extends Pane {
                     timeline.play();
                 }
             }
-        });
-        // Следим за изменением начальной и конечной даты
-        task.startDateProperty().addListener((observable, oldValue, newValue) -> {
-            if (!wasMoved) {
+        };
+        startDateChangeListener = (observable, oldValue, newValue) -> {
+            // ... если эти изменения произошли не спомощью мышки, то...
+            if (!wasMovedByMouse) {
+                // ... меняем положение метки на диаграмме...
                 // Animation
                 Timeline timeline = createTimelineAnimation(
                         this.layoutXProperty(),
                         taskX(
                                 task.getStartDate(),
                                 uiControl.getController().getProject().getStartDate(),
-                                uiControl.getZoomMultiplier()),
-                        400);
+                                uiControl.getZoomMultiplier()
+                        ),
+                        400
+                );
+                Timeline timeline1 = createTimelineAnimation(
+                        backgroundRectangle.widthProperty(),
+                        taskWidth(
+                                task.getStartDate(),
+                                task.getFinishDate(),
+                                uiControl.getZoomMultiplier()
+                        ),
+                        400
+                );
                 timeline.play();
-                /*
-                При изменении начальной даты через свойства, также двигаем конечную дату.
-                Длина прямоугольника при изменении начальной даты должна оставаться неизменной.
-                Также task.setFinishDate(...) оборачиваем в wasMoved, чтобы не сработал листенер конечной даты
-                */
-                wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                task.setFinishDate(task.getStartDate().plusDays(
-                        Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())));
-                wasMoved = false; // Когда окончили движение фолз
+                timeline1.play();
             }
-        });
-        task.finishDateProperty().addListener((observable, oldValue, newValue) -> {
-            if (!wasMoved) {
+        };
+        finishDateChangeListener = (observable, oldValue, newValue) -> {
+            if (!wasMovedByMouse) {
                 // Animation
                 Timeline timeline = createTimelineAnimation(
                         backgroundRectangle.widthProperty(),
-                        taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()),
-                        400);
+                        taskWidth(
+                                task.getStartDate(),
+                                task.getFinishDate(),
+                                uiControl.getZoomMultiplier()
+                        ),
+                        400
+                );
                 timeline.play();
             }
-        });
-
-        // Следим за списком ресурсов привязанных к данной задаче/
-        task.getResourceList().addListener((ListChangeListener<IResource>) change -> {
+        };
+        resourceListChangeListener = change -> {
             while (change.next()) {
                 // Если добавился
-                for (IResource resource : change.getAddedSubList()) {
-                    uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().addTaskBar(task, resource);
+                if (change.wasAdded()) {
+                    for (IResource resource : change.getAddedSubList()) {
+                        uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().addTaskBar(task, resource);
+                    }
                 }
                 // Если удалился
-                for (IResource resource : change.getRemoved()) {
-                    uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().removeTaskBarByResource(task, resource);
+                if (change.wasRemoved()) {
+                    for (IResource resource : change.getRemoved()) {
+                        uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().removeTaskBarByResource(task, resource);
+                    }
                 }
             }
-        });
-
-        //подсветка при наведении
-        this.hoverProperty().addListener((observable, oldValue, newValue) -> {
+        };
+        hoverListener = observable -> {
             if (this.isHover()) {
                 backgroundRectangle.setFill(Color.valueOf("03bdf4"));
                 backgroundRectangle.setStroke(Color.valueOf("#03d1f4"));
@@ -211,7 +231,20 @@ public class TaskPaneTaskBar extends Pane {
                 backgroundRectangle.setStroke(Color.valueOf("#03bdf4"));
                 donePercentRectangle.setFill(Color.valueOf("#0381f4"));
             }
-        });
+        };
+        /*
+         Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
+         то пересчитываем индексы у элементов на диаграмме
+         */
+        uiControl.getController().getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListChangeListener));
+        // Если начальная дата изменилась, то...
+        task.startDateProperty().addListener(new WeakChangeListener<>(startDateChangeListener));
+        // Если конечная дата изменилась, то...
+        task.finishDateProperty().addListener(new WeakChangeListener<>(finishDateChangeListener));
+        // Следим за списком ресурсов привязанных к данной задаче/
+        task.getResourceList().addListener(new WeakListChangeListener<>(resourceListChangeListener));
+        //подсветка при наведении // TODO: 15.01.2016 Сделать анимацию
+        this.hoverProperty().addListener(hoverListener);
     }
 
     public void setContextMenu(IController controller,
@@ -243,7 +276,7 @@ public class TaskPaneTaskBar extends Pane {
             uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(rowIndex);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
-                dragDelta.x = getLayoutX() - event.getSceneX();
+                dragDelta.x = this.getLayoutX() - event.getSceneX();
                 getScene().setCursor(Cursor.MOVE);
             }
             // Условие для контекстного меню
@@ -259,11 +292,23 @@ public class TaskPaneTaskBar extends Pane {
                     if (Math.round(newX / columnWidth) != oldRound.old) {
                         oldRound.old = Math.round(newX / columnWidth);
                         this.setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
-                        wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                        task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays(Math.round(newX / columnWidth)));
-                        task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / columnWidth)));
-                        wasMoved = false; // Когда окончили движение фолз
-                        LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {} и дату окончания на {}.", task.getName(), task.getStartDate(), task.getFinishDate());
+                        wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                        task.setStartDate(
+                                uiControl.getController().getProject().getStartDate().plusDays(
+                                        Math.round(newX / columnWidth)
+                                )
+                        );
+                        task.setFinishDate(
+                                task.getStartDate().plusDays(
+                                        Math.round(backgroundRectangle.getWidth() / columnWidth)
+                                )
+                        );
+                        wasMovedByMouse = false; // Когда окончили движение фолз
+                        LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {} и дату окончания на {}.",
+                                task.getName(),
+                                task.getStartDate(),
+                                task.getFinishDate()
+                        );
                     }
                 }
             }
@@ -307,7 +352,7 @@ public class TaskPaneTaskBar extends Pane {
         leftResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
         leftResizeHandle.yProperty().bind(backgroundRectangle.yProperty());
         // При наведении на левую сторону таскбара будет меняться курсор
-        leftResizeHandle.hoverProperty().addListener((observable, oldValue, newValue) -> {
+        leftResizeHandle.hoverProperty().addListener(observable -> {
             if (leftResizeHandle.isHover()) {
                 getScene().setCursor(Cursor.H_RESIZE);
             } else {
@@ -339,10 +384,13 @@ public class TaskPaneTaskBar extends Pane {
                             double oldX = getLayoutX();
                             this.setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
                             backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (this.getLayoutX() - oldX));
-                            wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                            wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                             task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / columnWidth))));
-                            wasMoved = false; // Когда окончили движение фолз
-                            LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {}.", task.getName(), task.getStartDate());
+                            wasMovedByMouse = false; // Когда окончили движение фолз
+                            LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {}.",
+                                    task.getName(),
+                                    task.getStartDate()
+                            );
                         }
                     }
                 }
@@ -360,11 +408,15 @@ public class TaskPaneTaskBar extends Pane {
         rightResizeHandle.setFill(Color.TRANSPARENT);
         rightResizeHandle.setWidth(10);
         // Привязываем этот прямоугольник к правой стороне таскбара
-        rightResizeHandle.xProperty().bind(backgroundRectangle.xProperty().add(backgroundRectangle.widthProperty()).subtract(rightResizeHandle.widthProperty()));
+        rightResizeHandle.xProperty().bind(
+                backgroundRectangle.xProperty()
+                        .add(backgroundRectangle.widthProperty())
+                        .subtract(rightResizeHandle.widthProperty())
+        );
         rightResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
         rightResizeHandle.yProperty().bind(backgroundRectangle.yProperty());
         // При наведении на левую сторону таскбара будет меняться курсор
-        rightResizeHandle.hoverProperty().addListener((observable, oldValue, newValue) -> {
+        rightResizeHandle.hoverProperty().addListener(observable -> {
             if (rightResizeHandle.isHover()) {
                 getScene().setCursor(Cursor.H_RESIZE);
             } else {
@@ -393,10 +445,13 @@ public class TaskPaneTaskBar extends Pane {
                     if (Math.round(newWidth / columnWidth) != oldRoundRight.old) {
                         oldRoundRight.old = Math.round(newWidth / columnWidth);
                         backgroundRectangle.setWidth(Math.round(newWidth / columnWidth) * columnWidth);
-                        wasMoved = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
+                        wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                         task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / columnWidth)));
-                        wasMoved = false; // Когда окончили движение фолз
-                        LOGGER.debug("Задача с именем \"{}\" изменила дату окончания на {}.", task.getName(), task.getFinishDate());
+                        wasMovedByMouse = false; // Когда окончили движение фолз
+                        LOGGER.debug("Задача с именем \"{}\" изменила дату окончания на {}.",
+                                task.getName(),
+                                task.getFinishDate()
+                        );
                     }
                 }
             }

@@ -5,7 +5,6 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * Created by nadezhda on 07.10.2015.

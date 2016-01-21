@@ -4,20 +4,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.VBox;
-import ru.khasang.cachoeira.controller.IController;
 
 import java.io.IOException;
 
-/**
- * Created by truesik on 25.11.2015.
- */
 public class DiagramPaneController {
     @FXML
     private Tab taskTab;
     @FXML
     private Tab resourceTab;
 
-    private IController controller;
     private UIControl uiControl;
     private ResourcePaneController resourcePaneController;
     private TaskPaneController taskPaneController;
@@ -34,10 +29,11 @@ public class DiagramPaneController {
 
             resourcePaneController = loader.getController();
             resourcePaneController.setUIControl(uiControl);
-            resourcePaneController.initResourceTable();
-            resourcePaneController.initContextMenus();
-            resourcePaneController.initGanttChart();
-            resourcePaneController.initZoom();
+            resourcePaneController.initResourceTable(uiControl);
+            resourcePaneController.initContextMenus(uiControl);
+            resourcePaneController.initGanttChart(uiControl);
+            resourcePaneController.setListeners(uiControl);
+            resourcePaneController.initZoom(uiControl);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,17 +48,14 @@ public class DiagramPaneController {
 
             taskPaneController = loader.getController();
             taskPaneController.setUIControl(uiControl);
-            taskPaneController.initTaskTable();
-            taskPaneController.initContextMenus();
-            taskPaneController.initGanttChart();
-            taskPaneController.initZoom();
+            taskPaneController.initTaskTable(uiControl);
+            taskPaneController.initContextMenus(uiControl);
+            taskPaneController.initGanttChart(uiControl);
+            taskPaneController.setListeners(uiControl);
+            taskPaneController.initZoom(uiControl);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void setController(IController controller) {
-        this.controller = controller;
     }
 
     public void setUIControl(UIControl uiControl) {

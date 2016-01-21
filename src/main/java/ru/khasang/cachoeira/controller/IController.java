@@ -17,46 +17,46 @@ public interface IController {
 
     void handleChangeProject(IProject project);
 
-    void notifyChangeProject(IProject project);
-    //добавил:
     void handleAddTask(ITask task);
-
-    void notifyAddTask(ITask task);
 
     void handleRemoveTask(ITask task);
 
-    void notifyRemoveTask(ITask task);
-    //добавил:
-    void handleChangeTask(String taskNameField, LocalDate taskStartDate, LocalDate taskFinishDate, Double taskCost, double taskDonePercent, PriorityType taskPriorityType, ObservableList<IResource> resources);
+    void handleChangeTask(ITask task,
+                          String taskNameField,
+                          LocalDate taskStartDate,
+                          LocalDate taskFinishDate,
+                          int duration,
+                          Double taskCost,
+                          double taskDonePercent,
+                          PriorityType taskPriorityType,
+                          ObservableList<IResource> resources);
 
-    void notifyChangeTask(ITask task);
-
-    //мои добавки
     ITask getSelectedTask();
 
     void setSelectedTask(ITask task);
 
-    void handleAddResource(IResource resource);
+    ObjectProperty<ITask> selectedTaskProperty();
 
-    void notifyAddResource(IResource resource);
+    void handleAddResource(IResource resource);
 
     void handleRemoveResource(IResource resource);
 
-    void notifyRemoveResource(IResource resource);
-
-    void handleChangeResource(String resourceName, String email, ResourceType type, List<ITask> tasks);
-
-    void notifyChangeResource(IResource resource);
+    void handleChangeResource(IResource resource,
+                              String resourceName,
+                              String email,
+                              ResourceType type,
+                              List<ITask> tasks);
 
     IResource getSelectedResource();
 
     void setSelectedResource(IResource resource);
 
-    void notifyAddProject(String projectName, LocalDate startDate, LocalDate finishDate, String description);
+    ObjectProperty<IResource> selectedResourceProperty();
+
+    void handleAddProject(String projectName,
+                          LocalDate startDate,
+                          LocalDate finishDate,
+                          String description);
 
     void setProject(IProject project);
-
-    ObjectProperty<ITask> selectedTaskProperty();
-
-    ObjectProperty<IResource> selectedResourceProperty();
 }

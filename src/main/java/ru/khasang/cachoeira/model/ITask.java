@@ -23,15 +23,21 @@ public interface ITask {
 
     LocalDate getStartDate();
 
-    void setStartDate(LocalDate start);
+    void setStartDate(LocalDate startDate);
 
     ObjectProperty<LocalDate> startDateProperty();
 
     LocalDate getFinishDate();
 
-    void setFinishDate(LocalDate finish);
+    void setFinishDate(LocalDate finishDate);
 
     ObjectProperty<LocalDate> finishDateProperty();
+
+    int getDuration();
+
+    IntegerProperty durationProperty();
+
+    void setDuration(int duration);
 
     int getDonePercent();
 

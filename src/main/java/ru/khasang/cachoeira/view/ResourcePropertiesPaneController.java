@@ -1,23 +1,26 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.WeakListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
-import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.ResourceType;
 
 /**
- * Created by truesik on 24.11.2015.
+ * Класс-контроллер для ResourcePropertiesPane.fxml
  */
 public class ResourcePropertiesPaneController {
-    //Информация
+    // Информация
     @FXML
     private VBox propertiesPane;
     @FXML
@@ -29,7 +32,7 @@ public class ResourcePropertiesPaneController {
     @FXML
     private TextArea descriptionTextArea;
 
-    //Привязанные задачи
+    // Привязанные задачи
     @FXML
     private TableView<ITask> taskTableView;
     @FXML
@@ -37,92 +40,128 @@ public class ResourcePropertiesPaneController {
     @FXML
     private TableColumn<ITask, Boolean> taskCheckboxColumn;
 
-    private IController controller;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChangeListener<IResource> selectedResourceListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ListChangeListener<ITask> taskListListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener nameFieldFocusListener;
 
     public ResourcePropertiesPaneController() {
     }
 
-    public void setController(IController controller) {
-        this.controller = controller;
-    }
-
-    public void initFields() {
-        /** Заполняем выпадающий список **/
+    public void initFields(UIControl uiControl) {
+        // Заполняем выпадающий список
         ObservableList<ResourceType> resourceTypesModel = FXCollections.observableArrayList(ResourceType.values());
         resourceTypeComboBox.setItems(resourceTypesModel);
+        // Делаем панель не активной, если ресурс не выбран
+        propertiesPane.disableProperty().bind(uiControl.getController().selectedResourceProperty().isNull());
 
-        /** Делаем панель не активной, если ресурс не выбран **/
-        propertiesPane.disableProperty().bind(controller.selectedResourceProperty().isNull());
-
-        controller.selectedResourceProperty().addListener((observable, oldValue, newValue) -> {
-            /** Прежде чем привязать поля свойств нового ресурса необходимо отвязать поля предыдущего ресурса (если такой был) **/
-            if (oldValue != null) {
-                nameField.textProperty().unbindBidirectional(oldValue.nameProperty());
-                emailField.textProperty().unbindBidirectional(oldValue.emailProperty());
-                resourceTypeComboBox.valueProperty().unbindBidirectional(oldValue.resourceTypeProperty());
-                descriptionTextArea.textProperty().unbindBidirectional(oldValue.descriptionProperty());
+        /* Поле наименование */
+        nameField.setOnKeyPressed(keyEvent -> {
+            // Изменения применяем только при нажатии на ENTER...
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                // Если поле не пустое
+                if (!nameField.getText().trim().isEmpty()) {
+                    uiControl.getController().getSelectedResource().setName(nameField.getText());
+                    // Убираем фокусировку с поля наименования задачи
+                    nameField.getParent().requestFocus();
+                }
             }
-            /** Привязываем поля свойств к модели **/
-            if (newValue != null) {
-                nameField.textProperty().bindBidirectional(newValue.nameProperty());
-                emailField.textProperty().bindBidirectional(newValue.emailProperty());
-                resourceTypeComboBox.valueProperty().bindBidirectional(newValue.resourceTypeProperty());
-                descriptionTextArea.textProperty().bindBidirectional(newValue.descriptionProperty());
+            // Если нажали ESC,
+            if (keyEvent.getCode() == KeyCode.ESCAPE) {
+                // то возвращаем предыдущее название
+                nameField.setText(uiControl.getController().getSelectedResource().getName());
+                // Убираем фокусировку с поля наименования задачи
+                nameField.getParent().requestFocus();
             }
         });
+        // ... или при потере фокуса.
+        nameFieldFocusListener = observable -> {
+            if (!nameField.isFocused()) {
+                // Если поле не пустое, то
+                if (!nameField.getText().trim().isEmpty()) {
+                    // применяем изменения
+                    uiControl.getController().getSelectedResource().setName(nameField.getText());
+                } else {
+                    // либо возвращаем предыдущее название
+                    nameField.setText(uiControl.getController().getSelectedResource().getName());
+                }
+            }
+        };
+        nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
     }
 
     /**
      * Заполняем таблицу с привязанными задачами
      */
-    public void initTaskTable() {
-        taskTableView.setItems(controller.getProject().getTaskList());
-        taskNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
-        controller.selectedResourceProperty().addListener((observable, oldValue, newValue) -> initCheckBoxColumn());
-        /** Не понимаю, что тут происходит, но работает */
-        controller.getProject().getTaskList().addListener((ListChangeListener<ITask>) c -> initCheckBoxColumn());
+    public void initAssignmentTaskTable(UIControl uiControl) {
+        taskTableView.setItems(uiControl.getController().getProject().getTaskList());
+        taskNameColumn.setCellValueFactory(cell -> cell.getValue().nameProperty());
     }
 
-    public void initCheckBoxColumn() {
-        taskCheckboxColumn.setCellFactory(new Callback<TableColumn<ITask, Boolean>, TableCell<ITask, Boolean>>() {
-            @Override
-            public TableCell<ITask, Boolean> call(TableColumn<ITask, Boolean> param) {
-                return new TableCell<ITask, Boolean>() {
-                    @Override
-                    public void updateItem(Boolean item, boolean empty) {
-                        super.updateItem(item, empty);
-                        setAlignment(Pos.CENTER);
-                        TableRow<ITask> currentRow = getTableRow();
-                        if (empty) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                            /** Заполняем столбец чек-боксами **/
-                            CheckBox checkBox = new CheckBox();
-                            setGraphic(checkBox);
-                            checkBox.setOnAction(event -> {
-                                if (checkBox.isSelected()) {
-                                    currentRow.getItem().addResource(controller.selectedResourceProperty().getValue());
-                                } else {
-                                    currentRow.getItem().removeResource(controller.selectedResourceProperty().getValue());
-                                }
-                            });
+    public void setListeners(UIControl uiControl) {
+        taskListListener = change -> initCheckBoxColumn(uiControl.getController().getSelectedResource());
+        selectedResourceListener = (observable, oldSelectedResource, newSelectedResource) -> {
+            // Прежде чем привязать поля свойств нового ресурса необходимо отвязать поля предыдущего ресурса
+            // (если такой был)
+            if (oldSelectedResource != null) {
+//                nameField.textProperty().unbindBidirectional(oldSelectedResource.nameProperty());
+                emailField.textProperty().unbindBidirectional(oldSelectedResource.emailProperty());
+                resourceTypeComboBox.valueProperty().unbindBidirectional(oldSelectedResource.resourceTypeProperty());
+                descriptionTextArea.textProperty().unbindBidirectional(oldSelectedResource.descriptionProperty());
+            }
+            // Привязываем поля свойств к модели
+            if (newSelectedResource != null) {
+//                nameField.textProperty().bindBidirectional(newSelectedResource.nameProperty());
+                nameField.setText(newSelectedResource.getName());
+                emailField.textProperty().bindBidirectional(newSelectedResource.emailProperty());
+                resourceTypeComboBox.valueProperty().bindBidirectional(newSelectedResource.resourceTypeProperty());
+                descriptionTextArea.textProperty().bindBidirectional(newSelectedResource.descriptionProperty());
+            }
+            // Если выбрали другой ресурс перерисовываем таблицу привязанных задач
+            initCheckBoxColumn(uiControl.getController().getSelectedResource());
+        };
 
-                            /** Расставляем галочки на нужных строках **/
-                            if (currentRow.getItem() != null) {
-                                for (IResource resource : currentRow.getItem().getResourceList()) {
-                                    if (controller.selectedResourceProperty().getValue().equals(resource)) {
-                                        checkBox.selectedProperty().setValue(Boolean.TRUE);
-                                        break;
-                                    } else {
-                                        checkBox.selectedProperty().setValue(Boolean.FALSE);
-                                    }
-                                }
+        // TODO: 18.01.2016 Разобраться почему не работает с WeakChangeListener'ом, при том что абсолютно такая же хрень в TaskPropertiesPaneController работает как часы.
+        uiControl.getController().selectedResourceProperty().addListener((selectedResourceListener));
+        // Если обновляется список задач, то обновляем таблицу
+        uiControl.getController().getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListListener));
+    }
+
+    public void initCheckBoxColumn(IResource selectedResource) {
+        if (selectedResource != null) {
+            taskCheckboxColumn.setCellFactory(column -> new TableCell<ITask, Boolean>() {
+                @Override
+                protected void updateItem(Boolean item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setAlignment(Pos.CENTER);
+                    ITask currentRowTask = (ITask) getTableRow().getItem();
+                    if (empty) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        // Заполняем столбец чек-боксами
+                        CheckBox checkBox = new CheckBox();
+                        setGraphic(checkBox);
+                        checkBox.setOnAction(event -> {
+                            if (checkBox.isSelected()) {
+                                currentRowTask.addResource(selectedResource);
+                            } else {
+                                currentRowTask.removeResource(selectedResource);
                             }
+                        });
+
+                        // Расставляем галочки на нужных строках
+                        if (currentRowTask != null) {
+                            currentRowTask.getResourceList()
+                                    .stream()
+                                    .filter(resource -> selectedResource.equals(resource) && !checkBox.isSelected())
+                                    .forEach(resource -> checkBox.setSelected(true));
                         }
                     }
-                };
-            }
-        });
+                }
+            });
+        }
     }
 }

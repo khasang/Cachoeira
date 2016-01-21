@@ -1,6 +1,7 @@
 package ru.khasang.cachoeira.view.rowfactories;
 
-import javafx.scene.control.*;
+import javafx.scene.control.TreeTableRow;
+import javafx.scene.control.TreeTableView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -13,10 +14,10 @@ import ru.khasang.cachoeira.view.contextmenus.TaskContextMenu;
 import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
 
 /**
- * Created by truesik on 18.11.2015.
+ * Класс отвечающий за дополнительные фичи (контекстное меню, всплывающие подсказки, изменение порядка элементов с
+ * помощью мышки) для каждой строки таблицы Задач.
  */
 public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask>, TreeTableRow<ITask>> {
-
     private TaskPaneController taskPaneController;
     private IController controller;
 
@@ -28,7 +29,7 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
     @Override
     public TreeTableRow<ITask> call(TreeTableView<ITask> param) {
         TreeTableRow<ITask> row = new TreeTableRow<ITask>() {
-            /** Tooltip & Context Menu */
+            /* Tooltip & Context Menu */
             TaskTooltip taskTooltip = new TaskTooltip();
             TaskContextMenu taskContextMenu = new TaskContextMenu();
 
@@ -47,7 +48,7 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
             }
         };
 
-        /**Drag & Drop **/
+        /* Drag & Drop */
         row.setOnDragDetected(event -> {
             if (!row.isEmpty()) {
                 Dragboard db = row.startDragAndDrop(TransferMode.MOVE);

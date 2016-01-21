@@ -1,13 +1,15 @@
 package ru.khasang.cachoeira.model;
 
 import javafx.beans.Observable;
-import javafx.beans.property.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * Created by nadezhda on 07.10.2015.
@@ -20,27 +22,29 @@ public class Project implements IProject {
     private StringProperty description = new SimpleStringProperty(this, "description");
     private ObservableList<ITask> tasks = FXCollections.observableArrayList(new Callback<ITask, Observable[]>() {
         @Override
-        public Observable[] call(ITask param) {
+        public Observable[] call(ITask task) {
             return new Observable[] {
-                    param.nameProperty(),
-                    param.startDateProperty(),
-                    param.finishDateProperty(),
-                    param.donePercentProperty(),
-                    param.priorityTypeProperty(),
-                    param.costProperty(),
-                    param.getDependentTasks(),
-                    param.groupProperty(),
-                    param.getResourceList()
+                    task.nameProperty(),
+                    task.startDateProperty(),
+                    task.finishDateProperty(),
+                    task.donePercentProperty(),
+                    task.priorityTypeProperty(),
+                    task.costProperty(),
+                    task.getDependentTasks(),
+                    task.groupProperty(),
+                    task.getResourceList(),
+                    task.descriptionProperty()
             };
         }
     });
     private ObservableList<IResource> resources = FXCollections.observableArrayList(new Callback<IResource, Observable[]>() {
         @Override
-        public Observable[] call(IResource param) {
+        public Observable[] call(IResource resource) {
             return new Observable[] {
-                    param.nameProperty(),
-                    param.resourceTypeProperty(),
-                    param.emailProperty()
+                    resource.nameProperty(),
+                    resource.resourceTypeProperty(),
+                    resource.emailProperty(),
+                    resource.descriptionProperty()
             };
         }
     });

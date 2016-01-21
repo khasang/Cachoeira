@@ -5,14 +5,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import ru.khasang.cachoeira.controller.IController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 /**
- * Created by truesik on 25.11.2015.
+ * Класс-контроллер для PropertiesPanel.fxml
  */
 public class PropertiesPanelController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesPanelController.class.getName());
+
     @FXML
     private Tab projectPropertiesTab;
     @FXML
@@ -20,7 +23,6 @@ public class PropertiesPanelController {
     @FXML
     private Tab resourcePropertiesTab;
 
-    private IController controller;
     private UIControl uiControl;
 
     public PropertiesPanelController() {
@@ -33,6 +35,9 @@ public class PropertiesPanelController {
         resourcePropertiesTab.setGraphic(new ImageView(getClass().getResource("/img/ic_resource.png").toExternalForm()));
     }
 
+    /**
+     * Метод инициализирует вкладки "Проект", "Задача", "Ресурс".
+     */
     public void initTabs() {
         initProjectPropertiesPane();
         initTaskPropertiesPane();
@@ -46,11 +51,12 @@ public class PropertiesPanelController {
             resourcePropertiesTab.setContent(resourceProperties);
 
             ResourcePropertiesPaneController resourcePropertiesPaneController = loader.getController();
-            resourcePropertiesPaneController.setController(controller);
-            resourcePropertiesPaneController.initFields();
-            resourcePropertiesPaneController.initTaskTable();
+            resourcePropertiesPaneController.initFields(uiControl);
+            resourcePropertiesPaneController.initAssignmentTaskTable(uiControl);
+            resourcePropertiesPaneController.setListeners(uiControl);
+            LOGGER.debug("Вкладка \"Ресурс\" загружена.");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.debug("IOException ", e);
         }
     }
 
@@ -61,11 +67,12 @@ public class PropertiesPanelController {
             taskPropertiesTab.setContent(taskProperties);
 
             TaskPropertiesPaneController taskPropertiesPaneController = loader.getController();
-            taskPropertiesPaneController.setController(controller);
-            taskPropertiesPaneController.initFields();
-            taskPropertiesPaneController.initResourceTable();
+            taskPropertiesPaneController.initFields(uiControl);
+            taskPropertiesPaneController.initAssignmentResourceTable(uiControl);
+            taskPropertiesPaneController.setListeners(uiControl);
+            LOGGER.debug("Вкладка \"Задача\" загружена.");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.debug("IOException ", e);
         }
     }
 
@@ -76,15 +83,11 @@ public class PropertiesPanelController {
             projectPropertiesTab.setContent(projectProperties);
 
             ProjectPropertiesPaneController projectPropertiesController = loader.getController();
-            projectPropertiesController.setController(controller);
-            projectPropertiesController.initFields();
+            projectPropertiesController.initFields(uiControl);
+            LOGGER.debug("Вкладка \"Проект\" загружена.");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.debug("IOException ", e);
         }
-    }
-
-    public void setController(IController controller) {
-        this.controller = controller;
     }
 
     public void setUIControl(UIControl uiControl) {
