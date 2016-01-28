@@ -4,11 +4,11 @@ package ru.khasang.cachoeira.model;
  * Created by truesik on 22.10.2015.
  */
 public interface IDependentTask {
-    Task getTask();
+    ITask getTask();
 
-    void setTask(Task task);
+    void setTask(ITask task);
 
-    TaskDependenceType getDependence();
+    TaskDependenceType getDependenceType();
 
-    void setDependence(TaskDependenceType dependence);
+    void setDependenceType(TaskDependenceType dependenceType);
 }
