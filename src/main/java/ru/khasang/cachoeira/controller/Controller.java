@@ -82,11 +82,10 @@ public class Controller implements IController {
     @Override
     public void handleRemoveResource(IResource resource) {
         // Удаляем этот ресурс из всех привязанных к нему задач
-        for (ITask task : getProject().getTaskList()) {
-            if (task.getResourceList().contains(resource)) {
-                task.getResourceList().remove(resource);
-            }
-        }
+        getProject().getTaskList()
+                .stream()
+                .filter(task -> task.getResourceList().contains(resource))
+                .forEach(task -> task.getResourceList().remove(resource));
         // Удаляем этот ресурс из проекта
         project.getResourceList().remove(resource);
     }
