@@ -57,13 +57,21 @@ public interface ITask {
 
     StringProperty descriptionProperty();
 
-    void addDependentTask(IDependentTask dependentTask);
+    void addParentTask(IDependentTask parentTask);
 
-    void removeDependentTask(IDependentTask dependentTask);
+    void removeParentTask(IDependentTask parentTask);
 
-    ObservableList<IDependentTask> getDependentTasks();
+    ObservableList<IDependentTask> getParentTasks();
 
-    void setDependentTask(ObservableList<IDependentTask> dependentTask);
+    void setParentTask(ObservableList<IDependentTask> parentTasks);
+
+    void addChildTask(IDependentTask childTask);
+
+    void removeChildTask(IDependentTask childTask);
+
+    ObservableList<IDependentTask> getChildTasks();
+
+    void setChildTasks(ObservableList<IDependentTask> childTasks);
 
     ITaskGroup getGroup();
 
