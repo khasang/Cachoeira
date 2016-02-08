@@ -34,8 +34,9 @@ public class Task implements ITask {
     private DoubleProperty cost = new SimpleDoubleProperty(this, "cost");
     // Описание задачи (комментарий)
     private StringProperty description = new SimpleStringProperty(this, "description");
-    // Список задач после завершения которых начинает выполнение эта задача (наверное)
-    private ObservableList<IDependentTask> dependentTasks = FXCollections.observableArrayList();
+
+    private ObservableList<IDependentTask> parentTasks = FXCollections.observableArrayList();
+    private ObservableList<IDependentTask> childTasks = FXCollections.observableArrayList();
     // Группа задач в которой находится эта задача
     private ObjectProperty<ITaskGroup> taskGroup = new SimpleObjectProperty<>(this, "taskGroup");
     // Список ресурсов к которым привязана эта задача
@@ -203,23 +204,42 @@ public class Task implements ITask {
     }
 
     @Override
-    public final void addDependentTask(IDependentTask dependentTask) {
-        dependentTasks.add(dependentTask);
+    public void addParentTask(IDependentTask parentTask) {
+        this.parentTasks.add(parentTask);
     }
 
     @Override
-    public final void removeDependentTask(IDependentTask dependentTask) {
-        dependentTasks.remove(dependentTask);
+    public void removeParentTask(IDependentTask parentTask) {
+        this.parentTasks.remove(parentTask);
+    }
+
+    public final ObservableList<IDependentTask> getParentTasks() {
+        return parentTasks;
     }
 
     @Override
-    public final ObservableList<IDependentTask> getDependentTasks() {
-        return dependentTasks;
+    public void setParentTask(ObservableList<IDependentTask> parentTasks) {
+        this.parentTasks.addAll(parentTasks);
     }
 
     @Override
-    public final void setDependentTask(ObservableList<IDependentTask> dependentTask) {
-        this.dependentTasks = dependentTask;
+    public void addChildTask(IDependentTask childTask) {
+        this.childTasks.add(childTask);
+    }
+
+    @Override
+    public void removeChildTask(IDependentTask childTask) {
+        this.childTasks.remove(childTask);
+    }
+
+    @Override
+    public ObservableList<IDependentTask> getChildTasks() {
+        return childTasks;
+    }
+
+    @Override
+    public void setChildTasks(ObservableList<IDependentTask> childTasks) {
+        this.childTasks.addAll(childTasks);
     }
 
     @Override
