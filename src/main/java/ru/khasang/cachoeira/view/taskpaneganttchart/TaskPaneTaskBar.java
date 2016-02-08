@@ -350,7 +350,7 @@ public class TaskPaneTaskBar extends Pane {
         // Привязываем этот прямоугольник к левой стороне таскбара
         leftResizeHandle.xProperty().bind(backgroundRectangle.xProperty());
         leftResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
-        leftResizeHandle.yProperty().bind(backgroundRectangle.yProperty());
+        leftResizeHandle.layoutYProperty().bind(backgroundRectangle.layoutYProperty());
         // При наведении на левую сторону таскбара будет меняться курсор
         leftResizeHandle.hoverProperty().addListener(observable -> {
             if (leftResizeHandle.isHover()) {
@@ -414,7 +414,7 @@ public class TaskPaneTaskBar extends Pane {
                         .subtract(rightResizeHandle.widthProperty())
         );
         rightResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
-        rightResizeHandle.yProperty().bind(backgroundRectangle.yProperty());
+        rightResizeHandle.layoutYProperty().bind(backgroundRectangle.layoutYProperty());
         // При наведении на левую сторону таскбара будет меняться курсор
         rightResizeHandle.hoverProperty().addListener(observable -> {
             if (rightResizeHandle.isHover()) {
