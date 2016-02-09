@@ -5,7 +5,9 @@ import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.WeakListChangeListener;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
@@ -35,8 +37,24 @@ public class Task implements ITask {
     // Описание задачи (комментарий)
     private StringProperty description = new SimpleStringProperty(this, "description");
 
-    private ObservableList<IDependentTask> parentTasks = FXCollections.observableArrayList();
-    private ObservableList<IDependentTask> childTasks = FXCollections.observableArrayList();
+    private ObservableList<IDependentTask> parentTasks = FXCollections.observableArrayList(new Callback<IDependentTask, Observable[]>() {
+        @Override
+        public Observable[] call(IDependentTask dependentTask) {
+            return new Observable[]{
+                    dependentTask.taskProperty(),
+                    dependentTask.dependenceTypeProperty()
+            };
+        }
+    });
+    private ObservableList<IDependentTask> childTasks = FXCollections.observableArrayList(new Callback<IDependentTask, Observable[]>() {
+        @Override
+        public Observable[] call(IDependentTask dependentTask) {
+            return new Observable[] {
+                    dependentTask.taskProperty(),
+                    dependentTask.dependenceTypeProperty()
+            };
+        }
+    });
     // Группа задач в которой находится эта задача
     private ObjectProperty<ITaskGroup> taskGroup = new SimpleObjectProperty<>(this, "taskGroup");
     // Список ресурсов к которым привязана эта задача
@@ -59,6 +77,8 @@ public class Task implements ITask {
     private ChangeListener<LocalDate> startDateChangeListener;
     @SuppressWarnings("FieldCanBeLocal")
     private ChangeListener<LocalDate> finishDateChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ListChangeListener<IDependentTask> dependentTaskListChangeListener;
 
     /**
      * Конструктор с дефолтовыми значениями.
@@ -81,6 +101,38 @@ public class Task implements ITask {
         };
         this.startDate.addListener(new WeakChangeListener<>(startDateChangeListener));
         this.finishDate.addListener(new WeakChangeListener<>(finishDateChangeListener));
+
+        dependentTaskListChangeListener = change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    for (IDependentTask dependentTask : change.getAddedSubList()) {
+                        if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHSTART)) {
+                            // Финиш-Старт
+                            // Находим самую позднюю начальную дату из списка привязанных задач
+                            LocalDate maxStartDate = startDate.getValue();
+                            for (IDependentTask parentTask : parentTasks) {
+                                if (parentTask.getTask().getFinishDate().isAfter(maxStartDate)) {
+                                    maxStartDate = parentTask.getTask().getFinishDate();
+                                }
+                            }
+                            long between = ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue());
+                            this.startDate.setValue(maxStartDate);
+                            this.finishDate.setValue(startDate.getValue().plusDays(between));
+                        }
+                        if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHFINISH)) {
+                            // Финиш-Финиш
+                        }
+                        if (dependentTask.getDependenceType().equals(TaskDependencyType.STARTFINISH)) {
+                            // Старт-Финиш
+                        }
+                        if (dependentTask.getDependenceType().equals(TaskDependencyType.STARTSTART)) {
+                            // Старт-Старт
+                        }
+                    }
+                }
+            }
+        };
+        this.parentTasks.addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
     }
 
     @Override
