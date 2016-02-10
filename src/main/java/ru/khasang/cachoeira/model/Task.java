@@ -88,51 +88,42 @@ public class Task implements ITask {
         dependentTaskListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
-                    for (IDependentTask dependentTask : change.getAddedSubList()) {
-                        if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHSTART)) {
-                            // Финиш-Старт
-                            // Находим самую позднюю начальную дату из списка привязанных задач
-                            LocalDate maxStartDate = startDate.getValue();
-                            for (IDependentTask parentTask : parentTasks) {
-                                if (parentTask.getTask().getFinishDate().isAfter(maxStartDate)) {
-                                    maxStartDate = parentTask.getTask().getFinishDate();
-                                }
-                            }
-                            long between = ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue());
-                            this.startDate.setValue(maxStartDate);
-                            this.finishDate.setValue(startDate.getValue().plusDays(between));
-                        }
-                        if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHFINISH)) {
-                            // Финиш-Финиш
-                        }
-                        if (dependentTask.getDependenceType().equals(TaskDependencyType.STARTFINISH)) {
-                            // Старт-Финиш
-                        }
-                        if (dependentTask.getDependenceType().equals(TaskDependencyType.STARTSTART)) {
-                            // Старт-Старт
-                        }
-                    }
+                    change.getAddedSubList().forEach(this::dependencyConditions);
+                }
+                if (change.wasRemoved()) {
+                    change.getList().forEach(this::dependencyConditions);
                 }
                 if (change.wasUpdated()) {
-                    for (IDependentTask dependentTask : change.getList().subList(change.getFrom(), change.getTo())) {
-                        if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHSTART)) {
-                            // Финиш-Старт
-                            // Находим самую позднюю начальную дату из списка привязанных задач
-                            LocalDate maxStartDate = startDate.getValue();
-                            for (IDependentTask parentTask : parentTasks) {
-                                if (parentTask.getTask().getFinishDate().isAfter(maxStartDate)) {
-                                    maxStartDate = parentTask.getTask().getFinishDate();
-                                }
-                            }
-                            long between = ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue());
-                            this.startDate.setValue(maxStartDate);
-                            this.finishDate.setValue(startDate.getValue().plusDays(between));
-                        }
-                    }
+                    change.getList().subList(change.getFrom(), change.getTo()).forEach(this::dependencyConditions);
                 }
             }
         };
         this.parentTasks.addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
+    }
+
+    private void dependencyConditions(IDependentTask dependentTask) {
+        if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHSTART)) {
+            // Финиш-Старт
+            // Находим самую позднюю конечную дату из списка привязанных задач
+            LocalDate latestFinishDate = dependentTask.getTask().getFinishDate();
+            for (IDependentTask parentTask : parentTasks) {
+                if (parentTask.getTask().getFinishDate().isAfter(latestFinishDate)) {
+                    latestFinishDate = parentTask.getTask().getFinishDate();
+                }
+            }
+            long between = ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue());
+            this.startDate.setValue(latestFinishDate);
+            this.finishDate.setValue(startDate.getValue().plusDays(between));
+        }
+        if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHFINISH)) {
+            // Финиш-Финиш
+        }
+        if (dependentTask.getDependenceType().equals(TaskDependencyType.STARTFINISH)) {
+            // Старт-Финиш
+        }
+        if (dependentTask.getDependenceType().equals(TaskDependencyType.STARTSTART)) {
+            // Старт-Старт
+        }
     }
 
     @Override
