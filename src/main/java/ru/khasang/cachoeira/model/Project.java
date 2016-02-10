@@ -7,12 +7,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.util.Callback;
 
 import java.time.LocalDate;
 
 /**
- * Created by nadezhda on 07.10.2015.
+ * Класс описывающий проект.
  */
 public class Project implements IProject {
 
@@ -20,34 +19,24 @@ public class Project implements IProject {
     private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
     private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
     private StringProperty description = new SimpleStringProperty(this, "description");
-    private ObservableList<ITask> tasks = FXCollections.observableArrayList(new Callback<ITask, Observable[]>() {
-        @Override
-        public Observable[] call(ITask task) {
-            return new Observable[] {
-                    task.nameProperty(),
-                    task.startDateProperty(),
-                    task.finishDateProperty(),
-                    task.donePercentProperty(),
-                    task.priorityTypeProperty(),
-                    task.costProperty(),
-                    task.getParentTasks(),
-                    task.getChildTasks(),
-                    task.groupProperty(),
-                    task.getResourceList(),
-                    task.descriptionProperty()
-            };
-        }
+    private ObservableList<ITask> tasks = FXCollections.observableArrayList(task -> new Observable[]{
+            task.nameProperty(),
+            task.startDateProperty(),
+            task.finishDateProperty(),
+            task.donePercentProperty(),
+            task.priorityTypeProperty(),
+            task.costProperty(),
+            task.getParentTasks(),
+            task.getChildTasks(),
+            task.groupProperty(),
+            task.getResourceList(),
+            task.descriptionProperty()
     });
-    private ObservableList<IResource> resources = FXCollections.observableArrayList(new Callback<IResource, Observable[]>() {
-        @Override
-        public Observable[] call(IResource resource) {
-            return new Observable[] {
-                    resource.nameProperty(),
-                    resource.resourceTypeProperty(),
-                    resource.emailProperty(),
-                    resource.descriptionProperty()
-            };
-        }
+    private ObservableList<IResource> resources = FXCollections.observableArrayList(resource -> new Observable[]{
+            resource.nameProperty(),
+            resource.resourceTypeProperty(),
+            resource.emailProperty(),
+            resource.descriptionProperty()
     });
 
     public Project() {
