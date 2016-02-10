@@ -8,7 +8,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.WeakListChangeListener;
-import javafx.util.Callback;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -36,38 +35,22 @@ public class Task implements ITask {
     private DoubleProperty cost = new SimpleDoubleProperty(this, "cost");
     // Описание задачи (комментарий)
     private StringProperty description = new SimpleStringProperty(this, "description");
-
-    private ObservableList<IDependentTask> parentTasks = FXCollections.observableArrayList(new Callback<IDependentTask, Observable[]>() {
-        @Override
-        public Observable[] call(IDependentTask dependentTask) {
-            return new Observable[]{
-                    dependentTask.taskProperty(),
-                    dependentTask.dependenceTypeProperty()
-            };
-        }
+    private ObservableList<IDependentTask> parentTasks = FXCollections.observableArrayList(dependentTask -> new Observable[]{
+            dependentTask.getTask().finishDateProperty(),
+            dependentTask.dependenceTypeProperty()
     });
-    private ObservableList<IDependentTask> childTasks = FXCollections.observableArrayList(new Callback<IDependentTask, Observable[]>() {
-        @Override
-        public Observable[] call(IDependentTask dependentTask) {
-            return new Observable[] {
-                    dependentTask.taskProperty(),
-                    dependentTask.dependenceTypeProperty()
-            };
-        }
+    private ObservableList<IDependentTask> childTasks = FXCollections.observableArrayList(dependentTask -> new Observable[]{
+            dependentTask.taskProperty(),
+            dependentTask.dependenceTypeProperty()
     });
     // Группа задач в которой находится эта задача
     private ObjectProperty<ITaskGroup> taskGroup = new SimpleObjectProperty<>(this, "taskGroup");
     // Список ресурсов к которым привязана эта задача
-    private ObservableList<IResource> resources = FXCollections.observableArrayList(new Callback<IResource, Observable[]>() {
-        @Override
-        public Observable[] call(IResource resource) {
-            return new Observable[]{
-                    resource.nameProperty(),
-                    resource.resourceTypeProperty(),
-                    resource.emailProperty(),
-                    resource.descriptionProperty()
-            };
-        }
+    private ObservableList<IResource> resources = FXCollections.observableArrayList(resource -> new Observable[]{
+            resource.nameProperty(),
+            resource.resourceTypeProperty(),
+            resource.emailProperty(),
+            resource.descriptionProperty()
     });
 
     // Запоминаем количество задач
@@ -127,6 +110,23 @@ public class Task implements ITask {
                         }
                         if (dependentTask.getDependenceType().equals(TaskDependencyType.STARTSTART)) {
                             // Старт-Старт
+                        }
+                    }
+                }
+                if (change.wasUpdated()) {
+                    for (IDependentTask dependentTask : change.getList().subList(change.getFrom(), change.getTo())) {
+                        if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHSTART)) {
+                            // Финиш-Старт
+                            // Находим самую позднюю начальную дату из списка привязанных задач
+                            LocalDate maxStartDate = startDate.getValue();
+                            for (IDependentTask parentTask : parentTasks) {
+                                if (parentTask.getTask().getFinishDate().isAfter(maxStartDate)) {
+                                    maxStartDate = parentTask.getTask().getFinishDate();
+                                }
+                            }
+                            long between = ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue());
+                            this.startDate.setValue(maxStartDate);
+                            this.finishDate.setValue(startDate.getValue().plusDays(between));
                         }
                     }
                 }
