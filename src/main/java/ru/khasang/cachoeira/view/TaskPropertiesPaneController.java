@@ -11,11 +11,13 @@ import javafx.collections.WeakListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.NumberStringConverter;
 import ru.khasang.cachoeira.model.*;
+import ru.khasang.cachoeira.view.contextmenus.ParentTaskContextMenu;
 
 import java.time.LocalDate;
 
@@ -247,7 +249,7 @@ public class TaskPropertiesPaneController {
             }
             // Если выбрали другую задачу перерисовываем таблицу привязанных ресурсов
             initCheckBoxColumn(uiControl.getController().getSelectedTask());
-            initParentTaskTableView(uiControl.getController().getSelectedTask());
+            initParentTaskTableView(uiControl.getController().getSelectedTask(), uiControl);
         };
 
         uiControl.getController().selectedTaskProperty().addListener(new WeakChangeListener<>(selectedTaskListener));
@@ -255,13 +257,19 @@ public class TaskPropertiesPaneController {
         uiControl.getController().getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListListener));
     }
 
-    public void initParentTaskTableView(ITask selectedTask) {
+    public void initParentTaskTableView(ITask selectedTask, UIControl uiControl) {
         if (selectedTask != null) {
             parentTaskTableView.setItems(selectedTask.getParentTasks());
             parentTaskNameColumn.setCellValueFactory(cellData -> cellData.getValue().getTask().nameProperty());
             parentTaskDependencyTypeColumn.setCellValueFactory(cellData -> cellData.getValue().dependenceTypeProperty());
+            // Добавляем возможность изменять тип связи в таблице
+            parentTaskTableView.setEditable(true);
+            parentTaskDependencyTypeColumn.setCellFactory(ComboBoxTableCell.forTableColumn(TaskDependencyType.values()));
+            // Контекстное меню
+            ParentTaskContextMenu parentTaskContextMenu = new ParentTaskContextMenu();
+            parentTaskContextMenu.initMenus(uiControl.getController(), uiControl.getController().getSelectedTask());
+            parentTaskTableView.setContextMenu(parentTaskContextMenu);
         }
-
     }
 
     private void initCheckBoxColumn(ITask selectedTask) {
