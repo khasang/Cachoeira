@@ -11,6 +11,7 @@ import javafx.collections.WeakListChangeListener;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -106,48 +107,44 @@ public class Task implements ITask {
         if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHSTART)) {
             // Финиш-Старт
             // Находим самую позднюю конечную дату из списка привязанных задач
-            LocalDate latestFinishDate = dependentTask.getTask().getFinishDate();
-            for (IDependentTask parentTask : parentTasks) {
-                if (parentTask.getTask().getFinishDate().isAfter(latestFinishDate)) {
-                    latestFinishDate = parentTask.getTask().getFinishDate();
-                }
-            }
+            LocalDate latestFinishDate = parentTasks.stream()
+                    .map(parentTask -> parentTask.getTask().getFinishDate())
+                    .sorted(Comparator.reverseOrder())
+                    .findFirst()
+                    .get();
             this.startDate.setValue(latestFinishDate);
             this.finishDate.setValue(startDate.getValue().plusDays(between));
         }
         if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHFINISH)) {
             // Финиш-Финиш
             // TODO: 11.02.2016 протестировать
-            LocalDate latestFinishDate = dependentTask.getTask().getFinishDate();
-            for (IDependentTask parentTask : parentTasks) {
-                if (parentTask.getTask().getFinishDate().isAfter(latestFinishDate)) {
-                    latestFinishDate = parentTask.getTask().getFinishDate();
-                }
-            }
+            LocalDate latestFinishDate = parentTasks.stream()
+                    .map(parentTask -> parentTask.getTask().getFinishDate())
+                    .sorted(Comparator.reverseOrder())
+                    .findFirst()
+                    .get();
             this.finishDate.setValue(latestFinishDate);
             this.startDate.setValue(finishDate.getValue().minusDays(between));
         }
         if (dependentTask.getDependenceType().equals(TaskDependencyType.STARTFINISH)) {
             // Старт-Финиш
             // TODO: 11.02.2016 протестировать
-            LocalDate earliestStartDate = dependentTask.getTask().getStartDate();
-            for (IDependentTask parentTask : parentTasks) {
-                if (parentTask.getTask().getStartDate().isBefore(earliestStartDate)) {
-                    earliestStartDate = parentTask.getTask().getStartDate();
-                }
-            }
+            LocalDate earliestStartDate = parentTasks.stream()
+                    .map(parentTask -> parentTask.getTask().getStartDate())
+                    .sorted()
+                    .findFirst()
+                    .get();
             this.finishDate.setValue(earliestStartDate);
             this.startDate.setValue(finishDate.getValue().minusDays(between));
         }
         if (dependentTask.getDependenceType().equals(TaskDependencyType.STARTSTART)) {
             // Старт-Старт
             // TODO: 11.02.2016 протестировать
-            LocalDate earliestStartDate = dependentTask.getTask().getStartDate();
-            for (IDependentTask parentTask : parentTasks) {
-                if (parentTask.getTask().getStartDate().isBefore(earliestStartDate)) {
-                    earliestStartDate = parentTask.getTask().getStartDate();
-                }
-            }
+            LocalDate earliestStartDate = parentTasks.stream()
+                    .map(parentTask -> parentTask.getTask().getStartDate())
+                    .sorted()
+                    .findFirst()
+                    .get();
             this.startDate.setValue(earliestStartDate);
             this.finishDate.setValue(startDate.getValue().plusDays(between));
         }
