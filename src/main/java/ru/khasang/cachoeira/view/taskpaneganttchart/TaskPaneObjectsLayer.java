@@ -27,16 +27,12 @@ public class TaskPaneObjectsLayer extends Pane {
     /**
      * Метод для обновления всей диаграммы.
      */
-    public void refreshTaskDiagram() {
+    public void refreshTaskDiagram(UIControl uiControl) {
         this.getChildren().clear();
         uiControl.getController().getProject().getTaskList().forEach(task -> {
             TaskPaneTaskBar taskPaneTaskBar = createTaskBar(uiControl, task);
             this.getChildren().add(taskPaneTaskBar);
         });
-//        for (ITask task : uiControl.getController().getProject().getTaskList()) {
-//            TaskPaneTaskBar taskPaneTaskBar = createTaskBar(uiControl, task);
-//            this.getChildren().add(taskPaneTaskBar);
-//        }
         LOGGER.debug("Диаграмма задач обновлена.");
     }
 
@@ -87,7 +83,7 @@ public class TaskPaneObjectsLayer extends Pane {
      * @param uiControl Контроллер вью
      */
     public void setListeners(UIControl uiControl) {
-        zoomMultiplierListener = observable -> refreshTaskDiagram();
+        zoomMultiplierListener = observable -> refreshTaskDiagram(uiControl);
         uiControl.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomMultiplierListener));
     }
 
