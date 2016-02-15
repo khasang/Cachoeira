@@ -20,6 +20,7 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.controller.IController;
+import ru.khasang.cachoeira.model.IDependentTask;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
@@ -63,6 +64,7 @@ public class TaskPaneTaskBar extends Pane {
     private ListChangeListener<IResource> resourceListChangeListener;
     @SuppressWarnings("FieldCanBeLocal")
     private InvalidationListener hoverListener;
+    private ListChangeListener<IDependentTask> dependentTaskListChangeListener;
 
     public TaskPaneTaskBar() {
         this.setPadding(new Insets(0, 0, 5, 0));
@@ -232,6 +234,20 @@ public class TaskPaneTaskBar extends Pane {
                 donePercentRectangle.setFill(Color.valueOf("#0381f4"));
             }
         };
+        dependentTaskListChangeListener = change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    change.getAddedSubList().forEach(dependentTask -> {
+//                        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+//                                .getTaskGanttChart().getTaskPaneRelationsLayer().addRelation(dependentTask, this.getTask(), uiControl);
+                        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+                                .getTaskGanttChart().getTaskPaneObjectsLayer()
+                                .addRelation(dependentTask, this.getTask());
+                    });
+                }
+            }
+        };
+
         /*
          Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
          то пересчитываем индексы у элементов на диаграмме
@@ -245,6 +261,8 @@ public class TaskPaneTaskBar extends Pane {
         task.getResourceList().addListener(new WeakListChangeListener<>(resourceListChangeListener));
         //подсветка при наведении // TODO: 15.01.2016 Сделать анимацию
         this.hoverProperty().addListener(hoverListener);
+
+        uiControl.getController().getSelectedTask().getParentTasks().addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
     }
 
     public void setContextMenu(IController controller,
