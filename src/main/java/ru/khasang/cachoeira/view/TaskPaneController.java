@@ -254,4 +254,8 @@ public class TaskPaneController {
     public void setUIControl(UIControl uiControl) {
         this.uiControl = uiControl;
     }
+
+    public TaskGanttChart getTaskGanttChart() {
+        return taskGanttChart;
+    }
 }
