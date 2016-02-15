@@ -5,6 +5,7 @@ import javafx.beans.WeakInvalidationListener;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.khasang.cachoeira.model.IDependentTask;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
@@ -58,6 +59,30 @@ public class TaskPaneObjectsLayer extends Pane {
             return taskBar.getTask().equals(task);
         });
         LOGGER.debug("Задача с именем \"{}\" удалена с диаграммы.", task.getName());
+    }
+
+    /**
+     * Метод для поиска нужной метки по задаче.
+     *
+     * @param task Задача которая присвоена метке.
+     * @return Возвращает метку.
+     */
+    public TaskPaneTaskBar findTaskBarByTask(ITask task) {
+        return (TaskPaneTaskBar) this.getChildren().stream()
+                .filter(node -> {
+                    TaskPaneTaskBar taskBar = (TaskPaneTaskBar) node;
+                    return taskBar.getTask().equals(task);
+                })
+                .findFirst()
+                .get();
+    }
+
+    public void addRelation(IDependentTask dependentTask,
+                            ITask task) {
+        TaskPaneTaskBar parentTaskBar = findTaskBarByTask(dependentTask.getTask());
+        TaskPaneTaskBar childTaskBar = findTaskBarByTask(task);
+        TaskPaneRelationLine relationLine = new TaskPaneRelationLine(parentTaskBar, childTaskBar);
+        this.getChildren().add(relationLine);
     }
 
     /**
