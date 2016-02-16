@@ -81,8 +81,12 @@ public class TaskPaneObjectsLayer extends Pane {
                             ITask task) {
         TaskPaneTaskBar parentTaskBar = findTaskBarByTask(dependentTask.getTask());
         TaskPaneTaskBar childTaskBar = findTaskBarByTask(task);
-        TaskPaneRelationLine relationLine = new TaskPaneRelationLine(parentTaskBar, childTaskBar);
+        TaskPaneRelationLine relationLine = new TaskPaneRelationLine(parentTaskBar, childTaskBar, dependentTask.getDependenceType());
         this.getChildren().add(relationLine);
+    }
+
+    public void removeRelation() {
+
     }
 
     /**
