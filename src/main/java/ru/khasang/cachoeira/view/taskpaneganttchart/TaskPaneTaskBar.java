@@ -64,6 +64,7 @@ public class TaskPaneTaskBar extends Pane {
     private ListChangeListener<IResource> resourceListChangeListener;
     @SuppressWarnings("FieldCanBeLocal")
     private InvalidationListener hoverListener;
+    @SuppressWarnings("FieldCanBeLocal")
     private ListChangeListener<IDependentTask> dependentTaskListChangeListener;
 
     public TaskPaneTaskBar() {
