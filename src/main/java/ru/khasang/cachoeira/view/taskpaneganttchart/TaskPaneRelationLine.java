@@ -5,6 +5,7 @@ import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.TaskDependencyType;
 
 public class TaskPaneRelationLine extends Group {
@@ -13,9 +14,15 @@ public class TaskPaneRelationLine extends Group {
     private final Color LINE_COLOR = Color.valueOf("03bdf4");
     private final Color HOVER_LINE_COLOR = Color.valueOf("#03A9F4");
 
+    private ITask parentTask;
+    private ITask childTask;
+
     public TaskPaneRelationLine(TaskPaneTaskBar parentTaskBar,
                                 TaskPaneTaskBar childTaskBar,
                                 TaskDependencyType dependenceType) {
+        this.parentTask = parentTaskBar.getTask();
+        this.childTask = childTaskBar.getTask();
+
         if (dependenceType.equals(TaskDependencyType.FINISHSTART)) {
             BoundLine firstLine = new BoundLine(
                     parentTaskBar.layoutXProperty().add(parentTaskBar.widthProperty()),
@@ -56,7 +63,7 @@ public class TaskPaneRelationLine extends Group {
             endYProperty().bind(endY);
             setStrokeWidth(1);
             setStroke(LINE_COLOR);
-            setMouseTransparent(true);
+//            setMouseTransparent(true);
         }
     }
 
@@ -67,5 +74,13 @@ public class TaskPaneRelationLine extends Group {
             this.layoutXProperty().bind(x);
             this.layoutYProperty().bind(y);
         }
+    }
+
+    public ITask getParentTask() {
+        return parentTask;
+    }
+
+    public ITask getChildTask() {
+        return childTask;
     }
 }
