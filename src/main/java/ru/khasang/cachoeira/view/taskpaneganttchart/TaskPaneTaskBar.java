@@ -238,13 +238,16 @@ public class TaskPaneTaskBar extends Pane {
         dependentTaskListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
-                    change.getAddedSubList().forEach(dependentTask -> {
-//                        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
-//                                .getTaskGanttChart().getTaskPaneRelationsLayer().addRelation(dependentTask, this.getTask(), uiControl);
-                        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
-                                .getTaskGanttChart().getTaskPaneObjectsLayer()
-                                .addRelation(dependentTask, this.getTask());
-                    });
+                    change.getAddedSubList().forEach(dependentTask -> uiControl.getMainWindow()
+                            .getDiagramPaneController().getTaskPaneController()
+                            .getTaskGanttChart().getTaskPaneRelationsLayer()
+                            .addRelation(dependentTask, this.getTask(), uiControl));
+                }
+                if (change.wasRemoved()) {
+                    change.getRemoved().forEach(dependentTask -> uiControl.getMainWindow()
+                            .getDiagramPaneController().getTaskPaneController()
+                            .getTaskGanttChart().getTaskPaneRelationsLayer()
+                            .removeRelation(dependentTask.getTask(), this.task));
                 }
             }
         };
