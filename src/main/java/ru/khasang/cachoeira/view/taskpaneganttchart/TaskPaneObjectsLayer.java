@@ -2,10 +2,11 @@ package ru.khasang.cachoeira.view.taskpaneganttchart;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.khasang.cachoeira.model.IDependentTask;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
@@ -77,16 +78,13 @@ public class TaskPaneObjectsLayer extends Pane {
                 .get();
     }
 
-    public void addRelation(IDependentTask dependentTask,
-                            ITask task) {
-        TaskPaneTaskBar parentTaskBar = findTaskBarByTask(dependentTask.getTask());
-        TaskPaneTaskBar childTaskBar = findTaskBarByTask(task);
-        TaskPaneRelationLine relationLine = new TaskPaneRelationLine(parentTaskBar, childTaskBar, dependentTask.getDependenceType());
-        this.getChildren().add(relationLine);
-    }
-
-    public void removeRelation() {
-
+    /**
+     * Метод для получения всех созданных меток.
+     *
+     * @return
+     */
+    public ObservableList<Node> getAllTaskBars() {
+        return this.getChildren();
     }
 
     /**
@@ -103,6 +101,9 @@ public class TaskPaneObjectsLayer extends Pane {
         taskPaneTaskBar.setTask(task);
         taskPaneTaskBar.setContextMenu(uiControl.getController(), task);
         taskPaneTaskBar.setTooltip(new TaskTooltip(task));
+        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+                .getTaskGanttChart().getTaskPaneLabelLayer()
+                .setLabelToTaskBar(taskPaneTaskBar);
         return taskPaneTaskBar;
     }
 
