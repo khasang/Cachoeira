@@ -1,10 +1,8 @@
 package ru.khasang.cachoeira.view.taskpaneganttchart;
 
 import javafx.scene.layout.Pane;
+import ru.khasang.cachoeira.model.ITask;
 
-/**
- * Created by Вячеслав on 17.02.2016.
- */
 public class TaskPaneLabelLayer extends Pane {
     public TaskPaneLabelLayer() {
     }
@@ -14,7 +12,10 @@ public class TaskPaneLabelLayer extends Pane {
         this.getChildren().add(taskPaneLabel);
     }
 
-    public void removeLabel(TaskPaneTaskBar taskBar) {
-
+    public void removeLabel(ITask task) {
+        this.getChildren().removeIf(node -> {
+            TaskPaneLabel taskPaneLabel = (TaskPaneLabel) node;
+            return taskPaneLabel.getTaskBar().getTask().equals(task);
+        });
     }
 }
