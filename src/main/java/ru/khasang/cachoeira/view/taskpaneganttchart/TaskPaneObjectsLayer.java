@@ -59,6 +59,7 @@ public class TaskPaneObjectsLayer extends Pane {
             TaskPaneTaskBar taskBar = (TaskPaneTaskBar) node;
             return taskBar.getTask().equals(task);
         });
+        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskGanttChart().getTaskPaneLabelLayer().removeLabel(task);
         LOGGER.debug("Задача с именем \"{}\" удалена с диаграммы.", task.getName());
     }
 
