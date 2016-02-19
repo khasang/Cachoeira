@@ -6,9 +6,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.khasang.cachoeira.view.taskpaneganttchart.TaskPaneDateLine;
-import ru.khasang.cachoeira.view.taskpaneganttchart.TaskPaneGridLayer;
-import ru.khasang.cachoeira.view.taskpaneganttchart.TaskPaneObjectsLayer;
+import ru.khasang.cachoeira.view.taskpaneganttchart.*;
 
 /**
  * Класс в котором определяется порядок расстановки слоев диаграммы Ганта.
@@ -17,6 +15,8 @@ public class TaskGanttChart extends VBox {
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskGanttChart.class.getName());
 
     private TaskPaneObjectsLayer taskPaneObjectsLayer;  //слой с объектами диаграммы (задачи, группы, ...)
+    private TaskPaneRelationsLayer taskPaneRelationsLayer;
+    private TaskPaneLabelLayer taskPaneLabelLayer;
 
     public TaskGanttChart() {
     }
@@ -79,8 +79,16 @@ public class TaskGanttChart extends VBox {
         taskPaneObjectsLayer = new TaskPaneObjectsLayer();
         taskPaneObjectsLayer.setUIControl(uiControl);
         taskPaneObjectsLayer.setListeners(uiControl);
+
+        taskPaneRelationsLayer = new TaskPaneRelationsLayer();
+        taskPaneRelationsLayer.setListeners(uiControl);
+
+        taskPaneLabelLayer = new TaskPaneLabelLayer();
+
+        StackPane stackPane = new StackPane(taskPaneLabelLayer, taskPaneRelationsLayer, taskPaneObjectsLayer);
         // Запихиваем слой объектов в скролл пэйн
-        ScrollPane verticalScrollPane = new ScrollPane(taskPaneObjectsLayer);
+//        ScrollPane verticalScrollPane = new ScrollPane(taskPaneObjectsLayer);
+        ScrollPane verticalScrollPane = new ScrollPane(stackPane);
         verticalScrollPane.setFitToWidth(true);
         verticalScrollPane.getStylesheets().add(this.getClass().getResource("/css/scrollpane.css").toExternalForm()); //делаем вертикальный скроллпэйн прозрачным
         // Синхронизируем вертикальный скролл слоя объектов cо скроллом таблицы задач
@@ -112,5 +120,13 @@ public class TaskGanttChart extends VBox {
 
     public TaskPaneObjectsLayer getTaskPaneObjectsLayer() {
         return taskPaneObjectsLayer;
+    }
+
+    public TaskPaneRelationsLayer getTaskPaneRelationsLayer() {
+        return taskPaneRelationsLayer;
+    }
+
+    public TaskPaneLabelLayer getTaskPaneLabelLayer() {
+        return taskPaneLabelLayer;
     }
 }
