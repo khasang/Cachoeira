@@ -102,9 +102,17 @@ public class TaskPaneObjectsLayer extends Pane {
         taskPaneTaskBar.setTask(task);
         taskPaneTaskBar.setContextMenu(uiControl.getController(), task);
         taskPaneTaskBar.setTooltip(new TaskTooltip(task));
+        // Создаем "панель" на которой будут отображаться привязанные ресурсы
         uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
                 .getTaskGanttChart().getTaskPaneLabelLayer()
                 .setLabelToTaskBar(taskPaneTaskBar);
+        // Создаем "панель" которая меняет, цвет если эта задача выделена
+        TaskPaneLabel paneLabel = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+                .getTaskGanttChart().getTaskPaneLabelLayer()
+                .findLabelByTask(task);
+        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+                .getTaskGanttChart().getTaskPaneSelectedObjectLayer()
+                .addBackgroundToTaskBar(taskPaneTaskBar, paneLabel, uiControl);
         return taskPaneTaskBar;
     }
 
