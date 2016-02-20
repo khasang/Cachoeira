@@ -24,23 +24,30 @@ public class TaskPaneBackgroundTaskBar extends Rectangle {
         this.layoutYProperty().bind(taskBar.layoutYProperty());
         this.heightProperty().bind(taskBar.heightProperty());
 
-        this.setFill(Color.TRANSPARENT);
-
+        setSelected(true);
         setListener(uiControl);
     }
 
     public void setListener(UIControl uiControl) {
         selectedTaskListener = (observable, oldValue, newValue) -> {
             if (newValue != null && taskBar.getTask().equals(newValue)) {
-                this.setStroke(Color.valueOf("#03A9F4"));
-                this.setFill(Color.valueOf("#e4f6ff"));
+                setSelected(true);
             }
             if (newValue == null || !taskBar.getTask().equals(newValue)) {
-                this.setStroke(Color.TRANSPARENT);
-                this.setFill(Color.TRANSPARENT);
+                setSelected(false);
             }
         };
         uiControl.getController().selectedTaskProperty().addListener(selectedTaskListener);
+    }
+
+    public void setSelected(boolean enabled) {
+        if (enabled) {
+            this.setStroke(Color.valueOf("#03A9F4"));
+            this.setFill(Color.valueOf("#e4f6ff"));
+        } else {
+            this.setStroke(Color.TRANSPARENT);
+            this.setFill(Color.TRANSPARENT);
+        }
     }
 
     public TaskPaneTaskBar getTaskBar() {
