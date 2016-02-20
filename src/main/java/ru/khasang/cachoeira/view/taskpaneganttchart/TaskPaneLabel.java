@@ -13,7 +13,7 @@ public class TaskPaneLabel extends HBox {
 
     public TaskPaneLabel(TaskPaneTaskBar taskBar) {
         this.taskBar = taskBar;
-        this.layoutXProperty().bind(taskBar.layoutXProperty().add(taskBar.widthProperty().add(20)));
+        this.layoutXProperty().bind(taskBar.layoutXProperty().add(taskBar.widthProperty().add(10)));
         this.layoutYProperty().bind(taskBar.layoutYProperty().add(6.5));
         this.setHeight(taskBar.getHeight());
         setListeners();
