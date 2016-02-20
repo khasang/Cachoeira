@@ -17,6 +17,7 @@ public class TaskGanttChart extends VBox {
     private TaskPaneObjectsLayer taskPaneObjectsLayer;  //слой с объектами диаграммы (задачи, группы, ...)
     private TaskPaneRelationsLayer taskPaneRelationsLayer;
     private TaskPaneLabelLayer taskPaneLabelLayer;
+    private TaskPaneSelectedObjectLayer taskPaneSelectedObjectLayer;
 
     public TaskGanttChart() {
     }
@@ -85,7 +86,9 @@ public class TaskGanttChart extends VBox {
 
         taskPaneLabelLayer = new TaskPaneLabelLayer();
 
-        StackPane stackPane = new StackPane(taskPaneLabelLayer, taskPaneRelationsLayer, taskPaneObjectsLayer);
+        taskPaneSelectedObjectLayer = new TaskPaneSelectedObjectLayer();
+
+        StackPane stackPane = new StackPane(taskPaneSelectedObjectLayer, taskPaneLabelLayer, taskPaneRelationsLayer, taskPaneObjectsLayer);
         // Запихиваем слой объектов в скролл пэйн
 //        ScrollPane verticalScrollPane = new ScrollPane(taskPaneObjectsLayer);
         ScrollPane verticalScrollPane = new ScrollPane(stackPane);
@@ -128,5 +131,9 @@ public class TaskGanttChart extends VBox {
 
     public TaskPaneLabelLayer getTaskPaneLabelLayer() {
         return taskPaneLabelLayer;
+    }
+
+    public TaskPaneSelectedObjectLayer getTaskPaneSelectedObjectLayer() {
+        return taskPaneSelectedObjectLayer;
     }
 }
