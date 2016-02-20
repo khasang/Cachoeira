@@ -40,6 +40,20 @@ public class Controller implements IController {
 
     @Override
     public void handleRemoveTask(ITask task) {
+        // Вычищяем все задачи из списка предшествующих задач
+        task.getParentTasks().clear();
+        // Вычищаем все задачи из списка последующих задач
+        task.getChildTasks().clear();
+        // Вычищяем все ресурсы из списка привязанных ресурсов
+        task.getResourceList().clear();
+        // Удаляем все связи с этой задачей
+        project.getTaskList().stream()
+                .forEach(taskFromList -> taskFromList.getParentTasks()
+                        .removeIf(dependentTask -> dependentTask.getTask().equals(task)));
+        project.getTaskList().stream()
+                .forEach(taskFromList -> taskFromList.getChildTasks()
+                        .removeIf(dependentTask -> dependentTask.getTask().equals(task)));
+        // Удаляем эту задачу
         project.getTaskList().remove(task);
     }
 
