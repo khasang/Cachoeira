@@ -18,4 +18,14 @@ public class TaskPaneLabelLayer extends Pane {
             return taskPaneLabel.getTaskBar().getTask().equals(task);
         });
     }
+
+    public TaskPaneLabel findLabelByTask(ITask task) {
+        return (TaskPaneLabel) this.getChildren().stream()
+                .filter(node -> {
+                    TaskPaneLabel taskLabel = (TaskPaneLabel) node;
+                    return taskLabel.getTaskBar().getTask().equals(task);
+                })
+                .findFirst()
+                .get();
+    }
 }
