@@ -56,20 +56,24 @@ public class TaskPaneRelationLine extends Group {
                             .when(endXProperty.greaterThanOrEqualTo(startXProperty))
                             .then(endXProperty)
                             .otherwise(startXProperty),
-                    startYProperty.add(endYProperty).divide(2)
+//                    startYProperty.add(endYProperty).divide(2)
+                    startYProperty.add(15.5)
             );
             BoundLine line3 = new BoundLine(
                     (DoubleBinding) Bindings
                             .when(endXProperty.greaterThanOrEqualTo(startXProperty))
                             .then(endXProperty)
                             .otherwise(startXProperty),
-                    startYProperty.add(endYProperty).divide(2),
+//                    startYProperty.add(endYProperty).divide(2),
+                    startYProperty.add(15.5),
                     endXProperty,
-                    startYProperty.add(endYProperty).divide(2)
+//                    startYProperty.add(endYProperty).divide(2)
+                    startYProperty.add(15.5)
             );
             BoundLine line4 = new BoundLine(
                     endXProperty,
-                    startYProperty.add(endYProperty).divide(2),
+//                    startYProperty.add(endYProperty).divide(2),
+                    startYProperty.add(15.5),
                     endXProperty,
                     endYProperty
             );
