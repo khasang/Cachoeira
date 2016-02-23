@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.view.taskpaneganttchart;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -10,7 +11,7 @@ import ru.khasang.cachoeira.model.TaskDependencyType;
 
 public class TaskPaneRelationLine extends Group {
     @SuppressWarnings("FieldCanBeLocal")
-    private final double[] ARROW_SHAPE = {0, 0, 3, -6, -3, -6};
+    private final double[] ARROW_SHAPE = {3, 0, -3, -3, -3, 3};
     private final Color LINE_COLOR = Color.valueOf("03bdf4");
     private final Color HOVER_LINE_COLOR = Color.valueOf("#03A9F4");
 
@@ -24,34 +25,66 @@ public class TaskPaneRelationLine extends Group {
         this.childTask = childTaskBar.getTask();
 
         if (dependenceType.equals(TaskDependencyType.FINISHSTART)) {
-            BoundLine firstLine = new BoundLine(
-                    parentTaskBar.layoutXProperty().add(parentTaskBar.widthProperty()),
-                    parentTaskBar.layoutYProperty().add(parentTaskBar.heightProperty().divide(2)),
-                    childTaskBar.layoutXProperty().add(5),
-                    parentTaskBar.layoutYProperty().add(parentTaskBar.heightProperty().divide(2))
+            DoubleBinding startXProperty = parentTaskBar.layoutXProperty().add(parentTaskBar.widthProperty()).add(12);
+            DoubleBinding startYProperty = parentTaskBar.layoutYProperty().add(parentTaskBar.heightProperty().divide(2));
+
+            DoubleBinding endXProperty = childTaskBar.layoutXProperty().subtract(12);
+            DoubleBinding endYProperty = childTaskBar.layoutYProperty().add(childTaskBar.heightProperty().divide(2));
+
+            BoundLine startLine = new BoundLine(
+                    startXProperty.subtract(12),
+                    startYProperty,
+                    startXProperty,
+                    startYProperty
             );
-            BoundLine secondLine = new BoundLine(
-                    childTaskBar.layoutXProperty().add(5),
-                    parentTaskBar.layoutYProperty().add(parentTaskBar.heightProperty().divide(2).add(1)),
-                    childTaskBar.layoutXProperty().add(5),
-                    childTaskBar.layoutYProperty().add(6.5)
+            BoundLine line1 = new BoundLine(
+                    startXProperty,
+                    startYProperty,
+                    (DoubleBinding) Bindings
+                            .when(endXProperty.greaterThanOrEqualTo(startXProperty))
+                            .then(endXProperty)
+                            .otherwise(startXProperty),
+                    startYProperty
+            );
+            BoundLine line2 = new BoundLine(
+                    (DoubleBinding) Bindings
+                            .when(endXProperty.greaterThanOrEqualTo(startXProperty))
+                            .then(endXProperty)
+                            .otherwise(startXProperty),
+                    startYProperty,
+                    (DoubleBinding) Bindings
+                            .when(endXProperty.greaterThanOrEqualTo(startXProperty))
+                            .then(endXProperty)
+                            .otherwise(startXProperty),
+                    startYProperty.add(endYProperty).divide(2)
+            );
+            BoundLine line3 = new BoundLine(
+                    (DoubleBinding) Bindings
+                            .when(endXProperty.greaterThanOrEqualTo(startXProperty))
+                            .then(endXProperty)
+                            .otherwise(startXProperty),
+                    startYProperty.add(endYProperty).divide(2),
+                    endXProperty,
+                    startYProperty.add(endYProperty).divide(2)
+            );
+            BoundLine line4 = new BoundLine(
+                    endXProperty,
+                    startYProperty.add(endYProperty).divide(2),
+                    endXProperty,
+                    endYProperty
+            );
+            BoundLine endLine = new BoundLine(
+                    endXProperty,
+                    endYProperty,
+                    endXProperty.add(12),
+                    endYProperty
             );
             Arrow arrow = new Arrow(
-                    childTaskBar.layoutXProperty().add(5),
-                    childTaskBar.layoutYProperty().add(6.5),
-                    ARROW_SHAPE);
-            this.getChildren().addAll(firstLine, secondLine, arrow);
-//            this.hoverProperty().addListener(event -> {
-//                if (this.isHover()) {
-//                    firstLine.setStroke(HOVER_LINE_COLOR);
-//                    secondLine.setStroke(HOVER_LINE_COLOR);
-//                    arrow.setFill(HOVER_LINE_COLOR);
-//                } else {
-//                    firstLine.setStroke(LINE_COLOR);
-//                    secondLine.setStroke(LINE_COLOR);
-//                    arrow.setFill(LINE_COLOR);
-//                }
-//            });
+                    endXProperty.add(12).subtract(3),
+                    endYProperty.add(0),
+                    ARROW_SHAPE
+            );
+            this.getChildren().addAll(startLine, line1, line2, line3, line4, endLine, arrow);
         }
     }
 
