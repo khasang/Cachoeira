@@ -35,7 +35,7 @@ public class TaskPaneRelationsLayer extends Pane {
                 TaskPaneRelationLine relationLine = new TaskPaneRelationLine(
                         parentTaskBar,
                         childTaskBar,
-                        dependentTask.getDependenceType()
+                        dependentTask.dependenceTypeProperty()
                 );
                 this.getChildren().add(relationLine);
             }
@@ -61,7 +61,7 @@ public class TaskPaneRelationsLayer extends Pane {
         TaskPaneRelationLine relationLine = new TaskPaneRelationLine(
                 parentTaskBar,
                 childTaskBar,
-                dependentTask.getDependenceType());
+                dependentTask.dependenceTypeProperty());
         this.getChildren().add(relationLine);
     }
 
