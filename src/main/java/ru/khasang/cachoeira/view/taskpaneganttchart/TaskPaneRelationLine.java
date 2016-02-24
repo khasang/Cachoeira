@@ -230,6 +230,63 @@ public class TaskPaneRelationLine extends Group {
                 arrow.setRotate(180);
                 this.getChildren().addAll(startLine, line1, line2, line3, line4, endLine, arrow);
             }
+            if (dependenceType.getValue().equals(TaskDependencyType.FINISHFINISH)) {
+                DoubleBinding startXProperty = parentTaskBar.layoutXProperty().add(parentTaskBar.widthProperty()).add(12);
+                DoubleBinding startYProperty = parentTaskBar.layoutYProperty().add(parentTaskBar.heightProperty().divide(2));
+
+                DoubleBinding endXProperty = childTaskBar.layoutXProperty().add(childTaskBar.widthProperty()).add(12);
+                DoubleBinding endYProperty = childTaskBar.layoutYProperty().add(childTaskBar.heightProperty().divide(2));
+
+                BoundLine startLine = new BoundLine(
+                        startXProperty.subtract(12),
+                        startYProperty,
+                        startXProperty,
+                        startYProperty
+                );
+                BoundLine line1 = new BoundLine(
+                        startXProperty,
+                        startYProperty,
+                        (DoubleBinding) Bindings
+                                .when(endXProperty.greaterThanOrEqualTo(startXProperty))
+                                .then(endXProperty)
+                                .otherwise(startXProperty),
+                        startYProperty
+                );
+                BoundLine line2 = new BoundLine(
+                        (DoubleBinding) Bindings
+                                .when(endXProperty.greaterThanOrEqualTo(startXProperty))
+                                .then(endXProperty)
+                                .otherwise(startXProperty),
+                        startYProperty,
+                        (DoubleBinding) Bindings
+                                .when(endXProperty.greaterThanOrEqualTo(startXProperty))
+                                .then(endXProperty)
+                                .otherwise(startXProperty),
+                        endYProperty
+                );
+                BoundLine line3 = new BoundLine(
+                        (DoubleBinding) Bindings
+                                .when(endXProperty.greaterThanOrEqualTo(startXProperty))
+                                .then(endXProperty)
+                                .otherwise(startXProperty),
+                        endYProperty,
+                        endXProperty,
+                        endYProperty
+                );
+                BoundLine endLine = new BoundLine(
+                        endXProperty,
+                        endYProperty,
+                        endXProperty.subtract(12),
+                        endYProperty
+                );
+                Arrow arrow = new Arrow(
+                        endXProperty.subtract(12).add(2),
+                        endYProperty,
+                        ARROW_SHAPE
+                );
+                arrow.setRotate(180);
+                this.getChildren().addAll(startLine, line1, line2, line3, endLine, arrow);
+            }
         };
         dependenceType.addListener(new WeakChangeListener<>(dependentTypeChangeListener));
     }
