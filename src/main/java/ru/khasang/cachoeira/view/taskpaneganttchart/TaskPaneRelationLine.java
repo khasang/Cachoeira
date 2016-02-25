@@ -97,20 +97,32 @@ public class TaskPaneRelationLine extends Group {
                         .when(endXProperty.greaterThanOrEqualTo(startXProperty))
                         .then(endXProperty)
                         .otherwise(startXProperty),
-                startYProperty.add(15.5)
+                (DoubleBinding) Bindings
+                        .when(endYProperty.greaterThan(startYProperty))
+                        .then(startYProperty.add(15.5))
+                        .otherwise(startYProperty.subtract(15.5))
         );
         BoundLine line3 = new BoundLine(
                 (DoubleBinding) Bindings
                         .when(endXProperty.greaterThanOrEqualTo(startXProperty))
                         .then(endXProperty)
                         .otherwise(startXProperty),
-                startYProperty.add(15.5),
+                (DoubleBinding) Bindings
+                        .when(endYProperty.greaterThan(startYProperty))
+                        .then(startYProperty.add(15.5))
+                        .otherwise(startYProperty.subtract(15.5)),
                 endXProperty,
-                startYProperty.add(15.5)
+                (DoubleBinding) Bindings
+                        .when(endYProperty.greaterThan(startYProperty))
+                        .then(startYProperty.add(15.5))
+                        .otherwise(startYProperty.subtract(15.5))
         );
         BoundLine line4 = new BoundLine(
                 endXProperty,
-                startYProperty.add(15.5),
+                (DoubleBinding) Bindings
+                        .when(endYProperty.greaterThan(startYProperty))
+                        .then(startYProperty.add(15.5))
+                        .otherwise(startYProperty.subtract(15.5)),
                 endXProperty,
                 endYProperty
         );
@@ -269,23 +281,35 @@ public class TaskPaneRelationLine extends Group {
                 startXProperty,
                 startYProperty,
                 startXProperty,
-                startYProperty.add(15.5)
+                (DoubleBinding) Bindings
+                        .when(endYProperty.greaterThan(startYProperty))
+                        .then(startYProperty.add(15.5))
+                        .otherwise(startYProperty.subtract(15.5))
         );
         BoundLine line2 = new BoundLine(
                 startXProperty,
-                startYProperty.add(15.5),
+                (DoubleBinding) Bindings
+                        .when(endYProperty.greaterThan(startYProperty))
+                        .then(startYProperty.add(15.5))
+                        .otherwise(startYProperty.subtract(15.5)),
                 (DoubleBinding) Bindings
                         .when(endXProperty.greaterThanOrEqualTo(startXProperty))
                         .then(endXProperty)
                         .otherwise(startXProperty),
-                startYProperty.add(15.5)
+                (DoubleBinding) Bindings
+                        .when(endYProperty.greaterThan(startYProperty))
+                        .then(startYProperty.add(15.5))
+                        .otherwise(startYProperty.subtract(15.5))
         );
         BoundLine line3 = new BoundLine(
                 (DoubleBinding) Bindings
                         .when(endXProperty.greaterThanOrEqualTo(startXProperty))
                         .then(endXProperty)
                         .otherwise(startXProperty),
-                startYProperty.add(15.5),
+                (DoubleBinding) Bindings
+                        .when(endYProperty.greaterThan(startYProperty))
+                        .then(startYProperty.add(15.5))
+                        .otherwise(startYProperty.subtract(15.5)),
                 (DoubleBinding) Bindings
                         .when(endXProperty.greaterThanOrEqualTo(startXProperty))
                         .then(endXProperty)
