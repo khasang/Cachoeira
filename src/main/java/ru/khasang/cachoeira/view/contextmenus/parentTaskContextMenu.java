@@ -11,8 +11,8 @@ import ru.khasang.cachoeira.model.IDependentTask;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.TaskDependencyType;
 
-public class parentTaskContextMenu extends ContextMenu {
-    public parentTaskContextMenu() {
+public class ParentTaskContextMenu extends ContextMenu {
+    public ParentTaskContextMenu() {
     }
 
     public void initMenus(IController controller, ITask task) {
