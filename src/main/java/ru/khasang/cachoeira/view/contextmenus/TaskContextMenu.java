@@ -64,14 +64,35 @@ public class TaskContextMenu extends ContextMenu {
                         }
                     });
                     menuItemsList.add(checkMenuItem);
-                    // Отключаем те задачи, которые уже находятся в списке последователей (childTasks),
-                    // чтобы нельзя было сделать закольцованность (например Задача 2 начинается после
-                    // Задачи 1, а Задача 1, после Задачи 2)
-                    task.getChildTasks()
-                            .stream()
-                            .filter(dependentTask -> dependentTask.getTask().equals(parentTask))
-                            .forEach(dependentTask -> checkMenuItem.setDisable(true));
                 });
+        // Отключаем те задачи, которые уже находятся в списке последователей (childTasks),
+        // чтобы нельзя было сделать закольцованность (например Задача 2 начинается после
+        // Задачи 1, а Задача 1, после Задачи 2)
+        setDisableSelectionChildTasks(task, menuItemsList);
+    }
+
+    /**
+     * Рекурсивный метод который отключает возможность сделать предшественником задачу, если она уже находится
+     * в списке наследников (или в списках наследников наследников).
+     * Например, есть последовательность Задача 1 -> Задача 2 -> Задача 3.
+     * Нажав правой кнопкой на Задаче 1 мы не сможем сделать предшественником ни Задачу 2, ни Задачу 3 (до тех пор пока
+     * не уберем предшественником Задачу 1 у Задачи 2).
+     *
+     * @param task      Задача на которую нажали правой кнопкой.
+     * @param menuItems Список меню с задачами.
+     */
+    private void setDisableSelectionChildTasks(ITask task, ObservableList<MenuItem> menuItems) {
+        if (!task.getChildTasks().isEmpty()) {
+            task.getChildTasks()
+                    .stream()
+                    .forEach(childTask -> {
+                        setDisableSelectionChildTasks(childTask.getTask(), menuItems);
+                        menuItems
+                                .stream()
+                                .filter(menuItem -> menuItem.getText().equals(childTask.getTask().getName()))
+                                .forEach(menuItem -> menuItem.setDisable(true));
+                    });
+        }
     }
 
     private void refreshResourceMenu(ObservableList<MenuItem> menuItemList,
