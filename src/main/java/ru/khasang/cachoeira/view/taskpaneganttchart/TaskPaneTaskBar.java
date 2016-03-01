@@ -5,7 +5,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.ListChangeListener;
@@ -49,10 +52,14 @@ public class TaskPaneTaskBar extends Pane {
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
     private static final double ROW_HEIGHT = 31;
 
+    private UIControl uiControl;
     private ITask task;
     private int rowIndex;                        //координата Y (строка задачи)
     private TaskContextMenu taskContextMenu;
     private boolean wasMovedByMouse = false;
+
+    private Rectangle backgroundRectangle;
+    private Rectangle donePercentRectangle;
 
     @SuppressWarnings("FieldCanBeLocal")
     private ListChangeListener<ITask> taskListChangeListener;
@@ -66,6 +73,8 @@ public class TaskPaneTaskBar extends Pane {
     private InvalidationListener hoverListener;
     @SuppressWarnings("FieldCanBeLocal")
     private ListChangeListener<IDependentTask> dependentTaskListChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private InvalidationListener zoomListener;
 
     public TaskPaneTaskBar() {
         this.setPadding(new Insets(0, 0, 5, 0));
@@ -73,16 +82,19 @@ public class TaskPaneTaskBar extends Pane {
 
     public void initTaskRectangle(UIControl uiControl,
                                   ITask task) {
-        Rectangle backgroundRectangle = new Rectangle();
+        this.uiControl = uiControl;
+        this.task = task;
+
+        backgroundRectangle = new Rectangle();
         backgroundRectangle.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
         backgroundRectangle.setStroke(Color.valueOf("#03bdf4"));  //цвет окантовки
         backgroundRectangle.setArcHeight(5);                      //скругление углов
         backgroundRectangle.setArcWidth(5);
         backgroundRectangle.setHeight(TASK_HEIGHT);
 
-        setParameters(uiControl, task, backgroundRectangle);
+        this.setParameters(uiControl, task, backgroundRectangle);
 
-        Rectangle donePercentRectangle = new Rectangle();
+        donePercentRectangle = new Rectangle();
         donePercentRectangle.setFill(Color.valueOf("#0381f4"));
         donePercentRectangle.arcHeightProperty().bind(backgroundRectangle.arcHeightProperty());
         donePercentRectangle.arcWidthProperty().bind(backgroundRectangle.arcWidthProperty());
@@ -98,15 +110,16 @@ public class TaskPaneTaskBar extends Pane {
         this.getChildren().add(backgroundRectangle);
         this.getChildren().add(donePercentRectangle);
 
-        enableDrag(uiControl, task, backgroundRectangle, uiControl.getZoomMultiplier());
-        enableResize(uiControl, task, backgroundRectangle, uiControl.getZoomMultiplier());
+        this.enableDrag(uiControl, task, backgroundRectangle, uiControl.getZoomMultiplier());
+        this.enableResize(uiControl, task, backgroundRectangle, uiControl.getZoomMultiplier());
 
-        setListeners(uiControl, task, backgroundRectangle, donePercentRectangle);
+        this.setListeners(uiControl, task, backgroundRectangle, donePercentRectangle);
     }
 
     private void setParameters(UIControl uiControl,
                                ITask task,
                                Rectangle backgroundRectangle) {
+//        backgroundRectangle.widthProperty().bind(uiControl.zoomMultiplierProperty().multiply(ChronoUnit.DAYS.between(task.getStartDate(), task.getFinishDate())));
         backgroundRectangle.setWidth(taskWidth(
                 task.getStartDate(),
                 task.getFinishDate(),
@@ -116,6 +129,7 @@ public class TaskPaneTaskBar extends Pane {
                 task.getStartDate(),
                 uiControl.getController().getProject().getStartDate(),
                 uiControl.getZoomMultiplier()));
+//        this.layoutXProperty().bind(uiControl.zoomMultiplierProperty().multiply(ChronoUnit.DAYS.between(uiControl.getController().getProject().getStartDate(), task.getStartDate())).subtract(1.5));
         this.setLayoutY(taskY(uiControl.getController().getProject().getTaskList().indexOf(task)));
     }
 
@@ -226,7 +240,7 @@ public class TaskPaneTaskBar extends Pane {
         };
         hoverListener = observable -> {
             if (this.isHover()) {
-                backgroundRectangle.setFill(Color.valueOf("03bdf4"));
+                backgroundRectangle.setFill(Color.valueOf("#03bdf4"));
                 backgroundRectangle.setStroke(Color.valueOf("#03d1f4"));
                 donePercentRectangle.setFill(Color.valueOf("#0395f4"));
             } else {
@@ -239,17 +253,21 @@ public class TaskPaneTaskBar extends Pane {
             while (change.next()) {
                 if (change.wasAdded()) {
                     change.getAddedSubList().forEach(dependentTask -> uiControl.getMainWindow()
-                            .getDiagramPaneController().getTaskPaneController()
-                            .getTaskGanttChart().getTaskPaneRelationsLayer()
-                            .addRelation(dependentTask, this.getTask(), uiControl));
+                        .getDiagramPaneController().getTaskPaneController()
+                        .getTaskGanttChart().getTaskPaneRelationsLayer()
+                        .addRelation(dependentTask, uiControl.getController().getSelectedTask(), uiControl));
                 }
                 if (change.wasRemoved()) {
                     change.getRemoved().forEach(dependentTask -> uiControl.getMainWindow()
                             .getDiagramPaneController().getTaskPaneController()
                             .getTaskGanttChart().getTaskPaneRelationsLayer()
-                            .removeRelation(dependentTask.getTask(), this.task));
+                            .removeRelation(dependentTask.getTask(), uiControl.getController().getSelectedTask()));
                 }
             }
+        };
+        zoomListener = observable -> {
+            this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()));
+            backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
         };
 
         /*
@@ -267,6 +285,7 @@ public class TaskPaneTaskBar extends Pane {
         this.hoverProperty().addListener(hoverListener);
 
         uiControl.getController().getSelectedTask().getParentTasks().addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
+        uiControl.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomListener));
     }
 
     public void setContextMenu(IController controller,
@@ -311,18 +330,18 @@ public class TaskPaneTaskBar extends Pane {
                 double newX = event.getSceneX() + dragDelta.x;
                 if (newX > 0 && newX + backgroundRectangle.getWidth() <= this.getParent().getBoundsInParent().getWidth()) {
                     // Хреначим привязку к сетке
-                    if (Math.round(newX / columnWidth) != oldRound.old) {
-                        oldRound.old = Math.round(newX / columnWidth);
-                        this.setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
+                    if (Math.round(newX / uiControl.getZoomMultiplier()) != oldRound.old) {
+                        oldRound.old = Math.round(newX / uiControl.getZoomMultiplier());
+                        this.setLayoutX(Math.round(newX / uiControl.getZoomMultiplier()) * uiControl.getZoomMultiplier() - 1.5);
                         wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                         task.setStartDate(
                                 uiControl.getController().getProject().getStartDate().plusDays(
-                                        Math.round(newX / columnWidth)
+                                        Math.round(newX / uiControl.getZoomMultiplier())
                                 )
                         );
                         task.setFinishDate(
                                 task.getStartDate().plusDays(
-                                        Math.round(backgroundRectangle.getWidth() / columnWidth)
+                                        Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())
                                 )
                         );
                         wasMovedByMouse = false; // Когда окончили движение фолз
@@ -368,7 +387,8 @@ public class TaskPaneTaskBar extends Pane {
         Rectangle leftResizeHandle = new Rectangle();
         this.getChildren().add(leftResizeHandle);
         leftResizeHandle.setFill(Color.TRANSPARENT);
-        leftResizeHandle.setWidth(10);
+//        leftResizeHandle.setWidth(4);
+        leftResizeHandle.widthProperty().bind(backgroundRectangle.widthProperty().divide(100).multiply(5));
         // Привязываем этот прямоугольник к левой стороне таскбара
         leftResizeHandle.xProperty().bind(backgroundRectangle.xProperty());
         leftResizeHandle.heightProperty().bind(backgroundRectangle.heightProperty());
@@ -377,8 +397,10 @@ public class TaskPaneTaskBar extends Pane {
         leftResizeHandle.hoverProperty().addListener(observable -> {
             if (leftResizeHandle.isHover()) {
                 getScene().setCursor(Cursor.H_RESIZE);
+                leftResizeHandle.setFill(Color.valueOf("#0381f4"));
             } else {
                 getScene().setCursor(Cursor.DEFAULT);
+                leftResizeHandle.setFill(Color.TRANSPARENT);
             }
         });
 
@@ -400,14 +422,14 @@ public class TaskPaneTaskBar extends Pane {
                 double newX = event.getSceneX() + dragDeltaLeft.x;
                 if (newX >= 0 && newX <= getLayoutX() + backgroundRectangle.getWidth()) {
                     // Хреначим привязку к сетке
-                    if (Math.round(newX / columnWidth) != oldRoundLeft.old) {
-                        if (!(Math.round(newX / columnWidth) * columnWidth - 1.5 == getLayoutX() + backgroundRectangle.getWidth())) { // Условие против нулевой длины тасбара
-                            oldRoundLeft.old = Math.round(newX / columnWidth);
+                    if (Math.round(newX / uiControl.getZoomMultiplier()) != oldRoundLeft.old) {
+                        if (!(Math.round(newX / uiControl.getZoomMultiplier()) * uiControl.getZoomMultiplier() - 1.5 == getLayoutX() + backgroundRectangle.getWidth())) { // Условие против нулевой длины тасбара
+                            oldRoundLeft.old = Math.round(newX / uiControl.getZoomMultiplier());
                             double oldX = getLayoutX();
-                            this.setLayoutX(Math.round(newX / columnWidth) * columnWidth - 1.5);
+                            this.setLayoutX(Math.round(newX / uiControl.getZoomMultiplier()) * uiControl.getZoomMultiplier() - 1.5);
                             backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (this.getLayoutX() - oldX));
                             wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                            task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / columnWidth))));
+                            task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / uiControl.getZoomMultiplier()))));
                             wasMovedByMouse = false; // Когда окончили движение фолз
                             LOGGER.debug("Задача с именем \"{}\" изменила дату начала на {}.",
                                     task.getName(),
@@ -428,7 +450,8 @@ public class TaskPaneTaskBar extends Pane {
         Rectangle rightResizeHandle = new Rectangle();
         this.getChildren().add(rightResizeHandle);
         rightResizeHandle.setFill(Color.TRANSPARENT);
-        rightResizeHandle.setWidth(10);
+//        rightResizeHandle.setWidth(4);
+        rightResizeHandle.widthProperty().bind(backgroundRectangle.widthProperty().divide(100).multiply(5));
         // Привязываем этот прямоугольник к правой стороне таскбара
         rightResizeHandle.xProperty().bind(
                 backgroundRectangle.xProperty()
@@ -441,8 +464,10 @@ public class TaskPaneTaskBar extends Pane {
         rightResizeHandle.hoverProperty().addListener(observable -> {
             if (rightResizeHandle.isHover()) {
                 getScene().setCursor(Cursor.H_RESIZE);
+                rightResizeHandle.setFill(Color.valueOf("#0381f4"));
             } else {
                 getScene().setCursor(Cursor.DEFAULT);
+                rightResizeHandle.setFill(Color.TRANSPARENT);
             }
         });
 
@@ -462,13 +487,13 @@ public class TaskPaneTaskBar extends Pane {
         rightResizeHandle.setOnMouseDragged(event -> {
             if (event.isPrimaryButtonDown()) {
                 double newWidth = event.getSceneX() + dragDeltaRight.x;
-                if (newWidth >= columnWidth && this.getLayoutX() + newWidth <= this.getParent().getBoundsInLocal().getWidth()) {
+                if (newWidth >= uiControl.getZoomMultiplier() && this.getLayoutX() + newWidth <= this.getParent().getBoundsInLocal().getWidth()) {
                     // Хреначим привязку к сетке
-                    if (Math.round(newWidth / columnWidth) != oldRoundRight.old) {
-                        oldRoundRight.old = Math.round(newWidth / columnWidth);
-                        backgroundRectangle.setWidth(Math.round(newWidth / columnWidth) * columnWidth);
+                    if (Math.round(newWidth / uiControl.getZoomMultiplier()) != oldRoundRight.old) {
+                        oldRoundRight.old = Math.round(newWidth / uiControl.getZoomMultiplier());
+                        backgroundRectangle.setWidth(Math.round(newWidth / uiControl.getZoomMultiplier()) * uiControl.getZoomMultiplier());
                         wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                        task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / columnWidth)));
+                        task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())));
                         wasMovedByMouse = false; // Когда окончили движение фолз
                         LOGGER.debug("Задача с именем \"{}\" изменила дату окончания на {}.",
                                 task.getName(),
