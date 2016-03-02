@@ -6,9 +6,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.ListChangeListener;
@@ -52,14 +50,10 @@ public class TaskPaneTaskBar extends Pane {
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
     private static final double ROW_HEIGHT = 31;
 
-    private UIControl uiControl;
     private ITask task;
     private int rowIndex;                        //координата Y (строка задачи)
     private TaskContextMenu taskContextMenu;
     private boolean wasMovedByMouse = false;
-
-    private Rectangle backgroundRectangle;
-    private Rectangle donePercentRectangle;
 
     @SuppressWarnings("FieldCanBeLocal")
     private ListChangeListener<ITask> taskListChangeListener;
@@ -82,10 +76,7 @@ public class TaskPaneTaskBar extends Pane {
 
     public void initTaskRectangle(UIControl uiControl,
                                   ITask task) {
-        this.uiControl = uiControl;
-        this.task = task;
-
-        backgroundRectangle = new Rectangle();
+        Rectangle backgroundRectangle = new Rectangle();
         backgroundRectangle.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
         backgroundRectangle.setStroke(Color.valueOf("#03bdf4"));  //цвет окантовки
         backgroundRectangle.setArcHeight(5);                      //скругление углов
@@ -94,7 +85,7 @@ public class TaskPaneTaskBar extends Pane {
 
         this.setParameters(uiControl, task, backgroundRectangle);
 
-        donePercentRectangle = new Rectangle();
+        Rectangle donePercentRectangle = new Rectangle();
         donePercentRectangle.setFill(Color.valueOf("#0381f4"));
         donePercentRectangle.arcHeightProperty().bind(backgroundRectangle.arcHeightProperty());
         donePercentRectangle.arcWidthProperty().bind(backgroundRectangle.arcWidthProperty());
@@ -110,8 +101,8 @@ public class TaskPaneTaskBar extends Pane {
         this.getChildren().add(backgroundRectangle);
         this.getChildren().add(donePercentRectangle);
 
-        this.enableDrag(uiControl, task, backgroundRectangle, uiControl.getZoomMultiplier());
-        this.enableResize(uiControl, task, backgroundRectangle, uiControl.getZoomMultiplier());
+        this.enableDrag(uiControl, task, backgroundRectangle);
+        this.enableResize(uiControl, task, backgroundRectangle);
 
         this.setListeners(uiControl, task, backgroundRectangle, donePercentRectangle);
     }
@@ -119,7 +110,6 @@ public class TaskPaneTaskBar extends Pane {
     private void setParameters(UIControl uiControl,
                                ITask task,
                                Rectangle backgroundRectangle) {
-//        backgroundRectangle.widthProperty().bind(uiControl.zoomMultiplierProperty().multiply(ChronoUnit.DAYS.between(task.getStartDate(), task.getFinishDate())));
         backgroundRectangle.setWidth(taskWidth(
                 task.getStartDate(),
                 task.getFinishDate(),
@@ -129,7 +119,6 @@ public class TaskPaneTaskBar extends Pane {
                 task.getStartDate(),
                 uiControl.getController().getProject().getStartDate(),
                 uiControl.getZoomMultiplier()));
-//        this.layoutXProperty().bind(uiControl.zoomMultiplierProperty().multiply(ChronoUnit.DAYS.between(uiControl.getController().getProject().getStartDate(), task.getStartDate())).subtract(1.5));
         this.setLayoutY(taskY(uiControl.getController().getProject().getTaskList().indexOf(task)));
     }
 
@@ -261,7 +250,7 @@ public class TaskPaneTaskBar extends Pane {
                     change.getRemoved().forEach(dependentTask -> uiControl.getMainWindow()
                             .getDiagramPaneController().getTaskPaneController()
                             .getTaskGanttChart().getTaskPaneRelationsLayer()
-                            .removeRelation(dependentTask.getTask(), uiControl.getController().getSelectedTask()));
+                            .removeRelation(dependentTask.getTask(), this.task));
                 }
             }
         };
@@ -304,12 +293,10 @@ public class TaskPaneTaskBar extends Pane {
      * @param uiControl           Контроллер интерфейса
      * @param task                Задача этой метки
      * @param backgroundRectangle Прямоугольник
-     * @param columnWidth         Ширина дня в пикселях (uiControl.getZoomMultiplier())
      */
     private void enableDrag(UIControl uiControl,
                             ITask task,
-                            Rectangle backgroundRectangle,
-                            int columnWidth) {
+                            Rectangle backgroundRectangle) {
         final Delta dragDelta = new Delta();
         final OldRound oldRound = new OldRound();
         backgroundRectangle.setOnMousePressed(event -> {
@@ -377,12 +364,10 @@ public class TaskPaneTaskBar extends Pane {
      * @param uiControl           Контроллер интерфейса
      * @param task                Задача этой метки
      * @param backgroundRectangle Прямоугольник
-     * @param columnWidth         Ширина дня в пикселях (uiControl.getZoomMultiplier())
      */
     public void enableResize(UIControl uiControl,
                              ITask task,
-                             Rectangle backgroundRectangle,
-                             int columnWidth) {
+                             Rectangle backgroundRectangle) {
         // Создаем прозрачный прямоугольник шириной 10 пикселей
         Rectangle leftResizeHandle = new Rectangle();
         this.getChildren().add(leftResizeHandle);
