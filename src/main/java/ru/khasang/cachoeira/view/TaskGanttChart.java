@@ -79,7 +79,7 @@ public class TaskGanttChart extends VBox {
     private ScrollPane createObjectsLayer(UIControl uiControl) {
         taskPaneObjectsLayer = new TaskPaneObjectsLayer();
         taskPaneObjectsLayer.setUIControl(uiControl);
-        taskPaneObjectsLayer.setListeners(uiControl);
+//        taskPaneObjectsLayer.setListeners(uiControl);
 
         taskPaneRelationsLayer = new TaskPaneRelationsLayer();
         taskPaneRelationsLayer.setListeners(uiControl);

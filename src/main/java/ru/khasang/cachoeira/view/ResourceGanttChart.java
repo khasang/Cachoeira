@@ -68,7 +68,7 @@ public class ResourceGanttChart extends VBox {
     private ScrollPane createObjectsLayer(UIControl uiControl) {
         resourcePaneObjectsLayer = new ResourcePaneObjectsLayer();
         resourcePaneObjectsLayer.setUIControl(uiControl);
-        resourcePaneObjectsLayer.setListeners(uiControl);
+//        resourcePaneObjectsLayer.setListeners(uiControl);
         // Запихиваем слой объектов в скролл пэйн
         ScrollPane verticalScrollPane = new ScrollPane(resourcePaneObjectsLayer);
         verticalScrollPane.setFitToWidth(true);
