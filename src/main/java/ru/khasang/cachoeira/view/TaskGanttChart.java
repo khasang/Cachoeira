@@ -82,7 +82,7 @@ public class TaskGanttChart extends VBox {
 //        taskPaneObjectsLayer.setListeners(uiControl);
 
         taskPaneRelationsLayer = new TaskPaneRelationsLayer();
-        taskPaneRelationsLayer.setListeners(uiControl);
+//        taskPaneRelationsLayer.setListeners(uiControl);
 
         taskPaneLabelLayer = new TaskPaneLabelLayer();
 
