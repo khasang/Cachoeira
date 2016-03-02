@@ -22,6 +22,7 @@ public class TaskPaneRelationsLayer extends Pane {
      *
      * @param uiControl
      */
+    @Deprecated
     public void refreshRelationsDiagram(UIControl uiControl) {
         this.getChildren().clear();
         for (ITask task : uiControl.getController().getProject().getTaskList()) {
@@ -63,6 +64,7 @@ public class TaskPaneRelationsLayer extends Pane {
                 childTaskBar,
                 dependentTask.dependenceTypeProperty());
         this.getChildren().add(relationLine);
+        LOGGER.debug("Связь между {} и {} добавлена на диаграмму.", parentTaskBar.getTask().getName(), childTaskBar.getTask().getName());
     }
 
     /**
