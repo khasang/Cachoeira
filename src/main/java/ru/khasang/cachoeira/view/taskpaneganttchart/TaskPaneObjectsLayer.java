@@ -2,8 +2,6 @@ package ru.khasang.cachoeira.view.taskpaneganttchart;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +27,7 @@ public class TaskPaneObjectsLayer extends Pane {
     /**
      * Метод для обновления всей диаграммы.
      */
+    @Deprecated
     public void refreshTaskDiagram(UIControl uiControl) {
         this.getChildren().clear();
         uiControl.getController().getProject().getTaskList().forEach(task -> {
@@ -77,15 +76,6 @@ public class TaskPaneObjectsLayer extends Pane {
                 })
                 .findFirst()
                 .get();
-    }
-
-    /**
-     * Метод для получения всех созданных меток.
-     *
-     * @return
-     */
-    public ObservableList<Node> getAllTaskBars() {
-        return this.getChildren();
     }
 
     /**
