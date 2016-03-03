@@ -2,6 +2,7 @@ package ru.khasang.cachoeira.view;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -15,6 +16,12 @@ import java.io.IOException;
  */
 public class PropertiesPanelController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesPanelController.class.getName());
+    @FXML
+    private ScrollPane taskPropertiesScrollPane;
+    @FXML
+    private ScrollPane projectPropertiesScrollPane;
+    @FXML
+    private ScrollPane resourcePropertiesScrollPane;
 
     @FXML
     private Tab projectPropertiesTab;
@@ -48,7 +55,8 @@ public class PropertiesPanelController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ResourcePropertiesPane.fxml"));
             VBox resourceProperties = loader.load();
-            resourcePropertiesTab.setContent(resourceProperties);
+//            resourcePropertiesTab.setContent(resourceProperties);
+            resourcePropertiesScrollPane.setContent(resourceProperties);
 
             ResourcePropertiesPaneController resourcePropertiesPaneController = loader.getController();
             resourcePropertiesPaneController.initFields(uiControl);
@@ -64,7 +72,8 @@ public class PropertiesPanelController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TaskPropertiesPane.fxml"));
             VBox taskProperties = loader.load();
-            taskPropertiesTab.setContent(taskProperties);
+//            taskPropertiesTab.setContent(taskProperties);
+            taskPropertiesScrollPane.setContent(taskProperties);
 
             TaskPropertiesPaneController taskPropertiesPaneController = loader.getController();
             taskPropertiesPaneController.initFields(uiControl);
@@ -80,7 +89,8 @@ public class PropertiesPanelController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ProjectPropertiesPane.fxml"));
             VBox projectProperties = loader.load();
-            projectPropertiesTab.setContent(projectProperties);
+//            projectPropertiesTab.setContent(projectProperties);
+            projectPropertiesScrollPane.setContent(projectProperties);
 
             ProjectPropertiesPaneController projectPropertiesController = loader.getController();
             projectPropertiesController.initFields(uiControl);

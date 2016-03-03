@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<TabPane prefHeight="631.0" prefWidth="296.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.PropertiesPanelController">
+
+<TabPane prefHeight="631.0" prefWidth="310.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.PropertiesPanelController">
    <tabs>
-      <Tab fx:id="projectPropertiesTab" text="Проект" />
-      <Tab fx:id="taskPropertiesTab" text="Задача" />
-      <Tab fx:id="resourcePropertiesTab" text="Ресурс" />
+      <Tab fx:id="projectPropertiesTab" text="Проект">
+         <content>
+            <ScrollPane fx:id="projectPropertiesScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+              </content>
+            </ScrollPane>
+         </content></Tab>
+      <Tab fx:id="taskPropertiesTab" text="Задача">
+         <content>
+            <ScrollPane fx:id="taskPropertiesScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" />
+         </content></Tab>
+      <Tab fx:id="resourcePropertiesTab" text="Ресурс">
+         <content>
+            <ScrollPane fx:id="resourcePropertiesScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+              </content>
+            </ScrollPane>
+         </content></Tab>
    </tabs>
 </TabPane>

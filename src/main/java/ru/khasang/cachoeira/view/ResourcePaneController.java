@@ -117,6 +117,7 @@ public class ResourcePaneController {
         taskListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
+                    // TODO: 02.03.2016 попытаться исправить
                     resourceGanttChart.getResourcePaneObjectsLayer().refreshResourceDiagram();
                 }
                 if (change.wasRemoved()) {

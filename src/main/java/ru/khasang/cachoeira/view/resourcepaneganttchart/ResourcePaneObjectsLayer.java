@@ -28,6 +28,7 @@ public class ResourcePaneObjectsLayer extends Pane {
     /**
      * Метод для обновления всей диаграммы.
      */
+    @Deprecated
     public void refreshResourceDiagram() {
         this.getChildren().clear();
         for (ITask task : uiControl.getController().getProject().getTaskList()) {
@@ -63,14 +64,6 @@ public class ResourcePaneObjectsLayer extends Pane {
             return taskBar.getTask().equals(task);
         });
         LOGGER.debug("Задача с именем \"{}\" удалена.", task.getName());
-//        Iterator<Node> taskBarIterator = this.getChildren().iterator();
-//        while (taskBarIterator.hasNext()) {
-//            ResourcePaneTaskBar resourcePaneTaskBar = (ResourcePaneTaskBar) taskBarIterator.next();
-//            if (resourcePaneTaskBar.getTask().equals(task)) {
-//                taskBarIterator.remove();
-//                LOGGER.debug("Задача с именем \"{}\" удалена.", task.getName());
-//            }
-//        }
     }
 
     /**

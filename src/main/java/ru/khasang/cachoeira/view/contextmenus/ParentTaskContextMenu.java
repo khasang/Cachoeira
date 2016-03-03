@@ -6,32 +6,25 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import ru.khasang.cachoeira.controller.IController;
-import ru.khasang.cachoeira.model.*;
+import ru.khasang.cachoeira.model.DependentTask;
+import ru.khasang.cachoeira.model.IDependentTask;
+import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.model.TaskDependencyType;
 
-/**
- * Класс описывает контекстное меню всплывающее при нажатии правой кнопкой на задаче.
- */
-public class TaskContextMenu extends ContextMenu {
-    public TaskContextMenu() {
-    }
-
-    public TaskContextMenu(IController controller, ITask task) {
-        initMenus(controller, task);
+public class ParentTaskContextMenu extends ContextMenu {
+    public ParentTaskContextMenu() {
     }
 
     public void initMenus(IController controller, ITask task) {
         this.getItems().clear();
-        Menu assignResourceMenu = new Menu("Назначить ресурс");
         Menu assignDependencyTask = new Menu("Назначить предшественника");
-        MenuItem removeTaskMenuItem = new MenuItem("Удалить задачу");
 
-        removeTaskMenuItem.setOnAction(event -> controller.handleRemoveTask(task));
-        this.getItems().addAll(assignResourceMenu, assignDependencyTask, removeTaskMenuItem);  //заполняем меню
+        this.getItems().addAll(assignDependencyTask);  //заполняем меню
 
-        this.setOnShowing(event -> {
-            refreshResourceMenu(assignResourceMenu.getItems(), task, controller.getProject().getResourceList());
-            refreshDependencyTaskMenu(assignDependencyTask.getItems(), task, controller.getProject().getTaskList());
-        });
+        this.setOnShowing(event -> refreshDependencyTaskMenu(
+                assignDependencyTask.getItems(),
+                task,
+                controller.getProject().getTaskList()));
     }
 
     private void refreshDependencyTaskMenu(ObservableList<MenuItem> menuItemsList,
@@ -92,27 +85,6 @@ public class TaskContextMenu extends ContextMenu {
                                 .filter(menuItem -> menuItem.getText().equals(childTask.getTask().getName()))
                                 .forEach(menuItem -> menuItem.setDisable(true));
                     });
-        }
-    }
-
-    private void refreshResourceMenu(ObservableList<MenuItem> menuItemList,
-                                     ITask task,
-                                     ObservableList<IResource> resourceList) {
-        menuItemList.clear();
-        for (IResource resource : resourceList) {                                                                  //берем список всех ресурсов
-            CheckMenuItem checkMenuItem = new CheckMenuItem(resource.getName());                                //создаем элемент меню для каждого ресурса
-            task.getResourceList()
-                    .stream()
-                    .filter(resourceOfTask -> resource.equals(resourceOfTask) && !checkMenuItem.isSelected())
-                    .forEach(resourceOfTask -> checkMenuItem.setSelected(true));
-            checkMenuItem.setOnAction(event -> {
-                if (checkMenuItem.isSelected()) {
-                    task.addResource(resource);
-                } else {
-                    task.removeResource(resource);
-                }
-            });
-            menuItemList.add(checkMenuItem);
         }
     }
 }

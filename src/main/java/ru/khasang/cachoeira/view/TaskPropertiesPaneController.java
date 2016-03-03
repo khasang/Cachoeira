@@ -11,13 +11,13 @@ import javafx.collections.WeakListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.NumberStringConverter;
-import ru.khasang.cachoeira.model.IResource;
-import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.model.PriorityType;
+import ru.khasang.cachoeira.model.*;
+import ru.khasang.cachoeira.view.contextmenus.ParentTaskContextMenu;
 
 import java.time.LocalDate;
 
@@ -42,7 +42,6 @@ public class TaskPropertiesPaneController {
     private TextField costField;
     @FXML
     private TextArea descriptionTextArea;
-
     // Привязанные ресурсы
     @FXML
     private TableView<IResource> resourceTableView;
@@ -50,6 +49,15 @@ public class TaskPropertiesPaneController {
     private TableColumn<IResource, String> resourceNameColumn;
     @FXML
     private TableColumn<IResource, Boolean> resourceCheckboxColumn;
+    // Привязанные задачи
+    @FXML
+    private TableView<IDependentTask> parentTaskTableView;
+    @FXML
+    private TableColumn<IDependentTask, String> parentTaskNameColumn;
+    @FXML
+    private TableColumn<IDependentTask, TaskDependencyType> parentTaskDependencyTypeColumn;
+    @FXML
+    private TableColumn<IDependentTask, Boolean> parentTaskCheckboxColumn;
 
     @SuppressWarnings("FieldCanBeLocal")
     private ChangeListener<ITask> selectedTaskListener;
@@ -241,11 +249,27 @@ public class TaskPropertiesPaneController {
             }
             // Если выбрали другую задачу перерисовываем таблицу привязанных ресурсов
             initCheckBoxColumn(uiControl.getController().getSelectedTask());
+            initParentTaskTableView(uiControl.getController().getSelectedTask(), uiControl);
         };
 
         uiControl.getController().selectedTaskProperty().addListener(new WeakChangeListener<>(selectedTaskListener));
         // Если список ресурсов в какой либо задаче обновляется, то обновляем список ресурсов в панели свойств задач
         uiControl.getController().getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListListener));
+    }
+
+    public void initParentTaskTableView(ITask selectedTask, UIControl uiControl) {
+        if (selectedTask != null) {
+            parentTaskTableView.setItems(selectedTask.getParentTasks());
+            parentTaskNameColumn.setCellValueFactory(cellData -> cellData.getValue().getTask().nameProperty());
+            parentTaskDependencyTypeColumn.setCellValueFactory(cellData -> cellData.getValue().dependenceTypeProperty());
+            // Добавляем возможность изменять тип связи в таблице
+            parentTaskTableView.setEditable(true);
+            parentTaskDependencyTypeColumn.setCellFactory(ComboBoxTableCell.forTableColumn(TaskDependencyType.values()));
+            // Контекстное меню
+            ParentTaskContextMenu parentTaskContextMenu = new ParentTaskContextMenu();
+            parentTaskContextMenu.initMenus(uiControl.getController(), uiControl.getController().getSelectedTask());
+            parentTaskTableView.setContextMenu(parentTaskContextMenu);
+        }
     }
 
     private void initCheckBoxColumn(ITask selectedTask) {

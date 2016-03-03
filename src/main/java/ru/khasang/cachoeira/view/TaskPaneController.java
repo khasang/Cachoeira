@@ -196,6 +196,7 @@ public class TaskPaneController {
                         removeTaskTreeItem(task, taskTreeTableView.getRoot().getChildren());
                         // ...а теперь с диаграммы
                         taskGanttChart.getTaskPaneObjectsLayer().removeTaskBar(task);
+                        taskGanttChart.getTaskPaneSelectedObjectLayer().removeBackgroundTaskBar(task);
                     });
                 }
             }
@@ -253,5 +254,9 @@ public class TaskPaneController {
 
     public void setUIControl(UIControl uiControl) {
         this.uiControl = uiControl;
+    }
+
+    public TaskGanttChart getTaskGanttChart() {
+        return taskGanttChart;
     }
 }

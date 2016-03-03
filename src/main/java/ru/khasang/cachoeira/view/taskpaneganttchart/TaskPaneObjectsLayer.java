@@ -27,16 +27,13 @@ public class TaskPaneObjectsLayer extends Pane {
     /**
      * Метод для обновления всей диаграммы.
      */
-    public void refreshTaskDiagram() {
+    @Deprecated
+    public void refreshTaskDiagram(UIControl uiControl) {
         this.getChildren().clear();
         uiControl.getController().getProject().getTaskList().forEach(task -> {
             TaskPaneTaskBar taskPaneTaskBar = createTaskBar(uiControl, task);
             this.getChildren().add(taskPaneTaskBar);
         });
-//        for (ITask task : uiControl.getController().getProject().getTaskList()) {
-//            TaskPaneTaskBar taskPaneTaskBar = createTaskBar(uiControl, task);
-//            this.getChildren().add(taskPaneTaskBar);
-//        }
         LOGGER.debug("Диаграмма задач обновлена.");
     }
 
@@ -61,7 +58,24 @@ public class TaskPaneObjectsLayer extends Pane {
             TaskPaneTaskBar taskBar = (TaskPaneTaskBar) node;
             return taskBar.getTask().equals(task);
         });
+        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskGanttChart().getTaskPaneLabelLayer().removeLabel(task);
         LOGGER.debug("Задача с именем \"{}\" удалена с диаграммы.", task.getName());
+    }
+
+    /**
+     * Метод для поиска нужной метки по задаче.
+     *
+     * @param task Задача которая присвоена метке.
+     * @return Возвращает метку.
+     */
+    public TaskPaneTaskBar findTaskBarByTask(ITask task) {
+        return (TaskPaneTaskBar) this.getChildren().stream()
+                .filter(node -> {
+                    TaskPaneTaskBar taskBar = (TaskPaneTaskBar) node;
+                    return taskBar.getTask().equals(task);
+                })
+                .findFirst()
+                .get();
     }
 
     /**
@@ -78,6 +92,17 @@ public class TaskPaneObjectsLayer extends Pane {
         taskPaneTaskBar.setTask(task);
         taskPaneTaskBar.setContextMenu(uiControl.getController(), task);
         taskPaneTaskBar.setTooltip(new TaskTooltip(task));
+        // Создаем "панель" на которой будут отображаться привязанные ресурсы
+        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+                .getTaskGanttChart().getTaskPaneLabelLayer()
+                .setLabelToTaskBar(taskPaneTaskBar);
+        // Создаем "панель" которая меняет, цвет если эта задача выделена
+        TaskPaneLabel paneLabel = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+                .getTaskGanttChart().getTaskPaneLabelLayer()
+                .findLabelByTask(task);
+        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+                .getTaskGanttChart().getTaskPaneSelectedObjectLayer()
+                .addBackgroundToTaskBar(taskPaneTaskBar, paneLabel, uiControl);
         return taskPaneTaskBar;
     }
 
@@ -87,7 +112,7 @@ public class TaskPaneObjectsLayer extends Pane {
      * @param uiControl Контроллер вью
      */
     public void setListeners(UIControl uiControl) {
-        zoomMultiplierListener = observable -> refreshTaskDiagram();
+        zoomMultiplierListener = observable -> refreshTaskDiagram(uiControl);
         uiControl.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomMultiplierListener));
     }
 

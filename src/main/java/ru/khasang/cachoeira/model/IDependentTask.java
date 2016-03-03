@@ -1,14 +1,20 @@
 package ru.khasang.cachoeira.model;
 
+import javafx.beans.property.ObjectProperty;
+
 /**
  * Created by truesik on 22.10.2015.
  */
 public interface IDependentTask {
-    Task getTask();
+    ITask getTask();
 
-    void setTask(Task task);
+    ObjectProperty<ITask> taskProperty();
 
-    TaskDependenceType getDependence();
+    void setTask(ITask task);
 
-    void setDependence(TaskDependenceType dependence);
+    TaskDependencyType getDependenceType();
+
+    ObjectProperty<TaskDependencyType> dependenceTypeProperty();
+
+    void setDependenceType(TaskDependencyType dependenceType);
 }

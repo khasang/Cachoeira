@@ -5,11 +5,13 @@ import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.util.Callback;
+import javafx.collections.WeakListChangeListener;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -34,21 +36,22 @@ public class Task implements ITask {
     private DoubleProperty cost = new SimpleDoubleProperty(this, "cost");
     // Описание задачи (комментарий)
     private StringProperty description = new SimpleStringProperty(this, "description");
-    // Список задач после завершения которых начинает выполнение эта задача (наверное)
-    private ObservableList<IDependentTask> dependentTasks = FXCollections.observableArrayList();
+    private ObservableList<IDependentTask> parentTasks = FXCollections.observableArrayList(dependentTask -> new Observable[]{
+            dependentTask.getTask().finishDateProperty(),
+            dependentTask.dependenceTypeProperty()
+    });
+    private ObservableList<IDependentTask> childTasks = FXCollections.observableArrayList(dependentTask -> new Observable[]{
+            dependentTask.taskProperty(),
+            dependentTask.dependenceTypeProperty()
+    });
     // Группа задач в которой находится эта задача
     private ObjectProperty<ITaskGroup> taskGroup = new SimpleObjectProperty<>(this, "taskGroup");
     // Список ресурсов к которым привязана эта задача
-    private ObservableList<IResource> resources = FXCollections.observableArrayList(new Callback<IResource, Observable[]>() {
-        @Override
-        public Observable[] call(IResource resource) {
-            return new Observable[]{
-                    resource.nameProperty(),
-                    resource.resourceTypeProperty(),
-                    resource.emailProperty(),
-                    resource.descriptionProperty()
-            };
-        }
+    private ObservableList<IResource> resources = FXCollections.observableArrayList(resource -> new Observable[]{
+            resource.nameProperty(),
+            resource.resourceTypeProperty(),
+            resource.emailProperty(),
+            resource.descriptionProperty()
     });
 
     // Запоминаем количество задач
@@ -58,6 +61,8 @@ public class Task implements ITask {
     private ChangeListener<LocalDate> startDateChangeListener;
     @SuppressWarnings("FieldCanBeLocal")
     private ChangeListener<LocalDate> finishDateChangeListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private ListChangeListener<IDependentTask> dependentTaskListChangeListener;
 
     /**
      * Конструктор с дефолтовыми значениями.
@@ -80,6 +85,69 @@ public class Task implements ITask {
         };
         this.startDate.addListener(new WeakChangeListener<>(startDateChangeListener));
         this.finishDate.addListener(new WeakChangeListener<>(finishDateChangeListener));
+
+        dependentTaskListChangeListener = change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    change.getAddedSubList().forEach(this::dependencyConditions);
+                }
+                if (change.wasRemoved()) {
+                    change.getList().forEach(this::dependencyConditions);
+                }
+                if (change.wasUpdated()) {
+                    change.getList().subList(change.getFrom(), change.getTo()).forEach(this::dependencyConditions);
+                }
+            }
+        };
+        this.parentTasks.addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
+    }
+
+    private void dependencyConditions(IDependentTask dependentTask) {
+        long between = ChronoUnit.DAYS.between(startDate.getValue(), finishDate.getValue());
+        if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHSTART)) {
+            // Финиш-Старт
+            // Находим самую позднюю конечную дату из списка привязанных задач
+            LocalDate latestFinishDate = parentTasks.stream()
+                    .map(parentTask -> parentTask.getTask().getFinishDate())
+                    .sorted(Comparator.reverseOrder())
+                    .findFirst()
+                    .get();
+            this.startDate.setValue(latestFinishDate);
+            this.finishDate.setValue(startDate.getValue().plusDays(between));
+        }
+        if (dependentTask.getDependenceType().equals(TaskDependencyType.FINISHFINISH)) {
+            // Финиш-Финиш
+            // TODO: 11.02.2016 протестировать
+            LocalDate latestFinishDate = parentTasks.stream()
+                    .map(parentTask -> parentTask.getTask().getFinishDate())
+                    .sorted(Comparator.reverseOrder())
+                    .findFirst()
+                    .get();
+            this.finishDate.setValue(latestFinishDate);
+            this.startDate.setValue(finishDate.getValue().minusDays(between));
+        }
+        if (dependentTask.getDependenceType().equals(TaskDependencyType.STARTFINISH)) {
+            // Старт-Финиш
+            // TODO: 11.02.2016 протестировать
+            LocalDate earliestStartDate = parentTasks.stream()
+                    .map(parentTask -> parentTask.getTask().getStartDate())
+                    .sorted()
+                    .findFirst()
+                    .get();
+            this.finishDate.setValue(earliestStartDate);
+            this.startDate.setValue(finishDate.getValue().minusDays(between));
+        }
+        if (dependentTask.getDependenceType().equals(TaskDependencyType.STARTSTART)) {
+            // Старт-Старт
+            // TODO: 11.02.2016 протестировать
+            LocalDate earliestStartDate = parentTasks.stream()
+                    .map(parentTask -> parentTask.getTask().getStartDate())
+                    .sorted()
+                    .findFirst()
+                    .get();
+            this.startDate.setValue(earliestStartDate);
+            this.finishDate.setValue(startDate.getValue().plusDays(between));
+        }
     }
 
     @Override
@@ -203,23 +271,42 @@ public class Task implements ITask {
     }
 
     @Override
-    public final void addDependentTask(IDependentTask dependentTask) {
-        dependentTasks.add(dependentTask);
+    public void addParentTask(IDependentTask parentTask) {
+        this.parentTasks.add(parentTask);
     }
 
     @Override
-    public final void removeDependentTask(IDependentTask dependentTask) {
-        dependentTasks.remove(dependentTask);
+    public void removeParentTask(IDependentTask parentTask) {
+        this.parentTasks.remove(parentTask);
+    }
+
+    public final ObservableList<IDependentTask> getParentTasks() {
+        return parentTasks;
     }
 
     @Override
-    public final ObservableList<IDependentTask> getDependentTasks() {
-        return dependentTasks;
+    public void setParentTask(ObservableList<IDependentTask> parentTasks) {
+        this.parentTasks.addAll(parentTasks);
     }
 
     @Override
-    public final void setDependentTask(ObservableList<IDependentTask> dependentTask) {
-        this.dependentTasks = dependentTask;
+    public void addChildTask(IDependentTask childTask) {
+        this.childTasks.add(childTask);
+    }
+
+    @Override
+    public void removeChildTask(IDependentTask childTask) {
+        this.childTasks.remove(childTask);
+    }
+
+    @Override
+    public ObservableList<IDependentTask> getChildTasks() {
+        return childTasks;
+    }
+
+    @Override
+    public void setChildTasks(ObservableList<IDependentTask> childTasks) {
+        this.childTasks.addAll(childTasks);
     }
 
     @Override
