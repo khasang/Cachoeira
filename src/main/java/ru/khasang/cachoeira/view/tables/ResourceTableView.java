@@ -64,7 +64,7 @@ public class ResourceTableView<S> extends TableView<S> {
             super(tableView);
             // Выцепляем скроллы
             flow.getChildrenUnmodifiable()
-                    .parallelStream()
+                    .stream()
                     .filter(child -> child instanceof VirtualScrollBar)
                     .forEach(child -> {
                         if (((VirtualScrollBar) child).getOrientation() == Orientation.VERTICAL) {
