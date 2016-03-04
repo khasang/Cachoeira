@@ -28,7 +28,6 @@ public class ResourcePaneObjectsLayer extends Pane {
     /**
      * Метод для обновления всей диаграммы.
      */
-    @Deprecated
     public void refreshResourceDiagram() {
         this.getChildren().clear();
         for (ITask task : uiControl.getController().getProject().getTaskList()) {
