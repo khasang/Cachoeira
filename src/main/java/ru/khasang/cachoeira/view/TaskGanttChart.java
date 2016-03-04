@@ -77,15 +77,19 @@ public class TaskGanttChart extends VBox {
      * @param uiControl Контроллер вьюхи
      */
     private ScrollPane createObjectsLayer(UIControl uiControl) {
+        // Слой на котором отображаются метки задач
         taskPaneObjectsLayer = new TaskPaneObjectsLayer();
         taskPaneObjectsLayer.setUIControl(uiControl);
 //        taskPaneObjectsLayer.setListeners(uiControl);
 
+        // Слой на котором отображаются связи между задачами
         taskPaneRelationsLayer = new TaskPaneRelationsLayer();
-//        taskPaneRelationsLayer.setListeners(uiControl);
+        taskPaneRelationsLayer.setListeners(uiControl);
 
+        // Слой на котором отображаются ресурсы привязанные к задачам
         taskPaneLabelLayer = new TaskPaneLabelLayer();
 
+        // Слой на котором отображается выделенная в данный момент задача
         taskPaneSelectedObjectLayer = new TaskPaneSelectedObjectLayer();
 
         StackPane stackPane = new StackPane(taskPaneSelectedObjectLayer, taskPaneLabelLayer, taskPaneRelationsLayer, taskPaneObjectsLayer);
