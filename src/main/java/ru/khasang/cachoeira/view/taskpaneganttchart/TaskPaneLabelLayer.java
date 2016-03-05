@@ -9,6 +9,7 @@ public class TaskPaneLabelLayer extends Pane {
 
     public void setLabelToTaskBar(TaskPaneTaskBar taskBar) {
         TaskPaneLabel taskPaneLabel = new TaskPaneLabel(taskBar);
+        taskPaneLabel.refreshResourceLabels();
         this.getChildren().add(taskPaneLabel);
     }
 

@@ -13,6 +13,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.WeakListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -79,7 +81,7 @@ public class ResourcePaneTaskBar extends Pane {
         backgroundRectangle.setArcWidth(5);
         backgroundRectangle.setHeight(TASK_HEIGHT);
 
-        setParameters(uiControl, task, resource, backgroundRectangle);
+        this.setParameters(uiControl, task, resource, backgroundRectangle);
 
         Rectangle donePercentRectangle = new Rectangle();
         donePercentRectangle.setFill(Color.valueOf("#0381f4"));
@@ -97,10 +99,20 @@ public class ResourcePaneTaskBar extends Pane {
         this.getChildren().add(backgroundRectangle);
         this.getChildren().add(donePercentRectangle);
 
-        enableDrag(uiControl, task, backgroundRectangle);
-        enableResize(uiControl, task, backgroundRectangle);
+        // Вешаем лэйбл с наименованием задачи
+        Label taskLabel = new Label(task.getName());
+        taskLabel.setTextOverrun(OverrunStyle.CLIP);
+        taskLabel.setTextFill(Color.WHITE);
+        taskLabel.setLayoutY(6);
+        taskLabel.prefWidthProperty().bind(backgroundRectangle.widthProperty());
+        taskLabel.onMousePressedProperty().bind(backgroundRectangle.onMousePressedProperty());
+        taskLabel.onMouseDraggedProperty().bind(backgroundRectangle.onMouseDraggedProperty());
+        this.getChildren().add(taskLabel);
 
-        setListeners(uiControl, task, resource, backgroundRectangle, donePercentRectangle);
+        this.enableDrag(uiControl, task, backgroundRectangle);
+        this.enableResize(uiControl, task, backgroundRectangle);
+
+        this.setListeners(uiControl, task, resource, backgroundRectangle, donePercentRectangle);
     }
 
     private void setParameters(UIControl uiControl,

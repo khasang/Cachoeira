@@ -13,8 +13,8 @@ public class TaskPaneLabel extends HBox {
 
     public TaskPaneLabel(TaskPaneTaskBar taskBar) {
         this.taskBar = taskBar;
-        this.layoutXProperty().bind(taskBar.layoutXProperty().add(taskBar.widthProperty().add(10)));
-        this.layoutYProperty().bind(taskBar.layoutYProperty().add(6.5));
+        this.layoutXProperty().bind(taskBar.layoutXProperty().add(taskBar.widthProperty().add(12)));
+        this.layoutYProperty().bind(taskBar.layoutYProperty().add(6));
         this.setHeight(taskBar.getHeight());
         setListeners();
     }
@@ -29,6 +29,11 @@ public class TaskPaneLabel extends HBox {
             Label resourceLabel = (Label) node;
             return resourceLabel.getText().equals(resource.getName());
         });
+    }
+
+    public void refreshResourceLabels() {
+        this.getChildren().clear();
+        taskBar.getTask().getResourceList().forEach(this::addResourceLabel);
     }
 
     public void setListeners() {

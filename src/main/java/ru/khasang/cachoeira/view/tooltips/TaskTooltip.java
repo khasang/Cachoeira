@@ -6,9 +6,6 @@ import ru.khasang.cachoeira.model.ITask;
 
 import java.time.temporal.ChronoUnit;
 
-/**
- * Created by truesik on 09.12.2015.
- */
 public class TaskTooltip extends Tooltip {
     public TaskTooltip() {
     }

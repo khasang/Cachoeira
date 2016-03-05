@@ -23,15 +23,10 @@ public class ResourceContextMenu extends ContextMenu {
     public void initMenus(IController controller, IResource resource) {
         this.getItems().clear();
         Menu assignTaskMenu = new Menu("Назначить задачу");
-        MenuItem getPropertiesMenuItem = new MenuItem("Свойства");
         MenuItem removeResourceMenuItem = new MenuItem("Удалить ресурс");
 
-        getPropertiesMenuItem.setOnAction(event -> {
-            controller.setSelectedResource(resource);
-//                resourcePaneController.openPropertiesResourceWindow(); // TODO: 25.11.2015 исправить
-        });
         removeResourceMenuItem.setOnAction(event -> controller.handleRemoveResource(resource));
-        this.getItems().addAll(assignTaskMenu, getPropertiesMenuItem, removeResourceMenuItem);  //заполняем меню
+        this.getItems().addAll(assignTaskMenu, removeResourceMenuItem);  //заполняем меню
 
         this.setOnShowing(event -> refreshTaskMenu(assignTaskMenu.getItems(), resource, controller.getProject().getTaskList()));
     }
