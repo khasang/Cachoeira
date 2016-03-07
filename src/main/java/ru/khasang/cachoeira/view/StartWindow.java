@@ -34,6 +34,7 @@ public class StartWindow implements IWindow {
         this.uiControl = uiControl;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StartWindow.fxml"));    //грузим макет окна
+        fxmlLoader.setResources(UIControl.BUNDLE);
         fxmlLoader.setController(this);                                                             //говорим макету, что этот класс является его контроллером
         try {
             root = fxmlLoader.load();

@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Класс-контроллер для PropertiesPanel.fxml
@@ -54,6 +56,7 @@ public class PropertiesPanelController {
     public void initResourcePropertiesPane() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ResourcePropertiesPane.fxml"));
+            loader.setResources(UIControl.BUNDLE);
             VBox resourceProperties = loader.load();
 //            resourcePropertiesTab.setContent(resourceProperties);
             resourcePropertiesScrollPane.setContent(resourceProperties);
@@ -71,6 +74,7 @@ public class PropertiesPanelController {
     public void initTaskPropertiesPane() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TaskPropertiesPane.fxml"));
+            loader.setResources(UIControl.BUNDLE);
             VBox taskProperties = loader.load();
 //            taskPropertiesTab.setContent(taskProperties);
             taskPropertiesScrollPane.setContent(taskProperties);
@@ -88,6 +92,7 @@ public class PropertiesPanelController {
     public void initProjectPropertiesPane() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ProjectPropertiesPane.fxml"));
+            loader.setResources(UIControl.BUNDLE);
             VBox projectProperties = loader.load();
 //            projectPropertiesTab.setContent(projectProperties);
             projectPropertiesScrollPane.setContent(projectProperties);

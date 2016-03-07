@@ -24,6 +24,7 @@ public class DiagramPaneController {
     public void initResourcePane() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ResourcePane.fxml"));
+            loader.setResources(UIControl.BUNDLE);
             VBox resourcePane = loader.load();
             resourceTab.setContent(resourcePane);
 
@@ -43,6 +44,7 @@ public class DiagramPaneController {
     public void initTaskPane() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TaskPane.fxml"));
+            loader.setResources(UIControl.BUNDLE);
             VBox taskPane = loader.load();
             taskTab.setContent(taskPane);
 
