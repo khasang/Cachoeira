@@ -7,7 +7,12 @@ import javafx.beans.property.SimpleIntegerProperty;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class UIControl {
+    public final static ResourceBundle BUNDLE = ResourceBundle.getBundle("locale.messages", Locale.ENGLISH);
+
     private MainWindow mainWindow;
     private StartWindow startWindow;
     private NewProjectWindow newProjectWindow;
