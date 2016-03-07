@@ -4,18 +4,18 @@
 <?import javafx.scene.layout.*?>
 <VBox fx:id="propertiesPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.ResourcePropertiesPaneController">
    <children>
-      <TitledPane text="Информация" VBox.vgrow="ALWAYS">
+      <TitledPane text="%info" VBox.vgrow="ALWAYS">
          <content>
             <GridPane hgap="10.0" prefHeight="297.0" vgap="10.0">
                <children>
                   <TextField fx:id="nameField" GridPane.columnIndex="1" />
                   <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <ComboBox fx:id="resourceTypeComboBox" prefWidth="165.0" promptText="Выберите тип" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <ComboBox fx:id="resourceTypeComboBox" prefWidth="165.0" promptText="%select_the_resource_type" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <TextArea fx:id="descriptionTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <Label text="Наименование:" />
-                  <Label text="Электронная почта:" GridPane.rowIndex="1" />
-                  <Label text="Тип:" GridPane.rowIndex="2" />
-                  <Label text="Описание:" GridPane.rowIndex="3" />
+                  <Label text="%resource_name" />
+                  <Label text="%email" GridPane.rowIndex="1" />
+                  <Label text="%resource_type" GridPane.rowIndex="2" />
+                  <Label text="%description" GridPane.rowIndex="3" />
                </children>
                <columnConstraints>
                   <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="222.0" minWidth="10.0" prefWidth="109.0" />
@@ -30,11 +30,11 @@
             </GridPane>
          </content>
       </TitledPane>
-      <TitledPane text="Привязанные задачи" VBox.vgrow="ALWAYS">
+      <TitledPane text="%assigned_tasks" VBox.vgrow="ALWAYS">
          <content>
             <TableView fx:id="taskTableView" prefHeight="200.0" prefWidth="200.0">
                <columns>
-                  <TableColumn fx:id="taskNameColumn" prefWidth="251.0" text="Наименование" />
+                  <TableColumn fx:id="taskNameColumn" prefWidth="251.0" text="%task_name" />
                   <TableColumn fx:id="taskCheckboxColumn" prefWidth="47.0" resizable="false" />
                </columns>
                <columnResizePolicy>

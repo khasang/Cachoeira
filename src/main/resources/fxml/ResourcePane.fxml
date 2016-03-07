@@ -12,9 +12,9 @@
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
                 </columnResizePolicy>
                 <columns>
-                    <TableColumn fx:id="resourceNameColumn" prefWidth="150.0" sortable="false" text="Наименование"/>
-                    <TableColumn fx:id="resourceTypeColumn" prefWidth="150.0" sortable="false" text="Тип"/>
-                    <TableColumn fx:id="resourceEmailColumn" prefWidth="150.0" sortable="false" text="Почта"
+                    <TableColumn fx:id="resourceNameColumn" prefWidth="150.0" sortable="false" text="%resource_name"/>
+                    <TableColumn fx:id="resourceTypeColumn" prefWidth="150.0" sortable="false" text="%resource_type"/>
+                    <TableColumn fx:id="resourceEmailColumn" prefWidth="150.0" sortable="false" text="%email"
                                  visible="false"/>
                 </columns>
             </ResourceTableView>
@@ -25,13 +25,13 @@
         <Button fx:id="addNewResourceButton" mnemonicParsing="false" onAction="#addNewResourceHandle"
                 HBox.hgrow="NEVER">
             <tooltip>
-                <Tooltip text="Добавить ресурс"/>
+                <Tooltip text="%add_resource"/>
             </tooltip>
         </Button>
         <Button fx:id="removeResourceButton" mnemonicParsing="false" onAction="#removeResourceHandle"
                 HBox.hgrow="NEVER">
             <tooltip>
-                <Tooltip text="Удалить ресурс"/>
+                <Tooltip text="%remove_resource"/>
             </tooltip>
         </Button>
         <Region HBox.hgrow="ALWAYS"/>

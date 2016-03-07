@@ -4,7 +4,7 @@
 <?import javafx.scene.control.TabPane?>
 <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.DiagramPaneController">
    <tabs>
-      <Tab fx:id="taskTab" closable="false" text="ЗАДАЧИ" />
-      <Tab fx:id="resourceTab" closable="false" text="РЕСУРСЫ" />
+      <Tab fx:id="taskTab" closable="false" text="%tasks" />
+      <Tab fx:id="resourceTab" closable="false" text="%resources" />
    </tabs>
 </TabPane>

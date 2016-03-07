@@ -12,16 +12,16 @@
                     <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
                 </columnResizePolicy>
                 <columns>
-                    <TreeTableColumn fx:id="nameColumn" prefWidth="75.0" sortable="false" text="Наименование"/>
-                    <TreeTableColumn fx:id="startDateColumn" prefWidth="75.0" sortable="false" text="Дата начала"/>
-                    <TreeTableColumn fx:id="finishDateColumn" prefWidth="75.0" sortable="false" text="Дата окончания"/>
-                    <TreeTableColumn fx:id="durationColumn" prefWidth="75.0" sortable="false" text="Продолжительность"
+                    <TreeTableColumn fx:id="nameColumn" prefWidth="75.0" sortable="false" text="%task_name"/>
+                    <TreeTableColumn fx:id="startDateColumn" prefWidth="75.0" sortable="false" text="%start_date"/>
+                    <TreeTableColumn fx:id="finishDateColumn" prefWidth="75.0" sortable="false" text="%finish_date"/>
+                    <TreeTableColumn fx:id="durationColumn" prefWidth="75.0" sortable="false" text="%duration"
                                      visible="false"/>
-                    <TreeTableColumn fx:id="donePercentColumn" prefWidth="75.0" sortable="false" text="Прогресс"
+                    <TreeTableColumn fx:id="donePercentColumn" prefWidth="75.0" sortable="false" text="%done_percent"
                                      visible="false"/>
-                    <TreeTableColumn fx:id="priorityColumn" prefWidth="75.0" sortable="false" text="Приоритет"
+                    <TreeTableColumn fx:id="priorityColumn" prefWidth="75.0" sortable="false" text="%priority_type"
                                      visible="false"/>
-                    <TreeTableColumn fx:id="costColumn" prefWidth="75.0" sortable="false" text="Стоимость"
+                    <TreeTableColumn fx:id="costColumn" prefWidth="75.0" sortable="false" text="%cost"
                                      visible="false"/>
                 </columns>
             </TaskTreeTableView>
@@ -31,12 +31,12 @@
     <HBox VBox.vgrow="NEVER">
         <Button fx:id="addNewTaskButton" mnemonicParsing="false" onAction="#addNewTaskHandle" HBox.hgrow="NEVER">
             <tooltip>
-                <Tooltip text="Добавить задачу"/>
+                <Tooltip text="%add_task"/>
             </tooltip>
         </Button>
         <Button fx:id="removeTaskButton" mnemonicParsing="false" onAction="#removeTaskHandle" HBox.hgrow="NEVER">
             <tooltip>
-                <Tooltip text="Удалить задачу"/>
+                <Tooltip text="%remove_task"/>
             </tooltip>
         </Button>
         <Region HBox.hgrow="ALWAYS"/>
