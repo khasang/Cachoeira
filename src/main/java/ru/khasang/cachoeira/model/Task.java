@@ -8,10 +8,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.WeakListChangeListener;
+import ru.khasang.cachoeira.view.UIControl;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -54,6 +56,8 @@ public class Task implements ITask {
             resource.descriptionProperty()
     });
 
+    private ResourceBundle bundle = UIControl.BUNDLE;
+
     // Запоминаем количество задач
     private static AtomicInteger taskSequence = new AtomicInteger(-1); // -1, потому что первым идет рутовый элемент в таблице задач (rootTask)
 
@@ -68,7 +72,7 @@ public class Task implements ITask {
      * Конструктор с дефолтовыми значениями.
      */
     public Task() {
-        this.name.setValue("Задача " + id.getValue());
+        this.name.setValue(bundle.getString("task") + " " + id.getValue());
         this.startDate.setValue(LocalDate.now());
         this.finishDate.setValue(startDate.getValue().plusDays(1));
         this.duration.setValue(1);
