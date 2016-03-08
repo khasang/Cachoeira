@@ -12,6 +12,8 @@ import java.util.ResourceBundle;
  * Класс описывающий поведение всплывающей подсказки при наведении курсора на ресурс.
  */
 public class TaskTooltip extends Tooltip {
+    private ResourceBundle bundle = UIControl.BUNDLE;
+
     public TaskTooltip() {
     }
 
@@ -20,19 +22,19 @@ public class TaskTooltip extends Tooltip {
     }
 
     public void initToolTip(ITask task) {
-        ResourceBundle resourceBundle = UIControl.BUNDLE;
+
         textProperty().bind(Bindings
-                .concat(resourceBundle.getString("task_name") + ": ").concat(task.nameProperty()).concat("\n")
+                .concat(bundle.getString("task_name") + ": ").concat(task.nameProperty()).concat("\n")
                 .concat(Bindings
                         .when(task.descriptionProperty().isNull().or(task.descriptionProperty().isEmpty()))
                         .then("")
-                        .otherwise(Bindings.concat(resourceBundle.getString("description") + ": ").concat(task.descriptionProperty()).concat("\n")))
-                .concat(resourceBundle.getString("start_date") + ": ").concat(task.startDateProperty()).concat("\n")
-                .concat(resourceBundle.getString("finish_date") + ": ").concat(task.finishDateProperty()).concat("\n")
-                .concat(resourceBundle.getString("duration") + ": ").concat(ChronoUnit.DAYS.between(task.startDateProperty().getValue(), task.finishDateProperty().getValue())).concat("\n")
-                .concat(resourceBundle.getString("done_percent") + ": ").concat(task.donePercentProperty()).concat("\n")
-                .concat(resourceBundle.getString("cost") + ": ").concat(task.costProperty()).concat("\n")
-                .concat(resourceBundle.getString("priority_type") + ": ").concat(task.priorityTypeProperty())
+                        .otherwise(Bindings.concat(bundle.getString("description") + ": ").concat(task.descriptionProperty()).concat("\n")))
+                .concat(bundle.getString("start_date") + ": ").concat(task.startDateProperty()).concat("\n")
+                .concat(bundle.getString("finish_date") + ": ").concat(task.finishDateProperty()).concat("\n")
+                .concat(bundle.getString("duration") + ": ").concat(ChronoUnit.DAYS.between(task.startDateProperty().getValue(), task.finishDateProperty().getValue())).concat("\n")
+                .concat(bundle.getString("done_percent") + ": ").concat(task.donePercentProperty()).concat("\n")
+                .concat(bundle.getString("cost") + ": ").concat(task.costProperty()).concat("\n")
+                .concat(bundle.getString("priority_type") + ": ").concat(task.priorityTypeProperty())
         );
     }
 }

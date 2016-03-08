@@ -11,6 +11,8 @@ import java.util.ResourceBundle;
  * Класс описывающий поведение всплывающей подсказки при наведении курсора на ресурс.
  */
 public class ResourceTooltip extends Tooltip {
+    private ResourceBundle bundle = UIControl.BUNDLE;
+
     public ResourceTooltip() {
     }
 
@@ -19,18 +21,17 @@ public class ResourceTooltip extends Tooltip {
     }
 
     public void initToolTip(IResource resource) {
-        ResourceBundle resourceBundle = UIControl.BUNDLE;
         textProperty().bind(Bindings
-                .concat(resourceBundle.getString("resource_name") + ": ").concat(resource.nameProperty()).concat("\n")
+                .concat(bundle.getString("resource_name") + ": ").concat(resource.nameProperty()).concat("\n")
                 .concat(Bindings
                         .when(resource.descriptionProperty().isNull().or(resource.descriptionProperty().isEmpty()))
                         .then("")
-                        .otherwise(Bindings.concat(resourceBundle.getString("description") + ": ").concat(resource.descriptionProperty()).concat("\n")))
+                        .otherwise(Bindings.concat(bundle.getString("description") + ": ").concat(resource.descriptionProperty()).concat("\n")))
                 .concat(Bindings
                         .when(resource.emailProperty().isNull().or(resource.emailProperty().isEmpty()))
                         .then("")
-                        .otherwise(Bindings.concat(resourceBundle.getString("email") + ": ").concat(resource.emailProperty()).concat("\n")))
-                .concat(resourceBundle.getString("resource_type") + ": ").concat(resource.resourceTypeProperty())
+                        .otherwise(Bindings.concat(bundle.getString("email") + ": ").concat(resource.emailProperty()).concat("\n")))
+                .concat(bundle.getString("resource_type") + ": ").concat(resource.resourceTypeProperty())
         );
     }
 }
