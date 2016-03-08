@@ -63,13 +63,13 @@ public class NewProjectWindow implements IWindow {
         stage.initOwner(uiControl.getStartWindow().getStage());
         stage.initModality(Modality.WINDOW_MODAL);
         stage.show();
-        stage.setTitle("Новый проект");
+        stage.setTitle(UIControl.BUNDLE.getString("new_project"));
 
         LOGGER.debug("Открыто окно создания нового проекта.");
 
         createNewProjectButton.disableProperty().bind(nameField.textProperty().isEmpty()); //рубим нажимательность кнопки, если поле с именем пустует
 
-        nameField.setText("Новый проект"); //дефолтовое название проекта
+        nameField.setText(UIControl.BUNDLE.getString("new_project")); //дефолтовое название проекта
 
         /** Отрубаем возможность ввода дат с клавиатуры воизбежание пустого поля */
         startDatePicker.setEditable(false);
