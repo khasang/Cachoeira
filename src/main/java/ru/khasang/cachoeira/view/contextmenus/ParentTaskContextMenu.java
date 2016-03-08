@@ -10,14 +10,19 @@ import ru.khasang.cachoeira.model.DependentTask;
 import ru.khasang.cachoeira.model.IDependentTask;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.TaskDependencyType;
+import ru.khasang.cachoeira.view.UIControl;
+
+import java.util.ResourceBundle;
 
 public class ParentTaskContextMenu extends ContextMenu {
+    private ResourceBundle bundle = UIControl.BUNDLE;
+
     public ParentTaskContextMenu() {
     }
 
     public void initMenus(IController controller, ITask task) {
         this.getItems().clear();
-        Menu assignDependencyTask = new Menu("Назначить предшественника");
+        Menu assignDependencyTask = new Menu(bundle.getString("assign_predecessor"));
 
         this.getItems().addAll(assignDependencyTask);  //заполняем меню
 
