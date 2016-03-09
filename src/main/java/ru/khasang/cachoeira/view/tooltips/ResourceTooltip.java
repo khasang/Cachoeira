@@ -3,11 +3,16 @@ package ru.khasang.cachoeira.view.tooltips;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Tooltip;
 import ru.khasang.cachoeira.model.IResource;
+import ru.khasang.cachoeira.view.UIControl;
+
+import java.util.ResourceBundle;
 
 /**
- * Created by truesik on 09.12.2015.
+ * Класс описывающий поведение всплывающей подсказки при наведении курсора на ресурс.
  */
 public class ResourceTooltip extends Tooltip {
+    private ResourceBundle bundle = UIControl.BUNDLE;
+
     public ResourceTooltip() {
     }
 
@@ -17,16 +22,16 @@ public class ResourceTooltip extends Tooltip {
 
     public void initToolTip(IResource resource) {
         textProperty().bind(Bindings
-                .concat("Наименование: ").concat(resource.nameProperty()).concat("\n")
+                .concat(bundle.getString("resource_name") + ": ").concat(resource.nameProperty()).concat("\n")
                 .concat(Bindings
                         .when(resource.descriptionProperty().isNull().or(resource.descriptionProperty().isEmpty()))
                         .then("")
-                        .otherwise(Bindings.concat("Описание: ").concat(resource.descriptionProperty()).concat("\n")))
+                        .otherwise(Bindings.concat(bundle.getString("description") + ": ").concat(resource.descriptionProperty()).concat("\n")))
                 .concat(Bindings
                         .when(resource.emailProperty().isNull().or(resource.emailProperty().isEmpty()))
                         .then("")
-                        .otherwise(Bindings.concat("Электронная почта: ").concat(resource.emailProperty()).concat("\n")))
-                .concat("Тип ресурса: ").concat(resource.resourceTypeProperty())
+                        .otherwise(Bindings.concat(bundle.getString("email") + ": ").concat(resource.emailProperty()).concat("\n")))
+                .concat(bundle.getString("resource_type") + ": ").concat(resource.resourceTypeProperty())
         );
     }
 }

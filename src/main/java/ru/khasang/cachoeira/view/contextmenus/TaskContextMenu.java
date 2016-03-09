@@ -7,11 +7,16 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
+import ru.khasang.cachoeira.view.UIControl;
+
+import java.util.ResourceBundle;
 
 /**
  * Класс описывает контекстное меню всплывающее при нажатии правой кнопкой на задаче.
  */
 public class TaskContextMenu extends ContextMenu {
+    private ResourceBundle bundle = UIControl.BUNDLE;
+
     public TaskContextMenu() {
     }
 
@@ -21,9 +26,9 @@ public class TaskContextMenu extends ContextMenu {
 
     public void initMenus(IController controller, ITask task) {
         this.getItems().clear();
-        Menu assignResourceMenu = new Menu("Назначить ресурс");
-        Menu assignDependencyTask = new Menu("Назначить предшественника");
-        MenuItem removeTaskMenuItem = new MenuItem("Удалить задачу");
+        Menu assignResourceMenu = new Menu(bundle.getString("assign_resource"));
+        Menu assignDependencyTask = new Menu(bundle.getString("assign_predecessor"));
+        MenuItem removeTaskMenuItem = new MenuItem(bundle.getString("remove_task"));
 
         removeTaskMenuItem.setOnAction(event -> controller.handleRemoveTask(task));
         this.getItems().addAll(assignResourceMenu, assignDependencyTask, removeTaskMenuItem);  //заполняем меню

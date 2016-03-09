@@ -8,11 +8,16 @@ import javafx.scene.control.MenuItem;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.view.UIControl;
+
+import java.util.ResourceBundle;
 
 /**
  * Класс описывает контекстное меню всплывающее при нажатии правой кнопкой на ресурсе.
  */
 public class ResourceContextMenu extends ContextMenu {
+    private ResourceBundle bundle = UIControl.BUNDLE;
+
     public ResourceContextMenu() {
     }
 
@@ -22,8 +27,8 @@ public class ResourceContextMenu extends ContextMenu {
 
     public void initMenus(IController controller, IResource resource) {
         this.getItems().clear();
-        Menu assignTaskMenu = new Menu("Назначить задачу");
-        MenuItem removeResourceMenuItem = new MenuItem("Удалить ресурс");
+        Menu assignTaskMenu = new Menu(bundle.getString("assign_task"));
+        MenuItem removeResourceMenuItem = new MenuItem(bundle.getString("remove_resource"));
 
         removeResourceMenuItem.setOnAction(event -> controller.handleRemoveResource(resource));
         this.getItems().addAll(assignTaskMenu, removeResourceMenuItem);  //заполняем меню

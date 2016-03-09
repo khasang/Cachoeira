@@ -23,7 +23,7 @@ import java.time.LocalDate;
 public class NewProjectWindow implements IWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(NewProjectWindow.class.getName());
 
-    private UIControl UIControl;
+    private UIControl uiControl;
     @FXML
     private TextField nameField;
     @FXML
@@ -40,10 +40,11 @@ public class NewProjectWindow implements IWindow {
     private Parent root = null;
     private Stage stage;
 
-    public NewProjectWindow(UIControl UIControl) {
-        this.UIControl = UIControl;
+    public NewProjectWindow(UIControl uiControl) {
+        this.uiControl = uiControl;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/NewProjectWindow.fxml"));    //грузим макет окна
+        fxmlLoader.setResources(UIControl.BUNDLE);
         fxmlLoader.setController(this);                                                             //говорим макету, что этот класс является его контроллером
         try {
             root = fxmlLoader.load();
@@ -59,16 +60,16 @@ public class NewProjectWindow implements IWindow {
             stage.setScene(new Scene(root));
         }
         stage.setResizable(false);
-        stage.initOwner(UIControl.getStartWindow().getStage());
+        stage.initOwner(uiControl.getStartWindow().getStage());
         stage.initModality(Modality.WINDOW_MODAL);
         stage.show();
-        stage.setTitle("Новый проект");
+        stage.setTitle(UIControl.BUNDLE.getString("new_project"));
 
         LOGGER.debug("Открыто окно создания нового проекта.");
 
         createNewProjectButton.disableProperty().bind(nameField.textProperty().isEmpty()); //рубим нажимательность кнопки, если поле с именем пустует
 
-        nameField.setText("Новый проект"); //дефолтовое название проекта
+        nameField.setText(UIControl.BUNDLE.getString("new_project")); //дефолтовое название проекта
 
         /** Отрубаем возможность ввода дат с клавиатуры воизбежание пустого поля */
         startDatePicker.setEditable(false);
@@ -112,12 +113,12 @@ public class NewProjectWindow implements IWindow {
     @FXML
     private void newProjectCreateButtonHandle(ActionEvent actionEvent) {
         LOGGER.debug("Нажата кнопка \"Создать\".");
-        UIControl.getController().handleAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText()); //создаем проект
+        uiControl.getController().handleAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText()); //создаем проект
         stage.close(); // закрываем это окошко
-        if (UIControl.getStartWindow().getStage().isShowing()) {
-            UIControl.getStartWindow().getStage().close(); //закрываем стартовое окно
+        if (uiControl.getStartWindow().getStage().isShowing()) {
+            uiControl.getStartWindow().getStage().close(); //закрываем стартовое окно
         }
-        UIControl.launchMainWindow(); //запускаем главное окно
+        uiControl.launchMainWindow(); //запускаем главное окно
     }
 
     @FXML

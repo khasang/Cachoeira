@@ -1,7 +1,9 @@
 package ru.khasang.cachoeira.model;
 
 import javafx.beans.property.*;
+import ru.khasang.cachoeira.view.UIControl;
 
+import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -14,12 +16,14 @@ public class Resource implements IResource {
     private StringProperty email = new SimpleStringProperty(this, "email");
     private StringProperty description = new SimpleStringProperty(this, "description");
 
+    private ResourceBundle bundle = UIControl.BUNDLE;
+
     /** Запоминаем количество задач **/
     private static AtomicInteger resourceSequence = new AtomicInteger(0);
 
     /** Конструктор с дефолтовыми значениями **/
     public Resource() {
-        this.name.setValue("Ресурс " + id.getValue());
+        this.name.setValue(bundle.getString("resource") + " " + id.getValue());
         this.type.setValue(ResourceType.STUFF);
     }
 
