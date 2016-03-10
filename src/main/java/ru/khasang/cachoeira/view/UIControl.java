@@ -6,25 +6,39 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
+import ru.khasang.cachoeira.data.ISettingsDAO;
+import ru.khasang.cachoeira.data.SettingsDAO;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class UIControl {
-    public final static ResourceBundle BUNDLE = ResourceBundle.getBundle("locale.messages", Locale.ENGLISH);
+    public static ResourceBundle bundle;
 
     private MainWindow mainWindow;
     private StartWindow startWindow;
     private NewProjectWindow newProjectWindow;
+    private ISettingsDAO settingsDAO = SettingsDAO.getInstance();
     private IController controller = new Controller();
 
-    private IntegerProperty zoomMultiplier = new SimpleIntegerProperty(this, "zoomMultiplier", 70);
-    private DoubleProperty horizontalScrollValue = new SimpleDoubleProperty(this, "horizontalScrollValue", 0);
-    private DoubleProperty taskVerticalScrollValue = new SimpleDoubleProperty(this, "taskVerticalScrollValue", 0);
-    private DoubleProperty resourceVerticalScrollValue = new SimpleDoubleProperty(this, "resourceVerticalScrollValue", 0);
-    private DoubleProperty taskHorizontalScrollValue = new SimpleDoubleProperty(this, "taskHorizontalScrollValue", 0);
-    private DoubleProperty resourceHorizontalScrollValue = new SimpleDoubleProperty(this, "resourceHorizontalScrollValue", 0);
-    private DoubleProperty splitPaneDividerValue = new SimpleDoubleProperty(this, "splitPaneDividerValue", 0.3);
+    private IntegerProperty zoomMultiplier;
+    private DoubleProperty horizontalScrollValue;
+    private DoubleProperty taskVerticalScrollValue;
+    private DoubleProperty resourceVerticalScrollValue;
+    private DoubleProperty taskHorizontalScrollValue;
+    private DoubleProperty resourceHorizontalScrollValue;
+    private DoubleProperty splitPaneDividerValue;
+
+    public UIControl() {
+        bundle = ResourceBundle.getBundle("locale.messages", new Locale(settingsDAO.getProgramPropertyByKey("Language")));
+        zoomMultiplier = new SimpleIntegerProperty(this, "zoomMultiplier", Double.valueOf(settingsDAO.getUIValueByKey("ZoomValue")).intValue());
+        horizontalScrollValue = new SimpleDoubleProperty(this, "horizontalScrollValue", 0);
+        taskVerticalScrollValue = new SimpleDoubleProperty(this, "taskVerticalScrollValue", 0);
+        resourceVerticalScrollValue = new SimpleDoubleProperty(this, "resourceVerticalScrollValue", 0);
+        taskHorizontalScrollValue = new SimpleDoubleProperty(this, "taskHorizontalScrollValue", 0);
+        resourceHorizontalScrollValue = new SimpleDoubleProperty(this, "resourceHorizontalScrollValue", 0);
+        splitPaneDividerValue = new SimpleDoubleProperty(this, "splitPaneDividerValue", Double.parseDouble(settingsDAO.getUIValueByKey("DiagramDividerValue")));
+    }
 
     public void launchStartWindow() {
         startWindow = new StartWindow(this);
@@ -87,5 +101,9 @@ public class UIControl {
 
     public DoubleProperty splitPaneDividerValueProperty() {
         return splitPaneDividerValue;
+    }
+
+    public double getSplitPaneDividerValue() {
+        return splitPaneDividerValue.get();
     }
 }
