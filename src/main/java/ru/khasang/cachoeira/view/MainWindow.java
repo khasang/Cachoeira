@@ -7,6 +7,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.khasang.cachoeira.data.ISettingsDAO;
+import ru.khasang.cachoeira.data.SettingsDAO;
 
 import java.io.IOException;
 
@@ -78,6 +80,10 @@ public class MainWindow implements IWindow {
             rootLayoutController.setController(uiControl.getController());
             rootLayoutController.setUIControl(uiControl);
             stage.show();
+            stage.setOnCloseRequest(event -> {
+                ISettingsDAO settingsDAO = SettingsDAO.getInstance();
+                settingsDAO.writeUIValues(uiControl.getSplitPaneDividerValue(), uiControl.getZoomMultiplier());
+            });
         } catch (IOException e) {
             LOGGER.debug("Ошибка загрузки: {}", e);
         }
