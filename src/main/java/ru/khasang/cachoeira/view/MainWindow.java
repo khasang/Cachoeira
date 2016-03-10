@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 /**
  * Класс в котором "собирается" главное окно
@@ -40,7 +38,7 @@ public class MainWindow implements IWindow {
     private void initPropertiesPanel() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PropertiesPanel.fxml"));
-            loader.setResources(UIControl.BUNDLE);
+            loader.setResources(UIControl.bundle);
             TabPane propertiesPanel = loader.load();
             rootLayout.setRight(propertiesPanel);
 
@@ -55,7 +53,7 @@ public class MainWindow implements IWindow {
     private void initDiagramPane() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DiagramPane.fxml"));
-            loader.setResources(UIControl.BUNDLE);
+            loader.setResources(UIControl.bundle);
             TabPane diagramPane = loader.load();
             rootLayout.setCenter(diagramPane);
 
@@ -71,7 +69,7 @@ public class MainWindow implements IWindow {
     private void initRootLayout() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/RootLayout.fxml"));
-            loader.setResources(UIControl.BUNDLE);
+            loader.setResources(UIControl.bundle);
             rootLayout = loader.load();
             stage = new Stage();
             stage.setScene(new Scene(rootLayout));

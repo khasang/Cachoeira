@@ -16,7 +16,7 @@ import java.util.ResourceBundle;
  * Класс описывает контекстное меню всплывающее при нажатии правой кнопкой на ресурсе.
  */
 public class ResourceContextMenu extends ContextMenu {
-    private ResourceBundle bundle = UIControl.BUNDLE;
+    private ResourceBundle bundle = UIControl.bundle;
 
     public ResourceContextMenu() {
     }

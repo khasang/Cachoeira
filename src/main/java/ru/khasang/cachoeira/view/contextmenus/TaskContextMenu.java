@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
  * Класс описывает контекстное меню всплывающее при нажатии правой кнопкой на задаче.
  */
 public class TaskContextMenu extends ContextMenu {
-    private ResourceBundle bundle = UIControl.BUNDLE;
+    private ResourceBundle bundle = UIControl.bundle;
 
     public TaskContextMenu() {
     }

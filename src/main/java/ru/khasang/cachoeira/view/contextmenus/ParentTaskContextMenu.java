@@ -15,7 +15,7 @@ import ru.khasang.cachoeira.view.UIControl;
 import java.util.ResourceBundle;
 
 public class ParentTaskContextMenu extends ContextMenu {
-    private ResourceBundle bundle = UIControl.BUNDLE;
+    private ResourceBundle bundle = UIControl.bundle;
 
     public ParentTaskContextMenu() {
     }
