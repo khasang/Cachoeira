@@ -8,6 +8,8 @@ import javafx.scene.control.ButtonType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.controller.IController;
+import ru.khasang.cachoeira.data.ISettingsDAO;
+import ru.khasang.cachoeira.data.SettingsDAO;
 
 import java.util.Optional;
 
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class RootLayoutController {
     private static final Logger logger = LoggerFactory.getLogger(RootLayoutController.class.getName());
     IController controller;
+    private UIControl uiControl;
 
     public RootLayoutController() {
     }
@@ -63,14 +66,25 @@ public class RootLayoutController {
 
         if (result.get() == saveProjectButtonType) {
             //сохранение
+            saveUIValues();
         } else if (result.get() == dontSaveProjectButtonType) {
             //закрываем программу без сохранения
+            saveUIValues();
             System.exit(0);
         }
         //}
     }
 
+    private void saveUIValues() {
+        ISettingsDAO settingsDAO = SettingsDAO.getInstance();
+        settingsDAO.writeUIValues(uiControl.getSplitPaneDividerValue(), uiControl.getZoomMultiplier());
+    }
+
     public void setController(IController controller) {
         this.controller = controller;
+    }
+
+    public void setUIControl(UIControl uiControl) {
+        this.uiControl = uiControl;
     }
 }

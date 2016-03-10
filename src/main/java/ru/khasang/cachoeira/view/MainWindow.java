@@ -76,6 +76,7 @@ public class MainWindow implements IWindow {
 
             rootLayoutController = loader.getController();
             rootLayoutController.setController(uiControl.getController());
+            rootLayoutController.setUIControl(uiControl);
             stage.show();
         } catch (IOException e) {
             LOGGER.debug("Ошибка загрузки: {}", e);
