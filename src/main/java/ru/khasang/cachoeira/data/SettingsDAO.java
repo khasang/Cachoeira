@@ -87,13 +87,20 @@ public class SettingsDAO implements ISettingsDAO {
     }
 
     @Override
-    public void writeUIValues(double diagramDividerValue, double zoomValue) {
+    public void writeUIValues(double diagramDividerValue,
+                              double zoomValue,
+                              double width,
+                              double height,
+                              boolean isMaximized) {
         Properties properties = new Properties();
         OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(uiValues);
             properties.setProperty("DiagramDividerValue", String.valueOf(diagramDividerValue));
             properties.setProperty("ZoomValue", String.valueOf(zoomValue));
+            properties.setProperty("WidthOfWindow", String.valueOf(width));
+            properties.setProperty("HeightOfWindow", String.valueOf(height));
+            properties.setProperty("MaximizedWindow", isMaximized ? "1" : "0");
             properties.store(outputStream, null);
         } catch (IOException e) {
             e.printStackTrace();
@@ -182,8 +189,11 @@ public class SettingsDAO implements ISettingsDAO {
         OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(uiValues);
-            properties.setProperty("DiagramDividerValue", "0.5");
+            properties.setProperty("DiagramDividerValue", "0.3");
             properties.setProperty("ZoomValue", "70");
+            properties.setProperty("WidthOfWindow", "1240");
+            properties.setProperty("HeightOfWindow", "720");
+            properties.setProperty("MaximizedWindow", "0");
             properties.store(outputStream, null);
         } catch (IOException e) {
             e.printStackTrace();

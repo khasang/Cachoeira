@@ -12,7 +12,7 @@ public interface ISettingsDAO {
 
     String getProgramPropertyByKey(String key);
 
-    void writeUIValues(double diagramDividerValue, double zoomValue);
+    void writeUIValues(double diagramDividerValue, double zoomValue, double width, double height, boolean isMaximized);
 
     void writeRecentProjects(List<IProject> recentProjectList, IProject lastOpenedProject);
 
