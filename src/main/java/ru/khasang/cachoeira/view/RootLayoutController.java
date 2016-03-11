@@ -76,8 +76,8 @@ public class RootLayoutController {
     }
 
     private void saveUIValues() {
-        ISettingsDAO settingsDAO = SettingsDAO.getInstance();
-        settingsDAO.writeUIValues(uiControl.getSplitPaneDividerValue(), uiControl.getZoomMultiplier());
+//        ISettingsDAO settingsDAO = SettingsDAO.getInstance();
+//        settingsDAO.writeUIValues(uiControl.getSplitPaneDividerValue(), uiControl.getZoomMultiplier());
     }
 
     public void setController(IController controller) {
