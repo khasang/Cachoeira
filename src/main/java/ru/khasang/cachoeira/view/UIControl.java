@@ -1,9 +1,6 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.data.ISettingsDAO;
@@ -28,6 +25,9 @@ public class UIControl {
     private DoubleProperty taskHorizontalScrollValue;
     private DoubleProperty resourceHorizontalScrollValue;
     private DoubleProperty splitPaneDividerValue;
+    private DoubleProperty widthOfWindow;
+    private DoubleProperty heightOfWindow;
+    private BooleanProperty isMaximized;
 
     public UIControl() {
         bundle = ResourceBundle.getBundle("locale.messages", new Locale(settingsDAO.getProgramPropertyByKey("Language")));
@@ -38,6 +38,13 @@ public class UIControl {
         taskHorizontalScrollValue = new SimpleDoubleProperty(this, "taskHorizontalScrollValue", 0);
         resourceHorizontalScrollValue = new SimpleDoubleProperty(this, "resourceHorizontalScrollValue", 0);
         splitPaneDividerValue = new SimpleDoubleProperty(this, "splitPaneDividerValue", Double.parseDouble(settingsDAO.getUIValueByKey("DiagramDividerValue")));
+        widthOfWindow = new SimpleDoubleProperty(this, "widthOfWindow", Double.parseDouble(settingsDAO.getUIValueByKey("WidthOfWindow")));
+        heightOfWindow = new SimpleDoubleProperty(this, "heightOfWindow", Double.parseDouble(settingsDAO.getUIValueByKey("HeightOfWindow")));
+        isMaximized = new SimpleBooleanProperty(this, "isMaximized", isMaximized());
+    }
+
+    private boolean isMaximized() {
+        return settingsDAO.getUIValueByKey("MaximizedWindow").equals("1");
     }
 
     public void launchStartWindow() {
@@ -105,5 +112,29 @@ public class UIControl {
 
     public double getSplitPaneDividerValue() {
         return splitPaneDividerValue.get();
+    }
+
+    public double getWidthOfWindow() {
+        return widthOfWindow.get();
+    }
+
+    public DoubleProperty widthOfWindowProperty() {
+        return widthOfWindow;
+    }
+
+    public double getHeightOfWindow() {
+        return heightOfWindow.get();
+    }
+
+    public DoubleProperty heightOfWindowProperty() {
+        return heightOfWindow;
+    }
+
+    public boolean getIsMaximized() {
+        return isMaximized.get();
+    }
+
+    public BooleanProperty isMaximizedProperty() {
+        return isMaximized;
     }
 }
