@@ -74,15 +74,21 @@ public class MainWindow implements IWindow {
             loader.setResources(UIControl.bundle);
             rootLayout = loader.load();
             stage = new Stage();
-            stage.setScene(new Scene(rootLayout));
+            stage.setScene(new Scene(rootLayout, uiControl.getWidthOfWindow(), uiControl.getHeightOfWindow()));
 
             rootLayoutController = loader.getController();
             rootLayoutController.setController(uiControl.getController());
             rootLayoutController.setUIControl(uiControl);
             stage.show();
+            stage.setMaximized(uiControl.getIsMaximized());
             stage.setOnCloseRequest(event -> {
                 ISettingsDAO settingsDAO = SettingsDAO.getInstance();
-                settingsDAO.writeUIValues(uiControl.getSplitPaneDividerValue(), uiControl.getZoomMultiplier());
+                settingsDAO.writeUIValues(
+                        uiControl.getSplitPaneDividerValue(),
+                        uiControl.getZoomMultiplier(),
+                        stage.getWidth(),
+                        stage.getHeight(),
+                        stage.isMaximized());
             });
         } catch (IOException e) {
             LOGGER.debug("Ошибка загрузки: {}", e);
