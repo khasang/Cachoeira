@@ -11,9 +11,11 @@ public class SettingsDAO implements ISettingsDAO {
     public static final Logger LOGGER = LoggerFactory.getLogger(SettingsDAO.class.getName());
     private static SettingsDAO instance;
 
-    private File uiValues = new File("ui_value.properties");
-    private File recentProjects = new File("recent_projects.properties");
-    private File programProperties = new File("settings.properties");
+    private File defaultDirectory = new File(System.getProperty("user.home") + "/Documents/Cachoeira/settings");
+
+    private File uiValues = new File(defaultDirectory + "/ui_value.properties");
+    private File recentProjects = new File(defaultDirectory + "/recent_projects.properties");
+    private File programProperties = new File(defaultDirectory + "/settings.properties");
 
     public static SettingsDAO getInstance() {
         if (instance == null) {
@@ -23,6 +25,11 @@ public class SettingsDAO implements ISettingsDAO {
     }
 
     private SettingsDAO() {
+        if (defaultDirectory.mkdirs()) {
+            LOGGER.debug("Создана папка для хранения настроек.");
+        } else {
+            LOGGER.debug("Папка для хранения настроек уже существует.");
+        }
         createPropertiesFileWithDefaultValues("ui");
         createPropertiesFileWithDefaultValues("recentProjects");
         createPropertiesFileWithDefaultValues("programProperties");
