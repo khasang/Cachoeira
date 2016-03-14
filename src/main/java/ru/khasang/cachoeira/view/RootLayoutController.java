@@ -17,6 +17,7 @@ import java.util.Optional;
 public class RootLayoutController {
     private static final Logger logger = LoggerFactory.getLogger(RootLayoutController.class.getName());
     IController controller;
+    private UIControl uiControl;
 
     public RootLayoutController() {
     }
@@ -63,14 +64,25 @@ public class RootLayoutController {
 
         if (result.get() == saveProjectButtonType) {
             //сохранение
+            saveUIValues();
         } else if (result.get() == dontSaveProjectButtonType) {
             //закрываем программу без сохранения
+            saveUIValues();
             System.exit(0);
         }
         //}
     }
 
+    private void saveUIValues() {
+//        ISettingsManager settingsDAO = SettingsManager.getInstance();
+//        settingsDAO.writeUIValues(uiControl.getSplitPaneDividerValue(), uiControl.getZoomMultiplier());
+    }
+
     public void setController(IController controller) {
         this.controller = controller;
+    }
+
+    public void setUIControl(UIControl uiControl) {
+        this.uiControl = uiControl;
     }
 }

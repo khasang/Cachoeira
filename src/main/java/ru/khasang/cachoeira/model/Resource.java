@@ -16,7 +16,7 @@ public class Resource implements IResource {
     private StringProperty email = new SimpleStringProperty(this, "email");
     private StringProperty description = new SimpleStringProperty(this, "description");
 
-    private ResourceBundle bundle = UIControl.BUNDLE;
+    private ResourceBundle bundle = UIControl.bundle;
 
     /** Запоминаем количество задач **/
     private static AtomicInteger resourceSequence = new AtomicInteger(0);

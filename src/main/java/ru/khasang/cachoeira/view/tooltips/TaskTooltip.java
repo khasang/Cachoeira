@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
  * Класс описывающий поведение всплывающей подсказки при наведении курсора на ресурс.
  */
 public class TaskTooltip extends Tooltip {
-    private ResourceBundle bundle = UIControl.BUNDLE;
+    private ResourceBundle bundle = UIControl.bundle;
 
     public TaskTooltip() {
     }

@@ -44,7 +44,7 @@ public class NewProjectWindow implements IWindow {
         this.uiControl = uiControl;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/NewProjectWindow.fxml"));    //грузим макет окна
-        fxmlLoader.setResources(UIControl.BUNDLE);
+        fxmlLoader.setResources(UIControl.bundle);
         fxmlLoader.setController(this);                                                             //говорим макету, что этот класс является его контроллером
         try {
             root = fxmlLoader.load();
@@ -63,13 +63,13 @@ public class NewProjectWindow implements IWindow {
         stage.initOwner(uiControl.getStartWindow().getStage());
         stage.initModality(Modality.WINDOW_MODAL);
         stage.show();
-        stage.setTitle(UIControl.BUNDLE.getString("new_project"));
+        stage.setTitle(UIControl.bundle.getString("new_project"));
 
         LOGGER.debug("Открыто окно создания нового проекта.");
 
         createNewProjectButton.disableProperty().bind(nameField.textProperty().isEmpty()); //рубим нажимательность кнопки, если поле с именем пустует
 
-        nameField.setText(UIControl.BUNDLE.getString("new_project")); //дефолтовое название проекта
+        nameField.setText(UIControl.bundle.getString("new_project")); //дефолтовое название проекта
 
         /** Отрубаем возможность ввода дат с клавиатуры воизбежание пустого поля */
         startDatePicker.setEditable(false);
