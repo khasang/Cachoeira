@@ -8,8 +8,6 @@ import javafx.scene.control.ButtonType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.controller.IController;
-import ru.khasang.cachoeira.data.ISettingsDAO;
-import ru.khasang.cachoeira.data.SettingsDAO;
 
 import java.util.Optional;
 
@@ -76,7 +74,7 @@ public class RootLayoutController {
     }
 
     private void saveUIValues() {
-//        ISettingsDAO settingsDAO = SettingsDAO.getInstance();
+//        ISettingsManager settingsDAO = SettingsManager.getInstance();
 //        settingsDAO.writeUIValues(uiControl.getSplitPaneDividerValue(), uiControl.getZoomMultiplier());
     }
 

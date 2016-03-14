@@ -5,7 +5,7 @@ import ru.khasang.cachoeira.model.IProject;
 import java.util.List;
 import java.util.Locale;
 
-public interface ISettingsDAO {
+public interface ISettingsManager {
     String getUIValueByKey(String key);
 
     List<String> getRecentProjects();

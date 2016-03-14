@@ -7,8 +7,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.khasang.cachoeira.data.ISettingsDAO;
-import ru.khasang.cachoeira.data.SettingsDAO;
+import ru.khasang.cachoeira.data.ISettingsManager;
+import ru.khasang.cachoeira.data.SettingsManager;
 
 import java.io.IOException;
 
@@ -82,8 +82,8 @@ public class MainWindow implements IWindow {
             stage.show();
             stage.setMaximized(uiControl.getIsMaximized());
             stage.setOnCloseRequest(event -> {
-                ISettingsDAO settingsDAO = SettingsDAO.getInstance();
-                settingsDAO.writeUIValues(
+                ISettingsManager settingsManager = SettingsManager.getInstance();
+                settingsManager.writeUIValues(
                         uiControl.getSplitPaneDividerValue(),
                         uiControl.getZoomMultiplier(),
                         stage.getWidth(),

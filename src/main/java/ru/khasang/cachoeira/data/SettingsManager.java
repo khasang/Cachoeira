@@ -7,9 +7,9 @@ import ru.khasang.cachoeira.model.IProject;
 import java.io.*;
 import java.util.*;
 
-public class SettingsDAO implements ISettingsDAO {
-    public static final Logger LOGGER = LoggerFactory.getLogger(SettingsDAO.class.getName());
-    private static SettingsDAO instance;
+public class SettingsManager implements ISettingsManager {
+    public static final Logger LOGGER = LoggerFactory.getLogger(SettingsManager.class.getName());
+    private static SettingsManager instance;
 
     private File defaultDirectory = new File(System.getProperty("user.home") + "/Documents/Cachoeira/settings");
 
@@ -17,14 +17,14 @@ public class SettingsDAO implements ISettingsDAO {
     private File recentProjects = new File(defaultDirectory + "/recent_projects.properties");
     private File programProperties = new File(defaultDirectory + "/settings.properties");
 
-    public static SettingsDAO getInstance() {
+    public static SettingsManager getInstance() {
         if (instance == null) {
-            instance = new SettingsDAO();
+            instance = new SettingsManager();
         }
         return instance;
     }
 
-    private SettingsDAO() {
+    private SettingsManager() {
         if (defaultDirectory.mkdirs()) {
             LOGGER.debug("Создана папка для хранения настроек.");
         } else {
@@ -198,7 +198,7 @@ public class SettingsDAO implements ISettingsDAO {
             outputStream = new FileOutputStream(uiValues);
             properties.setProperty("DiagramDividerValue", "0.3");
             properties.setProperty("ZoomValue", "70");
-            properties.setProperty("WidthOfWindow", "1240");
+            properties.setProperty("WidthOfWindow", "1280");
             properties.setProperty("HeightOfWindow", "720");
             properties.setProperty("MaximizedWindow", "0");
             properties.store(outputStream, null);
@@ -229,7 +229,7 @@ public class SettingsDAO implements ISettingsDAO {
         OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(programProperties);
-            properties.setProperty("Language", "ENGLISH");
+            properties.setProperty("Language", "EN");
             properties.setProperty("ReopenLastProject", "0");
             properties.store(outputStream, null);
         } catch (IOException e) {
