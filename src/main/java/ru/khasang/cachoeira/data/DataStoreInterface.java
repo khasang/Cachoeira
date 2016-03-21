@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface DataStoreInterface {
     void createProjectFile();
+
     void saveProjectToFile();
+
     List<ITask> getTaskListFromFile();
+
     List<IResource> getResourceListFromFile();
 }
