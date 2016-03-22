@@ -6,10 +6,9 @@ import ru.khasang.cachoeira.model.ITask;
 import java.io.File;
 import java.util.List;
 
-/**
- * Created by Вячеслав on 21.03.2016.
- */
 public class DBSchemeManager implements DataStoreInterface {
+    private DBHelper dbHelper = DBHelper.getInstance();
+
     @Override
     public void createProjectFile() {
 
