@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.List;
 
 public interface DataStoreInterface {
-    void createProjectFile();
+    void createProjectFile(String path);
 
     void saveProjectToFile(File file);
 
