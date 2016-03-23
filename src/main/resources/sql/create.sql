@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS Resources (
 	Type_Id             INTEGER             NOT NULL,
 	Email               TEXT,
 	Description         TEXT,
-	FOREIGN KEY (Task_Id) REFERENCES Resource_Type(Id)
+	FOREIGN KEY (Type_Id) REFERENCES Resource_Type(Id)
 );
 
 CREATE TABLE IF NOT EXISTS Main_Task_List_Table (
@@ -71,16 +71,16 @@ CREATE TABLE IF NOT EXISTS Dependency_Type (
 	Type                TEXT                NOT NULL
 );
 
-INSERT INTO Resource_Type(Type) VALUE (STUFF);
-INSERT INTO Resource_Type(Type) VALUE (TOOL);
-INSERT INTO Resource_Type(Type) VALUE (MATERIAL);
+INSERT INTO Resource_Type(Type) VALUES ('STUFF');
+INSERT INTO Resource_Type(Type) VALUES ('TOOL');
+INSERT INTO Resource_Type(Type) VALUES ('MATERIAL');
 
-INSERT INTO Priority_Type(Type) VALUE (High);
-INSERT INTO Priority_Type(Type) VALUE (Normal);
-INSERT INTO Priority_Type(Type) VALUE (Low);
+INSERT INTO Priority_Type(Type) VALUES ('High');
+INSERT INTO Priority_Type(Type) VALUES ('Normal');
+INSERT INTO Priority_Type(Type) VALUES ('Low');
 
-INSERT INTO Dependency_Type(Type) VALUE (STARTSTART);
-INSERT INTO Dependency_Type(Type) VALUE (STARTFINISH);
-INSERT INTO Dependency_Type(Type) VALUE (FINISHSTART);
-INSERT INTO Dependency_Type(Type) VALUE (FINISHFINISH);
+INSERT INTO Dependency_Type(Type) VALUES ('STARTSTART');
+INSERT INTO Dependency_Type(Type) VALUES ('STARTFINISH');
+INSERT INTO Dependency_Type(Type) VALUES ('FINISHSTART');
+INSERT INTO Dependency_Type(Type) VALUES ('FINISHFINISH');
 
