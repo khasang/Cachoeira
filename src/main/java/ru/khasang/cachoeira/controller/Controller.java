@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class Controller implements IController {
     private static final DataFormat SERIALIZED_MIME_TYPE = new DataFormat("application/x-java-serialized-object");
-    private IProject project;
+    private IProject project = new Project();
     private ObjectProperty<ITask> selectedTask = new SimpleObjectProperty<>(this, "selectedTask", null);
     private ObjectProperty<IResource> selectedResource = new SimpleObjectProperty<>(this, "selectedResource", null);
 
@@ -145,7 +145,9 @@ public class Controller implements IController {
                                  LocalDate startDate,
                                  LocalDate finishDate,
                                  String description) {
-        project = new Project();
+        if (project == null) {
+            project = new Project();
+        }
         project.setName(projectName);
         project.setStartDate(startDate);
         project.setFinishDate(finishDate);
