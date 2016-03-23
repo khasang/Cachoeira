@@ -7,10 +7,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.khasang.cachoeira.data.DBSchemeManager;
+import ru.khasang.cachoeira.data.DataStoreInterface;
+import ru.khasang.cachoeira.model.IProject;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -68,6 +73,19 @@ public class StartWindow implements IWindow {
 
     @FXML
     private void openProjectFileChooserHandle(ActionEvent actionEvent) {
-
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home") + "/Documents/Cachoeira"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CACH", "*.cach"));
+        File file = fileChooser.showOpenDialog(this.stage);
+        if (file != null) {
+            DataStoreInterface storeInterface = new DBSchemeManager();
+            IProject project = storeInterface.getProjectFromFile(file, uiControl.getController().getProject());
+            uiControl.getController().handleAddProject(project.getName(), project.getStartDate(), project.getFinishDate(), project.getDescription());
+            stage.close();
+            if (uiControl.getStartWindow().getStage().isShowing()) {
+                uiControl.getStartWindow().getStage().close(); //закрываем стартовое окно
+            }
+            uiControl.launchMainWindow(); //запускаем главное окно
+        }
     }
 }
