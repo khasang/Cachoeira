@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -81,6 +82,7 @@ public class StartWindow implements IWindow {
             DataStoreInterface storeInterface = new DBSchemeManager();
             IProject project = storeInterface.getProjectFromFile(file, uiControl.getController().getProject());
             uiControl.getController().handleAddProject(project.getName(), project.getStartDate(), project.getFinishDate(), project.getDescription());
+            uiControl.getController().getProject().setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListFromFile(file)));
             stage.close();
             if (uiControl.getStartWindow().getStage().isShowing()) {
                 uiControl.getStartWindow().getStage().close(); //закрываем стартовое окно
