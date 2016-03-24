@@ -1,3 +1,18 @@
+CREATE TABLE IF NOT EXISTS Resource_Type (
+	Id                  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	Type                TEXT                NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Priority_Type (
+	Id                  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	Type                TEXT                NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Dependency_Type (
+	Id                  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	Type                TEXT                NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS Project (
 	Name                TEXT                NOT NULL,
 	Start_Date          TEXT                NOT NULL,
@@ -54,21 +69,6 @@ CREATE TABLE IF NOT EXISTS Parent_Tasks (
 	Dependency_Type_Id  INTEGER             NOT NULL,
 	FOREIGN KEY (Task_Id) REFERENCES Tasks(Id),
     FOREIGN KEY (Dependency_Type_Id) REFERENCES Dependency_Type(Id)
-);
-
-CREATE TABLE IF NOT EXISTS Resource_Type (
-	Id                  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-	Type                TEXT                NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS Priority_Type (
-	Id                  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-	Type                TEXT                NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS Dependency_Type (
-	Id                  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-	Type                TEXT                NOT NULL
 );
 
 INSERT INTO Resource_Type(Type) VALUES ('STUFF');
