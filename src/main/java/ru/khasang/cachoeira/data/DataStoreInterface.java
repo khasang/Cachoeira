@@ -14,6 +14,8 @@ public interface DataStoreInterface {
 
     List<ITask> getTaskListFromFile(File file);
 
+    List<IResource> getResourceListByTaskFromFile(File file, ITask task);
+
     List<IResource> getResourceListFromFile(File file);
 
     IProject getProjectFromFile(File file, IProject project);
