@@ -125,7 +125,7 @@ public class NewProjectWindow implements IWindow {
         // Создаем проект
         uiControl.getController().handleAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText());
         // Создаем файл
-        DataStoreInterface storeInterface = new DBSchemeManager();
+        DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
         storeInterface.createProjectFile(projectPathField.getText(), uiControl.getController().getProject());
         // Закрываем это окошко
         stage.close();
