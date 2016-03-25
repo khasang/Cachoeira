@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
 import ru.khasang.cachoeira.model.IProject;
+import ru.khasang.cachoeira.model.ITask;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,10 +80,14 @@ public class StartWindow implements IWindow {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CACH", "*.cach"));
         File file = fileChooser.showOpenDialog(this.stage);
         if (file != null) {
-            DataStoreInterface storeInterface = new DBSchemeManager();
+            DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
             IProject project = storeInterface.getProjectFromFile(file, uiControl.getController().getProject());
             uiControl.getController().handleAddProject(project.getName(), project.getStartDate(), project.getFinishDate(), project.getDescription());
             uiControl.getController().getProject().setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListFromFile(file)));
+            uiControl.getController().getProject().setTaskList(FXCollections.observableArrayList(storeInterface.getTaskListFromFile(file)));
+            for (ITask task : uiControl.getController().getProject().getTaskList()) {
+                task.setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListByTask(file, task)));
+            }
             stage.close();
             if (uiControl.getStartWindow().getStage().isShowing()) {
                 uiControl.getStartWindow().getStage().close(); //закрываем стартовое окно
