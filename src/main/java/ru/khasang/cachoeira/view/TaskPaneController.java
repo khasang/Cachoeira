@@ -149,6 +149,10 @@ public class TaskPaneController {
         taskTreeTableView.setRoot(new TreeItem<>(new Task()));
         taskTreeTableView.getRoot().setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
         taskTreeTableView.setRowFactory(new TaskTreeTableViewRowFactory(this, uiControl.getController()));
+        // При загрузке проверяем наличие задач
+        for (ITask task : uiControl.getController().getProject().getTaskList()) {
+            taskTreeTableView.getRoot().getChildren().add(new TreeItem<>(task));
+        }
         // Временное решение для синхронизации таблицы и диаграммы.
         // Добавил собственный горизонтальный скролл за вместо скролла таблицы (который скрыл, см. TaskTreeTableView),
         // чтобы он был всегда видимый, пока не придумаю более изящное решение.
