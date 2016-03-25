@@ -1,6 +1,7 @@
 package ru.khasang.cachoeira.data;
 
 import ru.khasang.cachoeira.model.*;
+import ru.khasang.cachoeira.view.UIControl;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,11 @@ import java.util.List;
 
 public class DBSchemeManager implements DataStoreInterface {
     private DBHelper dbHelper = DBHelper.getInstance();
+    private UIControl uiControl;
+
+    public DBSchemeManager(UIControl uiControl) {
+        this.uiControl = uiControl;
+    }
 
     @Override
     public void createProjectFile(String path, IProject project) {
@@ -66,25 +72,73 @@ public class DBSchemeManager implements DataStoreInterface {
         try {
             statement = dbHelper.getConnection(file.getPath()).createStatement();
             resultSet = statement.executeQuery("" +
-                    "SELECT *" +
-                    "FROM ");
+                    "SELECT Tasks.Id AS Id, Name, Start_Date, Finish_Date, Duration, Done_Percent, Cost, Description, p.Type AS Type " +
+                    "FROM Tasks " +
+                    "JOIN Priority_Type AS p ON Priority_Type_Id = p.Id;");
             while (resultSet.next()) {
                 ITask task = new Task();
-                task.setId(resultSet.getInt("Id"));
+//                task.setId(resultSet.getInt("Id"));
                 task.setName(resultSet.getString("Name"));
                 task.setStartDate(LocalDate.parse(resultSet.getString("Start_Date")));
                 task.setFinishDate(LocalDate.parse(resultSet.getString("Finish_Date")));
-                task.setDuration();
-                task.setDonePercent();
-                task.setCost();
-                task.setPriorityType();
-                task.setResourceList();
-
+                task.setDuration(resultSet.getInt("Duration"));
+                task.setDonePercent(resultSet.getInt("Done_Percent"));
+                task.setCost(resultSet.getDouble("Cost"));
+                task.setDescription(resultSet.getString("Description"));
+                task.setPriorityType(PriorityType.valueOf(resultSet.getString("Type")));
+                taskList.add(task);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        return null;
+        return taskList;
+    }
+
+    @Override
+    public List<IResource> getResourceListByTaskFromFile(File file, ITask task) {
+        List<IResource> resourceList = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                    "SELECT Resource_Id " +
+                    "FROM Main_Task_List_Table " +
+                    "WHERE Task_Id = ?;");
+            preparedStatement.setInt(1, task.getId() + 1);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                for (IResource resource : uiControl.getController().getProject().getResourceList()) {
+                    if (resource.getId() == resultSet.getInt("Resource_Id")) {
+                        resourceList.add(resource);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return resourceList;
     }
 
     @Override
