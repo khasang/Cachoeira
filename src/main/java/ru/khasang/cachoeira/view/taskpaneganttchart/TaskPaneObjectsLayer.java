@@ -75,7 +75,7 @@ public class TaskPaneObjectsLayer extends Pane {
                     return taskBar.getTask().equals(task);
                 })
                 .findFirst()
-                .get();
+                .orElse(null);
     }
 
     /**
