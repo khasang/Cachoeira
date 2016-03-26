@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.data;
 
+import ru.khasang.cachoeira.model.IDependentTask;
 import ru.khasang.cachoeira.model.IProject;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
@@ -15,6 +16,10 @@ public interface DataStoreInterface {
     List<ITask> getTaskListFromFile(File file);
 
     List<IResource> getResourceListByTaskFromFile(File file, ITask task);
+
+    List<IDependentTask> getParentTaskListByTaskFromFile(File file, ITask task);
+
+    List<IDependentTask> getChildTaskListByTaskFromFile(File file, ITask task);
 
     List<IResource> getResourceListFromFile(File file);
 
