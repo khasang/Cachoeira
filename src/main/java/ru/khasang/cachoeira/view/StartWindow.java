@@ -88,6 +88,12 @@ public class StartWindow implements IWindow {
             for (ITask task : uiControl.getController().getProject().getTaskList()) {
                 task.setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListByTaskFromFile(file, task)));
             }
+            for (ITask task : uiControl.getController().getProject().getTaskList()) {
+                task.setParentTasks(FXCollections.observableArrayList(storeInterface.getParentTaskListByTaskFromFile(file, task)));
+            }
+            for (ITask task : uiControl.getController().getProject().getTaskList()) {
+                task.setChildTasks(FXCollections.observableArrayList(storeInterface.getChildTaskListByTaskFromFile(file, task)));
+            }
             stage.close();
             if (uiControl.getStartWindow().getStage().isShowing()) {
                 uiControl.getStartWindow().getStage().close(); //закрываем стартовое окно
