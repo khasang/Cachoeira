@@ -142,6 +142,88 @@ public class DBSchemeManager implements DataStoreInterface {
     }
 
     @Override
+    public List<IDependentTask> getParentTaskListByTaskFromFile(File file, ITask task) {
+        List<IDependentTask> parentTaskList = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                    "SELECT p.Task_Id AS Task_Id, d.Type AS Type " +
+                    "FROM Main_Task_List_Table AS m " +
+                    "JOIN Parent_Tasks AS p ON m.Parent_Task_Id = p.Id " +
+                    "JOIN Dependency_Type AS d ON p.Dependency_Type_Id = d.Id " +
+                    "WHERE m.Task_Id = ?;");
+            preparedStatement.setInt(1, task.getId() + 1);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                IDependentTask parentTask = new DependentTask();
+                for (ITask t : uiControl.getController().getProject().getTaskList()) {
+                    if ((t.getId() + 1) == resultSet.getInt("Task_Id")) {
+                        parentTask.setTask(t);
+                    }
+                }
+                parentTask.setDependenceType(TaskDependencyType.valueOf(resultSet.getString("Type")));
+                parentTaskList.add(parentTask);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return parentTaskList;
+    }
+
+    @Override
+    public List<IDependentTask> getChildTaskListByTaskFromFile(File file, ITask task) {
+        List<IDependentTask> childTaskList = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                    "SELECT c.Task_Id AS Task_Id, d.Type AS Type " +
+                    "FROM Main_Task_List_Table AS m " +
+                    "JOIN Child_Tasks AS c ON m.Child_Task_Id = c.Id " +
+                    "JOIN Dependency_Type AS d ON c.Dependency_Type_Id = d.Id " +
+                    "WHERE m.Task_Id = ?;");
+            preparedStatement.setInt(1, task.getId() + 1);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                IDependentTask childTask = new DependentTask();
+                for (ITask t : uiControl.getController().getProject().getTaskList()) {
+                    if ((t.getId() + 1) == resultSet.getInt("Task_Id")) {
+                        childTask.setTask(t);
+                    }
+                }
+                childTask.setDependenceType(TaskDependencyType.valueOf(resultSet.getString("Type")));
+                childTaskList.add(childTask);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return childTaskList;
+    }
+
+    @Override
     public List<IResource> getResourceListFromFile(File file) {
         List<IResource> resourceList = new ArrayList<>();
         Statement statement = null;
