@@ -11,7 +11,11 @@ import java.util.List;
 public interface DataStoreInterface {
     void createProjectFile(String path, IProject project);
 
-    void saveProjectToFile(File file);
+    void saveProjectToFile(File file, IProject project);
+
+    void saveTasksToFile(File file, IProject project);
+
+    void saveResourcesToFile(File file, IProject project);
 
     List<ITask> getTaskListFromFile(File file);
 

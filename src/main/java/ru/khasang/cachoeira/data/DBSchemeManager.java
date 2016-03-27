@@ -27,18 +27,13 @@ public class DBSchemeManager implements DataStoreInterface {
     @Override
     public void createProjectFile(String path, IProject project) {
         Statement statement = null;
-        PreparedStatement preparedStatement = null;
         try {
             try {
                 statement = dbHelper.getConnection(path).createStatement();
                 String sql = new String(Files.readAllBytes(Paths.get(getClass().getResource("/sql/create.sql").toURI())), "UTF-8");
                 statement.executeUpdate(sql);
-                preparedStatement = dbHelper.getConnection(path).prepareStatement("INSERT INTO Project(Name, Start_Date, Finish_Date, Description) VALUES (?, ?, ?, ?);");
-                preparedStatement.setString(1, project.getName());
-                preparedStatement.setString(2, project.getStartDate().toString());
-                preparedStatement.setString(3, project.getFinishDate().toString());
-                preparedStatement.setString(4, project.getDescription());
-                preparedStatement.executeUpdate();
+                uiControl.setFile(new File(path));
+                saveProjectToFile(uiControl.getFile(), project);
             } catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
@@ -49,10 +44,7 @@ public class DBSchemeManager implements DataStoreInterface {
                 if (statement != null) {
                     statement.close();
                 }
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-                dbHelper.getConnection(path).close();
+//                dbHelper.getConnection(path).close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -60,8 +52,89 @@ public class DBSchemeManager implements DataStoreInterface {
     }
 
     @Override
-    public void saveProjectToFile(File file) {
+    public void saveProjectToFile(File file, IProject project) {
+        deletePreviousDataFromTable(file, "Project");
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                    "INSERT INTO Project(Name, Start_Date, Finish_Date, Description) " +
+                    "VALUES (?, ?, ?, ?);");
+            preparedStatement.setString(1, project.getName());
+            preparedStatement.setString(2, project.getStartDate().toString());
+            preparedStatement.setString(3, project.getFinishDate().toString());
+            preparedStatement.setString(4, project.getDescription());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
+    @Override
+    public void saveTasksToFile(File file, IProject project) {
+        deletePreviousDataFromTable(file, "Tasks");
+        PreparedStatement preparedStatement = null;
+        try {
+            for (ITask task : project.getTaskList()) {
+                preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                        "INSERT INTO Tasks(Name, Start_Date, Finish_Date, Duration, Done_Percent, Priority_Type_Id, Cost, Description) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+                preparedStatement.setString(1, task.getName());
+                preparedStatement.setString(2, task.getStartDate().toString());
+                preparedStatement.setString(3, task.getFinishDate().toString());
+                preparedStatement.setInt(4, task.getDuration());
+                preparedStatement.setDouble(5, task.getDonePercent());
+                preparedStatement.setInt(6, getTypeId(file, "Priority_Type", task.getPriorityType().toString()));
+                preparedStatement.setDouble(7, task.getCost());
+                preparedStatement.setString(8, task.getDescription());
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void saveResourcesToFile(File file, IProject project) {
+        deletePreviousDataFromTable(file, "Resources");
+        PreparedStatement preparedStatement = null;
+        try {
+            for (IResource resource : project.getResourceList()) {
+                preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                        "INSERT INTO Resources(Name, Type_Id, Email, Description) " +
+                        "VALUES (?, ?, ?, ?);");
+                preparedStatement.setString(1, resource.getName());
+                preparedStatement.setInt(2, getTypeId(file, "Resource_Type", resource.getType().toString()));
+                preparedStatement.setString(3, resource.getEmail());
+                preparedStatement.setString(4, resource.getDescription());
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -291,5 +364,62 @@ public class DBSchemeManager implements DataStoreInterface {
             }
         }
         return project;
+    }
+
+    private void deletePreviousDataFromTable(File file, String table) {
+        Statement statement = null;
+        try {
+            statement = dbHelper.getConnection(file.getPath()).createStatement();
+            statement.executeUpdate("DELETE FROM " + table + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Метод возвращающий Id типа.
+     *
+     * @param file  Файл проекта.
+     * @param table Таблица из которой нужно получить айди типа: "Priority_Type", "Resource_Type", "Dependency_Type"
+     * @param type  Тип айди которого нужно получить (в строковом виде).
+     * @return Возвращает номер айди в таблице.
+     */
+    private int getTypeId(File file, String table, String type) {
+        int resourceTypeId = 0;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                    "SELECT Id " +
+                    "FROM " + table + " " +
+                    "WHERE Type = ?;");
+            preparedStatement.setString(1, type);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                resourceTypeId = resultSet.getInt("Id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return resourceTypeId;
     }
 }
