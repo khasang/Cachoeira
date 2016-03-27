@@ -98,6 +98,9 @@ public class MainWindow implements IWindow {
                 storeInterface.saveProjectToFile(uiControl.getFile(), uiControl.getController().getProject());
                 storeInterface.saveTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
                 storeInterface.saveResourcesToFile(uiControl.getFile(), uiControl.getController().getProject());
+                storeInterface.saveParentTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+                storeInterface.saveChildTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+                storeInterface.saveResourcesByTask(uiControl.getFile(), uiControl.getController().getProject());
             });
         } catch (IOException e) {
             LOGGER.debug("Ошибка загрузки: {}", e);
