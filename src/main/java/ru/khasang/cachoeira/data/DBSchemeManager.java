@@ -443,6 +443,7 @@ public class DBSchemeManager implements DataStoreInterface {
         try {
             statement = dbHelper.getConnection(file.getPath()).createStatement();
             statement.executeUpdate("DELETE FROM " + table + ";");
+            statement.executeUpdate("UPDATE sqlite_sequence SET seq = 0 WHERE name = '" + table + "';");
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
