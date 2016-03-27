@@ -78,21 +78,21 @@ public class StartWindow implements IWindow {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home") + "/Documents/Cachoeira"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CACH", "*.cach"));
-        File file = fileChooser.showOpenDialog(this.stage);
-        if (file != null) {
+        uiControl.setFile(fileChooser.showOpenDialog(this.stage));
+        if (uiControl.getFile() != null) {
             DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
-            IProject project = storeInterface.getProjectFromFile(file, uiControl.getController().getProject());
+            IProject project = storeInterface.getProjectFromFile(uiControl.getFile(), uiControl.getController().getProject());
             uiControl.getController().handleAddProject(project.getName(), project.getStartDate(), project.getFinishDate(), project.getDescription());
-            uiControl.getController().getProject().setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListFromFile(file)));
-            uiControl.getController().getProject().setTaskList(FXCollections.observableArrayList(storeInterface.getTaskListFromFile(file)));
+            uiControl.getController().getProject().setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListFromFile(uiControl.getFile())));
+            uiControl.getController().getProject().setTaskList(FXCollections.observableArrayList(storeInterface.getTaskListFromFile(uiControl.getFile())));
             for (ITask task : uiControl.getController().getProject().getTaskList()) {
-                task.setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListByTaskFromFile(file, task)));
+                task.setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListByTaskFromFile(uiControl.getFile(), task)));
             }
             for (ITask task : uiControl.getController().getProject().getTaskList()) {
-                task.setParentTasks(FXCollections.observableArrayList(storeInterface.getParentTaskListByTaskFromFile(file, task)));
+                task.setParentTasks(FXCollections.observableArrayList(storeInterface.getParentTaskListByTaskFromFile(uiControl.getFile(), task)));
             }
             for (ITask task : uiControl.getController().getProject().getTaskList()) {
-                task.setChildTasks(FXCollections.observableArrayList(storeInterface.getChildTaskListByTaskFromFile(file, task)));
+                task.setChildTasks(FXCollections.observableArrayList(storeInterface.getChildTaskListByTaskFromFile(uiControl.getFile(), task)));
             }
             stage.close();
             if (uiControl.getStartWindow().getStage().isShowing()) {
