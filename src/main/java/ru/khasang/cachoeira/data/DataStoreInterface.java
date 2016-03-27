@@ -17,6 +17,12 @@ public interface DataStoreInterface {
 
     void saveResourcesToFile(File file, IProject project);
 
+    void saveParentTasksToFile(File file, IProject project);
+
+    void saveChildTasksToFile(File file, IProject project);
+
+    void saveResourcesByTask(File file, IProject project);
+
     List<ITask> getTaskListFromFile(File file);
 
     List<IResource> getResourceListByTaskFromFile(File file, ITask task);
