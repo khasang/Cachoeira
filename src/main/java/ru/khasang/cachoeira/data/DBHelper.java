@@ -22,9 +22,7 @@ public class DBHelper {
             try {
                 Class.forName("org.sqlite.JDBC");
                 String dbUrl = "jdbc:sqlite://" + path;
-                SQLiteConfig sqLiteConfig = new SQLiteConfig();
-                sqLiteConfig.enforceForeignKeys(true);
-                connection = DriverManager.getConnection(dbUrl, sqLiteConfig.toProperties());
+                connection = DriverManager.getConnection(dbUrl);
             } catch (ClassNotFoundException | SQLException e) {
                 e.printStackTrace();
             }
