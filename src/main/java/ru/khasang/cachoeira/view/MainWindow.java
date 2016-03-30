@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
@@ -34,6 +35,8 @@ public class MainWindow implements IWindow {
         initRootLayout();
         initDiagramPane();
         initPropertiesPanel();
+
+        Platform.runLater(this::refreshDiagrams);
 
         // Заголовок окна меняется автоматически при изменении имени проекта
         stage.titleProperty().bind(uiControl.getController().getProject().nameProperty());
@@ -105,6 +108,14 @@ public class MainWindow implements IWindow {
         } catch (IOException e) {
             LOGGER.debug("Ошибка загрузки: {}", e);
         }
+    }
+
+    private void refreshDiagrams() {
+        diagramPaneController.getTaskPaneController().refreshTableView(uiControl);
+        diagramPaneController.getTaskPaneController().getTaskGanttChart().getTaskPaneObjectsLayer().refreshTaskDiagram(uiControl);
+        diagramPaneController.getTaskPaneController().getTaskGanttChart().getTaskPaneRelationsLayer().refreshRelationsDiagram(uiControl);
+
+        diagramPaneController.getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().refreshResourceDiagram();
     }
 
     @Override
