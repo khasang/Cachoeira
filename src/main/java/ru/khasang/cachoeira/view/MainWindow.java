@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
@@ -7,6 +8,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.khasang.cachoeira.data.DBSchemeManager;
+import ru.khasang.cachoeira.data.DataStoreInterface;
 import ru.khasang.cachoeira.data.ISettingsManager;
 import ru.khasang.cachoeira.data.SettingsManager;
 
@@ -32,6 +35,8 @@ public class MainWindow implements IWindow {
         initRootLayout();
         initDiagramPane();
         initPropertiesPanel();
+
+        Platform.runLater(this::refreshDiagrams);
 
         // Заголовок окна меняется автоматически при изменении имени проекта
         stage.titleProperty().bind(uiControl.getController().getProject().nameProperty());
@@ -82,6 +87,7 @@ public class MainWindow implements IWindow {
             stage.show();
             stage.setMaximized(uiControl.getIsMaximized());
             stage.setOnCloseRequest(event -> {
+                // Сохранение значений окна
                 ISettingsManager settingsManager = SettingsManager.getInstance();
                 settingsManager.writeUIValues(
                         uiControl.getSplitPaneDividerValue(),
@@ -89,10 +95,27 @@ public class MainWindow implements IWindow {
                         stage.getWidth(),
                         stage.getHeight(),
                         stage.isMaximized());
+
+                // Сохранение проекта в файл
+                DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
+                storeInterface.saveProjectToFile(uiControl.getFile(), uiControl.getController().getProject());
+                storeInterface.saveTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+                storeInterface.saveResourcesToFile(uiControl.getFile(), uiControl.getController().getProject());
+                storeInterface.saveParentTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+                storeInterface.saveChildTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+                storeInterface.saveResourcesByTask(uiControl.getFile(), uiControl.getController().getProject());
             });
         } catch (IOException e) {
             LOGGER.debug("Ошибка загрузки: {}", e);
         }
+    }
+
+    private void refreshDiagrams() {
+        diagramPaneController.getTaskPaneController().refreshTableView(uiControl);
+        diagramPaneController.getTaskPaneController().getTaskGanttChart().getTaskPaneObjectsLayer().refreshTaskDiagram(uiControl);
+        diagramPaneController.getTaskPaneController().getTaskGanttChart().getTaskPaneRelationsLayer().refreshRelationsDiagram(uiControl);
+
+        diagramPaneController.getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().refreshResourceDiagram();
     }
 
     @Override

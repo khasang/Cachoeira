@@ -147,8 +147,10 @@ public class TaskPaneController {
     public void initTaskTable(UIControl uiControl) {
         taskTreeTableView.bindScrollsToController(uiControl);
         taskTreeTableView.setRoot(new TreeItem<>(new Task()));
-        taskTreeTableView.getRoot().setExpanded(true); //делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
+        // Делаем корневой элемент расширяемым, т.е. если у TreeItem'а экспэндед стоит тру, то элементы находящиеся в подчинении (children) будут видны, если фолз, то соответственно нет.
+        taskTreeTableView.getRoot().setExpanded(true);
         taskTreeTableView.setRowFactory(new TaskTreeTableViewRowFactory(this, uiControl.getController()));
+
         // Временное решение для синхронизации таблицы и диаграммы.
         // Добавил собственный горизонтальный скролл за вместо скролла таблицы (который скрыл, см. TaskTreeTableView),
         // чтобы он был всегда видимый, пока не придумаю более изящное решение.
@@ -156,6 +158,16 @@ public class TaskPaneController {
         taskTreeTableViewHorizontalScrollBar.visibleAmountProperty().bind(taskTreeTableView.widthProperty());
         taskTreeTableViewHorizontalScrollBar.valueProperty().bindBidirectional(uiControl.taskHorizontalScrollValueProperty());
         LOGGER.debug("Таблица задач проинициализирована.");
+    }
+
+    public void refreshTableView(UIControl uiControl) {
+        // При загрузке проверяем наличие задач
+        for (ITask task : uiControl.getController().getProject().getTaskList()) {
+            TreeItem<ITask> treeItem = new TreeItem<>(task);
+            taskTreeTableView.getRoot().getChildren().add(treeItem);
+            taskTreeTableView.getSelectionModel().select(treeItem);
+//            uiControl.getController().setSelectedTask(treeItem.getValue());
+        }
     }
 
     public void setListeners(UIControl uiControl) {
@@ -225,7 +237,7 @@ public class TaskPaneController {
         taskGanttChart.initGanttDiagram(uiControl);
         taskSplitPane.getItems().add(taskGanttChart);
         taskSplitPane.setDividerPosition(0, 0.3);
-        //Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
+        // Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
         taskSplitPane.getDividers().get(0).positionProperty().bindBidirectional(uiControl.splitPaneDividerValueProperty());
         LOGGER.debug("Диаграмма Ганта проинициализирована.");
     }

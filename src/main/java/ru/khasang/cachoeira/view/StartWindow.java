@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,10 +8,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.khasang.cachoeira.data.DBSchemeManager;
+import ru.khasang.cachoeira.data.DataStoreInterface;
+import ru.khasang.cachoeira.model.IProject;
+import ru.khasang.cachoeira.model.ITask;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -68,6 +75,30 @@ public class StartWindow implements IWindow {
 
     @FXML
     private void openProjectFileChooserHandle(ActionEvent actionEvent) {
-
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home") + "/Documents/Cachoeira"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CACH", "*.cach"));
+        uiControl.setFile(fileChooser.showOpenDialog(this.stage));
+        if (uiControl.getFile() != null) {
+            DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
+            IProject project = storeInterface.getProjectFromFile(uiControl.getFile(), uiControl.getController().getProject());
+            uiControl.getController().handleAddProject(project.getName(), project.getStartDate(), project.getFinishDate(), project.getDescription());
+            uiControl.getController().getProject().setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListFromFile(uiControl.getFile())));
+            uiControl.getController().getProject().setTaskList(FXCollections.observableArrayList(storeInterface.getTaskListFromFile(uiControl.getFile())));
+            for (ITask task : uiControl.getController().getProject().getTaskList()) {
+                task.setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListByTaskFromFile(uiControl.getFile(), task)));
+            }
+            for (ITask task : uiControl.getController().getProject().getTaskList()) {
+                task.setParentTasks(FXCollections.observableArrayList(storeInterface.getParentTaskListByTaskFromFile(uiControl.getFile(), task)));
+            }
+            for (ITask task : uiControl.getController().getProject().getTaskList()) {
+                task.setChildTasks(FXCollections.observableArrayList(storeInterface.getChildTaskListByTaskFromFile(uiControl.getFile(), task)));
+            }
+            stage.close();
+            if (uiControl.getStartWindow().getStage().isShowing()) {
+                uiControl.getStartWindow().getStage().close(); //закрываем стартовое окно
+            }
+            uiControl.launchMainWindow(); //запускаем главное окно
+        }
     }
 }

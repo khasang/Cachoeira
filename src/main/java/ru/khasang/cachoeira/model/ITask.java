@@ -63,7 +63,7 @@ public interface ITask {
 
     ObservableList<IDependentTask> getParentTasks();
 
-    void setParentTask(ObservableList<IDependentTask> parentTasks);
+    void setParentTasks(ObservableList<IDependentTask> parentTasks);
 
     void addChildTask(IDependentTask childTask);
 

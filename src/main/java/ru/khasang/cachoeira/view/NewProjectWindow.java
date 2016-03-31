@@ -1,18 +1,23 @@
 package ru.khasang.cachoeira.view;
 
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.khasang.cachoeira.data.DBSchemeManager;
+import ru.khasang.cachoeira.data.DataStoreInterface;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 
@@ -39,6 +44,8 @@ public class NewProjectWindow implements IWindow {
 
     private Parent root = null;
     private Stage stage;
+
+    private File pathToFile = new File(System.getProperty("user.home") + "/Documents/Cachoeira");
 
     public NewProjectWindow(UIControl uiControl) {
         this.uiControl = uiControl;
@@ -67,9 +74,10 @@ public class NewProjectWindow implements IWindow {
 
         LOGGER.debug("Открыто окно создания нового проекта.");
 
-        createNewProjectButton.disableProperty().bind(nameField.textProperty().isEmpty()); //рубим нажимательность кнопки, если поле с именем пустует
+        createNewProjectButton.disableProperty().bind(nameField.textProperty().isEmpty().or(projectPathField.textProperty().isEmpty())); //рубим нажимательность кнопки, если поле с именем пустует
 
         nameField.setText(UIControl.bundle.getString("new_project")); //дефолтовое название проекта
+        projectPathField.textProperty().bind(Bindings.concat(pathToFile).concat(File.separator).concat(nameField.textProperty()).concat(".cach"));
 
         /** Отрубаем возможность ввода дат с клавиатуры воизбежание пустого поля */
         startDatePicker.setEditable(false);
@@ -107,14 +115,20 @@ public class NewProjectWindow implements IWindow {
 
     @FXML
     private void newProjectPathChooserButtonHandle(ActionEvent actionEvent) {
-
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        pathToFile = directoryChooser.showDialog(this.getStage());
     }
 
     @FXML
     private void newProjectCreateButtonHandle(ActionEvent actionEvent) {
         LOGGER.debug("Нажата кнопка \"Создать\".");
-        uiControl.getController().handleAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText()); //создаем проект
-        stage.close(); // закрываем это окошко
+        // Создаем проект
+        uiControl.getController().handleAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText());
+        // Создаем файл
+        DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
+        storeInterface.createProjectFile(projectPathField.getText(), uiControl.getController().getProject());
+        // Закрываем это окошко
+        stage.close();
         if (uiControl.getStartWindow().getStage().isShowing()) {
             uiControl.getStartWindow().getStage().close(); //закрываем стартовое окно
         }

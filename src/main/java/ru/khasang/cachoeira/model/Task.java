@@ -115,7 +115,7 @@ public class Task implements ITask {
                     .map(parentTask -> parentTask.getTask().getFinishDate())
                     .sorted(Comparator.reverseOrder())
                     .findFirst()
-                    .get();
+                    .orElseGet(null);
             this.startDate.setValue(latestFinishDate);
             this.finishDate.setValue(startDate.getValue().plusDays(between));
         }
@@ -126,7 +126,7 @@ public class Task implements ITask {
                     .map(parentTask -> parentTask.getTask().getFinishDate())
                     .sorted(Comparator.reverseOrder())
                     .findFirst()
-                    .get();
+                    .orElseGet(null);
             this.finishDate.setValue(latestFinishDate);
             this.startDate.setValue(finishDate.getValue().minusDays(between));
         }
@@ -137,7 +137,7 @@ public class Task implements ITask {
                     .map(parentTask -> parentTask.getTask().getStartDate())
                     .sorted()
                     .findFirst()
-                    .get();
+                    .orElseGet(null);
             this.finishDate.setValue(earliestStartDate);
             this.startDate.setValue(finishDate.getValue().minusDays(between));
         }
@@ -148,7 +148,7 @@ public class Task implements ITask {
                     .map(parentTask -> parentTask.getTask().getStartDate())
                     .sorted()
                     .findFirst()
-                    .get();
+                    .orElseGet(null);
             this.startDate.setValue(earliestStartDate);
             this.finishDate.setValue(startDate.getValue().plusDays(between));
         }
@@ -289,7 +289,7 @@ public class Task implements ITask {
     }
 
     @Override
-    public void setParentTask(ObservableList<IDependentTask> parentTasks) {
+    public void setParentTasks(ObservableList<IDependentTask> parentTasks) {
         this.parentTasks.addAll(parentTasks);
     }
 

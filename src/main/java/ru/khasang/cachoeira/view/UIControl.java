@@ -6,6 +6,7 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.data.ISettingsManager;
 import ru.khasang.cachoeira.data.SettingsManager;
 
+import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -31,6 +32,8 @@ public class UIControl {
     private DoubleProperty widthOfWindow = new SimpleDoubleProperty(this, "widthOfWindow", 1280);
     private DoubleProperty heightOfWindow = new SimpleDoubleProperty(this, "heightOfWindow", 720);
     private BooleanProperty isMaximized = new SimpleBooleanProperty(this, "isMaximized", false);
+
+    private File file;
 
     public UIControl() {
         if (settingsManager.getProgramPropertyByKey("Language") != null) {
@@ -144,5 +147,13 @@ public class UIControl {
 
     public BooleanProperty isMaximizedProperty() {
         return isMaximized;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 }

@@ -27,7 +27,6 @@ public class TaskPaneObjectsLayer extends Pane {
     /**
      * Метод для обновления всей диаграммы.
      */
-    @Deprecated
     public void refreshTaskDiagram(UIControl uiControl) {
         this.getChildren().clear();
         uiControl.getController().getProject().getTaskList().forEach(task -> {
@@ -75,7 +74,7 @@ public class TaskPaneObjectsLayer extends Pane {
                     return taskBar.getTask().equals(task);
                 })
                 .findFirst()
-                .get();
+                .orElse(null);
     }
 
     /**
