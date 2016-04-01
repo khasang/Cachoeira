@@ -8,10 +8,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,37 +23,48 @@ public class DBSchemeManager implements DataStoreInterface {
 
     @Override
     public void createProjectFile(String path, IProject project) {
+        Connection connection = null;
         Statement statement = null;
         try {
-            try {
-                statement = dbHelper.getConnection(path).createStatement();
-                String sql = new String(Files.readAllBytes(Paths.get(getClass().getResource("/sql/create.sql").toURI())), "UTF-8");
-                statement.executeUpdate(sql);
-                uiControl.setFile(new File(path));
-                saveProjectToFile(uiControl.getFile(), project);
-            } catch (IOException | URISyntaxException e) {
-                e.printStackTrace();
-            }
-        } catch (SQLException e) {
+            connection = dbHelper.getConnection(path);
+            statement = connection.createStatement();
+            String sql = new String(Files.readAllBytes(Paths.get(getClass().getResource("/sql/createProject.sql").toURI())), "UTF-8");
+            statement.executeUpdate(sql);
+            uiControl.setFile(new File(path));
+            saveProjectToFile(uiControl.getFile(), project);
+        } catch (IOException | URISyntaxException | SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-//                dbHelper.getConnection(path).close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(statement);
+            DBHelper.closeResources(connection);
+        }
+    }
+
+    @Override
+    public void createResourceExportFile(File file) {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = dbHelper.getConnection(file.getPath());
+            statement = connection.createStatement();
+            String sql = new String(Files.readAllBytes(Paths.get(getClass().getResource("/sql/createResourceExport.sql").toURI())), "UTF-8");
+            statement.executeUpdate(sql);
+        } catch (URISyntaxException | IOException | SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBHelper.closeResources(statement);
+            DBHelper.closeResources(connection);
         }
     }
 
     @Override
     public void saveProjectToFile(File file, IProject project) {
         deletePreviousDataFromTable(file, "Project");
+        Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+            connection = dbHelper.getConnection(file.getPath());
+            preparedStatement = connection.prepareStatement("" +
                     "INSERT INTO Project(Name, Start_Date, Finish_Date, Description) " +
                     "VALUES (?, ?, ?, ?);");
             preparedStatement.setString(1, project.getName());
@@ -67,23 +75,20 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(preparedStatement);
+            DBHelper.closeResources(connection);
         }
     }
 
     @Override
     public void saveTasksToFile(File file, IProject project) {
         deletePreviousDataFromTable(file, "Tasks");
+        Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
+            connection = dbHelper.getConnection(file.getPath());
             for (ITask task : project.getTaskList()) {
-                preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                preparedStatement = connection.prepareStatement("" +
                         "INSERT INTO Tasks(Name, Start_Date, Finish_Date, Duration, Done_Percent, Priority_Type, Cost, Description) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
                 preparedStatement.setString(1, task.getName());
@@ -99,23 +104,20 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(preparedStatement);
+            DBHelper.closeResources(connection);
         }
     }
 
     @Override
     public void saveResourcesToFile(File file, IProject project) {
         deletePreviousDataFromTable(file, "Resources");
+        Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
+            connection = dbHelper.getConnection(file.getPath());
             for (IResource resource : project.getResourceList()) {
-                preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                preparedStatement = connection.prepareStatement("" +
                         "INSERT INTO Resources(Name, Resource_Type, Email, Description) " +
                         "VALUES (?, ?, ?, ?);");
                 preparedStatement.setString(1, resource.getName());
@@ -127,28 +129,25 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(preparedStatement);
+            DBHelper.closeResources(connection);
         }
     }
 
     @Override
     public void saveParentTasksToFile(File file, IProject project) {
         deletePreviousDataFromTable(file, "Parent_Tasks");
+        Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
+            connection = dbHelper.getConnection(file.getPath());
             for (ITask task : uiControl.getController().getProject().getTaskList()) {
                 for (IDependentTask parentTask : task.getParentTasks()) {
-                    preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                    preparedStatement = connection.prepareStatement("" +
                             "INSERT INTO Parent_Tasks(Task_Id, Parent_Task_Id, Dependency_Type) " +
                             "VALUES (?, ?, ?);");
-                    preparedStatement.setInt(1, getId(file, "Tasks", task.getName()));
-                    preparedStatement.setInt(2, getId(file, "Tasks", parentTask.getTask().getName()));
+                    preparedStatement.setInt(1, getId(connection, "Tasks", task.getName()));
+                    preparedStatement.setInt(2, getId(connection, "Tasks", parentTask.getTask().getName()));
                     preparedStatement.setString(3, parentTask.getDependenceType().toString());
                     preparedStatement.executeUpdate();
                 }
@@ -156,28 +155,25 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(preparedStatement);
+            DBHelper.closeResources(connection);
         }
     }
 
     @Override
     public void saveChildTasksToFile(File file, IProject project) {
         deletePreviousDataFromTable(file, "Child_Tasks");
+        Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
+            connection = dbHelper.getConnection(file.getPath());
             for (ITask task : uiControl.getController().getProject().getTaskList()) {
                 for (IDependentTask childTask : task.getChildTasks()) {
-                    preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                    preparedStatement = connection.prepareStatement("" +
                             "INSERT INTO Child_Tasks(Task_Id, Child_Task_Id) " +
                             "VALUES (?, ?);");
-                    preparedStatement.setInt(1, getId(file, "Tasks", task.getName()));
-                    preparedStatement.setInt(2, getId(file, "Tasks", childTask.getTask().getName()));
+                    preparedStatement.setInt(1, getId(connection, "Tasks", task.getName()));
+                    preparedStatement.setInt(2, getId(connection, "Tasks", childTask.getTask().getName()));
 //                    preparedStatement.setString(3, childTask.getDependenceType().toString());
                     preparedStatement.executeUpdate();
                 }
@@ -185,43 +181,45 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(preparedStatement);
+            DBHelper.closeResources(connection);
         }
     }
 
     @Override
     public void saveResourcesByTask(File file, IProject project) {
         deletePreviousDataFromTable(file, "Resources_By_Task");
-        PreparedStatement preparedStatement;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
         try {
             for (ITask task : uiControl.getController().getProject().getTaskList()) {
                 for (IResource resource : task.getResourceList()) {
-                    preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+                    connection = dbHelper.getConnection(file.getPath());
+                    preparedStatement = connection.prepareStatement("" +
                             "INSERT INTO Resources_By_Task(Task_Id, Resource_Id) " +
                             "VALUES (?, ?);");
-                    preparedStatement.setInt(1, getId(file, "Tasks", task.getName()));
-                    preparedStatement.setInt(2, getId(file, "Resources", resource.getName()));
+                    preparedStatement.setInt(1, getId(connection, "Tasks", task.getName()));
+                    preparedStatement.setInt(2, getId(connection, "Resources", resource.getName()));
                     preparedStatement.executeUpdate();
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            DBHelper.closeResources(preparedStatement);
+            DBHelper.closeResources(connection);
         }
     }
 
     @Override
     public List<ITask> getTaskListFromFile(File file) {
         List<ITask> taskList = new ArrayList<>();
+        Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
         try {
-            statement = dbHelper.getConnection(file.getPath()).createStatement();
+            connection = dbHelper.getConnection(file.getPath());
+            statement = connection.createStatement();
             resultSet = statement.executeQuery("" +
                     "SELECT Id, Name, Start_Date, Finish_Date, Duration, Done_Percent, Cost, Description, Priority_Type " +
                     "FROM   Tasks;");
@@ -241,16 +239,9 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(resultSet);
+            DBHelper.closeResources(statement);
+            DBHelper.closeResources(connection);
         }
         return taskList;
     }
@@ -258,10 +249,12 @@ public class DBSchemeManager implements DataStoreInterface {
     @Override
     public List<IResource> getResourceListByTaskFromFile(File file, ITask task) {
         List<IResource> resourceList = new ArrayList<>();
+        Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+            connection = dbHelper.getConnection(file.getPath());
+            preparedStatement = connection.prepareStatement("" +
                     "SELECT Resource_Id " +
                     "FROM   Resources_By_Task " +
                     "WHERE  Task_Id = ?;");
@@ -277,16 +270,9 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(resultSet);
+            DBHelper.closeResources(preparedStatement);
+            DBHelper.closeResources(connection);
         }
         return resourceList;
     }
@@ -294,10 +280,12 @@ public class DBSchemeManager implements DataStoreInterface {
     @Override
     public List<IDependentTask> getParentTaskListByTaskFromFile(File file, ITask task) {
         List<IDependentTask> parentTaskList = new ArrayList<>();
+        Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+            connection = dbHelper.getConnection(file.getPath());
+            preparedStatement = connection.prepareStatement("" +
                     "SELECT Parent_Task_Id, Dependency_Type AS Type " +
                     "FROM   Parent_Tasks " +
                     "WHERE  Task_Id = ?;");
@@ -316,16 +304,9 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(resultSet);
+            DBHelper.closeResources(preparedStatement);
+            DBHelper.closeResources(connection);
         }
         return parentTaskList;
     }
@@ -333,10 +314,12 @@ public class DBSchemeManager implements DataStoreInterface {
     @Override
     public List<IDependentTask> getChildTaskListByTaskFromFile(File file, ITask task) {
         List<IDependentTask> childTaskList = new ArrayList<>();
+        Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+            connection = dbHelper.getConnection(file.getPath());
+            preparedStatement = connection.prepareStatement("" +
                     "SELECT Child_Task_Id, Dependency_Type AS Type " +
                     "FROM   Child_Tasks " +
                     "WHERE  Task_Id = ?;");
@@ -355,16 +338,9 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(resultSet);
+            DBHelper.closeResources(preparedStatement);
+            DBHelper.closeResources(connection);
         }
         return childTaskList;
     }
@@ -372,10 +348,12 @@ public class DBSchemeManager implements DataStoreInterface {
     @Override
     public List<IResource> getResourceListFromFile(File file) {
         List<IResource> resourceList = new ArrayList<>();
+        Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
         try {
-            statement = dbHelper.getConnection(file.getPath()).createStatement();
+            connection = dbHelper.getConnection(file.getPath());
+            statement = connection.createStatement();
             resultSet = statement.executeQuery("" +
                     "SELECT Id, Name, Resource_Type, Email, Description " +
                     "FROM   Resources;"
@@ -392,27 +370,21 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-                if (statement != null) {
-                    statement.close();
-                }
-//                dbHelper.getConnection(file.getPath()).close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(resultSet);
+            DBHelper.closeResources(statement);
+            DBHelper.closeResources(connection);
         }
         return resourceList;
     }
 
     @Override
     public IProject getProjectFromFile(File file, IProject project) {
+        Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
         try {
-            statement = dbHelper.getConnection(file.getPath()).createStatement();
+            connection = dbHelper.getConnection(file.getPath());
+            statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT * FROM Project;");
             while (resultSet.next()) {
                 project.setName(resultSet.getString("Name"));
@@ -423,46 +395,35 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-                if (statement != null) {
-                    statement.close();
-                }
-//                dbHelper.getConnection(file.getPath()).close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(resultSet);
+            DBHelper.closeResources(statement);
+            DBHelper.closeResources(connection);
         }
         return project;
     }
 
     private void deletePreviousDataFromTable(File file, String table) {
+        Connection connection = null;
         Statement statement = null;
         try {
-            statement = dbHelper.getConnection(file.getPath()).createStatement();
+            connection = dbHelper.getConnection(file.getPath());
+            statement = connection.createStatement();
             statement.executeUpdate("DELETE FROM " + table + ";");
             statement.executeUpdate("UPDATE sqlite_sequence SET seq = 0 WHERE name = '" + table + "';");
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(statement);
+            DBHelper.closeResources(connection);
         }
     }
 
-    private int getId(File file, String table, String name) {
+    private int getId(Connection connection, String table, String name) {
         int id = 0;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = dbHelper.getConnection(file.getPath()).prepareStatement("" +
+            preparedStatement = connection.prepareStatement("" +
                     "SELECT Id " +
                     "FROM " + table + " " +
                     "WHERE  Name = ?;");
@@ -474,16 +435,8 @@ public class DBSchemeManager implements DataStoreInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DBHelper.closeResources(resultSet);
+            DBHelper.closeResources(preparedStatement);
         }
         return id;
     }
