@@ -8,27 +8,26 @@ public class DBHelper {
     private static DBHelper instance;
     private static Connection connection;
 
+    private DBHelper() {
+    }
+
     public static DBHelper getInstance() {
-        if (instance == null) {
+        if (instance != null) {
             instance = new DBHelper();
         }
         return instance;
     }
 
     public Connection getConnection(String path) {
-        if (connection == null) {
-            try {
+        try {
+            if (connection == null || connection.isClosed()) {
                 Class.forName("org.sqlite.JDBC");
                 String dbUrl = "jdbc:sqlite://" + path;
                 connection = DriverManager.getConnection(dbUrl);
-            } catch (ClassNotFoundException | SQLException e) {
-                e.printStackTrace();
             }
-
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
         }
         return connection;
-    }
-
-    private DBHelper() {
     }
 }
