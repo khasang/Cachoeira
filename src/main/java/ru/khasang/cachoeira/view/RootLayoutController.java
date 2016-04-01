@@ -52,6 +52,7 @@ public class RootLayoutController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CRES", "*.cres"));
         File file = fileChooser.showSaveDialog(uiControl.getMainWindow().getStage());
+        storeInterface.createResourceExportFile(file);
         storeInterface.saveResourcesToFile(file, uiControl.getController().getProject());
     }
 
