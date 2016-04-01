@@ -12,7 +12,7 @@ public class DBHelper {
     }
 
     public static DBHelper getInstance() {
-        if (instance != null) {
+        if (instance == null) {
             instance = new DBHelper();
         }
         return instance;
@@ -29,5 +29,15 @@ public class DBHelper {
             e.printStackTrace();
         }
         return connection;
+    }
+
+    public static void closeResources(AutoCloseable autoCloseable) {
+        try {
+            if (autoCloseable != null) {
+                autoCloseable.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
