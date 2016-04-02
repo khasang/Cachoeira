@@ -5,10 +5,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.controller.IController;
+import ru.khasang.cachoeira.data.DBSchemeManager;
+import ru.khasang.cachoeira.data.DataStoreInterface;
+import ru.khasang.cachoeira.model.IResource;
 
+import java.io.File;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,7 +22,7 @@ import java.util.Optional;
  */
 public class RootLayoutController {
     private static final Logger logger = LoggerFactory.getLogger(RootLayoutController.class.getName());
-    IController controller;
+    private IController controller;
     private UIControl uiControl;
 
     public RootLayoutController() {
@@ -38,6 +44,26 @@ public class RootLayoutController {
     private void saveProjectMenuItemHandle(ActionEvent actionEvent) {
         logger.info("Нажата кнопка меню \"Сохранить\".");
         //сохранение проекта
+    }
+
+    @FXML
+    private void resourceExportHandle(ActionEvent actionEvent) {
+        DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CRES", "*.cres"));
+        File file = fileChooser.showSaveDialog(uiControl.getMainWindow().getStage());
+        storeInterface.createResourceExportFile(file);
+        storeInterface.saveResourcesToFile(file, uiControl.getController().getProject());
+    }
+
+    @FXML
+    private void resourceImportHandle(ActionEvent actionEvent) {
+        DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CRES", "*.cres"));
+        File file = fileChooser.showOpenDialog(uiControl.getMainWindow().getStage());
+        List<IResource> resourceListFromFile = storeInterface.getResourceListFromFile(file);
+        uiControl.getController().getProject().getResourceList().addAll(resourceListFromFile);
     }
 
     @FXML

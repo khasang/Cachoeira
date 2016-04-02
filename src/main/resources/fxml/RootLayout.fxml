@@ -14,6 +14,12 @@
                      <MenuItem mnemonicParsing="false" onAction="#newProjectMenuItemHandle" text="%create_project" />
                      <MenuItem mnemonicParsing="false" onAction="#openProjectMenuItemHandle" text="%open_project" />
                      <MenuItem mnemonicParsing="false" onAction="#saveProjectMenuItemHandle" text="%save_project" />
+                  <Menu mnemonicParsing="false" text="%resources">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#resourceExportHandle" text="%export" />
+                        <MenuItem mnemonicParsing="false" onAction="#resourceImportHandle" text="%import" />
+                    </items>
+                  </Menu>
                      <SeparatorMenuItem mnemonicParsing="false" />
                      <MenuItem mnemonicParsing="false" onAction="#exitMenuItemHandle" text="%exit" />
                  </items>
