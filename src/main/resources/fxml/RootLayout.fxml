@@ -13,7 +13,8 @@
                  <items>
                      <MenuItem mnemonicParsing="false" onAction="#newProjectMenuItemHandle" text="%create_project" />
                      <MenuItem mnemonicParsing="false" onAction="#openProjectMenuItemHandle" text="%open_project" />
-                     <MenuItem mnemonicParsing="false" onAction="#saveProjectMenuItemHandle" text="%save_project" />
+                     <MenuItem mnemonicParsing="false" onAction="#saveProjectMenuItemHandle" text="%save" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveProjectAsMenuItemHandle" text="%save_as" />
                   <Menu mnemonicParsing="false" text="%resources">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#resourceExportHandle" text="%export" />

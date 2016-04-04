@@ -31,7 +31,6 @@ public class DBSchemeManager implements DataStoreInterface {
             String sql = new String(Files.readAllBytes(Paths.get(getClass().getResource("/sql/createProject.sql").toURI())), "UTF-8");
             statement.executeUpdate(sql);
             uiControl.setFile(new File(path));
-            saveProjectToFile(uiControl.getFile(), project);
         } catch (IOException | URISyntaxException | SQLException e) {
             e.printStackTrace();
         } finally {

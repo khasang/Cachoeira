@@ -44,6 +44,29 @@ public class RootLayoutController {
     private void saveProjectMenuItemHandle(ActionEvent actionEvent) {
         logger.info("Нажата кнопка меню \"Сохранить\".");
         //сохранение проекта
+        DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
+        storeInterface.saveProjectToFile(uiControl.getFile(), uiControl.getController().getProject());
+        storeInterface.saveTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+        storeInterface.saveResourcesToFile(uiControl.getFile(), uiControl.getController().getProject());
+        storeInterface.saveParentTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+        storeInterface.saveChildTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+        storeInterface.saveResourcesByTask(uiControl.getFile(), uiControl.getController().getProject());
+    }
+
+    @FXML
+    public void saveProjectAsMenuItemHandle(ActionEvent actionEvent) {
+        DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CACH", "*.cach"));
+        File file = fileChooser.showSaveDialog(uiControl.getMainWindow().getStage());
+        uiControl.setFile(file);
+        storeInterface.createProjectFile(file.getPath(), uiControl.getController().getProject());
+        storeInterface.saveProjectToFile(uiControl.getFile(), uiControl.getController().getProject());
+        storeInterface.saveTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+        storeInterface.saveResourcesToFile(uiControl.getFile(), uiControl.getController().getProject());
+        storeInterface.saveParentTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+        storeInterface.saveChildTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+        storeInterface.saveResourcesByTask(uiControl.getFile(), uiControl.getController().getProject());
     }
 
     @FXML
