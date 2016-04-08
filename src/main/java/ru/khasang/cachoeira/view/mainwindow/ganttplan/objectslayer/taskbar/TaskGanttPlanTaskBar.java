@@ -1,9 +1,12 @@
-package ru.khasang.cachoeira.view.ganttplan.taskbar;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar;
 
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.ListChangeListener;
+import javafx.collections.WeakListChangeListener;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import ru.khasang.cachoeira.model.IDependentTask;
@@ -30,7 +33,12 @@ public class TaskGanttPlanTaskBar extends TaskBar {
     private InvalidationListener zoomListener;
 
     @Override
-    void setParameters(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle) {
+    public void initTaskRectangle(UIControl uiControl, ITask task, IResource resource) {
+        super.initTaskRectangle(uiControl, task, resource);
+    }
+
+    @Override
+    protected void setParameters(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle) {
         backgroundRectangle.setWidth(taskWidth(
                 task.getStartDate(),
                 task.getFinishDate(),
@@ -44,13 +52,13 @@ public class TaskGanttPlanTaskBar extends TaskBar {
     }
 
     @Override
-    double taskY(int rowIndex) {
+    protected double taskY(int rowIndex) {
         this.rowIndex = rowIndex;
         return (rowIndex * ROW_HEIGHT);
     }
 
     @Override
-    void setListeners(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle, Rectangle donePercentRectangle) {
+    protected void setListeners(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle, Rectangle donePercentRectangle) {
         taskListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasRemoved() || change.wasAdded()) {
@@ -132,25 +140,41 @@ public class TaskGanttPlanTaskBar extends TaskBar {
                 donePercentRectangle.setFill(Color.valueOf("#0381f4"));
             }
         };
-//        dependentTaskListChangeListener = change -> {
-//            while (change.next()) {
-//                if (change.wasAdded()) {
-//                    change.getAddedSubList().forEach(dependentTask -> uiControl.getMainWindow()
-//                        .getDiagramPaneController().getTaskPaneController()
-//                        .getGanttPlan().getTaskPaneRelationsLayer()
-//                        .addRelation(dependentTask, uiControl.getController().getSelectedTask(), uiControl));
-//                }
-//                if (change.wasRemoved()) {
-//                    change.getRemoved().forEach(dependentTask -> uiControl.getMainWindow()
-//                            .getDiagramPaneController().getTaskPaneController()
-//                            .getGanttPlan().getTaskPaneRelationsLayer()
-//                            .removeRelation(dependentTask.getTask(), this.task));
-//                }
-//            }
-//        };
+        dependentTaskListChangeListener = change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    change.getAddedSubList().forEach(dependentTask -> uiControl.getMainWindow()
+                        .getDiagramPaneController().getTaskPaneController()
+                        .getGanttPlan().getRelationsLayer()
+                        .addRelation(dependentTask, uiControl.getController().getSelectedTask(), uiControl));
+                }
+                if (change.wasRemoved()) {
+                    change.getRemoved().forEach(dependentTask -> uiControl.getMainWindow()
+                            .getDiagramPaneController().getTaskPaneController()
+                            .getGanttPlan().getRelationsLayer()
+                            .removeRelation(dependentTask.getTask(), this.task));
+                }
+            }
+        };
         zoomListener = observable -> {
             this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()));
             backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
         };
+        /*
+         Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
+         то пересчитываем индексы у элементов на диаграмме
+         */
+        uiControl.getController().getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListChangeListener));
+        // Если начальная дата изменилась, то...
+        task.startDateProperty().addListener(new WeakChangeListener<>(startDateChangeListener));
+        // Если конечная дата изменилась, то...
+        task.finishDateProperty().addListener(new WeakChangeListener<>(finishDateChangeListener));
+        // Следим за списком ресурсов привязанных к данной задаче/
+        task.getResourceList().addListener(new WeakListChangeListener<>(resourceListChangeListener));
+        //подсветка при наведении // TODO: 15.01.2016 Сделать анимацию
+        this.hoverProperty().addListener(hoverListener);
+
+        uiControl.getController().getSelectedTask().getParentTasks().addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
+        uiControl.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomListener));
     }
 }
