@@ -1,13 +1,16 @@
-package ru.khasang.cachoeira.view.ganttplan;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan;
 
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import ru.khasang.cachoeira.view.UIControl;
-import ru.khasang.cachoeira.view.ganttplan.dateline.DateLine;
-import ru.khasang.cachoeira.view.ganttplan.gridlayer.GridLayer;
-import ru.khasang.cachoeira.view.ganttplan.objectslayer.ObjectsLayer;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.dateline.DateLine;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.gridlayer.GridLayer;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.labelslayer.TaskBarLabelsLayer;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.ObjectsLayer;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.relationlayer.RelationsLayer;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.selectedobjectlayer.SelectedObjectLayer;
 
 public abstract class GanttPlan extends VBox {
     protected ObjectsLayer objectsLayer;
@@ -77,9 +80,9 @@ public abstract class GanttPlan extends VBox {
         return objectsLayer;
     }
 
-//    abstract RelationsLayer getRelationsLayer();
-//
-//    abstract LabelLayer getLabelLayer();
-//
-//    abstract SelectedObjectLayer getSelectedObjectLayer();
+    public abstract RelationsLayer getRelationsLayer();
+
+    public abstract TaskBarLabelsLayer getLabelsLayer();
+
+    public abstract SelectedObjectLayer getSelectedObjectLayer();
 }
