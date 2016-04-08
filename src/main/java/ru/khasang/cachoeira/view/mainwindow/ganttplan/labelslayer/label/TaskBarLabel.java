@@ -1,17 +1,18 @@
-package ru.khasang.cachoeira.view.taskpaneganttchart;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan.labelslayer.label;
 
 import javafx.collections.ListChangeListener;
 import javafx.collections.WeakListChangeListener;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import ru.khasang.cachoeira.model.IResource;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
 
-public class TaskPaneLabel extends HBox {
-    private TaskPaneTaskBar taskBar;
+public abstract class TaskBarLabel extends HBox {
+    private TaskBar taskBar;
     @SuppressWarnings("FieldCanBeLocal")
     private ListChangeListener<IResource> resourceListChangeListener;
 
-    public TaskPaneLabel(TaskPaneTaskBar taskBar) {
+    public TaskBarLabel(TaskBar taskBar) {
         this.taskBar = taskBar;
         this.layoutXProperty().bind(taskBar.layoutXProperty().add(taskBar.widthProperty().add(12)));
         this.layoutYProperty().bind(taskBar.layoutYProperty().add(6));
@@ -26,7 +27,7 @@ public class TaskPaneLabel extends HBox {
 
     public void removeResourceLabel(IResource resource) {
         this.getChildren().removeIf(node -> {
-            Label resourceLabel = (Label) node;
+            javafx.scene.control.Label resourceLabel = (javafx.scene.control.Label) node;
             return resourceLabel.getText().equals(resource.getName());
         });
     }
@@ -50,7 +51,7 @@ public class TaskPaneLabel extends HBox {
         taskBar.getTask().getResourceList().addListener(new WeakListChangeListener<>(resourceListChangeListener));
     }
 
-    public TaskPaneTaskBar getTaskBar() {
+    public TaskBar getTaskBar() {
         return taskBar;
     }
 }
