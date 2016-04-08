@@ -1,11 +1,11 @@
-package ru.khasang.cachoeira.view.ganttplan.objectslayer;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer;
 
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
-import ru.khasang.cachoeira.view.ganttplan.taskbar.ResourceGanttPlanTaskBar;
-import ru.khasang.cachoeira.view.ganttplan.taskbar.TaskBar;
-import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.ResourceGanttPlanTaskBar;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
+import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskTooltip;
 
 public class ResourceGanttPlanObjectsLayer extends ObjectsLayer {
     @Override

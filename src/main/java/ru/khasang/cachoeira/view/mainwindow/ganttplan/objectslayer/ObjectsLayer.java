@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.ganttplan.objectslayer;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
@@ -6,10 +6,10 @@ import javafx.scene.layout.Pane;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
-import ru.khasang.cachoeira.view.ganttplan.taskbar.TaskBar;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
 
 public abstract class ObjectsLayer extends Pane {
-    private UIControl uiControl;
+    protected UIControl uiControl;
 
     @SuppressWarnings("FieldCanBeLocal")
     private InvalidationListener zoomMultiplierListener;
@@ -34,7 +34,6 @@ public abstract class ObjectsLayer extends Pane {
             TaskBar taskBar = (TaskBar) node;
             return taskBar.getTask().equals(task);
         });
-//        uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getGanttPlan().getTaskPaneLabelLayer().removeLabel(task);
     }
 
     /**
