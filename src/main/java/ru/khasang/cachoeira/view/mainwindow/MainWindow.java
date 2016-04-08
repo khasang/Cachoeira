@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.mainwindow;
 
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +12,7 @@ import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
 import ru.khasang.cachoeira.data.ISettingsManager;
 import ru.khasang.cachoeira.data.SettingsManager;
+import ru.khasang.cachoeira.view.*;
 
 import java.io.IOException;
 
@@ -112,10 +113,10 @@ public class MainWindow implements IWindow {
 
     private void refreshDiagrams() {
         diagramPaneController.getTaskPaneController().refreshTableView(uiControl);
-        diagramPaneController.getTaskPaneController().getTaskGanttChart().getTaskPaneObjectsLayer().refreshTaskDiagram(uiControl);
-        diagramPaneController.getTaskPaneController().getTaskGanttChart().getTaskPaneRelationsLayer().refreshRelationsDiagram(uiControl);
+        diagramPaneController.getTaskPaneController().getGanttPlan().getObjectsLayer().refreshPlan(uiControl);
+        diagramPaneController.getTaskPaneController().getGanttPlan().getRelationsLayer().refreshRelationsDiagram(uiControl);
 
-        diagramPaneController.getResourcePaneController().getResourceGanttChart().getResourcePaneObjectsLayer().refreshResourceDiagram();
+        diagramPaneController.getResourcePaneController().getGanttPlan().getObjectsLayer().refreshPlan(uiControl);
     }
 
     @Override

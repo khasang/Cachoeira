@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.mainwindow;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
@@ -16,9 +16,12 @@ import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
 import ru.khasang.cachoeira.model.Task;
-import ru.khasang.cachoeira.view.contextmenus.ColumnContextMenu;
-import ru.khasang.cachoeira.view.rowfactories.TaskTreeTableViewRowFactory;
-import ru.khasang.cachoeira.view.tables.TaskTreeTableView;
+import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.mainwindow.contextmenus.ColumnContextMenu;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.GanttPlan;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.TaskGanttPlan;
+import ru.khasang.cachoeira.view.mainwindow.rowfactories.TaskTreeTableViewRowFactory;
+import ru.khasang.cachoeira.view.mainwindow.tables.TaskTreeTableView;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -57,7 +60,7 @@ public class TaskPaneController {
     @FXML
     private Slider zoomSlider;
 
-    private TaskGanttChart taskGanttChart;
+    private GanttPlan ganttPlan;
     private UIControl uiControl;
 
     @SuppressWarnings("FieldCanBeLocal")
@@ -198,7 +201,7 @@ public class TaskPaneController {
                         // Выделяем добавленный элемент в таблице
                         taskTreeTableView.getSelectionModel().select(taskTreeItem);
                         // Добавляем задачу на диаграмму
-                        taskGanttChart.getTaskPaneObjectsLayer().addTaskBar(task);
+                        ganttPlan.getObjectsLayer().addTaskBar(task, null);
                     });
                 }
                 // Удаляем
@@ -207,8 +210,8 @@ public class TaskPaneController {
                         // Сначала удаляем из таблицы...
                         removeTaskTreeItem(task, taskTreeTableView.getRoot().getChildren());
                         // ...а теперь с диаграммы
-                        taskGanttChart.getTaskPaneObjectsLayer().removeTaskBar(task);
-                        taskGanttChart.getTaskPaneSelectedObjectLayer().removeBackgroundTaskBar(task);
+                        ganttPlan.getObjectsLayer().removeTaskBar(task);
+                        ganttPlan.getSelectedObjectLayer().removeBackgroundTaskBar(task);
                     });
                 }
             }
@@ -233,9 +236,9 @@ public class TaskPaneController {
     }
 
     public void initGanttChart(UIControl uiControl) {
-        taskGanttChart = new TaskGanttChart();
-        taskGanttChart.initGanttDiagram(uiControl);
-        taskSplitPane.getItems().add(taskGanttChart);
+        ganttPlan = new TaskGanttPlan();
+        ganttPlan.initGanttDiagram(uiControl);
+        taskSplitPane.getItems().add(ganttPlan);
         taskSplitPane.setDividerPosition(0, 0.3);
         // Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
         taskSplitPane.getDividers().get(0).positionProperty().bindBidirectional(uiControl.splitPaneDividerValueProperty());
@@ -268,7 +271,7 @@ public class TaskPaneController {
         this.uiControl = uiControl;
     }
 
-    public TaskGanttChart getTaskGanttChart() {
-        return taskGanttChart;
+    public GanttPlan getGanttPlan() {
+        return ganttPlan;
     }
 }

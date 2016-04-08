@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.mainwindow;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
@@ -15,9 +15,12 @@ import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.Resource;
 import ru.khasang.cachoeira.model.ResourceType;
-import ru.khasang.cachoeira.view.contextmenus.ColumnContextMenu;
-import ru.khasang.cachoeira.view.rowfactories.ResourceTableViewRowFactory;
-import ru.khasang.cachoeira.view.tables.ResourceTableView;
+import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.mainwindow.contextmenus.ColumnContextMenu;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.GanttPlan;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.ResourceGanttPlan;
+import ru.khasang.cachoeira.view.mainwindow.rowfactories.ResourceTableViewRowFactory;
+import ru.khasang.cachoeira.view.mainwindow.tables.ResourceTableView;
 
 
 /**
@@ -45,7 +48,7 @@ public class ResourcePaneController {
     @FXML
     private Slider zoomSlider;
 
-    private ResourceGanttChart resourceGanttChart;
+    private GanttPlan ganttPlan;
     private UIControl uiControl;
 
     @SuppressWarnings("FieldCanBeLocal")
@@ -117,10 +120,10 @@ public class ResourcePaneController {
         taskListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
-                    resourceGanttChart.getResourcePaneObjectsLayer().refreshResourceDiagram();
+                    ganttPlan.getObjectsLayer().refreshPlan(uiControl);
                 }
                 if (change.wasRemoved()) {
-                    change.getRemoved().forEach(task -> resourceGanttChart.getResourcePaneObjectsLayer().removeTaskBar(task));
+                    change.getRemoved().forEach(task -> ganttPlan.getObjectsLayer().removeTaskBar(task));
                 }
             }
         };
@@ -133,9 +136,9 @@ public class ResourcePaneController {
     }
 
     public void initGanttChart(UIControl uiControl) {
-        resourceGanttChart = new ResourceGanttChart();
-        resourceGanttChart.initGanttDiagram(uiControl);
-        resourceSplitPane.getItems().add(resourceGanttChart);
+        ganttPlan = new ResourceGanttPlan();
+        ganttPlan.initGanttDiagram(uiControl);
+        resourceSplitPane.getItems().add(ganttPlan);
         resourceSplitPane.setDividerPosition(0, 0.3);
         //Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
         resourceSplitPane.getDividers().get(0).positionProperty().bindBidirectional(uiControl.splitPaneDividerValueProperty());
@@ -168,7 +171,7 @@ public class ResourcePaneController {
         this.uiControl = uiControl;
     }
 
-    public ResourceGanttChart getResourceGanttChart() {
-        return resourceGanttChart;
+    public GanttPlan getGanttPlan() {
+        return ganttPlan;
     }
 }
