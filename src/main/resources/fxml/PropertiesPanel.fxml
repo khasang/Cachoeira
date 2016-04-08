@@ -6,7 +6,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 
-<TabPane prefHeight="631.0" prefWidth="310.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.PropertiesPanelController">
+<TabPane prefHeight="631.0" prefWidth="310.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.mainwindow.PropertiesPanelController">
    <tabs>
       <Tab fx:id="projectPropertiesTab" text="%project">
          <content>

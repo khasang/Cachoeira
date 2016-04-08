@@ -2,9 +2,9 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import ru.khasang.cachoeira.view.tables.ResourceTableView?>
+<?import ru.khasang.cachoeira.view.mainwindow.tables.ResourceTableView?>
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="ru.khasang.cachoeira.view.ResourcePaneController">
+      fx:controller="ru.khasang.cachoeira.view.mainwindow.ResourcePaneController">
     <SplitPane fx:id="resourceSplitPane" VBox.vgrow="ALWAYS">
         <VBox>
             <ResourceTableView fx:id="resourceTableView" VBox.vgrow="ALWAYS">
