@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.Task;
+import ru.khasang.cachoeira.view.mainwindow.TaskPaneController;
 
 public class TaskPaneControllerTest {
 
