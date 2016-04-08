@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.tables;
+package ru.khasang.cachoeira.view.mainwindow.tables;
 
 import com.sun.javafx.scene.control.skin.TableViewSkin;
 import com.sun.javafx.scene.control.skin.VirtualScrollBar;

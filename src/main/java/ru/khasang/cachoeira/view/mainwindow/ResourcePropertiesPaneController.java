@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.mainwindow;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.ResourceType;
+import ru.khasang.cachoeira.view.UIControl;
 
 /**
  * Класс-контроллер для ResourcePropertiesPane.fxml

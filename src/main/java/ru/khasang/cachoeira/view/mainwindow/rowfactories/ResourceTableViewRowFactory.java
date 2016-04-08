@@ -1,49 +1,48 @@
-package ru.khasang.cachoeira.view.rowfactories;
+package ru.khasang.cachoeira.view.mainwindow.rowfactories;
 
-import javafx.scene.control.TreeTableRow;
-import javafx.scene.control.TreeTableView;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
-import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.TaskPaneController;
-import ru.khasang.cachoeira.view.contextmenus.TaskContextMenu;
-import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
+import ru.khasang.cachoeira.model.IResource;
+import ru.khasang.cachoeira.view.mainwindow.ResourcePaneController;
+import ru.khasang.cachoeira.view.mainwindow.contextmenus.ResourceContextMenu;
+import ru.khasang.cachoeira.view.mainwindow.tooltips.ResourceTooltip;
 
 /**
  * Класс отвечающий за дополнительные фичи (контекстное меню, всплывающие подсказки, изменение порядка элементов с
- * помощью мышки) для каждой строки таблицы Задач.
+ * помощью мышки) для каждой строки таблицы Ресурсов.
  */
-public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask>, TreeTableRow<ITask>> {
-    private TaskPaneController taskPaneController;
+public class ResourceTableViewRowFactory implements Callback<TableView<IResource>, TableRow<IResource>> {
+    private final ResourcePaneController resourcePaneController;
     private IController controller;
 
-    public TaskTreeTableViewRowFactory(TaskPaneController taskPaneController, IController controller) {
-        this.taskPaneController = taskPaneController;
+    public ResourceTableViewRowFactory(ResourcePaneController resourcePaneController, IController controller) {
+        this.resourcePaneController = resourcePaneController;
         this.controller = controller;
     }
 
     @Override
-    public TreeTableRow<ITask> call(TreeTableView<ITask> param) {
-        TreeTableRow<ITask> row = new TreeTableRow<ITask>() {
+    public TableRow<IResource> call(TableView<IResource> param) {
+        TableRow<IResource> row = new TableRow<IResource>() {
             /* Tooltip & Context Menu */
-            TaskTooltip taskTooltip = new TaskTooltip();
-            TaskContextMenu taskContextMenu = new TaskContextMenu();
+            ResourceTooltip resourceTooltip = new ResourceTooltip();
+            ResourceContextMenu resourceContextMenu = new ResourceContextMenu();
 
             @Override
-            protected void updateItem(ITask task, boolean empty) {
-                super.updateItem(task, empty);
+            protected void updateItem(IResource resource, boolean empty) {
+                super.updateItem(resource, empty);
                 if (empty) {
                     setTooltip(null);
-                    setContextMenu(null);
                 } else {
-                    taskTooltip.initToolTip(task);
-                    setTooltip(taskTooltip);
-                    taskContextMenu.initMenus(controller, task);
-                    setContextMenu(taskContextMenu);
+                    resourceTooltip.initToolTip(resource);
+                    setTooltip(resourceTooltip);
+                    resourceContextMenu.initMenus(controller, resource);
+                    setContextMenu(resourceContextMenu);
                 }
             }
         };
@@ -74,16 +73,16 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
             Dragboard db = event.getDragboard();
             if (db.hasContent(Controller.getSerializedMimeType())) {
                 int draggedIndex = (Integer) db.getContent(Controller.getSerializedMimeType());
-                ITask draggedTask = controller.getProject().getTaskList().remove(draggedIndex);
+                IResource draggedResource = resourcePaneController.getResourceTableView().getItems().remove(draggedIndex);
                 int dropIndex;
                 if (row.isEmpty()) {
-                    dropIndex = taskPaneController.getTaskTreeTableView().getRoot().getChildren().size();
+                    dropIndex = resourcePaneController.getResourceTableView().getItems().size();
                 } else {
                     dropIndex = row.getIndex();
                 }
-                controller.getProject().getTaskList().add(dropIndex, draggedTask);
+                resourcePaneController.getResourceTableView().getItems().add(dropIndex, draggedResource);
                 event.setDropCompleted(true);
-                taskPaneController.getTaskTreeTableView().getSelectionModel().select(dropIndex);
+                resourcePaneController.getResourceTableView().getSelectionModel().select(dropIndex);
                 event.consume();
             }
         });

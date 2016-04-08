@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.mainwindow;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +12,7 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
 import ru.khasang.cachoeira.model.IResource;
+import ru.khasang.cachoeira.view.UIControl;
 
 import java.io.File;
 import java.util.List;

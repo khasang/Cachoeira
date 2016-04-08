@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.tooltips;
+package ru.khasang.cachoeira.view.mainwindow.tooltips;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Tooltip;

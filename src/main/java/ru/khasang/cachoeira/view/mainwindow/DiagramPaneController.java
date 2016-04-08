@@ -1,9 +1,10 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.mainwindow;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.VBox;
+import ru.khasang.cachoeira.view.UIControl;
 
 import java.io.IOException;
 

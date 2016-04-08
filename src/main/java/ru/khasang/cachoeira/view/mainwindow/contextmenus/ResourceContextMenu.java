@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.contextmenus;
+package ru.khasang.cachoeira.view.mainwindow.contextmenus;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.CheckMenuItem;

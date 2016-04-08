@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.mainwindow;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
@@ -17,7 +17,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.NumberStringConverter;
 import ru.khasang.cachoeira.model.*;
-import ru.khasang.cachoeira.view.contextmenus.ParentTaskContextMenu;
+import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.mainwindow.contextmenus.ParentTaskContextMenu;
 
 import java.time.LocalDate;
 
