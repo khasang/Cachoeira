@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.taskpaneganttchart;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan.dateline;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
@@ -15,15 +15,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
-/**
- * В этом классе описываются методы для создания шкалы с датами.
- */
-public class TaskPaneDateLine extends HBox {
+public abstract class DateLine extends HBox{
     private UIControl uiControl;
     @SuppressWarnings("FieldCanBeLocal")
     private InvalidationListener listener; // Если листенер объявить локально, то GC прибьет его раньше времени
 
-    public TaskPaneDateLine() {
+    public DateLine() {
         setAlignment(Pos.CENTER_LEFT);
 
         // Высота строки с датами
