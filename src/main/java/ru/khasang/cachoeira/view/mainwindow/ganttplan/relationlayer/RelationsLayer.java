@@ -1,22 +1,21 @@
-package ru.khasang.cachoeira.view.taskpaneganttchart;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan.relationlayer;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.WeakListChangeListener;
 import javafx.scene.layout.Pane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.model.IDependentTask;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.relationlayer.relationline.RelationLine;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.relationlayer.relationline.TaskGanttPlanRelationLine;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
 
-public class TaskPaneRelationsLayer extends Pane {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TaskPaneRelationsLayer.class.getName());
-
+public abstract class RelationsLayer extends Pane{
     @SuppressWarnings("FieldCanBeLocal")
     private ListChangeListener<ITask> taskListChangeListener;
 
-    public TaskPaneRelationsLayer() {
+    public RelationsLayer() {
     }
 
     /**
@@ -28,13 +27,13 @@ public class TaskPaneRelationsLayer extends Pane {
         this.getChildren().clear();
         for (ITask task : uiControl.getController().getProject().getTaskList()) {
             for (IDependentTask dependentTask : task.getParentTasks()) {
-                TaskPaneTaskBar parentTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
-                        .getTaskGanttChart().getTaskPaneObjectsLayer()
+                TaskBar parentTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+                        .getGanttPlan().getObjectsLayer()
                         .findTaskBarByTask(dependentTask.getTask());
-                TaskPaneTaskBar childTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
-                        .getTaskGanttChart().getTaskPaneObjectsLayer()
+                TaskBar childTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+                        .getGanttPlan().getObjectsLayer()
                         .findTaskBarByTask(task);
-                TaskPaneRelationLine relationLine = new TaskPaneRelationLine(
+                RelationLine relationLine = new TaskGanttPlanRelationLine(
                         parentTaskBar,
                         childTaskBar,
                         dependentTask.dependenceTypeProperty()
@@ -42,7 +41,6 @@ public class TaskPaneRelationsLayer extends Pane {
                 this.getChildren().add(relationLine);
             }
         }
-        LOGGER.debug("Диаграмма связей обновлена.");
     }
 
     /**
@@ -55,18 +53,17 @@ public class TaskPaneRelationsLayer extends Pane {
     public void addRelation(IDependentTask parentTask,
                             ITask childTask,
                             UIControl uiControl) {
-        TaskPaneTaskBar parentTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
-                .getTaskGanttChart().getTaskPaneObjectsLayer()
+        TaskBar parentTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+                .getGanttPlan().getObjectsLayer()
                 .findTaskBarByTask(parentTask.getTask());
-        TaskPaneTaskBar childTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
-                .getTaskGanttChart().getTaskPaneObjectsLayer()
+        TaskBar childTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
+                .getGanttPlan().getObjectsLayer()
                 .findTaskBarByTask(childTask);
-        TaskPaneRelationLine relationLine = new TaskPaneRelationLine(
+        RelationLine relationLine = new TaskGanttPlanRelationLine(
                 parentTaskBar,
                 childTaskBar,
                 parentTask.dependenceTypeProperty());
         this.getChildren().add(relationLine);
-        LOGGER.debug("Связь между {} и {} добавлена на диаграмму.", parentTaskBar.getTask().getName(), childTaskBar.getTask().getName());
     }
 
     /**
@@ -78,7 +75,7 @@ public class TaskPaneRelationsLayer extends Pane {
     public void removeRelation(ITask parentTask,
                                ITask childTask) {
         this.getChildren().removeIf(node -> {
-            TaskPaneRelationLine relationLine = (TaskPaneRelationLine) node;
+            RelationLine relationLine = (RelationLine) node;
             return relationLine.getParentTask().equals(parentTask) && relationLine.getChildTask().equals(childTask);
         });
     }
