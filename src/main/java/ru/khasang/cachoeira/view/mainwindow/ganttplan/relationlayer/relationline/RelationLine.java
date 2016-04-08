@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.taskpaneganttchart;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan.relationlayer.relationline;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -14,14 +14,15 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.TaskDependencyType;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
 
-public class TaskPaneRelationLine extends Group {
+public abstract class RelationLine extends Group {
     @SuppressWarnings("FieldCanBeLocal")
     private final double[] ARROW_SHAPE = {3, 0, -3, -3, -3, 3};
     private final Color LINE_COLOR = Color.valueOf("03bdf4");
 
-    private final TaskPaneTaskBar parentTaskBar;
-    private final TaskPaneTaskBar childTaskBar;
+    private final TaskBar parentTaskBar;
+    private final TaskBar childTaskBar;
     private ObjectProperty<TaskDependencyType> dependenceType;
     private ITask parentTask;
     private ITask childTask;
@@ -29,8 +30,8 @@ public class TaskPaneRelationLine extends Group {
     @SuppressWarnings("FieldCanBeLocal")
     private ChangeListener<TaskDependencyType> dependentTypeChangeListener;
 
-    public TaskPaneRelationLine(TaskPaneTaskBar parentTaskBar,
-                                TaskPaneTaskBar childTaskBar,
+    public RelationLine(TaskBar parentTaskBar,
+                                TaskBar childTaskBar,
                                 ObjectProperty<TaskDependencyType> dependenceType) {
         this.parentTaskBar = parentTaskBar;
         this.childTaskBar = childTaskBar;
@@ -64,8 +65,8 @@ public class TaskPaneRelationLine extends Group {
         dependenceType.addListener(new WeakChangeListener<>(dependentTypeChangeListener));
     }
 
-    private ObservableList<Node> initFinishStartRelationLine(TaskPaneTaskBar parentTaskBar,
-                                                             TaskPaneTaskBar childTaskBar) {
+    private ObservableList<Node> initFinishStartRelationLine(TaskBar parentTaskBar,
+                                                             TaskBar childTaskBar) {
         DoubleBinding startXProperty = parentTaskBar.layoutXProperty().add(parentTaskBar.widthProperty()).add(12);
         DoubleBinding startYProperty = parentTaskBar.layoutYProperty().add(parentTaskBar.heightProperty().divide(2));
 
@@ -142,8 +143,8 @@ public class TaskPaneRelationLine extends Group {
         return relationLine;
     }
 
-    private ObservableList<Node> initStartStartRelationLine(TaskPaneTaskBar parentTaskBar,
-                                                            TaskPaneTaskBar childTaskBar) {
+    private ObservableList<Node> initStartStartRelationLine(TaskBar parentTaskBar,
+                                                            TaskBar childTaskBar) {
         DoubleBinding startXProperty = parentTaskBar.layoutXProperty().subtract(12);
         DoubleBinding startYProperty = parentTaskBar.layoutYProperty().add(parentTaskBar.heightProperty().divide(2));
 
@@ -202,8 +203,8 @@ public class TaskPaneRelationLine extends Group {
         return relationLine;
     }
 
-    private ObservableList<Node> initFinishFinishRelationLine(TaskPaneTaskBar parentTaskBar,
-                                                              TaskPaneTaskBar childTaskBar) {
+    private ObservableList<Node> initFinishFinishRelationLine(TaskBar parentTaskBar,
+                                                              TaskBar childTaskBar) {
         DoubleBinding startXProperty = parentTaskBar.layoutXProperty().add(parentTaskBar.widthProperty()).add(12);
         DoubleBinding startYProperty = parentTaskBar.layoutYProperty().add(parentTaskBar.heightProperty().divide(2));
 
@@ -263,8 +264,8 @@ public class TaskPaneRelationLine extends Group {
         return relationLine;
     }
 
-    private ObservableList<Node> iniStartFinishRelationLine(TaskPaneTaskBar parentTaskBar,
-                                                            TaskPaneTaskBar childTaskBar) {
+    private ObservableList<Node> iniStartFinishRelationLine(TaskBar parentTaskBar,
+                                                            TaskBar childTaskBar) {
         DoubleBinding startXProperty = parentTaskBar.layoutXProperty().subtract(12);
         DoubleBinding startYProperty = parentTaskBar.layoutYProperty().add(parentTaskBar.heightProperty().divide(2));
 
