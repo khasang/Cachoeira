@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.ganttplan.gridlayer;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan.gridlayer;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
