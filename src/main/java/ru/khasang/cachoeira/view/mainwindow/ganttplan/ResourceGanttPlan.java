@@ -1,12 +1,15 @@
-package ru.khasang.cachoeira.view.ganttplan;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan;
 
 import javafx.scene.control.ScrollPane;
 import ru.khasang.cachoeira.view.UIControl;
-import ru.khasang.cachoeira.view.ganttplan.dateline.DateLine;
-import ru.khasang.cachoeira.view.ganttplan.dateline.ResourceGanttPlanDateLine;
-import ru.khasang.cachoeira.view.ganttplan.gridlayer.GridLayer;
-import ru.khasang.cachoeira.view.ganttplan.gridlayer.ResourceGanttPlanGridLayer;
-import ru.khasang.cachoeira.view.ganttplan.objectslayer.ResourceGanttPlanObjectsLayer;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.dateline.DateLine;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.dateline.ResourceGanttPlanDateLine;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.gridlayer.GridLayer;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.gridlayer.ResourceGanttPlanGridLayer;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.labelslayer.TaskBarLabelsLayer;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.ResourceGanttPlanObjectsLayer;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.relationlayer.RelationsLayer;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.selectedobjectlayer.SelectedObjectLayer;
 
 public class ResourceGanttPlan extends GanttPlan {
     @Override
@@ -40,5 +43,20 @@ public class ResourceGanttPlan extends GanttPlan {
                 uiControl.getController().getProject().finishDateProperty(),
                 uiControl.zoomMultiplierProperty());
         return dateLine;
+    }
+
+    @Override
+    public RelationsLayer getRelationsLayer() {
+        return null;
+    }
+
+    @Override
+    public TaskBarLabelsLayer getLabelsLayer() {
+        return null;
+    }
+
+    @Override
+    public SelectedObjectLayer getSelectedObjectLayer() {
+        return null;
     }
 }
