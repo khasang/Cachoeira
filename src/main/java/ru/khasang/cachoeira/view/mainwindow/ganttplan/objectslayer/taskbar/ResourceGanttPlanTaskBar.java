@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.ganttplan.taskbar;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar;
 
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
@@ -28,7 +28,13 @@ public class ResourceGanttPlanTaskBar extends TaskBar {
     private InvalidationListener zoomListener;
 
     @Override
-    void setParameters(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle) {
+    public void initTaskRectangle(UIControl uiControl, ITask task, IResource resource) {
+        super.initTaskRectangle(uiControl, task, resource);
+        setLabel(task, backgroundRectangle);
+    }
+
+    @Override
+    protected void setParameters(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle) {
         backgroundRectangle.setWidth(taskWidth(
                 task.getStartDate(),
                 task.getFinishDate(),
@@ -42,12 +48,12 @@ public class ResourceGanttPlanTaskBar extends TaskBar {
     }
 
     @Override
-    double taskY(int rowIndex) {
+    protected double taskY(int rowIndex) {
         return (rowIndex * ROW_HEIGHT);
     }
 
     @Override
-    void setListeners(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle, Rectangle donePercentRectangle) {
+    protected void setListeners(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle, Rectangle donePercentRectangle) {
         resourceListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasRemoved() || change.wasAdded()) {

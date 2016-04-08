@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.ganttplan.taskbar;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar;
 
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -18,8 +18,8 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
-import ru.khasang.cachoeira.view.contextmenus.TaskContextMenu;
-import ru.khasang.cachoeira.view.tooltips.TaskTooltip;
+import ru.khasang.cachoeira.view.mainwindow.contextmenus.TaskContextMenu;
+import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskTooltip;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -28,11 +28,14 @@ public abstract class TaskBar extends Pane {
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
     protected static final double ROW_HEIGHT = 31;
 
-    private ITask task;
+    protected ITask task;
     private IResource resource;
     private TaskContextMenu taskContextMenu;
     protected boolean wasMovedByMouse = false;
     protected int rowIndex;                        //координата Y (строка задачи)
+
+    protected Rectangle backgroundRectangle;
+    protected Rectangle donePercentRectangle;
 
     public TaskBar() {
         this.setPadding(new Insets(0, 0, 5, 0));
@@ -41,7 +44,7 @@ public abstract class TaskBar extends Pane {
     public void initTaskRectangle(UIControl uiControl,
                                   ITask task,
                                   IResource resource) {
-        Rectangle backgroundRectangle = new Rectangle();
+        backgroundRectangle = new Rectangle();
         backgroundRectangle.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
         backgroundRectangle.setStroke(Color.valueOf("#03bdf4"));  //цвет окантовки
         backgroundRectangle.setArcHeight(5);                      //скругление углов
@@ -50,7 +53,7 @@ public abstract class TaskBar extends Pane {
 
         this.setParameters(uiControl, task, resource, backgroundRectangle);
 
-        Rectangle donePercentRectangle = new Rectangle();
+        donePercentRectangle = new Rectangle();
         donePercentRectangle.setFill(Color.valueOf("#0381f4"));
         donePercentRectangle.arcHeightProperty().bind(backgroundRectangle.arcHeightProperty());
         donePercentRectangle.arcWidthProperty().bind(backgroundRectangle.arcWidthProperty());
@@ -69,10 +72,10 @@ public abstract class TaskBar extends Pane {
         this.enableDrag(uiControl, task, backgroundRectangle);
         this.enableResize(uiControl, task, backgroundRectangle);
 
-        this.setListeners(uiControl, task, resource, backgroundRectangle, donePercentRectangle);
+        setListeners(uiControl, task, resource, backgroundRectangle, donePercentRectangle);
     }
 
-    public void setLabel(ITask task, Rectangle backgroundRectangle) {
+    protected void setLabel(ITask task, Rectangle backgroundRectangle) {
         // Вешаем лэйбл с наименованием задачи
         Label taskLabel = new Label(task.getName());
         taskLabel.setTextOverrun(OverrunStyle.CLIP);
@@ -84,10 +87,10 @@ public abstract class TaskBar extends Pane {
         this.getChildren().add(taskLabel);
     }
 
-    abstract void setParameters(UIControl uiControl,
-                                ITask task,
-                                IResource resource,
-                                Rectangle backgroundRectangle);
+    protected abstract void setParameters(UIControl uiControl,
+                                          ITask task,
+                                          IResource resource,
+                                          Rectangle backgroundRectangle);
 
     protected double taskWidth(LocalDate taskStartDate,
                                LocalDate taskFinishDate,
@@ -95,7 +98,7 @@ public abstract class TaskBar extends Pane {
         return (ChronoUnit.DAYS.between(taskStartDate, taskFinishDate) * columnWidth);
     }
 
-    abstract double taskY(int rowIndex);
+    protected abstract double taskY(int rowIndex);
 
     protected double taskX(LocalDate taskStartDate,
                            LocalDate projectStartDate,
@@ -117,11 +120,11 @@ public abstract class TaskBar extends Pane {
         return new Timeline(endKeyFrame);
     }
 
-    abstract void setListeners(UIControl uiControl,
-                               ITask task,
-                               IResource resource,
-                               Rectangle backgroundRectangle,
-                               Rectangle donePercentRectangle);
+    protected abstract void setListeners(UIControl uiControl,
+                                         ITask task,
+                                         IResource resource,
+                                         Rectangle backgroundRectangle,
+                                         Rectangle donePercentRectangle);
 
     public void setContextMenu(IController controller,
                                ITask task) {
