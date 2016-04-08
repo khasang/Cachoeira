@@ -1,19 +1,21 @@
-package ru.khasang.cachoeira.view.taskpaneganttchart;
+package ru.khasang.cachoeira.view.mainwindow.ganttplan.selectedobjectlayer.backgroundtaskbar;
 
 import javafx.beans.value.ChangeListener;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.labelslayer.label.TaskBarLabel;
+import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
 
-public class TaskPaneBackgroundTaskBar extends Rectangle {
-    private final TaskPaneTaskBar taskBar;
+public abstract class BackgroundTaskBar extends Rectangle {
+    private final TaskBar taskBar;
     @SuppressWarnings("FieldCanBeLocal")
     private ChangeListener<ITask> selectedTaskListener;
 
-    public TaskPaneBackgroundTaskBar(TaskPaneTaskBar taskBar,
-                                     TaskPaneLabel taskLabel,
-                                     UIControl uiControl) {
+    public BackgroundTaskBar(TaskBar taskBar,
+                             TaskBarLabel taskLabel,
+                             UIControl uiControl) {
         this.taskBar = taskBar;
 
         this.setArcHeight(10);
@@ -50,7 +52,7 @@ public class TaskPaneBackgroundTaskBar extends Rectangle {
         }
     }
 
-    public TaskPaneTaskBar getTaskBar() {
+    public TaskBar getTaskBar() {
         return taskBar;
     }
 }
