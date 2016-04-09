@@ -6,7 +6,7 @@ import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.labelslayer.label.TaskBarLabel;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskGanttPlanTaskBar;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskTooltip;
+import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskHint;
 
 public class TaskGanttPlanObjectsLayer extends ObjectsLayer {
     @Override
@@ -21,7 +21,7 @@ public class TaskGanttPlanObjectsLayer extends ObjectsLayer {
         taskBar.initTaskRectangle(uiControl, task, null);
         taskBar.setTask(task);
         taskBar.setContextMenu(uiControl.getController(), task);
-        taskBar.setTooltip(new TaskTooltip(task));
+        taskBar.setHint(new TaskHint(task));
 //         Создаем "панель" на которой будут отображаться привязанные ресурсы
         uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
                 .getGanttPlan().getLabelsLayer()

@@ -5,7 +5,7 @@ import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.ResourceGanttPlanTaskBar;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskTooltip;
+import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskHint;
 
 public class ResourceGanttPlanObjectsLayer extends ObjectsLayer {
     @Override
@@ -15,7 +15,7 @@ public class ResourceGanttPlanObjectsLayer extends ObjectsLayer {
         taskBar.setTask(task);
         taskBar.setResource(resource);
         taskBar.setContextMenu(uiControl.getController(), task);
-        taskBar.setTooltip(new TaskTooltip(task));
+        taskBar.setHint(new TaskHint(task));
         return taskBar;
     }
 
