@@ -11,8 +11,8 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.mainwindow.TaskPaneController;
 import ru.khasang.cachoeira.view.mainwindow.contextmenus.TaskContextMenu;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskTooltipFactory;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.TooltipFactory;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.TaskTooltipFactory;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.TooltipFactory;
 
 /**
  * Класс отвечающий за дополнительные фичи (контекстное меню, всплывающие подсказки, изменение порядка элементов с

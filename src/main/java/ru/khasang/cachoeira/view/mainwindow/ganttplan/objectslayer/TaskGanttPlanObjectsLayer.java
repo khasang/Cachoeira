@@ -6,8 +6,8 @@ import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.labelslayer.label.TaskBarLabel;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskGanttPlanTaskBar;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskTooltipFactory;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.TooltipFactory;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.TaskTooltipFactory;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.TooltipFactory;
 
 public class TaskGanttPlanObjectsLayer extends ObjectsLayer {
     TooltipFactory<ITask> tooltipFactory = new TaskTooltipFactory();

@@ -11,8 +11,8 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.view.mainwindow.ResourcePaneController;
 import ru.khasang.cachoeira.view.mainwindow.contextmenus.ResourceContextMenu;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.ResourceTooltipFactory;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.TooltipFactory;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.ResourceTooltipFactory;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.TooltipFactory;
 
 /**
  * Класс отвечающий за дополнительные фичи (контекстное меню, всплывающие подсказки, изменение порядка элементов с
