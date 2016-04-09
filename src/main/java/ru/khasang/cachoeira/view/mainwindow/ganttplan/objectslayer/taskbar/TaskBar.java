@@ -19,7 +19,6 @@ import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.mainwindow.contextmenus.TaskContextMenu;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.Hint;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -132,8 +131,8 @@ public abstract class TaskBar extends Pane {
         taskContextMenu.initMenus(controller, task);
     }
 
-    public void setHint(Hint hint) {
-        Tooltip.install(this, hint);
+    public void setTooltip(Tooltip tooltip) {
+        Tooltip.install(this, tooltip);
     }
 
     /**
