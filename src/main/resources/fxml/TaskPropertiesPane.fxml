@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox fx:id="propertiesPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.TaskPropertiesPaneController">
+<VBox fx:id="propertiesPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.khasang.cachoeira.view.mainwindow.TaskPropertiesPaneController">
     <children>
         <TitledPane text="%info" VBox.vgrow="ALWAYS">
             <content>

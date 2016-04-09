@@ -5,6 +5,7 @@ import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.data.ISettingsManager;
 import ru.khasang.cachoeira.data.SettingsManager;
+import ru.khasang.cachoeira.view.mainwindow.MainWindow;
 
 import java.io.File;
 import java.util.Locale;
