@@ -11,6 +11,7 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.view.mainwindow.ResourcePaneController;
 import ru.khasang.cachoeira.view.mainwindow.contextmenus.ResourceContextMenu;
+import ru.khasang.cachoeira.view.mainwindow.tooltips.ResourceTooltipFactory;
 import ru.khasang.cachoeira.view.mainwindow.tooltips.TooltipFactory;
 
 /**
@@ -30,7 +31,7 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
     public TableRow<IResource> call(TableView<IResource> param) {
         TableRow<IResource> row = new TableRow<IResource>() {
             /* Tooltip & Context Menu */
-            TooltipFactory tooltipFactory = new TooltipFactory();
+            TooltipFactory<IResource> tooltipFactory = new ResourceTooltipFactory();
             ResourceContextMenu resourceContextMenu = new ResourceContextMenu();
 
             @Override

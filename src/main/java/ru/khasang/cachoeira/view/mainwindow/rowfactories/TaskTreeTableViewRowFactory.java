@@ -11,6 +11,7 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.mainwindow.TaskPaneController;
 import ru.khasang.cachoeira.view.mainwindow.contextmenus.TaskContextMenu;
+import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskTooltipFactory;
 import ru.khasang.cachoeira.view.mainwindow.tooltips.TooltipFactory;
 
 /**
@@ -30,7 +31,7 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
     public TreeTableRow<ITask> call(TreeTableView<ITask> param) {
         TreeTableRow<ITask> row = new TreeTableRow<ITask>() {
             /* Tooltip & Context Menu */
-            TooltipFactory tooltipFactory = new TooltipFactory();
+            TooltipFactory<ITask> tooltipFactory = new TaskTooltipFactory();
             TaskContextMenu taskContextMenu = new TaskContextMenu();
 
             @Override

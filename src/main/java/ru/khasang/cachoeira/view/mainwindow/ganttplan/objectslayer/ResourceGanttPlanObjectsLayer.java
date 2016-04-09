@@ -5,10 +5,11 @@ import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.ResourceGanttPlanTaskBar;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
+import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskTooltipFactory;
 import ru.khasang.cachoeira.view.mainwindow.tooltips.TooltipFactory;
 
 public class ResourceGanttPlanObjectsLayer extends ObjectsLayer {
-    TooltipFactory tooltipFactory = new TooltipFactory();
+    TooltipFactory<ITask> tooltipFactory = new TaskTooltipFactory();
 
     @Override
     public TaskBar createTaskBar(UIControl uiControl, ITask task, IResource resource) {
