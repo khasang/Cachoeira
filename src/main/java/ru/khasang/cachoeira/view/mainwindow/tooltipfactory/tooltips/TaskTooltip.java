@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.mainwindow.tooltips;
+package ru.khasang.cachoeira.view.mainwindow.tooltipfactory.tooltips;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Tooltip;
@@ -14,15 +14,11 @@ import java.util.ResourceBundle;
 public class TaskTooltip extends Tooltip {
     private ResourceBundle bundle = UIControl.bundle;
 
-    public TaskTooltip() {
-    }
-
     public TaskTooltip(ITask task) {
-        initToolTip(task);
+        initTooltip(task);
     }
 
-    public void initToolTip(ITask task) {
-
+    public void initTooltip(ITask task) {
         textProperty().bind(Bindings
                 .concat(bundle.getString("task_name") + ": ").concat(task.nameProperty()).concat("\n")
                 .concat(Bindings

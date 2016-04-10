@@ -11,7 +11,8 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.view.mainwindow.ResourcePaneController;
 import ru.khasang.cachoeira.view.mainwindow.contextmenus.ResourceContextMenu;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.ResourceTooltip;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.ResourceTooltipFactory;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.TooltipFactory;
 
 /**
  * Класс отвечающий за дополнительные фичи (контекстное меню, всплывающие подсказки, изменение порядка элементов с
@@ -30,7 +31,7 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
     public TableRow<IResource> call(TableView<IResource> param) {
         TableRow<IResource> row = new TableRow<IResource>() {
             /* Tooltip & Context Menu */
-            ResourceTooltip resourceTooltip = new ResourceTooltip();
+            TooltipFactory<IResource> tooltipFactory = new ResourceTooltipFactory();
             ResourceContextMenu resourceContextMenu = new ResourceContextMenu();
 
             @Override
@@ -39,8 +40,7 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
                 if (empty) {
                     setTooltip(null);
                 } else {
-                    resourceTooltip.initToolTip(resource);
-                    setTooltip(resourceTooltip);
+                    setTooltip(tooltipFactory.createTooltip(resource));
                     resourceContextMenu.initMenus(controller, resource);
                     setContextMenu(resourceContextMenu);
                 }

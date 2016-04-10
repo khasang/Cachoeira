@@ -5,9 +5,12 @@ import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.UIControl;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.ResourceGanttPlanTaskBar;
 import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskTooltip;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.TaskTooltipFactory;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.TooltipFactory;
 
 public class ResourceGanttPlanObjectsLayer extends ObjectsLayer {
+    TooltipFactory<ITask> tooltipFactory = new TaskTooltipFactory();
+
     @Override
     public TaskBar createTaskBar(UIControl uiControl, ITask task, IResource resource) {
         TaskBar taskBar = new ResourceGanttPlanTaskBar();
@@ -15,7 +18,7 @@ public class ResourceGanttPlanObjectsLayer extends ObjectsLayer {
         taskBar.setTask(task);
         taskBar.setResource(resource);
         taskBar.setContextMenu(uiControl.getController(), task);
-        taskBar.setTooltip(new TaskTooltip(task));
+        taskBar.setTooltip(tooltipFactory.createTooltip(task));
         return taskBar;
     }
 

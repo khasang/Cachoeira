@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.mainwindow.tooltips;
+package ru.khasang.cachoeira.view.mainwindow.tooltipfactory.tooltips;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Tooltip;
@@ -13,14 +13,11 @@ import java.util.ResourceBundle;
 public class ResourceTooltip extends Tooltip {
     private ResourceBundle bundle = UIControl.bundle;
 
-    public ResourceTooltip() {
-    }
-
     public ResourceTooltip(IResource resource) {
-        initToolTip(resource);
+        initTooltip(resource);
     }
 
-    public void initToolTip(IResource resource) {
+    public void initTooltip(IResource resource) {
         textProperty().bind(Bindings
                 .concat(bundle.getString("resource_name") + ": ").concat(resource.nameProperty()).concat("\n")
                 .concat(Bindings

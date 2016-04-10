@@ -11,7 +11,8 @@ import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.mainwindow.TaskPaneController;
 import ru.khasang.cachoeira.view.mainwindow.contextmenus.TaskContextMenu;
-import ru.khasang.cachoeira.view.mainwindow.tooltips.TaskTooltip;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.TaskTooltipFactory;
+import ru.khasang.cachoeira.view.mainwindow.tooltipfactory.TooltipFactory;
 
 /**
  * Класс отвечающий за дополнительные фичи (контекстное меню, всплывающие подсказки, изменение порядка элементов с
@@ -30,7 +31,7 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
     public TreeTableRow<ITask> call(TreeTableView<ITask> param) {
         TreeTableRow<ITask> row = new TreeTableRow<ITask>() {
             /* Tooltip & Context Menu */
-            TaskTooltip taskTooltip = new TaskTooltip();
+            TooltipFactory<ITask> tooltipFactory = new TaskTooltipFactory();
             TaskContextMenu taskContextMenu = new TaskContextMenu();
 
             @Override
@@ -40,8 +41,7 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
                     setTooltip(null);
                     setContextMenu(null);
                 } else {
-                    taskTooltip.initToolTip(task);
-                    setTooltip(taskTooltip);
+                    setTooltip(tooltipFactory.createTooltip(task));
                     taskContextMenu.initMenus(controller, task);
                     setContextMenu(taskContextMenu);
                 }
