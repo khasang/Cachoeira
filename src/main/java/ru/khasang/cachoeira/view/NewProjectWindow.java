@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.*;
 import javafx.util.Callback;
 import org.slf4j.Logger;
@@ -77,22 +76,23 @@ public class NewProjectWindow implements IWindow {
 
         createNewProjectButton.disableProperty().bind(nameField.textProperty().isEmpty().or(projectPathField.textProperty().isEmpty())); //рубим нажимательность кнопки, если поле с именем пустует
 
-        nameField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
-            // Фильтруем все кроме букв и цифр
-            if (event.getCharacter().matches("^[^A-Za-z0-9\\s]+$")) {
-                event.consume();
+        // Фильтруем все кроме букв, цифр и пробела (в том числе и из буфера обмена)
+        nameField.setTextFormatter(new TextFormatter<>(change -> {
+            if (change.getText().matches("^[^A-Za-z0-9\\s]+$")) {
+                return null;
             }
-        });
+            return change;
+        }));
         nameField.setText(UIControl.bundle.getString("new_project")); //дефолтовое название проекта
         projectPathField.textProperty().bind(Bindings.concat(absolutePath).concat(File.separator).concat(nameField.textProperty()).concat(".cach"));
 
-        /** Отрубаем возможность ввода дат с клавиатуры воизбежание пустого поля */
+        // Отрубаем возможность ввода дат с клавиатуры воизбежание пустого поля
         startDatePicker.setEditable(false);
         finishDatePicker.setEditable(false);
 
         startDatePicker.setValue(LocalDate.now()); //по дефолту сегодняшняя дата
         finishDatePicker.setValue(startDatePicker.getValue().plusDays(28));
-        /** Конечная дата всегда после начальной */
+        // Конечная дата всегда после начальной
         startDatePicker.valueProperty().addListener(((observable, oldValue, newValue) -> {
             if (newValue.isEqual(finishDatePicker.getValue()) || newValue.isAfter(finishDatePicker.getValue())) {
                 finishDatePicker.setValue(newValue.plusDays(1));
