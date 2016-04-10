@@ -36,4 +36,6 @@ public interface DataStoreInterface {
     List<IResource> getResourceListFromFile(File file);
 
     IProject getProjectFromFile(File file, IProject project);
+
+    void eraseAllTables(File file);
 }
