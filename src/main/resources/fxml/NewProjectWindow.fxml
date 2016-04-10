@@ -24,7 +24,7 @@
          <children>
             <Label text="%project_name" />
             <TextField fx:id="nameField" GridPane.columnIndex="1" />
-            <Label disable="true" text="%project_path" GridPane.rowIndex="1" />
+            <Label text="%project_path" GridPane.rowIndex="1" />
             <Label text="%start_date" GridPane.rowIndex="2" />
             <Label text="%finish_date" GridPane.rowIndex="3" />
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
