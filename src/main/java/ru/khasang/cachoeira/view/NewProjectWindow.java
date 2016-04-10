@@ -1,16 +1,16 @@
 package ru.khasang.cachoeira.view;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.scene.input.KeyEvent;
+import javafx.stage.*;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +27,7 @@ import java.time.LocalDate;
  */
 public class NewProjectWindow implements IWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(NewProjectWindow.class.getName());
+    private static final File DEFAULT_PATH = new File(System.getProperty("user.home") + "/Documents/Cachoeira");
 
     private UIControl uiControl;
     @FXML
@@ -45,7 +46,7 @@ public class NewProjectWindow implements IWindow {
     private Parent root = null;
     private Stage stage;
 
-    private File pathToFile = new File(System.getProperty("user.home") + "/Documents/Cachoeira");
+    private StringProperty absolutePath = new SimpleStringProperty(this, "absolutePath", DEFAULT_PATH.getAbsolutePath());
 
     public NewProjectWindow(UIControl uiControl) {
         this.uiControl = uiControl;
@@ -76,8 +77,14 @@ public class NewProjectWindow implements IWindow {
 
         createNewProjectButton.disableProperty().bind(nameField.textProperty().isEmpty().or(projectPathField.textProperty().isEmpty())); //рубим нажимательность кнопки, если поле с именем пустует
 
+        nameField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            // Фильтруем все кроме букв и цифр
+            if (event.getCharacter().matches("^[^A-Za-z0-9\\s]+$")) {
+                event.consume();
+            }
+        });
         nameField.setText(UIControl.bundle.getString("new_project")); //дефолтовое название проекта
-        projectPathField.textProperty().bind(Bindings.concat(pathToFile).concat(File.separator).concat(nameField.textProperty()).concat(".cach"));
+        projectPathField.textProperty().bind(Bindings.concat(absolutePath).concat(File.separator).concat(nameField.textProperty()).concat(".cach"));
 
         /** Отрубаем возможность ввода дат с клавиатуры воизбежание пустого поля */
         startDatePicker.setEditable(false);
@@ -116,17 +123,45 @@ public class NewProjectWindow implements IWindow {
     @FXML
     private void newProjectPathChooserButtonHandle(ActionEvent actionEvent) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        pathToFile = directoryChooser.showDialog(this.getStage());
+        directoryChooser.setInitialDirectory(DEFAULT_PATH);
+        File file = directoryChooser.showDialog(this.getStage());
+        if (file != null) {
+            absolutePath.setValue(file.getAbsolutePath());
+        }
     }
 
     @FXML
     private void newProjectCreateButtonHandle(ActionEvent actionEvent) {
         LOGGER.debug("Нажата кнопка \"Создать\".");
+        File file = new File(projectPathField.getText());
+        if (!file.exists()) {
+            createProjectAndLaunchMainWindow(file);
+        } else {
+            ButtonType yesButton = new ButtonType(UIControl.bundle.getString("yes"));
+            ButtonType noButton = new ButtonType(UIControl.bundle.getString("no"), ButtonBar.ButtonData.CANCEL_CLOSE);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Заменить его?", yesButton, noButton);
+            alert.setTitle("Cachoeira");
+            alert.setHeaderText("Проект с таким именем уже существует!");
+            alert.showAndWait()
+                    .filter(response -> response == yesButton)
+                    .ifPresent(response -> createProjectAndLaunchMainWindow(file));
+        }
+    }
+
+    @FXML
+    private void newProjectCancelButtonHandle(ActionEvent actionEvent) {
+        LOGGER.debug("Нажата кнопка \"Отмена\".");
+        stage.close();
+    }
+
+    private void createProjectAndLaunchMainWindow(File file) {
         // Создаем проект
         uiControl.getController().handleAddProject(nameField.getText(), startDatePicker.getValue(), finishDatePicker.getValue(), descriptionArea.getText());
         // Создаем файл
         DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
-        storeInterface.createProjectFile(projectPathField.getText(), uiControl.getController().getProject());
+        storeInterface.createProjectFile(file.getPath(), uiControl.getController().getProject());
+        // Очищаем файл проекта на тот случай, если файл перезаписывается
+        storeInterface.eraseAllTables(file);
         storeInterface.saveProjectToFile(uiControl.getFile(), uiControl.getController().getProject());
         // Закрываем это окошко
         stage.close();
@@ -134,11 +169,5 @@ public class NewProjectWindow implements IWindow {
             uiControl.getStartWindow().getStage().close(); //закрываем стартовое окно
         }
         uiControl.launchMainWindow(); //запускаем главное окно
-    }
-
-    @FXML
-    private void newProjectCancelButtonHandle(ActionEvent actionEvent) {
-        LOGGER.debug("Нажата кнопка \"Отмена\".");
-        stage.close();
     }
 }
