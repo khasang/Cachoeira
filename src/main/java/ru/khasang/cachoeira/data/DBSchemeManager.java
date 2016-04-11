@@ -401,6 +401,16 @@ public class DBSchemeManager implements DataStoreInterface {
         return project;
     }
 
+    @Override
+    public void eraseAllTables(File file) {
+        deletePreviousDataFromTable(file, "Project");
+        deletePreviousDataFromTable(file, "Resources_By_Task");
+        deletePreviousDataFromTable(file, "Resources");
+        deletePreviousDataFromTable(file, "Parent_Tasks");
+        deletePreviousDataFromTable(file, "Child_Tasks");
+        deletePreviousDataFromTable(file, "Tasks");
+    }
+
     private void deletePreviousDataFromTable(File file, String table) {
         Connection connection = null;
         Statement statement = null;

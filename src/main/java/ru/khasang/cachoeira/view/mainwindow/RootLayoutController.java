@@ -60,14 +60,16 @@ public class RootLayoutController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CACH", "*.cach"));
         File file = fileChooser.showSaveDialog(uiControl.getMainWindow().getStage());
-        uiControl.setFile(file);
-        storeInterface.createProjectFile(file.getPath(), uiControl.getController().getProject());
-        storeInterface.saveProjectToFile(uiControl.getFile(), uiControl.getController().getProject());
-        storeInterface.saveTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
-        storeInterface.saveResourcesToFile(uiControl.getFile(), uiControl.getController().getProject());
-        storeInterface.saveParentTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
-        storeInterface.saveChildTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
-        storeInterface.saveResourcesByTask(uiControl.getFile(), uiControl.getController().getProject());
+        if (file != null) {
+            uiControl.setFile(file);
+            storeInterface.createProjectFile(file.getPath(), uiControl.getController().getProject());
+            storeInterface.saveProjectToFile(uiControl.getFile(), uiControl.getController().getProject());
+            storeInterface.saveTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+            storeInterface.saveResourcesToFile(uiControl.getFile(), uiControl.getController().getProject());
+            storeInterface.saveParentTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+            storeInterface.saveChildTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
+            storeInterface.saveResourcesByTask(uiControl.getFile(), uiControl.getController().getProject());
+        }
     }
 
     @FXML
@@ -76,8 +78,10 @@ public class RootLayoutController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CRES", "*.cres"));
         File file = fileChooser.showSaveDialog(uiControl.getMainWindow().getStage());
-        storeInterface.createResourceExportFile(file);
-        storeInterface.saveResourcesToFile(file, uiControl.getController().getProject());
+        if (file != null) {
+            storeInterface.createResourceExportFile(file);
+            storeInterface.saveResourcesToFile(file, uiControl.getController().getProject());
+        }
     }
 
     @FXML
@@ -86,8 +90,10 @@ public class RootLayoutController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CRES", "*.cres"));
         File file = fileChooser.showOpenDialog(uiControl.getMainWindow().getStage());
-        List<IResource> resourceListFromFile = storeInterface.getResourceListFromFile(file);
-        uiControl.getController().getProject().getResourceList().addAll(resourceListFromFile);
+        if (file != null) {
+            List<IResource> resourceListFromFile = storeInterface.getResourceListFromFile(file);
+            uiControl.getController().getProject().getResourceList().addAll(resourceListFromFile);
+        }
     }
 
     @FXML
