@@ -8,6 +8,7 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.khasang.cachoeira.commands.CommandControl;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
@@ -101,6 +102,16 @@ public class RootLayoutController {
         logger.info("Нажата кнопка меню \"Выход\".");
         //если произошли изменения в проекте: открытие диалогового окошка "Сохранить проект? Да Нет Отмена"
         onClose();
+    }
+
+    @FXML
+    private void undoMenuItemHandle(ActionEvent actionEvent) {
+        CommandControl.getInstance().undo();
+    }
+
+    @FXML
+    private void redoMenuItemHandle(ActionEvent actionEvent) {
+        CommandControl.getInstance().redo();
     }
 
     private void onClose() {
