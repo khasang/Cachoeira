@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.input.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
@@ -25,6 +26,20 @@
                      <MenuItem mnemonicParsing="false" onAction="#exitMenuItemHandle" text="%exit" />
                  </items>
               </Menu>
+            <Menu mnemonicParsing="false" text="%edit">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#undoMenuItemHandle" text="%undo">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#redoMenuItemHandle" text="%redo">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+              </items>
+            </Menu>
           </menus>
        </MenuBar>
    </top>
