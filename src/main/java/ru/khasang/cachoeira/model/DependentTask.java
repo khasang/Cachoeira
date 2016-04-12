@@ -7,6 +7,11 @@ public class DependentTask implements IDependentTask {
     private ObjectProperty<ITask> task = new SimpleObjectProperty<>(this, "task");
     private ObjectProperty<TaskDependencyType> dependenceType = new SimpleObjectProperty<>(this, "dependenceType");
 
+    public DependentTask(ITask task, TaskDependencyType dependenceType) {
+        this.task.setValue(task);
+        this.dependenceType.setValue(dependenceType);
+    }
+
     @Override
     public ITask getTask() {
         return task.get();
