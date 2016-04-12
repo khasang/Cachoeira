@@ -2,9 +2,6 @@ package ru.khasang.cachoeira.model;
 
 import javafx.beans.property.ObjectProperty;
 
-/**
- * Created by truesik on 22.10.2015.
- */
 public interface IDependentTask {
     ITask getTask();
 

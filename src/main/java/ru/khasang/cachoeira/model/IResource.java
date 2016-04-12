@@ -4,9 +4,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- * Created by truesik on 22.10.2015.
- */
 public interface IResource {
     int getId();
 
