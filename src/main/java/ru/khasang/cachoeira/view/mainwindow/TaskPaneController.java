@@ -13,6 +13,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.khasang.cachoeira.commands.CommandControl;
+import ru.khasang.cachoeira.commands.project.AddTaskToProjectCommand;
+import ru.khasang.cachoeira.commands.project.RemoveTaskFromProjectCommand;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.PriorityType;
 import ru.khasang.cachoeira.model.Task;
@@ -94,34 +97,8 @@ public class TaskPaneController {
         priorityColumn.setCellValueFactory(cellData -> cellData.getValue().getValue().priorityTypeProperty());
         costColumn.setCellValueFactory(cellData -> cellData.getValue().getValue().costProperty().asObject());
         // Форматируем столбцы с датами
-        startDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
-            @Override
-            protected void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-                setAlignment(Pos.CENTER);
-                if (empty) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(item);
-                    setText(dateFormatter);
-                }
-            }
-        });
-        finishDateColumn.setCellFactory(column -> new TreeTableCell<ITask, LocalDate>() {
-            @Override
-            protected void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-                setAlignment(Pos.CENTER);
-                if (empty) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(item);
-                    setText(dateFormatter);
-                }
-            }
-        });
+        startDateColumn.setCellFactory(column -> getTreeTableCell());
+        finishDateColumn.setCellFactory(column -> getTreeTableCell());
         // Высота строк и выравнивание
         taskTreeTableView.setFixedCellSize(31);
         nameColumn.setStyle("-fx-alignment: CENTER-LEFT");
@@ -131,12 +108,30 @@ public class TaskPaneController {
         costColumn.setStyle("-fx-alignment: CENTER-LEFT");
     }
 
+    private TreeTableCell<ITask, LocalDate> getTreeTableCell() {
+        return new TreeTableCell<ITask, LocalDate>() {
+            @Override
+            protected void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                setAlignment(Pos.CENTER);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    String dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(item);
+                    setText(dateFormatter);
+                }
+            }
+        };
+    }
+
     /**
      * Метод срабатывающий при нажатии на кнопку "Добавить задачу".
      */
     @FXML
     private void addNewTaskHandle(ActionEvent actionEvent) {
-        uiControl.getController().handleAddTask(new Task());
+//        uiControl.getController().handleAddTask(new Task());
+        CommandControl.getInstance().execute(new AddTaskToProjectCommand(uiControl.getController().getProject(), new Task()));
     }
 
     /**
@@ -144,7 +139,8 @@ public class TaskPaneController {
      */
     @FXML
     private void removeTaskHandle(ActionEvent actionEvent) {
-        uiControl.getController().handleRemoveTask(taskTreeTableView.getSelectionModel().getSelectedItem().getValue());
+//        uiControl.getController().handleRemoveTask(taskTreeTableView.getSelectionModel().getSelectedItem().getValue());
+        CommandControl.getInstance().execute(new RemoveTaskFromProjectCommand(uiControl.getController().getProject(), uiControl.getController().getSelectedTask()));
     }
 
     public void initTaskTable(UIControl uiControl) {
@@ -254,7 +250,7 @@ public class TaskPaneController {
         // Контекстное меню для таблицы
         ContextMenu taskTableMenu = new ContextMenu();
         MenuItem addNewTask = new MenuItem("Новая задача");
-        addNewTask.setOnAction(event -> uiControl.getController().handleAddTask(new Task()));
+        addNewTask.setOnAction(event -> CommandControl.getInstance().execute(new AddTaskToProjectCommand(uiControl.getController().getProject(), new Task())));
         taskTableMenu.getItems().addAll(addNewTask);   //заполняем меню
         taskTreeTableView.setContextMenu(taskTableMenu);
     }
