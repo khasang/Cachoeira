@@ -23,9 +23,4 @@ public class SetProjectDescriptionCommand implements Command {
     public void undo() {
         project.setDescription(oldDescription);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

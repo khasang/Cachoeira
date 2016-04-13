@@ -24,9 +24,4 @@ public class RemoveParentTaskFromTaskCommand implements Command {
     public void undo() {
         task.getParentTasks().add(index, parentTask);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

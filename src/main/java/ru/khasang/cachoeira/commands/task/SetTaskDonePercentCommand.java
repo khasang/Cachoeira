@@ -23,9 +23,4 @@ public class SetTaskDonePercentCommand implements Command {
     public void undo() {
         task.setDonePercent(oldDonePercent);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

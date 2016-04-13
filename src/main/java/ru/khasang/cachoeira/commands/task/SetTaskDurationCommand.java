@@ -23,9 +23,4 @@ public class SetTaskDurationCommand implements Command {
     public void undo() {
         task.setDuration(oldDuration);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

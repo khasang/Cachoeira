@@ -25,9 +25,4 @@ public class SetProjectFinishDateCommand implements Command {
     public void undo() {
         project.setFinishDate(oldFinishDate);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

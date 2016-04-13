@@ -23,9 +23,4 @@ public class SetTaskCostCommand implements Command {
     public void undo() {
         task.setCost(oldCost);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

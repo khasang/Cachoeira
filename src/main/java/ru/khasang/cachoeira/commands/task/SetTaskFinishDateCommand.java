@@ -25,9 +25,4 @@ public class SetTaskFinishDateCommand implements Command {
     public void undo() {
         task.setFinishDate(oldFinishDate);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

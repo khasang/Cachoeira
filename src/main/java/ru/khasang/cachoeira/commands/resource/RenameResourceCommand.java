@@ -23,9 +23,4 @@ public class RenameResourceCommand implements Command {
     public void undo() {
         resource.setName(oldName);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

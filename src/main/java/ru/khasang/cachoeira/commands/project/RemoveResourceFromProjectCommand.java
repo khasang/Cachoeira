@@ -24,9 +24,4 @@ public class RemoveResourceFromProjectCommand implements Command {
     public void undo() {
         project.getResourceList().add(index, resource);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

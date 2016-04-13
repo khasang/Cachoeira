@@ -24,9 +24,4 @@ public class SetResourceTypeCommand implements Command {
     public void undo() {
         resource.setType(oldResourceType);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

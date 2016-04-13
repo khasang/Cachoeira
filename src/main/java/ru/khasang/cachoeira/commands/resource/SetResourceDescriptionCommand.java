@@ -23,9 +23,4 @@ public class SetResourceDescriptionCommand implements Command {
     public void undo() {
         resource.setDescription(oldDescription);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

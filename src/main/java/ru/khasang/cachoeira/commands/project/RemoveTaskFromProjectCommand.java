@@ -24,9 +24,4 @@ public class RemoveTaskFromProjectCommand implements Command {
     public void undo() {
         project.getTaskList().add(index, task);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

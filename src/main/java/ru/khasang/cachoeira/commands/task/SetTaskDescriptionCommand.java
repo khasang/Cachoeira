@@ -23,9 +23,4 @@ public class SetTaskDescriptionCommand implements Command {
     public void undo() {
         task.setDescription(oldDescription);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

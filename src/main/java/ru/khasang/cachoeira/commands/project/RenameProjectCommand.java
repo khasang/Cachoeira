@@ -23,9 +23,4 @@ public class RenameProjectCommand implements Command {
     public void undo() {
         project.setName(oldName);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

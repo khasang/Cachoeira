@@ -23,9 +23,4 @@ public class SetResourceEmailCommand implements Command {
     public void undo() {
         resource.setEmail(oldEmail);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

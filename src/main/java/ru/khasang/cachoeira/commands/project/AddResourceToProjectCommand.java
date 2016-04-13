@@ -22,9 +22,4 @@ public class AddResourceToProjectCommand implements Command {
     public void undo() {
         project.getResourceList().remove(resource);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

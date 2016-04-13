@@ -24,9 +24,4 @@ public class SetTaskPriorityTypeCommand implements Command {
     public void undo() {
         task.setPriorityType(oldPriorityType);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

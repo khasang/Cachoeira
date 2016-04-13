@@ -25,9 +25,4 @@ public class SetTaskStartDateCommand implements Command {
     public void undo() {
         task.setStartDate(oldStartDate);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

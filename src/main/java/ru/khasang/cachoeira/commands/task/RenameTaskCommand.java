@@ -23,9 +23,4 @@ public class RenameTaskCommand implements Command {
     public void undo() {
         task.setName(oldName);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

@@ -22,9 +22,4 @@ public class AddResourceToTaskCommand implements Command {
     public void undo() {
         task.getResourceList().remove(resource);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

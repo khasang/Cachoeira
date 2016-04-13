@@ -25,9 +25,4 @@ public class SetProjectStartDateCommand implements Command {
     public void undo() {
         project.setStartDate(oldStartDate);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

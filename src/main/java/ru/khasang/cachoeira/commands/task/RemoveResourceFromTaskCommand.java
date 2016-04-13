@@ -24,9 +24,4 @@ public class RemoveResourceFromTaskCommand implements Command {
     public void undo() {
         task.getResourceList().add(index, resource);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }

@@ -22,9 +22,4 @@ public class AddTaskToProjectCommand implements Command {
     public void undo() {
         project.getTaskList().remove(task);
     }
-
-    @Override
-    public void redo() {
-
-    }
 }
