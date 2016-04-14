@@ -89,7 +89,7 @@ public class MainWindow implements IWindow {
                 // Сохранение значений окна
                 onClose.saveProperties();
                 // Сохранение проекта в файл
-                onClose.saveProject();
+                onClose.saveProject(event);
             });
         } catch (IOException e) {
             LOGGER.debug("Ошибка загрузки: {}", e);

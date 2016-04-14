@@ -4,6 +4,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import ru.khasang.cachoeira.commands.CommandControl;
 import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
@@ -32,7 +33,7 @@ public class OnCloseMainWindow implements OnClose {
     }
 
     @Override
-    public void saveProject() {
+    public void saveProject(WindowEvent event) {
         //минимум JDK 8u40
         if (CommandControl.getInstance().isChanged()) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -56,9 +57,12 @@ public class OnCloseMainWindow implements OnClose {
                     storeInterface.saveResourcesByTask(uiControl.getFile(), uiControl.getController().getProject());
 
                     System.exit(0);
-                }
-                if (response == dontSaveProjectButtonType) {
+                } else if (response == dontSaveProjectButtonType) {
                     System.exit(0);
+                } else {
+                    if (event != null) {
+                        event.consume();
+                    }
                 }
             });
         } else {

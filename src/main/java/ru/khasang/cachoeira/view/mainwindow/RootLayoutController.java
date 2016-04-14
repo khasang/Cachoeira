@@ -117,7 +117,7 @@ public class RootLayoutController {
     private void onClose() {
         OnClose onClose = new OnCloseMainWindow(uiControl);
         onClose.saveProperties();
-        onClose.saveProject();
+        onClose.saveProject(null);
     }
 
     public void setUIControl(UIControl uiControl) {
