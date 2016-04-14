@@ -8,16 +8,14 @@ import java.time.LocalDate;
 public class SetTaskStartAndFinishDateCommand implements Command {
     private final ITask task;
     private final LocalDate startDate;
-    private final LocalDate finishDate;
+    private final long taskWidthInDays;
     private LocalDate oldStartDate;
     private LocalDate oldFinishDate;
 
-    public SetTaskStartAndFinishDateCommand(ITask task, LocalDate startDate, LocalDate finishDate) {
+    public SetTaskStartAndFinishDateCommand(ITask task, LocalDate startDate, long taskWidthInDays) {
         this.task = task;
         this.startDate = startDate;
-        this.finishDate = finishDate;
-        System.out.println(startDate);
-        System.out.println(finishDate);
+        this.taskWidthInDays = taskWidthInDays;
     }
 
     @Override
@@ -25,15 +23,11 @@ public class SetTaskStartAndFinishDateCommand implements Command {
         oldStartDate = task.getStartDate();
         oldFinishDate = task.getFinishDate();
         task.setStartDate(startDate);
-        task.setFinishDate(finishDate);
+        task.setFinishDate(startDate.plusDays(taskWidthInDays));
     }
 
     @Override
     public void undo() {
-        System.out.println("------");
-        System.out.println(oldStartDate);
-        System.out.println(oldFinishDate);
-        System.out.println();
         task.setStartDate(oldStartDate);
         task.setFinishDate(oldFinishDate);
     }
