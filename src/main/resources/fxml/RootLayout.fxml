@@ -52,6 +52,11 @@
                   </MenuItem>
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="%help">
+              <items>
+                <MenuItem mnemonicParsing="false" text="%about" />
+              </items>
+            </Menu>
           </menus>
        </MenuBar>
    </top>
