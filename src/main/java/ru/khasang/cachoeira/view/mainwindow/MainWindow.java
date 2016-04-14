@@ -8,11 +8,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.khasang.cachoeira.data.DBSchemeManager;
-import ru.khasang.cachoeira.data.DataStoreInterface;
-import ru.khasang.cachoeira.data.ISettingsManager;
-import ru.khasang.cachoeira.data.SettingsManager;
 import ru.khasang.cachoeira.view.*;
+import ru.khasang.cachoeira.view.mainwindow.exit.OnClose;
+import ru.khasang.cachoeira.view.mainwindow.exit.OnCloseMainWindow;
 
 import java.io.IOException;
 
@@ -83,28 +81,15 @@ public class MainWindow implements IWindow {
             stage.setScene(new Scene(rootLayout, uiControl.getWidthOfWindow(), uiControl.getHeightOfWindow()));
 
             rootLayoutController = loader.getController();
-            rootLayoutController.setController(uiControl.getController());
             rootLayoutController.setUIControl(uiControl);
             stage.show();
             stage.setMaximized(uiControl.getIsMaximized());
             stage.setOnCloseRequest(event -> {
+                OnClose onClose = new OnCloseMainWindow(uiControl);
                 // Сохранение значений окна
-                ISettingsManager settingsManager = SettingsManager.getInstance();
-                settingsManager.writeUIValues(
-                        uiControl.getSplitPaneDividerValue(),
-                        uiControl.getZoomMultiplier(),
-                        stage.getWidth(),
-                        stage.getHeight(),
-                        stage.isMaximized());
-
+                onClose.saveProperties();
                 // Сохранение проекта в файл
-                DataStoreInterface storeInterface = new DBSchemeManager(uiControl);
-                storeInterface.saveProjectToFile(uiControl.getFile(), uiControl.getController().getProject());
-                storeInterface.saveTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
-                storeInterface.saveResourcesToFile(uiControl.getFile(), uiControl.getController().getProject());
-                storeInterface.saveParentTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
-                storeInterface.saveChildTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
-                storeInterface.saveResourcesByTask(uiControl.getFile(), uiControl.getController().getProject());
+                onClose.saveProject();
             });
         } catch (IOException e) {
             LOGGER.debug("Ошибка загрузки: {}", e);
