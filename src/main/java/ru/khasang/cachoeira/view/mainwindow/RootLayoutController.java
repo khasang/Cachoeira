@@ -2,29 +2,25 @@ package ru.khasang.cachoeira.view.mainwindow;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.commands.CommandControl;
-import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.view.mainwindow.exit.OnClose;
+import ru.khasang.cachoeira.view.mainwindow.exit.OnCloseMainWindow;
 
 import java.io.File;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Класс-контроллер для {@link /fxml/RootLayout.fxml}
  */
 public class RootLayoutController {
     private static final Logger logger = LoggerFactory.getLogger(RootLayoutController.class.getName());
-    private IController controller;
     private UIControl uiControl;
 
     public RootLayoutController() {
@@ -53,6 +49,8 @@ public class RootLayoutController {
         storeInterface.saveParentTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
         storeInterface.saveChildTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
         storeInterface.saveResourcesByTask(uiControl.getFile(), uiControl.getController().getProject());
+        // После сохранения очищаем списки анду и реду
+        CommandControl.getInstance().clearLists();
     }
 
     @FXML
@@ -70,6 +68,8 @@ public class RootLayoutController {
             storeInterface.saveParentTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
             storeInterface.saveChildTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
             storeInterface.saveResourcesByTask(uiControl.getFile(), uiControl.getController().getProject());
+            // После сохранения очищаем списки анду и реду
+            CommandControl.getInstance().clearLists();
         }
     }
 
@@ -115,38 +115,9 @@ public class RootLayoutController {
     }
 
     private void onClose() {
-        //минимум JDK 8u40
-        //if (произошли изменения в проекте) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Cachoeira");
-        alert.setHeaderText("Вы хотите сохранить изменения в " + controller.getProject().getName() + "?");
-
-        ButtonType saveProjectButtonType = new ButtonType("Сохранить");
-        ButtonType dontSaveProjectButtonType = new ButtonType("Не сохранять");
-        ButtonType cancelButtonType = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        alert.getButtonTypes().setAll(saveProjectButtonType, dontSaveProjectButtonType, cancelButtonType);
-
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if (result.get() == saveProjectButtonType) {
-            //сохранение
-            saveUIValues();
-        } else if (result.get() == dontSaveProjectButtonType) {
-            //закрываем программу без сохранения
-            saveUIValues();
-            System.exit(0);
-        }
-        //}
-    }
-
-    private void saveUIValues() {
-//        ISettingsManager settingsDAO = SettingsManager.getInstance();
-//        settingsDAO.writeUIValues(uiControl.getSplitPaneDividerValue(), uiControl.getZoomMultiplier());
-    }
-
-    public void setController(IController controller) {
-        this.controller = controller;
+        OnClose onClose = new OnCloseMainWindow(uiControl);
+        onClose.saveProperties();
+        onClose.saveProject();
     }
 
     public void setUIControl(UIControl uiControl) {
