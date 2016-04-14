@@ -54,6 +54,8 @@ public class OnCloseMainWindow implements OnClose {
                     storeInterface.saveParentTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
                     storeInterface.saveChildTasksToFile(uiControl.getFile(), uiControl.getController().getProject());
                     storeInterface.saveResourcesByTask(uiControl.getFile(), uiControl.getController().getProject());
+
+                    System.exit(0);
                 }
                 if (response == dontSaveProjectButtonType) {
                     System.exit(0);
