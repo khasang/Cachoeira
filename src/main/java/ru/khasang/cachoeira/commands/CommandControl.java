@@ -42,4 +42,9 @@ public class CommandControl {
     public boolean isChanged() {
         return !undoStack.isEmpty();
     }
+
+    public void clearLists() {
+        undoStack.clear();
+        redoStack.clear();
+    }
 }
