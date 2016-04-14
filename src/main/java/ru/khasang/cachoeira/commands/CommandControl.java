@@ -38,4 +38,8 @@ public class CommandControl {
             command.execute();
         }
     }
+
+    public boolean isChanged() {
+        return !undoStack.isEmpty();
+    }
 }
