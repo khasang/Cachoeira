@@ -5,6 +5,9 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import ru.khasang.cachoeira.commands.CommandControl;
+import ru.khasang.cachoeira.commands.project.RemoveTaskFromProjectCommand;
+import ru.khasang.cachoeira.commands.task.*;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
 import ru.khasang.cachoeira.view.UIControl;
@@ -30,7 +33,7 @@ public class TaskContextMenu extends ContextMenu {
         Menu assignDependencyTask = new Menu(bundle.getString("assign_predecessor"));
         MenuItem removeTaskMenuItem = new MenuItem(bundle.getString("remove_task"));
 
-        removeTaskMenuItem.setOnAction(event -> controller.handleRemoveTask(task));
+        removeTaskMenuItem.setOnAction(event -> CommandControl.getInstance().execute(new RemoveTaskFromProjectCommand(controller.getProject(), task)));
         this.getItems().addAll(assignResourceMenu, assignDependencyTask, removeTaskMenuItem);  //заполняем меню
 
         this.setOnShowing(event -> {
@@ -55,17 +58,17 @@ public class TaskContextMenu extends ContextMenu {
                     // Вешаем ивент при нажатии на каком-либо пункте меню
                     checkMenuItem.setOnAction(event -> {
                         if (checkMenuItem.isSelected()) {
-                            IDependentTask parentDependentTask = new DependentTask();
-                            parentDependentTask.setTask(parentTask);
-                            parentDependentTask.setDependenceType(TaskDependencyType.FINISHSTART);
-                            task.addParentTask(parentDependentTask);
-
-                            IDependentTask childTask = new DependentTask();
-                            childTask.setTask(task);
-                            parentTask.addChildTask(childTask);
+                            CommandControl.getInstance().execute(new AddParentTaskToTaskCommand(task, new DependentTask(parentTask, TaskDependencyType.FINISHSTART)));
+                            CommandControl.getInstance().execute(new AddChildTaskToTaskCommand(parentTask, new DependentTask(task, null)));
                         } else {
-                            task.getParentTasks().removeIf(parentDependentTask -> parentDependentTask.getTask().equals(parentTask));
-                            parentTask.getChildTasks().removeIf(childTask -> childTask.getTask().equals(task));
+                            task.getParentTasks().stream()
+                                    .filter(dependentTask -> dependentTask.getTask().equals(parentTask))
+                                    .findFirst()
+                                    .ifPresent(dependentTask -> CommandControl.getInstance().execute(new RemoveParentTaskFromTaskCommand(task, dependentTask)));
+                            parentTask.getChildTasks().stream()
+                                    .filter(dependentTask -> dependentTask.getTask().equals(task))
+                                    .findFirst()
+                                    .ifPresent(dependentTask -> CommandControl.getInstance().execute(new RemoveChildTaskFromTaskCommand(parentTask, dependentTask)));
                         }
                     });
                     menuItemsList.add(checkMenuItem);
@@ -112,9 +115,9 @@ public class TaskContextMenu extends ContextMenu {
                     .forEach(resourceOfTask -> checkMenuItem.setSelected(true));
             checkMenuItem.setOnAction(event -> {
                 if (checkMenuItem.isSelected()) {
-                    task.addResource(resource);
+                    CommandControl.getInstance().execute(new AddResourceToTaskCommand(task, resource));
                 } else {
-                    task.removeResource(resource);
+                    CommandControl.getInstance().execute(new RemoveResourceFromTaskCommand(task, resource));
                 }
             });
             menuItemList.add(checkMenuItem);

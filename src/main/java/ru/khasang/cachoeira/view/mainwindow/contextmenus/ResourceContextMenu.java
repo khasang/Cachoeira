@@ -5,6 +5,10 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import ru.khasang.cachoeira.commands.CommandControl;
+import ru.khasang.cachoeira.commands.project.RemoveResourceFromProjectCommand;
+import ru.khasang.cachoeira.commands.task.AddResourceToTaskCommand;
+import ru.khasang.cachoeira.commands.task.RemoveResourceFromTaskCommand;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
@@ -30,7 +34,7 @@ public class ResourceContextMenu extends ContextMenu {
         Menu assignTaskMenu = new Menu(bundle.getString("assign_task"));
         MenuItem removeResourceMenuItem = new MenuItem(bundle.getString("remove_resource"));
 
-        removeResourceMenuItem.setOnAction(event -> controller.handleRemoveResource(resource));
+        removeResourceMenuItem.setOnAction(event -> CommandControl.getInstance().execute(new RemoveResourceFromProjectCommand(controller.getProject(), resource)));
         this.getItems().addAll(assignTaskMenu, removeResourceMenuItem);  //заполняем меню
 
         this.setOnShowing(event -> refreshTaskMenu(assignTaskMenu.getItems(), resource, controller.getProject().getTaskList()));
@@ -48,9 +52,9 @@ public class ResourceContextMenu extends ContextMenu {
                     .forEach(resource -> checkMenuItem.setSelected(true));
             checkMenuItem.setOnAction(event -> {
                 if (checkMenuItem.isSelected()) {
-                    task.addResource(currentRowResource);
+                    CommandControl.getInstance().execute(new AddResourceToTaskCommand(task, currentRowResource));
                 } else {
-                    task.removeResource(currentRowResource);
+                    CommandControl.getInstance().execute(new RemoveResourceFromTaskCommand(task, currentRowResource));
                 }
             });
             menuItemList.add(checkMenuItem);
