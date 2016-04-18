@@ -101,7 +101,7 @@ public class ResourcePropertiesPaneController {
         };
         nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
 
-        // TODO: 15.04.2016 Исправить текстовые проперти а-ля nameFiekd
+        // TODO: 15.04.2016 Исправить текстовые проперти а-ля nameField
         emailField.textProperty().addListener((observable, oldValue, newValue) -> {
             CommandControl.getInstance().execute(new SetResourceEmailCommand(uiControl.getController().getSelectedResource(), newValue));
         });
@@ -128,14 +128,11 @@ public class ResourcePropertiesPaneController {
         selectedResourceListener = (observable, oldSelectedResource, newSelectedResource) -> {
             // Привязываем поля свойств к модели
             if (newSelectedResource != null) {
-//                nameField.textProperty().bindBidirectional(newSelectedResource.nameProperty());
                 nameField.setText(newSelectedResource.getName());
                 emailField.setText(newSelectedResource.getEmail());
                 resourceTypeComboBox.setValue(newSelectedResource.getType());
                 descriptionTextArea.setText(newSelectedResource.getDescription());
-//                emailField.textProperty().bindBidirectional(newSelectedResource.emailProperty());
-//                resourceTypeComboBox.valueProperty().bindBidirectional(newSelectedResource.resourceTypeProperty());
-//                descriptionTextArea.textProperty().bindBidirectional(newSelectedResource.descriptionProperty());
+
                 uiControl.getController().getSelectedResource().nameProperty().addListener(observable1 -> {
                     nameField.setText(uiControl.getController().getSelectedResource().getName());
                 });
