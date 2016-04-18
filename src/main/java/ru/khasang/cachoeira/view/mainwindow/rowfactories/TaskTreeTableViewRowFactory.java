@@ -73,7 +73,9 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
         row.setOnDragDropped(event -> {
             Dragboard db = event.getDragboard();
             if (db.hasContent(Controller.getSerializedMimeType())) {
+                // TODO: 12.04.2016 Драг н дроп тоже изменение модели, надо что то придумать
                 int draggedIndex = (Integer) db.getContent(Controller.getSerializedMimeType());
+//                ITask draggedTask = controller.getProject().getTaskList().get(draggedIndex);
                 ITask draggedTask = controller.getProject().getTaskList().remove(draggedIndex);
                 int dropIndex;
                 if (row.isEmpty()) {
