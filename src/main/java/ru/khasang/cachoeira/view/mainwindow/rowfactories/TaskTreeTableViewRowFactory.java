@@ -6,6 +6,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
+import ru.khasang.cachoeira.commands.CommandControl;
+import ru.khasang.cachoeira.commands.project.DragNDropTaskCommand;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.ITask;
@@ -73,19 +75,10 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
         row.setOnDragDropped(event -> {
             Dragboard db = event.getDragboard();
             if (db.hasContent(Controller.getSerializedMimeType())) {
-                // TODO: 12.04.2016 Драг н дроп тоже изменение модели, надо что то придумать
                 int draggedIndex = (Integer) db.getContent(Controller.getSerializedMimeType());
-//                ITask draggedTask = controller.getProject().getTaskList().get(draggedIndex);
-                ITask draggedTask = controller.getProject().getTaskList().remove(draggedIndex);
-                int dropIndex;
-                if (row.isEmpty()) {
-                    dropIndex = taskPaneController.getTaskTreeTableView().getRoot().getChildren().size();
-                } else {
-                    dropIndex = row.getIndex();
-                }
-                controller.getProject().getTaskList().add(dropIndex, draggedTask);
+                CommandControl.getInstance().execute(new DragNDropTaskCommand(controller.getProject(), row, draggedIndex));
                 event.setDropCompleted(true);
-                taskPaneController.getTaskTreeTableView().getSelectionModel().select(dropIndex);
+                taskPaneController.getTaskTreeTableView().getSelectionModel().select(row.getIndex());
                 event.consume();
             }
         });

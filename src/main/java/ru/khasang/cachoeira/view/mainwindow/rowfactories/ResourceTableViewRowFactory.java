@@ -6,6 +6,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
+import ru.khasang.cachoeira.commands.CommandControl;
+import ru.khasang.cachoeira.commands.project.DragNDropResourceCommand;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
@@ -72,18 +74,10 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
         row.setOnDragDropped(event -> {
             Dragboard db = event.getDragboard();
             if (db.hasContent(Controller.getSerializedMimeType())) {
-                // TODO: 12.04.2016 Драг н дроп тоже изменение модели, надо что то придумать
                 int draggedIndex = (Integer) db.getContent(Controller.getSerializedMimeType());
-                IResource draggedResource = resourcePaneController.getResourceTableView().getItems().remove(draggedIndex);
-                int dropIndex;
-                if (row.isEmpty()) {
-                    dropIndex = resourcePaneController.getResourceTableView().getItems().size();
-                } else {
-                    dropIndex = row.getIndex();
-                }
-                resourcePaneController.getResourceTableView().getItems().add(dropIndex, draggedResource);
+                CommandControl.getInstance().execute(new DragNDropResourceCommand(controller.getProject(), row, draggedIndex));
                 event.setDropCompleted(true);
-                resourcePaneController.getResourceTableView().getSelectionModel().select(dropIndex);
+                resourcePaneController.getResourceTableView().getSelectionModel().select(row.getIndex());
                 event.consume();
             }
         });
