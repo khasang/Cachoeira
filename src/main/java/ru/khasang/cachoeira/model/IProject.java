@@ -6,9 +6,6 @@ import javafx.collections.ObservableList;
 
 import java.time.LocalDate;
 
-/**
- * Created by nadezhda on 07.10.2015.
- */
 public interface IProject {
     String getName();
 

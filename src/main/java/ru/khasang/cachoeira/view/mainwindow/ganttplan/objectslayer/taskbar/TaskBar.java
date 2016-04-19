@@ -14,6 +14,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import ru.khasang.cachoeira.commands.CommandControl;
+import ru.khasang.cachoeira.commands.task.SetTaskFinishDateCommand;
+import ru.khasang.cachoeira.commands.task.SetTaskStartAndFinishDateCommand;
+import ru.khasang.cachoeira.commands.task.SetTaskStartDateCommand;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
@@ -170,16 +174,12 @@ public abstract class TaskBar extends Pane {
                         oldRound.old = Math.round(newX / uiControl.getZoomMultiplier());
                         this.setLayoutX(Math.round(newX / uiControl.getZoomMultiplier()) * uiControl.getZoomMultiplier() - 1.5);
                         wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                        task.setStartDate(
+                        CommandControl.getInstance().execute(new SetTaskStartAndFinishDateCommand(
+                                task,
                                 uiControl.getController().getProject().getStartDate().plusDays(
-                                        Math.round(newX / uiControl.getZoomMultiplier())
-                                )
-                        );
-                        task.setFinishDate(
-                                task.getStartDate().plusDays(
-                                        Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())
-                                )
-                        );
+                                        Math.round(newX / uiControl.getZoomMultiplier())),
+                                Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())
+                        ));
                         wasMovedByMouse = false; // Когда окончили движение фолз
                     }
                 }
@@ -259,7 +259,10 @@ public abstract class TaskBar extends Pane {
                             this.setLayoutX(Math.round(newX / uiControl.getZoomMultiplier()) * uiControl.getZoomMultiplier() - 1.5);
                             backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (this.getLayoutX() - oldX));
                             wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                            task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / uiControl.getZoomMultiplier()))));
+                            CommandControl.getInstance().execute(new SetTaskStartDateCommand(
+                                    task,
+                                    uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / uiControl.getZoomMultiplier())))));
+//                            task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / uiControl.getZoomMultiplier()))));
                             wasMovedByMouse = false; // Когда окончили движение фолз
                         }
                     }
@@ -319,7 +322,9 @@ public abstract class TaskBar extends Pane {
                         oldRoundRight.old = Math.round(newWidth / uiControl.getZoomMultiplier());
                         backgroundRectangle.setWidth(Math.round(newWidth / uiControl.getZoomMultiplier()) * uiControl.getZoomMultiplier());
                         wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                        task.setFinishDate(task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())));
+                        CommandControl.getInstance().execute(new SetTaskFinishDateCommand(
+                                task,
+                                task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier()))));
                         wasMovedByMouse = false; // Когда окончили движение фолз
                     }
                 }

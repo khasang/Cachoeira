@@ -72,6 +72,7 @@ public class ResourceTableViewRowFactory implements Callback<TableView<IResource
         row.setOnDragDropped(event -> {
             Dragboard db = event.getDragboard();
             if (db.hasContent(Controller.getSerializedMimeType())) {
+                // TODO: 12.04.2016 Драг н дроп тоже изменение модели, надо что то придумать
                 int draggedIndex = (Integer) db.getContent(Controller.getSerializedMimeType());
                 IResource draggedResource = resourcePaneController.getResourceTableView().getItems().remove(draggedIndex);
                 int dropIndex;

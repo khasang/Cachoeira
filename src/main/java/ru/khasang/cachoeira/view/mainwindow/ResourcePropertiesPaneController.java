@@ -5,13 +5,19 @@ import javafx.beans.WeakInvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.collections.WeakListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
+import ru.khasang.cachoeira.commands.CommandControl;
+import ru.khasang.cachoeira.commands.resource.RenameResourceCommand;
+import ru.khasang.cachoeira.commands.resource.SetResourceDescriptionCommand;
+import ru.khasang.cachoeira.commands.resource.SetResourceEmailCommand;
+import ru.khasang.cachoeira.commands.resource.SetResourceTypeCommand;
+import ru.khasang.cachoeira.commands.task.AddResourceToTaskCommand;
+import ru.khasang.cachoeira.commands.task.RemoveResourceFromTaskCommand;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.ResourceType;
@@ -53,10 +59,11 @@ public class ResourcePropertiesPaneController {
 
     public void initFields(UIControl uiControl) {
         // Заполняем выпадающий список
-        ObservableList<ResourceType> resourceTypesModel = FXCollections.observableArrayList(ResourceType.values());
-        resourceTypeComboBox.setItems(resourceTypesModel);
+        resourceTypeComboBox.setItems(FXCollections.observableArrayList(ResourceType.values()));
         // Делаем панель не активной, если ресурс не выбран
         propertiesPane.disableProperty().bind(uiControl.getController().selectedResourceProperty().isNull());
+
+
 
         /* Поле наименование */
         nameField.setOnKeyPressed(keyEvent -> {
@@ -64,7 +71,8 @@ public class ResourcePropertiesPaneController {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 // Если поле не пустое
                 if (!nameField.getText().trim().isEmpty()) {
-                    uiControl.getController().getSelectedResource().setName(nameField.getText());
+                    CommandControl.getInstance().execute(new RenameResourceCommand(uiControl.getController().getSelectedResource(), nameField.getText()));
+//                    uiControl.getController().getSelectedResource().setName(nameField.getText());
                     // Убираем фокусировку с поля наименования задачи
                     nameField.getParent().requestFocus();
                 }
@@ -83,7 +91,8 @@ public class ResourcePropertiesPaneController {
                 // Если поле не пустое, то
                 if (!nameField.getText().trim().isEmpty()) {
                     // применяем изменения
-                    uiControl.getController().getSelectedResource().setName(nameField.getText());
+                    CommandControl.getInstance().execute(new RenameResourceCommand(uiControl.getController().getSelectedResource(), nameField.getText()));
+//                    uiControl.getController().getSelectedResource().setName(nameField.getText());
                 } else {
                     // либо возвращаем предыдущее название
                     nameField.setText(uiControl.getController().getSelectedResource().getName());
@@ -91,6 +100,19 @@ public class ResourcePropertiesPaneController {
             }
         };
         nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
+
+        // TODO: 15.04.2016 Исправить текстовые проперти а-ля nameField
+        emailField.textProperty().addListener((observable, oldValue, newValue) -> {
+            CommandControl.getInstance().execute(new SetResourceEmailCommand(uiControl.getController().getSelectedResource(), newValue));
+        });
+
+        resourceTypeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            CommandControl.getInstance().execute(new SetResourceTypeCommand(uiControl.getController().getSelectedResource(), newValue));
+        });
+
+        descriptionTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            CommandControl.getInstance().execute(new SetResourceDescriptionCommand(uiControl.getController().getSelectedResource(), newValue));
+        });
     }
 
     /**
@@ -104,21 +126,25 @@ public class ResourcePropertiesPaneController {
     public void setListeners(UIControl uiControl) {
         taskListListener = change -> initCheckBoxColumn(uiControl.getController().getSelectedResource());
         selectedResourceListener = (observable, oldSelectedResource, newSelectedResource) -> {
-            // Прежде чем привязать поля свойств нового ресурса необходимо отвязать поля предыдущего ресурса
-            // (если такой был)
-            if (oldSelectedResource != null) {
-//                nameField.textProperty().unbindBidirectional(oldSelectedResource.nameProperty());
-                emailField.textProperty().unbindBidirectional(oldSelectedResource.emailProperty());
-                resourceTypeComboBox.valueProperty().unbindBidirectional(oldSelectedResource.resourceTypeProperty());
-                descriptionTextArea.textProperty().unbindBidirectional(oldSelectedResource.descriptionProperty());
-            }
             // Привязываем поля свойств к модели
             if (newSelectedResource != null) {
-//                nameField.textProperty().bindBidirectional(newSelectedResource.nameProperty());
                 nameField.setText(newSelectedResource.getName());
-                emailField.textProperty().bindBidirectional(newSelectedResource.emailProperty());
-                resourceTypeComboBox.valueProperty().bindBidirectional(newSelectedResource.resourceTypeProperty());
-                descriptionTextArea.textProperty().bindBidirectional(newSelectedResource.descriptionProperty());
+                emailField.setText(newSelectedResource.getEmail());
+                resourceTypeComboBox.setValue(newSelectedResource.getType());
+                descriptionTextArea.setText(newSelectedResource.getDescription());
+
+                uiControl.getController().getSelectedResource().nameProperty().addListener(observable1 -> {
+                    nameField.setText(uiControl.getController().getSelectedResource().getName());
+                });
+                uiControl.getController().getSelectedResource().emailProperty().addListener(observable1 -> {
+                    emailField.setText(uiControl.getController().getSelectedResource().getEmail());
+                });
+                uiControl.getController().getSelectedResource().resourceTypeProperty().addListener(observable1 -> {
+                    resourceTypeComboBox.setValue(uiControl.getController().getSelectedResource().getType());
+                });
+                uiControl.getController().getSelectedResource().descriptionProperty().addListener(observable1 -> {
+                    descriptionTextArea.setText(uiControl.getController().getSelectedResource().getDescription());
+                });
             }
             // Если выбрали другой ресурс перерисовываем таблицу привязанных задач
             initCheckBoxColumn(uiControl.getController().getSelectedResource());
@@ -147,9 +173,9 @@ public class ResourcePropertiesPaneController {
                         setGraphic(checkBox);
                         checkBox.setOnAction(event -> {
                             if (checkBox.isSelected()) {
-                                currentRowTask.addResource(selectedResource);
+                                CommandControl.getInstance().execute(new AddResourceToTaskCommand(currentRowTask, selectedResource));
                             } else {
-                                currentRowTask.removeResource(selectedResource);
+                                CommandControl.getInstance().execute(new RemoveResourceFromTaskCommand(currentRowTask, selectedResource));
                             }
                         });
 

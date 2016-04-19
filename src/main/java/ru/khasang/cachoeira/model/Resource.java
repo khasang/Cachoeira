@@ -6,9 +6,6 @@ import ru.khasang.cachoeira.view.UIControl;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Created by truesik on 22.10.2015.
- */
 public class Resource implements IResource {
     private final ReadOnlyIntegerWrapper id = new ReadOnlyIntegerWrapper(this, "id", resourceSequence.incrementAndGet());
     private StringProperty name = new SimpleStringProperty(this, "name");

@@ -11,6 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.khasang.cachoeira.commands.CommandControl;
+import ru.khasang.cachoeira.commands.project.AddResourceToProjectCommand;
+import ru.khasang.cachoeira.commands.project.RemoveResourceFromProjectCommand;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.Resource;
@@ -87,12 +90,12 @@ public class ResourcePaneController {
 
     @FXML
     private void addNewResourceHandle(ActionEvent actionEvent) {
-        uiControl.getController().handleAddResource(new Resource());
+        CommandControl.getInstance().execute(new AddResourceToProjectCommand(uiControl.getController().getProject(), new Resource()));
     }
 
     @FXML
     private void removeResourceHandle(ActionEvent actionEvent) {
-        uiControl.getController().handleRemoveResource(resourceTableView.getSelectionModel().getSelectedItem());
+        CommandControl.getInstance().execute(new RemoveResourceFromProjectCommand(uiControl.getController().getProject(), uiControl.getController().getSelectedResource()));
     }
 
     public void initResourceTable(UIControl uiControl) {
@@ -154,7 +157,7 @@ public class ResourcePaneController {
         // Контекстное меню для таблицы
         ContextMenu resourceTableMenu = new ContextMenu();
         MenuItem addNewResource = new MenuItem("Новый ресурс");
-        addNewResource.setOnAction(event -> uiControl.getController().handleAddResource(new Resource()));
+        addNewResource.setOnAction(event -> CommandControl.getInstance().execute(new AddResourceToProjectCommand(uiControl.getController().getProject(), new Resource())));
         resourceTableMenu.getItems().addAll(addNewResource);   //заполняем меню
         resourceTableView.setContextMenu(resourceTableMenu);
     }

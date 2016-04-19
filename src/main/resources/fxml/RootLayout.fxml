@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.input.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
@@ -11,10 +12,22 @@
           <menus>
               <Menu mnemonicParsing="false" text="%project">
                  <items>
-                     <MenuItem mnemonicParsing="false" onAction="#newProjectMenuItemHandle" text="%create_project" />
-                     <MenuItem mnemonicParsing="false" onAction="#openProjectMenuItemHandle" text="%open_project" />
-                     <MenuItem mnemonicParsing="false" onAction="#saveProjectMenuItemHandle" text="%save" />
-                  <MenuItem mnemonicParsing="false" onAction="#saveProjectAsMenuItemHandle" text="%save_as" />
+                     <MenuItem mnemonicParsing="false" onAction="#newProjectMenuItemHandle" text="%create_project">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                     <MenuItem mnemonicParsing="false" onAction="#openProjectMenuItemHandle" text="%open_project">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                     <MenuItem mnemonicParsing="false" onAction="#saveProjectMenuItemHandle" text="%save">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#saveProjectAsMenuItemHandle" text="%save_as">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                     </accelerator></MenuItem>
                   <Menu mnemonicParsing="false" text="%resources">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#resourceExportHandle" text="%export" />
@@ -25,6 +38,25 @@
                      <MenuItem mnemonicParsing="false" onAction="#exitMenuItemHandle" text="%exit" />
                  </items>
               </Menu>
+            <Menu mnemonicParsing="false" text="%edit">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#undoMenuItemHandle" text="%undo">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#redoMenuItemHandle" text="%redo">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="%help">
+              <items>
+                <MenuItem mnemonicParsing="false" text="%about" />
+              </items>
+            </Menu>
           </menus>
        </MenuBar>
    </top>

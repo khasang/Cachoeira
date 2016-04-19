@@ -3,12 +3,17 @@ package ru.khasang.cachoeira.model;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-/**
- * Created by truesik on 22.10.2015.
- */
 public class DependentTask implements IDependentTask {
     private ObjectProperty<ITask> task = new SimpleObjectProperty<>(this, "task");
     private ObjectProperty<TaskDependencyType> dependenceType = new SimpleObjectProperty<>(this, "dependenceType");
+
+    public DependentTask() {
+    }
+
+    public DependentTask(ITask task, TaskDependencyType dependenceType) {
+        this.task.setValue(task);
+        this.dependenceType.setValue(dependenceType);
+    }
 
     @Override
     public ITask getTask() {

@@ -31,8 +31,8 @@ public abstract class RelationLine extends Group {
     private ChangeListener<TaskDependencyType> dependentTypeChangeListener;
 
     public RelationLine(TaskBar parentTaskBar,
-                                TaskBar childTaskBar,
-                                ObjectProperty<TaskDependencyType> dependenceType) {
+                        TaskBar childTaskBar,
+                        ObjectProperty<TaskDependencyType> dependenceType) {
         this.parentTaskBar = parentTaskBar;
         this.childTaskBar = childTaskBar;
         this.dependenceType = dependenceType;
