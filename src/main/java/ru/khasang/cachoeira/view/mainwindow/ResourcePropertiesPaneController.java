@@ -63,8 +63,6 @@ public class ResourcePropertiesPaneController {
         // Делаем панель не активной, если ресурс не выбран
         propertiesPane.disableProperty().bind(uiControl.getController().selectedResourceProperty().isNull());
 
-
-
         /* Поле наименование */
         nameField.setOnKeyPressed(keyEvent -> {
             // Изменения применяем только при нажатии на ENTER...
@@ -72,7 +70,6 @@ public class ResourcePropertiesPaneController {
                 // Если поле не пустое
                 if (!nameField.getText().trim().isEmpty()) {
                     CommandControl.getInstance().execute(new RenameResourceCommand(uiControl.getController().getSelectedResource(), nameField.getText()));
-//                    uiControl.getController().getSelectedResource().setName(nameField.getText());
                     // Убираем фокусировку с поля наименования задачи
                     nameField.getParent().requestFocus();
                 }
@@ -101,18 +98,7 @@ public class ResourcePropertiesPaneController {
         };
         nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
 
-        // TODO: 15.04.2016 Исправить текстовые проперти а-ля nameField
-        emailField.textProperty().addListener((observable, oldValue, newValue) -> {
-            CommandControl.getInstance().execute(new SetResourceEmailCommand(uiControl.getController().getSelectedResource(), newValue));
-        });
 
-        resourceTypeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            CommandControl.getInstance().execute(new SetResourceTypeCommand(uiControl.getController().getSelectedResource(), newValue));
-        });
-
-        descriptionTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            CommandControl.getInstance().execute(new SetResourceDescriptionCommand(uiControl.getController().getSelectedResource(), newValue));
-        });
     }
 
     /**
@@ -144,6 +130,19 @@ public class ResourcePropertiesPaneController {
                 });
                 uiControl.getController().getSelectedResource().descriptionProperty().addListener(observable1 -> {
                     descriptionTextArea.setText(uiControl.getController().getSelectedResource().getDescription());
+                });
+
+                // TODO: 15.04.2016 Исправить текстовые проперти а-ля nameField
+                emailField.textProperty().addListener((observable1, oldValue, newValue) -> {
+                    CommandControl.getInstance().execute(new SetResourceEmailCommand(uiControl.getController().getSelectedResource(), newValue));
+                });
+
+                resourceTypeComboBox.valueProperty().addListener((observable1, oldValue, newValue) -> {
+                    CommandControl.getInstance().execute(new SetResourceTypeCommand(uiControl.getController().getSelectedResource(), newValue));
+                });
+
+                descriptionTextArea.textProperty().addListener((observable1, oldValue, newValue) -> {
+                    CommandControl.getInstance().execute(new SetResourceDescriptionCommand(uiControl.getController().getSelectedResource(), newValue));
                 });
             }
             // Если выбрали другой ресурс перерисовываем таблицу привязанных задач
