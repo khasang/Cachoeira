@@ -69,6 +69,11 @@ public class Project implements IProject {
     @Override
     public final void setStartDate(LocalDate startDate) {
         this.startDate.set(startDate);
+        if (finishDate.getValue() != null) {
+            if (startDate.isEqual(finishDate.getValue()) || startDate.isAfter(finishDate.getValue())) {
+                finishDate.setValue(startDate.plusDays(1));
+            }
+        }
     }
 
     @Override
@@ -125,30 +130,4 @@ public class Project implements IProject {
     public final StringProperty descriptionProperty() {
         return description;
     }
-
-//
-//    //Метод, сохраняющий проект в хранилище
-//    @Override
-//    public void save(String target) {
-//
-//    }
-//
-//    //Метод, загружающий проект из хранилища
-//    @Override
-//    public void load(String source) {
-//
-//    }
-//
-//    //Метод, выгружающий ресурсы проекта во внешний файл
-//    @Override
-//    public void exportResources(String target){
-//
-//    }
-//
-//    //Метод, добавляющий новые ресурсы из внешнего файла
-//    @Override
-//    public void importResources(String sources){
-//
-//    }
-
 }

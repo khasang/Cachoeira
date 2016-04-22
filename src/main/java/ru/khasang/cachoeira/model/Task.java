@@ -192,6 +192,11 @@ public class Task implements ITask {
     @Override
     public final void setStartDate(LocalDate startDate) {
         this.startDate.set(startDate);
+        if (finishDate.getValue() != null) {
+            if (startDate.isEqual(finishDate.getValue()) || startDate.isAfter(finishDate.getValue())) {
+                finishDate.setValue(startDate.plusDays(1));
+            }
+        }
     }
 
     @Override
