@@ -86,14 +86,7 @@ public class ProjectPropertiesPaneController {
         // ... или при потере фокуса.
         nameFieldFocusListener = observable -> {
             if (!nameField.isFocused()) {
-                // Если поле не пустое, то
-                if (!nameField.getText().trim().isEmpty()) {
-                    // применяем изменения
-                    CommandControl.getInstance().execute(new RenameProjectCommand(uiControl.getController().getProject(), nameField.getText()));
-                } else {
-                    // либо возвращаем предыдущее название
-                    nameField.setText(uiControl.getController().getProject().getName());
-                }
+                nameField.setText(uiControl.getController().getProject().getName());
             }
         };
         nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));

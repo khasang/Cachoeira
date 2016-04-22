@@ -85,15 +85,7 @@ public class ResourcePropertiesPaneController {
         // ... или при потере фокуса.
         nameFieldFocusListener = observable -> {
             if (!nameField.isFocused()) {
-                // Если поле не пустое, то
-                if (!nameField.getText().trim().isEmpty()) {
-                    // применяем изменения
-                    CommandControl.getInstance().execute(new RenameResourceCommand(uiControl.getController().getSelectedResource(), nameField.getText()));
-//                    uiControl.getController().getSelectedResource().setName(nameField.getText());
-                } else {
-                    // либо возвращаем предыдущее название
-                    nameField.setText(uiControl.getController().getSelectedResource().getName());
-                }
+                nameField.setText(uiControl.getController().getSelectedResource().getName());
             }
         };
         nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
