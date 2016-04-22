@@ -6,7 +6,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.collections.WeakListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -148,8 +147,7 @@ public class TaskPropertiesPaneController {
 
     public void initFields(UIControl uiControl) {
         // Заполняем комбобокс
-        ObservableList<PriorityType> taskPriorityTypes = FXCollections.observableArrayList(PriorityType.values());
-        priorityTypeComboBox.setItems(taskPriorityTypes);
+        priorityTypeComboBox.setItems(FXCollections.observableArrayList(PriorityType.values()));
         // Делаем панель не активной, если задача не выбрана
         propertiesPane.disableProperty().bind(uiControl.getController().selectedTaskProperty().isNull());
 
@@ -175,21 +173,11 @@ public class TaskPropertiesPaneController {
         // ... или при потере фокуса.
         nameFieldFocusListener = observable -> {
             if (!nameField.isFocused()) {
-                // Если поле не пустое, то
-                if (!nameField.getText().trim().isEmpty()) {
-                    // применяем изменения
-                    CommandControl.getInstance().execute(new RenameTaskCommand(uiControl.getController().getSelectedTask(), nameField.getText()));
-                } else {
-                    // либо возвращаем предыдущее название
-                    nameField.setText(uiControl.getController().getSelectedTask().getName());
-                }
+                nameField.setText(uiControl.getController().getSelectedTask().getName());
             }
         };
         nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
         /* Поле дата начала*/
-        startDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
-            CommandControl.getInstance().execute(new SetTaskStartDateCommand(uiControl.getController().getSelectedTask(), newValue));
-        });
         startDatePicker.setDayCellFactory(datePicker -> new DateCell() {
             @Override
             public void updateItem(LocalDate startDate, boolean empty) {
@@ -203,9 +191,6 @@ public class TaskPropertiesPaneController {
             }
         });
         /* Поле дата окончания */
-        finishDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
-            CommandControl.getInstance().execute(new SetTaskFinishDateCommand(uiControl.getController().getSelectedTask(), newValue));
-        });
         // Отключает возможность в Дате окончания выбрать дату предыдущую Начальной даты
         finishDatePicker.setDayCellFactory(datePicker -> new DateCell() {
             @Override
@@ -221,22 +206,8 @@ public class TaskPropertiesPaneController {
         });
         /* Слайдер изменения прогресса */
         donePercentSlider.setSnapToTicks(true);
-        donePercentSlider.setOnMouseReleased(event -> CommandControl.getInstance().execute(new SetTaskDonePercentCommand(uiControl.getController().getSelectedTask(), (int) donePercentSlider.getValue())));
-
-        /* Priority ComboBox */
-        priorityTypeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            CommandControl.getInstance().execute(new SetTaskPriorityTypeCommand(uiControl.getController().getSelectedTask(), newValue));
-        });
-
-        /* CostField */
-        costField.textProperty().addListener((observable, oldValue, newValue) -> {
-            CommandControl.getInstance().execute(new SetTaskCostCommand(uiControl.getController().getSelectedTask(), Double.parseDouble(newValue)));
-        });
-
-        /* DescriptionTextArea*/
-        descriptionTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            CommandControl.getInstance().execute(new SetTaskDescriptionCommand(uiControl.getController().getSelectedTask(), newValue));
-        });
+        donePercentSlider.setOnMouseReleased(event -> CommandControl.getInstance().execute(
+                new SetTaskDonePercentCommand(uiControl.getController().getSelectedTask(), (int) donePercentSlider.getValue())));
     }
 
     public void initAssignmentResourceTable(UIControl uiControl) {
@@ -277,6 +248,22 @@ public class TaskPropertiesPaneController {
                 });
                 uiControl.getController().getSelectedTask().descriptionProperty().addListener(observable1 -> {
                     descriptionTextArea.setText(uiControl.getController().getSelectedTask().getDescription());
+                });
+
+                startDatePicker.valueProperty().addListener((observable1, oldValue, newValue) -> {
+                    CommandControl.getInstance().execute(new SetTaskStartDateCommand(uiControl.getController().getSelectedTask(), newValue));
+                });
+                finishDatePicker.valueProperty().addListener((observable1, oldValue, newValue) -> {
+                    CommandControl.getInstance().execute(new SetTaskFinishDateCommand(uiControl.getController().getSelectedTask(), newValue));
+                });
+                priorityTypeComboBox.valueProperty().addListener((observable1, oldValue, newValue) -> {
+                    CommandControl.getInstance().execute(new SetTaskPriorityTypeCommand(uiControl.getController().getSelectedTask(), newValue));
+                });
+                costField.textProperty().addListener((observable1, oldValue, newValue) -> {
+                    CommandControl.getInstance().execute(new SetTaskCostCommand(uiControl.getController().getSelectedTask(), Double.parseDouble(newValue)));
+                });
+                descriptionTextArea.textProperty().addListener((observable1, oldValue, newValue) -> {
+                    CommandControl.getInstance().execute(new SetTaskDescriptionCommand(uiControl.getController().getSelectedTask(), newValue));
                 });
             }
             // Если выбрали другую задачу перерисовываем таблицу привязанных ресурсов
