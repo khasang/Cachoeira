@@ -67,7 +67,7 @@ public class Project implements IProject {
     }
 
     @Override
-    public final void setStartDate(LocalDate startDate) {
+    public final void setStartDateAndVerify(LocalDate startDate) {
         this.startDate.set(startDate);
         if (finishDate.getValue() != null) {
             if (startDate.isEqual(finishDate.getValue()) || startDate.isAfter(finishDate.getValue())) {
@@ -87,8 +87,13 @@ public class Project implements IProject {
     }
 
     @Override
-    public final void setFinishDate(LocalDate finishDate) {
+    public final void setFinishDateAndVerify(LocalDate finishDate) {
         this.finishDate.set(finishDate);
+        if (startDate.getValue() != null) {
+            if (finishDate.isEqual(startDate.getValue()) || finishDate.isBefore(startDate.getValue())) {
+                startDate.setValue(finishDate.minusDays(1));
+            }
+        }
     }
 
     @Override
