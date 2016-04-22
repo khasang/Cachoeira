@@ -93,11 +93,6 @@ public class ProjectPropertiesPaneController {
 
         startDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
             CommandControl.getInstance().execute(new SetProjectStartDateCommand(uiControl.getController().getProject(), newValue));
-            // Конечная дата всегда после начальной
-            // TODO: 12.04.2016 Представлению должно быть похер на "кто за кем"
-            if (newValue.isEqual(finishDatePicker.getValue()) || newValue.isAfter(finishDatePicker.getValue())) {
-                finishDatePicker.setValue(newValue.plusDays(1));
-            }
         });
 
         finishDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
