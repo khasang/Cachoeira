@@ -18,11 +18,11 @@ public class SetProjectFinishDateCommand implements Command {
     @Override
     public void execute() {
         oldFinishDate = project.getFinishDate();
-        project.setFinishDate(finishDate);
+        project.setFinishDateAndVerify(finishDate);
     }
 
     @Override
     public void undo() {
-        project.setFinishDate(oldFinishDate);
+        project.setFinishDateAndVerify(oldFinishDate);
     }
 }

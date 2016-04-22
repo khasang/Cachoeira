@@ -86,25 +86,13 @@ public class ProjectPropertiesPaneController {
         // ... или при потере фокуса.
         nameFieldFocusListener = observable -> {
             if (!nameField.isFocused()) {
-                // Если поле не пустое, то
-                if (!nameField.getText().trim().isEmpty()) {
-                    // применяем изменения
-                    CommandControl.getInstance().execute(new RenameProjectCommand(uiControl.getController().getProject(), nameField.getText()));
-                } else {
-                    // либо возвращаем предыдущее название
-                    nameField.setText(uiControl.getController().getProject().getName());
-                }
+                nameField.setText(uiControl.getController().getProject().getName());
             }
         };
         nameField.focusedProperty().addListener(new WeakInvalidationListener(nameFieldFocusListener));
 
         startDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
             CommandControl.getInstance().execute(new SetProjectStartDateCommand(uiControl.getController().getProject(), newValue));
-            // Конечная дата всегда после начальной
-            // TODO: 12.04.2016 Представлению должно быть похер на "кто за кем"
-            if (newValue.isEqual(finishDatePicker.getValue()) || newValue.isAfter(finishDatePicker.getValue())) {
-                finishDatePicker.setValue(newValue.plusDays(1));
-            }
         });
 
         finishDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {

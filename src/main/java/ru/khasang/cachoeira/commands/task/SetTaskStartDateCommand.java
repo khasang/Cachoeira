@@ -18,11 +18,11 @@ public class SetTaskStartDateCommand implements Command {
     @Override
     public void execute() {
         oldStartDate = task.getStartDate();
-        task.setStartDate(startDate);
+        task.setStartDateAndVerify(startDate);
     }
 
     @Override
     public void undo() {
-        task.setStartDate(oldStartDate);
+        task.setStartDateAndVerify(oldStartDate);
     }
 }

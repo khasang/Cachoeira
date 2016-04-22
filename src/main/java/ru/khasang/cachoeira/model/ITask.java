@@ -20,13 +20,13 @@ public interface ITask {
 
     LocalDate getStartDate();
 
-    void setStartDate(LocalDate startDate);
+    void setStartDateAndVerify(LocalDate startDate);
 
     ObjectProperty<LocalDate> startDateProperty();
 
     LocalDate getFinishDate();
 
-    void setFinishDate(LocalDate finishDate);
+    void setFinishDateAndVerify(LocalDate finishDate);
 
     ObjectProperty<LocalDate> finishDateProperty();
 

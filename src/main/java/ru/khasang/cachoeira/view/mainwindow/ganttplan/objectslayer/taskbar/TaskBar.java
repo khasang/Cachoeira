@@ -262,7 +262,6 @@ public abstract class TaskBar extends Pane {
                             CommandControl.getInstance().execute(new SetTaskStartDateCommand(
                                     task,
                                     uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / uiControl.getZoomMultiplier())))));
-//                            task.setStartDate(uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / uiControl.getZoomMultiplier()))));
                             wasMovedByMouse = false; // Когда окончили движение фолз
                         }
                     }

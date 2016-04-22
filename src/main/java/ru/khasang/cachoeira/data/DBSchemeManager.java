@@ -226,8 +226,8 @@ public class DBSchemeManager implements DataStoreInterface {
                 ITask task = new Task();
 //                task.setId(resultSet.getInt("Id"));
                 task.setName(resultSet.getString("Name"));
-                task.setStartDate(LocalDate.parse(resultSet.getString("Start_Date")));
-                task.setFinishDate(LocalDate.parse(resultSet.getString("Finish_Date")));
+                task.setStartDateAndVerify(LocalDate.parse(resultSet.getString("Start_Date")));
+                task.setFinishDateAndVerify(LocalDate.parse(resultSet.getString("Finish_Date")));
                 task.setDuration(resultSet.getInt("Duration"));
                 task.setDonePercent(resultSet.getInt("Done_Percent"));
                 task.setCost(resultSet.getDouble("Cost"));
@@ -387,8 +387,8 @@ public class DBSchemeManager implements DataStoreInterface {
             resultSet = statement.executeQuery("SELECT * FROM Project;");
             while (resultSet.next()) {
                 project.setName(resultSet.getString("Name"));
-                project.setStartDate(LocalDate.parse(resultSet.getString("Start_Date")));
-                project.setFinishDate(LocalDate.parse(resultSet.getString("Finish_Date")));
+                project.setStartDateAndVerify(LocalDate.parse(resultSet.getString("Start_Date")));
+                project.setFinishDateAndVerify(LocalDate.parse(resultSet.getString("Finish_Date")));
                 project.setDescription(resultSet.getString("Description"));
             }
         } catch (SQLException e) {
