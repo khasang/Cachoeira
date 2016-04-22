@@ -18,11 +18,11 @@ public class SetTaskFinishDateCommand implements Command {
     @Override
     public void execute() {
         oldFinishDate = task.getFinishDate();
-        task.setFinishDate(finishDate);
+        task.setFinishDateAndVerify(finishDate);
     }
 
     @Override
     public void undo() {
-        task.setFinishDate(oldFinishDate);
+        task.setFinishDateAndVerify(oldFinishDate);
     }
 }

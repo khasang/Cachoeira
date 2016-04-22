@@ -18,11 +18,11 @@ public class SetProjectStartDateCommand implements Command {
     @Override
     public void execute() {
         oldStartDate = project.getStartDate();
-        project.setStartDate(startDate);
+        project.setStartDateAndVerify(startDate);
     }
 
     @Override
     public void undo() {
-        project.setStartDate(oldStartDate);
+        project.setStartDateAndVerify(oldStartDate);
     }
 }

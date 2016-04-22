@@ -22,13 +22,13 @@ public class SetTaskStartAndFinishDateCommand implements Command {
     public void execute() {
         oldStartDate = task.getStartDate();
         oldFinishDate = task.getFinishDate();
-        task.setStartDate(startDate);
-        task.setFinishDate(startDate.plusDays(taskWidthInDays));
+        task.setStartDateAndVerify(startDate);
+        task.setFinishDateAndVerify(startDate.plusDays(taskWidthInDays));
     }
 
     @Override
     public void undo() {
-        task.setStartDate(oldStartDate);
-        task.setFinishDate(oldFinishDate);
+        task.setStartDateAndVerify(oldStartDate);
+        task.setFinishDateAndVerify(oldFinishDate);
     }
 }
