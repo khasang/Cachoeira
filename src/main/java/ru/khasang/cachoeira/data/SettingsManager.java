@@ -11,11 +11,11 @@ public class SettingsManager implements ISettingsManager {
     public static final Logger LOGGER = LoggerFactory.getLogger(SettingsManager.class.getName());
     private static SettingsManager instance;
 
-    private File defaultDirectory = new File(System.getProperty("user.home") + "/Documents/Cachoeira/settings");
+    private final File DEFAULT_DIRECTORY = new File(System.getProperty("user.home") + "/Documents/Cachoeira/settings");
 
-    private File uiValues = new File(defaultDirectory + "/ui_value.properties");
-    private File recentProjects = new File(defaultDirectory + "/recent_projects.properties");
-    private File programProperties = new File(defaultDirectory + "/settings.properties");
+    private final File UI_VALUES = new File(DEFAULT_DIRECTORY + "/ui_value.properties");
+    private final File RECENT_PROJECTS = new File(DEFAULT_DIRECTORY + "/recent_projects.properties");
+    private final File PROGRAM_PROPERTIES = new File(DEFAULT_DIRECTORY + "/settings.properties");
 
     public static SettingsManager getInstance() {
         if (instance == null) {
@@ -25,7 +25,7 @@ public class SettingsManager implements ISettingsManager {
     }
 
     private SettingsManager() {
-        if (defaultDirectory.mkdirs()) {
+        if (DEFAULT_DIRECTORY.mkdirs()) {
             LOGGER.debug("Создана папка для хранения настроек.");
         } else {
             LOGGER.debug("Папка для хранения настроек уже существует.");
@@ -38,29 +38,22 @@ public class SettingsManager implements ISettingsManager {
     @Override
     public String getUIValueByKey(String key) {
         Properties properties = new Properties();
-        InputStream inputStream = null;
-        String value = null;
-        try {
-            inputStream = new FileInputStream(uiValues);
+        try (InputStream inputStream = new FileInputStream(UI_VALUES)){
             properties.load(inputStream);
             if (properties.containsKey(key)) {
-                value = properties.getProperty(key);
+                return properties.getProperty(key);
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            closeInputStream(inputStream);
         }
-        return value;
+        throw new RuntimeException("Can't get UI Value");
     }
 
     @Override
     public List<String> getRecentProjects() {
         List<String> list = new ArrayList<>();
         Properties properties = new Properties();
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(recentProjects);
+        try (InputStream inputStream = new FileInputStream(RECENT_PROJECTS)){
             properties.load(inputStream);
             if (properties.containsKey("RecentProjects")) {
                 String[] propertyValues = properties.getProperty("RecentProjects").split(",");
@@ -68,8 +61,6 @@ public class SettingsManager implements ISettingsManager {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            closeInputStream(inputStream);
         }
         return list;
     }
@@ -77,20 +68,15 @@ public class SettingsManager implements ISettingsManager {
     @Override
     public String getProgramPropertyByKey(String key) {
         Properties properties = new Properties();
-        InputStream inputStream = null;
-        String value = null;
-        try {
-            inputStream = new FileInputStream(programProperties);
+        try (InputStream inputStream = new FileInputStream(PROGRAM_PROPERTIES)){
             properties.load(inputStream);
             if (properties.containsKey(key)) {
-                value = properties.getProperty(key);
+                return properties.getProperty(key);
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            closeInputStream(inputStream);
         }
-        return value;
+        throw new RuntimeException("Can't get property");
     }
 
     @Override
@@ -100,9 +86,7 @@ public class SettingsManager implements ISettingsManager {
                               double height,
                               boolean isMaximized) {
         Properties properties = new Properties();
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(uiValues);
+        try (OutputStream outputStream = new FileOutputStream(UI_VALUES)){
             properties.setProperty("DiagramDividerValue", String.valueOf(diagramDividerValue));
             properties.setProperty("ZoomValue", String.valueOf(zoomValue));
             properties.setProperty("WidthOfWindow", String.valueOf(width));
@@ -111,43 +95,33 @@ public class SettingsManager implements ISettingsManager {
             properties.store(outputStream, null);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            closeOutputStream(outputStream);
         }
     }
 
     @Override
     public void writeRecentProjects(List<IProject> recentProjectList, IProject lastOpenedProject) {
         Properties properties = new Properties();
-        OutputStream outputStream = null;
         StringBuilder recentProjectsValue = new StringBuilder();
         recentProjectList.forEach(recentProject -> recentProjectsValue.append(recentProject.getName()).append(","));
         recentProjectsValue.delete(recentProjectsValue.length() - 1, recentProjectsValue.length());
-        try {
-            outputStream = new FileOutputStream(recentProjects);
+        try (OutputStream outputStream = new FileOutputStream(RECENT_PROJECTS)){
             properties.setProperty("RecentProjects", recentProjectsValue.toString());
             properties.setProperty("LastOpenedProject", lastOpenedProject.getName());
             properties.store(outputStream, null);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            closeOutputStream(outputStream);
         }
     }
 
     @Override
     public void writeProgramProperties(Locale locale, boolean reopenLastProject) {
         Properties properties = new Properties();
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(programProperties);
+        try (OutputStream outputStream = new FileOutputStream(PROGRAM_PROPERTIES)){
             properties.setProperty("Language", locale.getLanguage());
             properties.setProperty("ReopenLastProject", reopenLastProject ? "1" : "0");
             properties.store(outputStream, null);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            closeOutputStream(outputStream);
         }
     }
 
@@ -155,7 +129,7 @@ public class SettingsManager implements ISettingsManager {
         switch (key) {
             case "ui":
                 try {
-                    if (uiValues.createNewFile()) {
+                    if (UI_VALUES.createNewFile()) {
                         writeDefaultUIValues();
                         LOGGER.debug("Создан файл с настройками интерфейса по умолчанию");
                     } else {
@@ -167,7 +141,7 @@ public class SettingsManager implements ISettingsManager {
                 break;
             case "recentProjects":
                 try {
-                    if (recentProjects.createNewFile()) {
+                    if (RECENT_PROJECTS.createNewFile()) {
                         writeDefaultRecentProjectValues();
                         LOGGER.debug("Создан файл для сохранения списка ранее открытых проектов");
                     } else {
@@ -179,7 +153,7 @@ public class SettingsManager implements ISettingsManager {
                 break;
             case "programProperties":
                 try {
-                    if (programProperties.createNewFile()) {
+                    if (PROGRAM_PROPERTIES.createNewFile()) {
                         writeDefaultProgramValues();
                         LOGGER.debug("Создан файл с настройками программы по умолчанию");
                     } else {
@@ -193,9 +167,7 @@ public class SettingsManager implements ISettingsManager {
 
     private void writeDefaultUIValues() {
         Properties properties = new Properties();
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(uiValues);
+        try (OutputStream outputStream = new FileOutputStream(UI_VALUES)){
             properties.setProperty("DiagramDividerValue", "0.3");
             properties.setProperty("ZoomValue", "70");
             properties.setProperty("WidthOfWindow", "1280");
@@ -204,58 +176,28 @@ public class SettingsManager implements ISettingsManager {
             properties.store(outputStream, null);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            closeOutputStream(outputStream);
         }
     }
 
     private void writeDefaultRecentProjectValues() {
         Properties properties = new Properties();
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(recentProjects);
+        try (OutputStream outputStream = new FileOutputStream(RECENT_PROJECTS)){
             properties.setProperty("RecentProjects", "null");
             properties.setProperty("LastOpenedProject", "null");
             properties.store(outputStream, null);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            closeOutputStream(outputStream);
         }
     }
 
     private void writeDefaultProgramValues() {
         Properties properties = new Properties();
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(programProperties);
+        try (OutputStream outputStream = new FileOutputStream(PROGRAM_PROPERTIES)){
             properties.setProperty("Language", "EN");
             properties.setProperty("ReopenLastProject", "0");
             properties.store(outputStream, null);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            closeOutputStream(outputStream);
-        }
-    }
-
-    private void closeInputStream(InputStream inputStream) {
-        if (inputStream != null) {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void closeOutputStream(OutputStream outputStream) {
-        if (outputStream != null) {
-            try {
-                outputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 }
