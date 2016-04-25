@@ -10,6 +10,7 @@ import ru.khasang.cachoeira.data.DataStoreInterface;
 import ru.khasang.cachoeira.model.IProject;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.properties.RecentProjectsController;
+import ru.khasang.cachoeira.properties.SettingsManager;
 import ru.khasang.cachoeira.view.UIControl;
 
 import java.io.File;
@@ -50,9 +51,10 @@ public class RecentProjectsRowFactory implements Callback<TableView<File>, Table
                     }
                     uiControl.launchMainWindow();
                 } else {
-                    Alert alert = new Alert(Alert.AlertType.WARNING, "File does not exist");
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "File does not exist");
                     alert.showAndWait();
                     RecentProjectsController.getInstance().removeRecentProject(recentProject);
+                    SettingsManager.getInstance().writeRecentProjects(RecentProjectsController.getInstance().getRecentProjects());
                 }
             }
         });
