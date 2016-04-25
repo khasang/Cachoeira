@@ -10,7 +10,7 @@
       <TableView fx:id="recentProjectsTableVIew" prefHeight="529.0" prefWidth="341.0" BorderPane.alignment="CENTER">
         <columns>
           <!--<TableColumn fx:id="recentProjectNameColumn" prefWidth="75.0" text="%project_name" />-->
-          <TableColumn fx:id="recentProjectPathColumn" prefWidth="75.0" text="%project_path" />
+          <TableColumn fx:id="recentProjectPathColumn" prefWidth="75.0" text="%recently_opened_projects" />
         </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
