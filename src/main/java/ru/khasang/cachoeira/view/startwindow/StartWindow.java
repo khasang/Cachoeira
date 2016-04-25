@@ -1,5 +1,6 @@
-package ru.khasang.cachoeira.view;
+package ru.khasang.cachoeira.view.startwindow;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,6 +17,8 @@ import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
 import ru.khasang.cachoeira.model.IProject;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.view.IWindow;
+import ru.khasang.cachoeira.view.UIControl;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,14 +31,13 @@ public class StartWindow implements IWindow {
     private UIControl uiControl;
 
     @FXML
-    private TableView recentProjectsTableVIew;
+    private TableView<File> recentProjectsTableVIew;
     @FXML
-    private TableColumn recentProjectNameColumn;
-    @FXML
-    private TableColumn recentProjectPathColumn;
+    private TableColumn<File, String> recentProjectPathColumn;
 
     private Parent root = null;
     private Stage stage;
+    private RecentProjectsController recentProjectsController = RecentProjectsController.getInstance();
 
     public StartWindow(UIControl uiControl) {
         this.uiControl = uiControl;
@@ -60,6 +62,10 @@ public class StartWindow implements IWindow {
         stage.show();
         stage.setTitle("Cachoeira");
         LOGGER.debug("Открыто стартовое окно.");
+
+        recentProjectsTableVIew.setItems(recentProjectsController.getRecentProjects());
+        recentProjectsTableVIew.setRowFactory(new RecentProjectsRowFactory(uiControl));
+        recentProjectPathColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPath()));
     }
 
     @Override
@@ -94,7 +100,8 @@ public class StartWindow implements IWindow {
             for (ITask task : uiControl.getController().getProject().getTaskList()) {
                 task.setChildTasks(FXCollections.observableArrayList(storeInterface.getChildTaskListByTaskFromFile(uiControl.getFile(), task)));
             }
-            stage.close();
+
+            recentProjectsController.addRecentProject(uiControl.getFile());
             if (uiControl.getStartWindow().getStage().isShowing()) {
                 uiControl.getStartWindow().getStage().close(); //закрываем стартовое окно
             }
