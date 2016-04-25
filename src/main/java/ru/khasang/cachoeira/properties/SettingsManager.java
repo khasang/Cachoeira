@@ -1,8 +1,7 @@
-package ru.khasang.cachoeira.data;
+package ru.khasang.cachoeira.properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.khasang.cachoeira.model.IProject;
 
 import java.io.*;
 import java.util.*;
@@ -50,14 +49,18 @@ public class SettingsManager implements ISettingsManager {
     }
 
     @Override
-    public List<String> getRecentProjects() {
-        List<String> list = new ArrayList<>();
+    public List<File> getRecentProjects() {
+        List<File> list = new ArrayList<>();
         Properties properties = new Properties();
         try (InputStream inputStream = new FileInputStream(RECENT_PROJECTS)){
             properties.load(inputStream);
             if (properties.containsKey("RecentProjects")) {
                 String[] propertyValues = properties.getProperty("RecentProjects").split(",");
-                Collections.addAll(list, propertyValues);
+                for (String propertyValue : propertyValues) {
+                    if (!propertyValue.trim().isEmpty()) {
+                        list.add(new File(propertyValue));
+                    }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -99,14 +102,13 @@ public class SettingsManager implements ISettingsManager {
     }
 
     @Override
-    public void writeRecentProjects(List<IProject> recentProjectList, IProject lastOpenedProject) {
+    public void writeRecentProjects(List<File> recentProjectList) {
         Properties properties = new Properties();
         StringBuilder recentProjectsValue = new StringBuilder();
-        recentProjectList.forEach(recentProject -> recentProjectsValue.append(recentProject.getName()).append(","));
+        recentProjectList.forEach(recentProject -> recentProjectsValue.append(recentProject.getPath()).append(","));
         recentProjectsValue.delete(recentProjectsValue.length() - 1, recentProjectsValue.length());
         try (OutputStream outputStream = new FileOutputStream(RECENT_PROJECTS)){
             properties.setProperty("RecentProjects", recentProjectsValue.toString());
-            properties.setProperty("LastOpenedProject", lastOpenedProject.getName());
             properties.store(outputStream, null);
         } catch (IOException e) {
             e.printStackTrace();
