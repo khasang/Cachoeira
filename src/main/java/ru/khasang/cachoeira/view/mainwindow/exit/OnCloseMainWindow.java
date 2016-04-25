@@ -10,7 +10,7 @@ import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
 import ru.khasang.cachoeira.properties.ISettingsManager;
 import ru.khasang.cachoeira.properties.SettingsManager;
-import ru.khasang.cachoeira.view.startwindow.RecentProjectsController;
+import ru.khasang.cachoeira.properties.RecentProjectsController;
 import ru.khasang.cachoeira.view.UIControl;
 
 public class OnCloseMainWindow implements OnClose {

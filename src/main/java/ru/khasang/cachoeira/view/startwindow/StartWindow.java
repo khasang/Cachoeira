@@ -17,6 +17,7 @@ import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
 import ru.khasang.cachoeira.model.IProject;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.properties.RecentProjectsController;
 import ru.khasang.cachoeira.view.IWindow;
 import ru.khasang.cachoeira.view.UIControl;
 

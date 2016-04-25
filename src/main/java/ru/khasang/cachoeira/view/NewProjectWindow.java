@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
-import ru.khasang.cachoeira.view.startwindow.RecentProjectsController;
+import ru.khasang.cachoeira.properties.RecentProjectsController;
 
 import java.io.File;
 import java.io.IOException;
