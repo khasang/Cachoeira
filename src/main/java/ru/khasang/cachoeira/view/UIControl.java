@@ -3,9 +3,10 @@ package ru.khasang.cachoeira.view;
 import javafx.beans.property.*;
 import ru.khasang.cachoeira.controller.Controller;
 import ru.khasang.cachoeira.controller.IController;
-import ru.khasang.cachoeira.data.ISettingsManager;
-import ru.khasang.cachoeira.data.SettingsManager;
+import ru.khasang.cachoeira.properties.ISettingsManager;
+import ru.khasang.cachoeira.properties.SettingsManager;
 import ru.khasang.cachoeira.view.mainwindow.MainWindow;
+import ru.khasang.cachoeira.view.startwindow.StartWindow;
 
 import java.io.File;
 import java.util.Locale;

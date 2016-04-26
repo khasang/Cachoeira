@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
+import ru.khasang.cachoeira.properties.RecentProjectsController;
 
 import java.io.File;
 import java.io.IOException;
@@ -163,6 +164,7 @@ public class NewProjectWindow implements IWindow {
         // Очищаем файл проекта на тот случай, если файл перезаписывается
         storeInterface.eraseAllTables(file);
         storeInterface.saveProjectToFile(uiControl.getFile(), uiControl.getController().getProject());
+        RecentProjectsController.getInstance().addRecentProject(file);
         // Закрываем это окошко
         stage.close();
         if (uiControl.getStartWindow().getStage().isShowing()) {
