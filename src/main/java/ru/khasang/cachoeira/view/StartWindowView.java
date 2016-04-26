@@ -38,21 +38,27 @@ public class StartWindowView extends Application{
 
     public void createView() {
         borderPane = new BorderPane();
-        recentProjectsTable = new TableView<>();
-        recentProjectsPathColumn = new TableColumn<>("Recent Projects");
-
-        recentProjectsTable.getColumns().add(recentProjectsPathColumn);
-        recentProjectsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        borderPane.setLeft(recentProjectsTable);
-        centralVerticalPane = new VBox(createImageBox(), createButtonsBox());
-        VBox.setVgrow(centralVerticalPane, Priority.ALWAYS);
-        borderPane.setCenter(centralVerticalPane);
-
+        borderPane.setLeft(createTable());
+        borderPane.setCenter(createCentralBox());
         stage = new Stage();
         stage.setScene(new Scene(borderPane, WINDOW_WIDTH, WINDOW_HEIGHT));
         stage.setResizable(false);
         stage.setTitle("Cachoeira");
         stage.show();
+    }
+
+    private Node createCentralBox() {
+        centralVerticalPane = new VBox(createImageBox(), createButtonsBox());
+        VBox.setVgrow(centralVerticalPane, Priority.ALWAYS);
+        return centralVerticalPane;
+    }
+
+    private Node createTable() {
+        recentProjectsTable = new TableView<>();
+        recentProjectsPathColumn = new TableColumn<>("Recent Projects");
+        recentProjectsTable.getColumns().add(recentProjectsPathColumn);
+        recentProjectsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        return recentProjectsTable;
     }
 
     private Node createImageBox() {
