@@ -18,12 +18,11 @@ import java.io.File;
 public class StartWindowView extends Application{
     private final static double WINDOW_HEIGHT = 417;
     private final static double WINDOW_WIDTH = 812;
+    private final static double TABLE_WIDTH = 341;
 
     private Stage stage;
-    private BorderPane borderPane;
     private TableView<File> recentProjectsTable;
     private TableColumn<File, String> recentProjectsPathColumn;
-    private VBox centralVerticalPane;
     private Button createProjectButton;
     private Button openProjectButton;
 
@@ -37,7 +36,7 @@ public class StartWindowView extends Application{
     }
 
     public void createView() {
-        borderPane = new BorderPane();
+        BorderPane borderPane = new BorderPane();
         borderPane.setLeft(createTable());
         borderPane.setCenter(createCentralBox());
         stage = new Stage();
@@ -47,18 +46,19 @@ public class StartWindowView extends Application{
         stage.show();
     }
 
-    private Node createCentralBox() {
-        centralVerticalPane = new VBox(createImageBox(), createButtonsBox());
-        VBox.setVgrow(centralVerticalPane, Priority.ALWAYS);
-        return centralVerticalPane;
-    }
-
     private Node createTable() {
         recentProjectsTable = new TableView<>();
+        recentProjectsTable.setPrefWidth(TABLE_WIDTH);
         recentProjectsPathColumn = new TableColumn<>("Recent Projects");
         recentProjectsTable.getColumns().add(recentProjectsPathColumn);
         recentProjectsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         return recentProjectsTable;
+    }
+
+    private Node createCentralBox() {
+        VBox centralVerticalPane = new VBox(createImageBox(), createButtonsBox());
+        VBox.setVgrow(centralVerticalPane, Priority.ALWAYS);
+        return centralVerticalPane;
     }
 
     private Node createImageBox() {
@@ -76,6 +76,26 @@ public class StartWindowView extends Application{
         VBox.setVgrow(buttonsVBox, Priority.ALWAYS);
         buttonsVBox.setAlignment(Pos.CENTER);
         return buttonsVBox;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public TableView<File> getRecentProjectsTable() {
+        return recentProjectsTable;
+    }
+
+    public TableColumn<File, String> getRecentProjectsPathColumn() {
+        return recentProjectsPathColumn;
+    }
+
+    public Button getCreateProjectButton() {
+        return createProjectButton;
+    }
+
+    public Button getOpenProjectButton() {
+        return openProjectButton;
     }
 
     public static void main(String[] args) {
