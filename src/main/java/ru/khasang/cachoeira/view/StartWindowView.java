@@ -16,6 +16,9 @@ import javafx.stage.Stage;
 import java.io.File;
 
 public class StartWindowView extends Application{
+    private final static double WINDOW_HEIGHT = 417;
+    private final static double WINDOW_WIDTH = 812;
+
     private Stage stage;
     private BorderPane borderPane;
     private TableView<File> recentProjectsTable;
@@ -36,7 +39,7 @@ public class StartWindowView extends Application{
     public void createView() {
         borderPane = new BorderPane();
         recentProjectsTable = new TableView<>();
-        recentProjectsPathColumn = new TableColumn<>();
+        recentProjectsPathColumn = new TableColumn<>("Recent Projects");
 
         recentProjectsTable.getColumns().add(recentProjectsPathColumn);
         recentProjectsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -46,7 +49,9 @@ public class StartWindowView extends Application{
         borderPane.setCenter(centralVerticalPane);
 
         stage = new Stage();
-        stage.setScene(new Scene(borderPane, 812, 417));
+        stage.setScene(new Scene(borderPane, WINDOW_WIDTH, WINDOW_HEIGHT));
+        stage.setResizable(false);
+        stage.setTitle("Cachoeira");
         stage.show();
     }
 
@@ -59,8 +64,8 @@ public class StartWindowView extends Application{
     }
 
     private Node createButtonsBox() {
-        createProjectButton = new Button();
-        openProjectButton = new Button();
+        createProjectButton = new Button("Create");
+        openProjectButton = new Button("Open");
         VBox buttonsVBox = new VBox(20, createProjectButton, openProjectButton);
         VBox.setVgrow(buttonsVBox, Priority.ALWAYS);
         buttonsVBox.setAlignment(Pos.CENTER);
