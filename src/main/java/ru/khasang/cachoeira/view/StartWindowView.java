@@ -40,7 +40,9 @@ public class StartWindowView extends Application{
         borderPane.setLeft(createTable());
         borderPane.setCenter(createCentralBox());
         stage = new Stage();
-        stage.setScene(new Scene(borderPane, WINDOW_WIDTH, WINDOW_HEIGHT));
+        stage.setHeight(WINDOW_HEIGHT);
+        stage.setWidth(WINDOW_WIDTH);
+        stage.setScene(new Scene(borderPane));
         stage.setResizable(false);
         stage.setTitle("Cachoeira");
         stage.show();
