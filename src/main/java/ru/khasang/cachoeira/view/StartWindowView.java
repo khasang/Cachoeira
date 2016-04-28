@@ -7,10 +7,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -23,8 +26,8 @@ public class StartWindowView extends Application{
     private Stage stage;
     private TableView<File> recentProjectsTable;
     private TableColumn<File, String> recentProjectsPathColumn;
-    private Button createProjectButton;
-    private Button openProjectButton;
+    private MaterialButton createProjectButton;
+    private MaterialButton openProjectButton;
 
     public StartWindowView() {
     }
@@ -37,6 +40,7 @@ public class StartWindowView extends Application{
 
     public void createView() {
         BorderPane borderPane = new BorderPane();
+        borderPane.getStylesheets().add(getClass().getResource("/css/startwindow.css").toExternalForm());
         borderPane.setLeft(createTable());
         borderPane.setCenter(createCentralBox());
         stage = new Stage();
@@ -65,6 +69,7 @@ public class StartWindowView extends Application{
 
     private Node createImageBox() {
         ImageView imageView = new ImageView(getClass().getResource("/img/cachoeira.png").toExternalForm());
+        imageView.setEffect(new DropShadow(BlurType.TWO_PASS_BOX, Color.rgb(0, 0, 0, 0.8), 4, 0, 0, 2));
         VBox imageVBox = new VBox(imageView);
         VBox.setVgrow(imageVBox, Priority.ALWAYS);
         imageVBox.setAlignment(Pos.CENTER);
@@ -72,8 +77,8 @@ public class StartWindowView extends Application{
     }
 
     private Node createButtonsBox() {
-        createProjectButton = new Button("Create");
-        openProjectButton = new Button("Open");
+        createProjectButton = new MaterialButton("CREATE");
+        openProjectButton = new MaterialButton("OPEN");
         VBox buttonsVBox = new VBox(20, createProjectButton, openProjectButton);
         VBox.setVgrow(buttonsVBox, Priority.ALWAYS);
         buttonsVBox.setAlignment(Pos.CENTER);
