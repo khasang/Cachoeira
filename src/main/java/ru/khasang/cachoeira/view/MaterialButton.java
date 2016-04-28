@@ -3,6 +3,7 @@ package ru.khasang.cachoeira.view;
 import com.sun.javafx.scene.control.skin.ButtonSkin;
 import javafx.animation.*;
 import javafx.beans.property.DoubleProperty;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Skin;
 import javafx.scene.effect.BlurType;
@@ -29,6 +30,15 @@ public class MaterialButton extends Button {
 
     public MaterialButton(String text) {
         super(text);
+        this.setFont(Font.loadFont(getClass().getResource("/font/Roboto-Medium.ttf").toExternalForm(), 10.5));
+        dropShadow = createDropShadow();
+        this.setEffect(dropShadow);
+        this.enableDropShadowAnimationOnHover();
+        this.createRippleEffect();
+    }
+
+    public MaterialButton(String text, Node graphic) {
+        super(text, graphic);
         this.setFont(Font.loadFont(getClass().getResource("/font/Roboto-Medium.ttf").toExternalForm(), 10.5));
         dropShadow = createDropShadow();
         this.setEffect(dropShadow);
