@@ -32,9 +32,9 @@ public class CreateNewProjectWindowView extends Application {
     private DatePicker finishDatePicker;
     private TextArea descriptionTextArea;
 
-    private Button pathChooserButton;
-    private Button createNewProjectButton;
-    private Button cancelButton;
+    private MaterialButton pathChooserButton;
+    private MaterialButton createNewProjectButton;
+    private MaterialButton cancelButton;
 
     public CreateNewProjectWindowView() {
     }
@@ -48,6 +48,7 @@ public class CreateNewProjectWindowView extends Application {
     public void createView() {
         VBox window = new VBox(createFieldsGrid(), createButtonsBox());
         window.setPadding(new Insets(10));
+        window.getStylesheets().add(getClass().getResource("/css/startwindow.css").toExternalForm());
 
         stage = new Stage(StageStyle.UTILITY);
         stage.setHeight(HEIGHT_WINDOW);
@@ -92,9 +93,9 @@ public class CreateNewProjectWindowView extends Application {
     }
 
     private Node createButtonsBox() {
-        createNewProjectButton = new Button("Create");
+        createNewProjectButton = new MaterialButton("Create");
         createNewProjectButton.setDefaultButton(true);
-        cancelButton = new Button("Cancel");
+        cancelButton = new MaterialButton("Cancel");
         cancelButton.setCancelButton(true);
         HBox hBox = new HBox(20, createNewProjectButton, cancelButton);
         HBox.setHgrow(hBox, Priority.NEVER);
@@ -105,7 +106,7 @@ public class CreateNewProjectWindowView extends Application {
     private void initFields() {
         projectNameField = new TextField();
         projectPathField = new TextField();
-        pathChooserButton = new Button("...");
+        pathChooserButton = new MaterialButton("...");
         startDatePicker = new DatePicker();
         finishDatePicker = new DatePicker();
         descriptionTextArea = new TextArea();
