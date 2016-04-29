@@ -1,6 +1,5 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
@@ -11,12 +10,15 @@ import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import ru.khasang.cachoeira.vcontroller.CreateNewProjectWindowController;
 
-public class CreateNewProjectWindowView extends Application {
+public class CreateNewProjectWindowView {
     private static final double HEIGHT_WINDOW = 424;
     private static final double WIDTH_WINDOW = 487;
     private static final double FIRST_COLUMN_PERCENT_WIDTH = 30;
     private static final double SECOND_COLUMN_PERCENT_WIDTH = 70;
+
+    private final CreateNewProjectWindowController controller;
 
     private Stage stage;
 
@@ -24,25 +26,20 @@ public class CreateNewProjectWindowView extends Application {
     private Label projectPathLabel;
     private Label startDateLabel;
     private Label finishDateLabel;
-    private Label descriptionLabel;
 
+    private Label descriptionLabel;
     private TextField projectNameField;
     private TextField projectPathField;
     private DatePicker startDatePicker;
     private DatePicker finishDatePicker;
-    private TextArea descriptionTextArea;
 
+    private TextArea descriptionTextArea;
     private MaterialButton pathChooserButton;
     private MaterialButton createNewProjectButton;
     private MaterialButton cancelButton;
 
-    public CreateNewProjectWindowView() {
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        CreateNewProjectWindowView createNewProjectWindowView = new CreateNewProjectWindowView();
-        createNewProjectWindowView.createView();
+    public CreateNewProjectWindowView(CreateNewProjectWindowController controller) {
+        this.controller = controller;
     }
 
     public void createView() {
@@ -154,9 +151,5 @@ public class CreateNewProjectWindowView extends Application {
 
     public Button getCancelButton() {
         return cancelButton;
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 }

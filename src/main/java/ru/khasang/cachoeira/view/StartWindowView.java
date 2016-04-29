@@ -1,6 +1,5 @@
 package ru.khasang.cachoeira.view;
 
-import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -15,13 +14,16 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import ru.khasang.cachoeira.vcontroller.StartWindowController;
 
 import java.io.File;
 
-public class StartWindowView extends Application{
+public class StartWindowView {
     private final static double WINDOW_HEIGHT = 417;
     private final static double WINDOW_WIDTH = 812;
     private final static double TABLE_WIDTH = 341;
+
+    private final StartWindowController controller;
 
     private Stage stage;
     private TableView<File> recentProjectsTable;
@@ -29,13 +31,8 @@ public class StartWindowView extends Application{
     private MaterialButton createProjectButton;
     private MaterialButton openProjectButton;
 
-    public StartWindowView() {
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        StartWindowView startWindowView = new StartWindowView();
-        startWindowView.createView();
+    public StartWindowView(StartWindowController controller) {
+        this.controller = controller;
     }
 
     public void createView() {
@@ -103,10 +100,5 @@ public class StartWindowView extends Application{
 
     public Button getOpenProjectButton() {
         return openProjectButton;
-    }
-
-    public static void main(String[] args) {
-        Application.launch();
-
     }
 }
