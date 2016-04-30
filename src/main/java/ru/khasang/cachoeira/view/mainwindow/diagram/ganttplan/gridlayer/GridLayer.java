@@ -1,19 +1,18 @@
-package ru.khasang.cachoeira.view.mainwindow.ganttplan.gridlayer;
+package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.gridlayer;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.UIControl;
 
 public abstract class GridLayer extends Pane {
     // This is to make the stroke be drawn 'on pixel'.
     private static final double HALF_PIXEL_OFFSET = -0.5;
 
-    private UIControl uiControl;
+    protected MainWindowController controller;
 
-    public GridLayer(UIControl uiControl) {
-        this.uiControl = uiControl;
-
+    public GridLayer() {
         this.setStyle("-fx-background-color: white");
     }
 
@@ -25,7 +24,7 @@ public abstract class GridLayer extends Pane {
         final int left = (int) snappedLeftInset();
         final int width = (int) getWidth() - left - right;
         final int height = (int) getHeight() - top - bottom;
-        final int spacing = uiControl.getZoomMultiplier(); // Ширина дня в пикселях
+        final int spacing = controller.getZoomMultiplier(); // Ширина дня в пикселях
 
         if (spacing <= 130 && spacing >= 55) {
             drawLines(width, height, spacing, 1);

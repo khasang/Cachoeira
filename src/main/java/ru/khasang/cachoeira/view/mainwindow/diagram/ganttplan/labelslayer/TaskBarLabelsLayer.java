@@ -1,9 +1,9 @@
-package ru.khasang.cachoeira.view.mainwindow.ganttplan.labelslayer;
+package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.labelslayer;
 
 import javafx.scene.layout.Pane;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.labelslayer.label.TaskBarLabel;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.labelslayer.label.TaskBarLabel;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
 
 public abstract class TaskBarLabelsLayer extends Pane {
     public TaskBarLabelsLayer() {

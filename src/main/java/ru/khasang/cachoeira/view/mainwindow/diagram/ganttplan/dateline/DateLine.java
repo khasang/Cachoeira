@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.mainwindow.ganttplan.dateline;
+package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.dateline;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
@@ -8,7 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.layout.HBox;
-import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -16,7 +16,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
 public abstract class DateLine extends HBox{
-    private UIControl uiControl;
+    protected MainWindowController controller;
     @SuppressWarnings("FieldCanBeLocal")
     private InvalidationListener listener; // Если листенер объявить локально, то GC прибьет его раньше времени
 
@@ -109,7 +109,7 @@ public abstract class DateLine extends HBox{
                                   String dateFormatter) {
         Label dateLabel = new Label(dateFormatter); //фигачим лейбл с датой на борту
         dateLabel.setTextOverrun(OverrunStyle.CLIP);
-        dateLabel.setPrefWidth(uiControl.getZoomMultiplier() * multiplier);
+        dateLabel.setPrefWidth(controller.getZoomMultiplier() * multiplier);
         dateLabel.setMinHeight(24);
         dateLabel.getStylesheets().add(this.getClass().getResource("/css/header.css").toExternalForm()); // делаем красиво
         dateLabel.setAlignment(Pos.CENTER);
@@ -148,9 +148,5 @@ public abstract class DateLine extends HBox{
                                  LocalDate projectFinishDate,
                                  int zoomMultiplier) {
         initDateLine(projectStartDate, projectFinishDate, zoomMultiplier);
-    }
-
-    public void setUIControl(UIControl uiControl) {
-        this.uiControl = uiControl;
     }
 }

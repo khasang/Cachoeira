@@ -1,16 +1,16 @@
-package ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer;
+package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
 import javafx.scene.layout.Pane;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.UIControl;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
+import ru.khasang.cachoeira.viewcontroller.UIControl;
 
 public abstract class ObjectsLayer extends Pane {
-    protected UIControl uiControl;
-
+    protected MainWindowController controller;
     @SuppressWarnings("FieldCanBeLocal")
     private InvalidationListener zoomMultiplierListener;
 
@@ -20,7 +20,7 @@ public abstract class ObjectsLayer extends Pane {
      * @param task Задача которая присваивается к метке.
      */
     public void addTaskBar(ITask task, IResource resource) {
-        TaskBar taskBar = createTaskBar(uiControl, task, resource);
+        TaskBar taskBar = createTaskBar(task, resource);
         this.getChildren().add(taskBar);
     }
 
@@ -69,28 +69,21 @@ public abstract class ObjectsLayer extends Pane {
     /**
      * Метод для создания метки.
      *
-     * @param uiControl Контроллер вью.
      * @param task      Задача которая присваивается к метке.
      * @return Возвращает taskBar.
      */
-    public abstract TaskBar createTaskBar(UIControl uiControl, ITask task, IResource resource);
+    public abstract TaskBar createTaskBar(ITask task, IResource resource);
 
     /**
      * Метод для обновления всей диаграммы.
      */
-    public abstract void refreshPlan(UIControl uiControl);
+    public abstract void refreshPlan();
 
     /**
      * Если переменная зума меняется то обновляем диаграмму
-     *
-     * @param uiControl Контроллер вью
      */
-    public void setListeners(UIControl uiControl) {
-        zoomMultiplierListener = observable -> refreshPlan(uiControl);
-        uiControl.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomMultiplierListener));
-    }
-
-    public void setUIControl(UIControl uiControl) {
-        this.uiControl = uiControl;
+    public void setListeners() {
+        zoomMultiplierListener = observable -> refreshPlan();
+        controller.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomMultiplierListener));
     }
 }

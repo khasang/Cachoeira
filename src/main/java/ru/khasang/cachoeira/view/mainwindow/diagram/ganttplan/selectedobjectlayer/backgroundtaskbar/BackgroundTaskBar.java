@@ -1,22 +1,25 @@
-package ru.khasang.cachoeira.view.mainwindow.ganttplan.selectedobjectlayer.backgroundtaskbar;
+package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.selectedobjectlayer.backgroundtaskbar;
 
 import javafx.beans.value.ChangeListener;
+import javafx.scene.control.TreeItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.UIControl;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.labelslayer.label.TaskBarLabel;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.labelslayer.label.TaskBarLabel;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
 
 public abstract class BackgroundTaskBar extends Rectangle {
     private final TaskBar taskBar;
     @SuppressWarnings("FieldCanBeLocal")
-    private ChangeListener<ITask> selectedTaskListener;
+    private ChangeListener<TreeItem<ITask>> selectedTaskListener;
+    private MainWindowController controller;
 
     public BackgroundTaskBar(TaskBar taskBar,
                              TaskBarLabel taskLabel,
-                             UIControl uiControl) {
+                             MainWindowController controller) {
         this.taskBar = taskBar;
+        this.controller = controller;
 
         this.setArcHeight(10);
         this.setArcWidth(10);
@@ -26,20 +29,20 @@ public abstract class BackgroundTaskBar extends Rectangle {
         this.layoutYProperty().bind(taskBar.layoutYProperty());
         this.heightProperty().bind(taskBar.heightProperty());
 
-        setSelected(true);
-        setListener(uiControl);
+        this.setSelected(true);
+        this.setListener();
     }
 
-    public void setListener(UIControl uiControl) {
+    public void setListener() {
         selectedTaskListener = (observable, oldValue, newValue) -> {
-            if (newValue != null && taskBar.getTask().equals(newValue)) {
+            if (newValue != null && taskBar.getTask().equals(newValue.getValue())) {
                 setSelected(true);
             }
-            if (newValue == null || !taskBar.getTask().equals(newValue)) {
+            if (newValue == null || !taskBar.getTask().equals(newValue.getValue())) {
                 setSelected(false);
             }
         };
-        uiControl.getController().selectedTaskProperty().addListener(selectedTaskListener);
+        controller.getView().getTaskTableView().getSelectionModel().selectedItemProperty().addListener(selectedTaskListener);
     }
 
     public void setSelected(boolean enabled) {

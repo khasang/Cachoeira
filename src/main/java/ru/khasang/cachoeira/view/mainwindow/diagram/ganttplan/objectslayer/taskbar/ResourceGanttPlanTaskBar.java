@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar;
+package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar;
 
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
@@ -11,7 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.UIControl;
 
 import java.time.LocalDate;
 
@@ -27,24 +28,28 @@ public class ResourceGanttPlanTaskBar extends TaskBar {
     @SuppressWarnings("FieldCanBeLocal")
     private InvalidationListener zoomListener;
 
+    public ResourceGanttPlanTaskBar(MainWindowController controller) {
+        this.controller = controller;
+    }
+
     @Override
-    public void initTaskRectangle(UIControl uiControl, ITask task, IResource resource) {
-        super.initTaskRectangle(uiControl, task, resource);
+    public void initTaskRectangle(ITask task, IResource resource) {
+        super.initTaskRectangle(task, resource);
         setLabel(task, backgroundRectangle);
     }
 
     @Override
-    protected void setParameters(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle) {
+    protected void setParameters(ITask task, IResource resource, Rectangle backgroundRectangle) {
         backgroundRectangle.setWidth(taskWidth(
                 task.getStartDate(),
                 task.getFinishDate(),
-                uiControl.getZoomMultiplier()));
+                controller.getZoomMultiplier()));
         backgroundRectangle.setLayoutY(6);
         this.setLayoutX(taskX(
                 task.getStartDate(),
-                uiControl.getController().getProject().getStartDate(),
-                uiControl.getZoomMultiplier()));
-        this.setLayoutY(taskY(uiControl.getController().getProject().getResourceList().indexOf(resource)));
+                controller.getProject().getStartDate(),
+                controller.getZoomMultiplier()));
+        this.setLayoutY(taskY(controller.getProject().getResourceList().indexOf(resource)));
     }
 
     @Override
@@ -53,15 +58,15 @@ public class ResourceGanttPlanTaskBar extends TaskBar {
     }
 
     @Override
-    protected void setListeners(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle, Rectangle donePercentRectangle) {
+    protected void setListeners(ITask task, IResource resource, Rectangle backgroundRectangle, Rectangle donePercentRectangle) {
         resourceListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasRemoved() || change.wasAdded()) {
                     // Анимация при удалении и добавления элемента на диаграмме
                     Timeline timeline = createTimelineAnimation(
                             this.layoutYProperty(),
-                            taskY(uiControl.getController().getProject().getResourceList().indexOf(resource)),
-                            (uiControl.getController().getProject().getResourceList().indexOf(resource) + 1) * 150);
+                            taskY(controller.getProject().getResourceList().indexOf(resource)),
+                            (controller.getProject().getResourceList().indexOf(resource) + 1) * 150);
                     timeline.play();
                 }
             }
@@ -75,8 +80,8 @@ public class ResourceGanttPlanTaskBar extends TaskBar {
                         this.layoutXProperty(),
                         taskX(
                                 task.getStartDate(),
-                                uiControl.getController().getProject().getStartDate(),
-                                uiControl.getZoomMultiplier()
+                                controller.getProject().getStartDate(),
+                                controller.getZoomMultiplier()
                         ),
                         400
                 );
@@ -85,7 +90,7 @@ public class ResourceGanttPlanTaskBar extends TaskBar {
                         taskWidth(
                                 task.getStartDate(),
                                 task.getFinishDate(),
-                                uiControl.getZoomMultiplier()
+                                controller.getZoomMultiplier()
                         ),
                         400
                 );
@@ -101,7 +106,7 @@ public class ResourceGanttPlanTaskBar extends TaskBar {
                         taskWidth(
                                 task.getStartDate(),
                                 task.getFinishDate(),
-                                uiControl.getZoomMultiplier()
+                                controller.getZoomMultiplier()
                         ),
                         400);
                 timeline.play();
@@ -119,14 +124,14 @@ public class ResourceGanttPlanTaskBar extends TaskBar {
             }
         };
         zoomListener = observable -> {
-            this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()));
-            backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
+            this.setLayoutX(taskX(task.getStartDate(), controller.getProject().getStartDate(), controller.getZoomMultiplier()));
+            backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), controller.getZoomMultiplier()));
         };
         /*
          Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
          то пересчитываем индексы у элементов на диаграмме
          */
-        uiControl.getController().getProject().getResourceList().addListener(new WeakListChangeListener<>(resourceListChangeListener));
+        controller.getProject().getResourceList().addListener(new WeakListChangeListener<>(resourceListChangeListener));
         // Если начальная дата изменилась, то...
         task.startDateProperty().addListener(new WeakChangeListener<>(startDateChangeListener));
         // Если конечная дата изменилась, то...
@@ -135,6 +140,6 @@ public class ResourceGanttPlanTaskBar extends TaskBar {
         // подсветка при наведении // TODO: 15.01.2016 Сделать анимацию
         this.hoverProperty().addListener(new WeakInvalidationListener(hoverListener));
 
-        uiControl.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomListener));
+        controller.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomListener));
     }
 }

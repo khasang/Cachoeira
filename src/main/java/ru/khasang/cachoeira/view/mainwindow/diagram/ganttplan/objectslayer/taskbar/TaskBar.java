@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar;
+package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar;
 
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -21,8 +21,8 @@ import ru.khasang.cachoeira.commands.task.SetTaskStartDateCommand;
 import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.UIControl;
-import ru.khasang.cachoeira.view.mainwindow.contextmenus.TaskContextMenu;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.mainwindow.contextmenus.TaskContextMenu;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -30,6 +30,8 @@ import java.time.temporal.ChronoUnit;
 public abstract class TaskBar extends Pane {
     private static final double TASK_HEIGHT = 18;   //высота прямоугольника задачи
     protected static final double ROW_HEIGHT = 31;
+
+    protected MainWindowController controller;
 
     protected ITask task;
     private IResource resource;
@@ -44,8 +46,7 @@ public abstract class TaskBar extends Pane {
         this.setPadding(new Insets(0, 0, 5, 0));
     }
 
-    public void initTaskRectangle(UIControl uiControl,
-                                  ITask task,
+    public void initTaskRectangle(ITask task,
                                   IResource resource) {
         backgroundRectangle = new Rectangle();
         backgroundRectangle.setFill(Color.valueOf("#03A9F4"));    //цвет прямоугольника
@@ -54,7 +55,7 @@ public abstract class TaskBar extends Pane {
         backgroundRectangle.setArcWidth(5);
         backgroundRectangle.setHeight(TASK_HEIGHT);
 
-        this.setParameters(uiControl, task, resource, backgroundRectangle);
+        this.setParameters(task, resource, backgroundRectangle);
 
         donePercentRectangle = new Rectangle();
         donePercentRectangle.setFill(Color.valueOf("#0381f4"));
@@ -72,10 +73,10 @@ public abstract class TaskBar extends Pane {
         this.getChildren().add(backgroundRectangle);
         this.getChildren().add(donePercentRectangle);
 
-        this.enableDrag(uiControl, task, backgroundRectangle);
-        this.enableResize(uiControl, task, backgroundRectangle);
+        this.enableDrag(task, backgroundRectangle);
+        this.enableResize(task, backgroundRectangle);
 
-        setListeners(uiControl, task, resource, backgroundRectangle, donePercentRectangle);
+        this.setListeners(task, resource, backgroundRectangle, donePercentRectangle);
     }
 
     protected void setLabel(ITask task, Rectangle backgroundRectangle) {
@@ -90,8 +91,7 @@ public abstract class TaskBar extends Pane {
         this.getChildren().add(taskLabel);
     }
 
-    protected abstract void setParameters(UIControl uiControl,
-                                          ITask task,
+    protected abstract void setParameters(ITask task,
                                           IResource resource,
                                           Rectangle backgroundRectangle);
 
@@ -123,8 +123,7 @@ public abstract class TaskBar extends Pane {
         return new Timeline(endKeyFrame);
     }
 
-    protected abstract void setListeners(UIControl uiControl,
-                                         ITask task,
+    protected abstract void setListeners(ITask task,
                                          IResource resource,
                                          Rectangle backgroundRectangle,
                                          Rectangle donePercentRectangle);
@@ -142,19 +141,17 @@ public abstract class TaskBar extends Pane {
     /**
      * Метод который включает возможность перемещения метки с помощью мышки по оси Х
      *
-     * @param uiControl           Контроллер интерфейса
      * @param task                Задача этой метки
      * @param backgroundRectangle Прямоугольник
      */
-    private void enableDrag(UIControl uiControl,
-                            ITask task,
+    private void enableDrag(ITask task,
                             Rectangle backgroundRectangle) {
         final Delta dragDelta = new Delta();
         final OldRound oldRound = new OldRound();
         backgroundRectangle.setOnMousePressed(event -> {
             // Выделяем нужный элемент в таблице
-            int i = uiControl.getController().getProject().getTaskList().indexOf(task);
-            uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(i);
+            int i = controller.getProject().getTaskList().indexOf(task);
+            controller.getView().getTaskTableView().getSelectionModel().select(i);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
                 dragDelta.x = this.getLayoutX() - event.getSceneX();
@@ -170,15 +167,15 @@ public abstract class TaskBar extends Pane {
                 double newX = event.getSceneX() + dragDelta.x;
                 if (newX > 0 && newX + backgroundRectangle.getWidth() <= this.getParent().getBoundsInParent().getWidth()) {
                     // Хреначим привязку к сетке
-                    if (Math.round(newX / uiControl.getZoomMultiplier()) != oldRound.old) {
-                        oldRound.old = Math.round(newX / uiControl.getZoomMultiplier());
-                        this.setLayoutX(Math.round(newX / uiControl.getZoomMultiplier()) * uiControl.getZoomMultiplier() - 1.5);
+                    if (Math.round(newX / controller.getZoomMultiplier()) != oldRound.old) {
+                        oldRound.old = Math.round(newX / controller.getZoomMultiplier());
+                        this.setLayoutX(Math.round(newX / controller.getZoomMultiplier()) * controller.getZoomMultiplier() - 1.5);
                         wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                         CommandControl.getInstance().execute(new SetTaskStartAndFinishDateCommand(
                                 task,
-                                uiControl.getController().getProject().getStartDate().plusDays(
-                                        Math.round(newX / uiControl.getZoomMultiplier())),
-                                Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier())
+                                controller.getProject().getStartDate().plusDays(
+                                        Math.round(newX / controller.getZoomMultiplier())),
+                                Math.round(backgroundRectangle.getWidth() / controller.getZoomMultiplier())
                         ));
                         wasMovedByMouse = false; // Когда окончили движение фолз
                     }
@@ -205,12 +202,10 @@ public abstract class TaskBar extends Pane {
      * <p>
      * Проще простого.
      *
-     * @param uiControl           Контроллер интерфейса
      * @param task                Задача этой метки
      * @param backgroundRectangle Прямоугольник
      */
-    public void enableResize(UIControl uiControl,
-                             ITask task,
+    public void enableResize(ITask task,
                              Rectangle backgroundRectangle) {
         // Создаем прозрачный прямоугольник шириной 10 пикселей
         Rectangle leftResizeHandle = new Rectangle();
@@ -238,8 +233,8 @@ public abstract class TaskBar extends Pane {
         // Ивент при нажатии на прямоугольник
         leftResizeHandle.setOnMousePressed(event -> {
             // Выделяем нужный элемент в таблице
-            int i = uiControl.getController().getProject().getTaskList().indexOf(task);
-            uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(i);
+            int i = controller.getProject().getTaskList().indexOf(task);
+            controller.getView().getTaskTableView().getSelectionModel().select(i);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
                 dragDeltaLeft.x = getLayoutX() - event.getSceneX();
@@ -252,16 +247,16 @@ public abstract class TaskBar extends Pane {
                 double newX = event.getSceneX() + dragDeltaLeft.x;
                 if (newX >= 0 && newX <= getLayoutX() + backgroundRectangle.getWidth()) {
                     // Хреначим привязку к сетке
-                    if (Math.round(newX / uiControl.getZoomMultiplier()) != oldRoundLeft.old) {
-                        if (!(Math.round(newX / uiControl.getZoomMultiplier()) * uiControl.getZoomMultiplier() - 1.5 == getLayoutX() + backgroundRectangle.getWidth())) { // Условие против нулевой длины тасбара
-                            oldRoundLeft.old = Math.round(newX / uiControl.getZoomMultiplier());
+                    if (Math.round(newX / controller.getZoomMultiplier()) != oldRoundLeft.old) {
+                        if (!(Math.round(newX / controller.getZoomMultiplier()) * controller.getZoomMultiplier() - 1.5 == getLayoutX() + backgroundRectangle.getWidth())) { // Условие против нулевой длины тасбара
+                            oldRoundLeft.old = Math.round(newX / controller.getZoomMultiplier());
                             double oldX = getLayoutX();
-                            this.setLayoutX(Math.round(newX / uiControl.getZoomMultiplier()) * uiControl.getZoomMultiplier() - 1.5);
+                            this.setLayoutX(Math.round(newX / controller.getZoomMultiplier()) * controller.getZoomMultiplier() - 1.5);
                             backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (this.getLayoutX() - oldX));
                             wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                             CommandControl.getInstance().execute(new SetTaskStartDateCommand(
                                     task,
-                                    uiControl.getController().getProject().getStartDate().plusDays((Math.round(newX / uiControl.getZoomMultiplier())))));
+                                    controller.getProject().getStartDate().plusDays((Math.round(newX / controller.getZoomMultiplier())))));
                             wasMovedByMouse = false; // Когда окончили движение фолз
                         }
                     }
@@ -304,7 +299,7 @@ public abstract class TaskBar extends Pane {
         // Ивент при нажатии на прямоугольник
         rightResizeHandle.setOnMousePressed(event -> {
             // Выделяем нужный элемент в таблице
-            uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController().getTaskTreeTableView().getSelectionModel().select(rowIndex);
+            controller.getView().getTaskTableView().getSelectionModel().select(rowIndex);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
                 dragDeltaRight.x = backgroundRectangle.getWidth() - event.getSceneX();
@@ -315,15 +310,15 @@ public abstract class TaskBar extends Pane {
         rightResizeHandle.setOnMouseDragged(event -> {
             if (event.isPrimaryButtonDown()) {
                 double newWidth = event.getSceneX() + dragDeltaRight.x;
-                if (newWidth >= uiControl.getZoomMultiplier() && this.getLayoutX() + newWidth <= this.getParent().getBoundsInLocal().getWidth()) {
+                if (newWidth >= controller.getZoomMultiplier() && this.getLayoutX() + newWidth <= this.getParent().getBoundsInLocal().getWidth()) {
                     // Хреначим привязку к сетке
-                    if (Math.round(newWidth / uiControl.getZoomMultiplier()) != oldRoundRight.old) {
-                        oldRoundRight.old = Math.round(newWidth / uiControl.getZoomMultiplier());
-                        backgroundRectangle.setWidth(Math.round(newWidth / uiControl.getZoomMultiplier()) * uiControl.getZoomMultiplier());
+                    if (Math.round(newWidth / controller.getZoomMultiplier()) != oldRoundRight.old) {
+                        oldRoundRight.old = Math.round(newWidth / controller.getZoomMultiplier());
+                        backgroundRectangle.setWidth(Math.round(newWidth / controller.getZoomMultiplier()) * controller.getZoomMultiplier());
                         wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                         CommandControl.getInstance().execute(new SetTaskFinishDateCommand(
                                 task,
-                                task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / uiControl.getZoomMultiplier()))));
+                                task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / controller.getZoomMultiplier()))));
                         wasMovedByMouse = false; // Когда окончили движение фолз
                     }
                 }

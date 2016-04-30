@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.mainwindow.ganttplan.relationlayer;
+package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.relationlayer;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -6,10 +6,10 @@ import javafx.collections.WeakListChangeListener;
 import javafx.scene.layout.Pane;
 import ru.khasang.cachoeira.model.IDependentTask;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.UIControl;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.relationlayer.relationline.RelationLine;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.relationlayer.relationline.TaskGanttPlanRelationLine;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.relationlayer.relationline.RelationLine;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.relationlayer.relationline.TaskGanttPlanRelationLine;
 
 public abstract class RelationsLayer extends Pane{
     @SuppressWarnings("FieldCanBeLocal")
@@ -21,17 +21,14 @@ public abstract class RelationsLayer extends Pane{
     /**
      * Метод перерисовывает связи всех задач.
      *
-     * @param uiControl Контроллер представления.
      */
-    public void refreshRelationsDiagram(UIControl uiControl) {
+    public void refreshRelationsDiagram(MainWindowController controller) {
         this.getChildren().clear();
-        for (ITask task : uiControl.getController().getProject().getTaskList()) {
+        for (ITask task : controller.getProject().getTaskList()) {
             for (IDependentTask dependentTask : task.getParentTasks()) {
-                TaskBar parentTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
-                        .getGanttPlan().getObjectsLayer()
+                TaskBar parentTaskBar = controller.getView().getTaskGanttPlan().getObjectsLayer()
                         .findTaskBarByTask(dependentTask.getTask());
-                TaskBar childTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
-                        .getGanttPlan().getObjectsLayer()
+                TaskBar childTaskBar = controller.getView().getTaskGanttPlan().getObjectsLayer()
                         .findTaskBarByTask(task);
                 RelationLine relationLine = new TaskGanttPlanRelationLine(
                         parentTaskBar,
@@ -48,16 +45,13 @@ public abstract class RelationsLayer extends Pane{
      *
      * @param parentTask Предыдущая задача (от нее идет стрелка).
      * @param childTask  Задача к которой идет стрелка.
-     * @param uiControl  Контроллер представления.
      */
     public void addRelation(IDependentTask parentTask,
                             ITask childTask,
-                            UIControl uiControl) {
-        TaskBar parentTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
-                .getGanttPlan().getObjectsLayer()
+                            MainWindowController controller) {
+        TaskBar parentTaskBar = controller.getView().getTaskGanttPlan().getObjectsLayer()
                 .findTaskBarByTask(parentTask.getTask());
-        TaskBar childTaskBar = uiControl.getMainWindow().getDiagramPaneController().getTaskPaneController()
-                .getGanttPlan().getObjectsLayer()
+        TaskBar childTaskBar = controller.getView().getTaskGanttPlan().getObjectsLayer()
                 .findTaskBarByTask(childTask);
         RelationLine relationLine = new TaskGanttPlanRelationLine(
                 parentTaskBar,
@@ -83,9 +77,8 @@ public abstract class RelationsLayer extends Pane{
     /**
      * Метод инициализирующий листенеры.
      *
-     * @param uiControl Контроллер вью
      */
-    public void setListeners(UIControl uiControl) {
+    public void setListeners(MainWindowController controller) {
         // Листенер который следит за добавлением новых задач.
         // Нужен для обновления связей при изменении положения задачи в таблице задач (при драг'н'дропе).
         // Если после драг'н'дропа не обновить связь, то она работает не корректно.
@@ -93,10 +86,10 @@ public abstract class RelationsLayer extends Pane{
         taskListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
-                    Platform.runLater(() -> refreshRelationsDiagram(uiControl));
+                    Platform.runLater(() -> refreshRelationsDiagram(controller));
                 }
             }
         };
-        uiControl.getController().getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListChangeListener));
+        controller.getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListChangeListener));
     }
 }

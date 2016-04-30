@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar;
+package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar;
 
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
@@ -12,7 +12,7 @@ import javafx.scene.shape.Rectangle;
 import ru.khasang.cachoeira.model.IDependentTask;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.view.UIControl;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
 
 import java.time.LocalDate;
 
@@ -32,23 +32,27 @@ public class TaskGanttPlanTaskBar extends TaskBar {
     @SuppressWarnings("FieldCanBeLocal")
     private InvalidationListener zoomListener;
 
-    @Override
-    public void initTaskRectangle(UIControl uiControl, ITask task, IResource resource) {
-        super.initTaskRectangle(uiControl, task, resource);
+    public TaskGanttPlanTaskBar(MainWindowController controller) {
+        this.controller = controller;
     }
 
     @Override
-    protected void setParameters(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle) {
+    public void initTaskRectangle(ITask task, IResource resource) {
+        super.initTaskRectangle(task, resource);
+    }
+
+    @Override
+    protected void setParameters(ITask task, IResource resource, Rectangle backgroundRectangle) {
         backgroundRectangle.setWidth(taskWidth(
                 task.getStartDate(),
                 task.getFinishDate(),
-                uiControl.getZoomMultiplier()));
+                controller.getZoomMultiplier()));
         backgroundRectangle.setLayoutY(6);
         this.setLayoutX(taskX(
                 task.getStartDate(),
-                uiControl.getController().getProject().getStartDate(),
-                uiControl.getZoomMultiplier()));
-        this.setLayoutY(taskY(uiControl.getController().getProject().getTaskList().indexOf(task)));
+                controller.getProject().getStartDate(),
+                controller.getZoomMultiplier()));
+        this.setLayoutY(taskY(controller.getProject().getTaskList().indexOf(task)));
     }
 
     @Override
@@ -58,14 +62,14 @@ public class TaskGanttPlanTaskBar extends TaskBar {
     }
 
     @Override
-    protected void setListeners(UIControl uiControl, ITask task, IResource resource, Rectangle backgroundRectangle, Rectangle donePercentRectangle) {
+    protected void setListeners(ITask task, IResource resource, Rectangle backgroundRectangle, Rectangle donePercentRectangle) {
         taskListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasRemoved() || change.wasAdded()) {
                     // Анимация при удалении и добавления элемента на диаграмме
                     Timeline timeline = createTimelineAnimation(
                             this.layoutYProperty(),
-                            taskY(uiControl.getController().getProject().getTaskList().indexOf(task)),
+                            taskY(controller.getProject().getTaskList().indexOf(task)),
                             (rowIndex + 1) * 150);
                     timeline.play();
                 }
@@ -80,8 +84,8 @@ public class TaskGanttPlanTaskBar extends TaskBar {
                         this.layoutXProperty(),
                         taskX(
                                 task.getStartDate(),
-                                uiControl.getController().getProject().getStartDate(),
-                                uiControl.getZoomMultiplier()
+                                controller.getProject().getStartDate(),
+                                controller.getZoomMultiplier()
                         ),
                         400
                 );
@@ -90,7 +94,7 @@ public class TaskGanttPlanTaskBar extends TaskBar {
                         taskWidth(
                                 task.getStartDate(),
                                 task.getFinishDate(),
-                                uiControl.getZoomMultiplier()
+                                controller.getZoomMultiplier()
                         ),
                         400
                 );
@@ -106,7 +110,7 @@ public class TaskGanttPlanTaskBar extends TaskBar {
                         taskWidth(
                                 task.getStartDate(),
                                 task.getFinishDate(),
-                                uiControl.getZoomMultiplier()
+                                controller.getZoomMultiplier()
                         ),
                         400
                 );
@@ -118,13 +122,13 @@ public class TaskGanttPlanTaskBar extends TaskBar {
                 // Если добавился
                 if (change.wasAdded()) {
                     for (IResource res : change.getAddedSubList()) {
-                        uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getGanttPlan().getObjectsLayer().addTaskBar(task, res);
+                        controller.getView().getResourceGanttPlan().getObjectsLayer().addTaskBar(task, res);
                     }
                 }
                 // Если удалился
                 if (change.wasRemoved()) {
                     for (IResource res : change.getRemoved()) {
-                        uiControl.getMainWindow().getDiagramPaneController().getResourcePaneController().getGanttPlan().getObjectsLayer().removeTaskBarByResource(task, res);
+                        controller.getView().getResourceGanttPlan().getObjectsLayer().removeTaskBarByResource(task, res);
                     }
                 }
             }
@@ -143,28 +147,25 @@ public class TaskGanttPlanTaskBar extends TaskBar {
         dependentTaskListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
-                    change.getAddedSubList().forEach(dependentTask -> uiControl.getMainWindow()
-                        .getDiagramPaneController().getTaskPaneController()
-                        .getGanttPlan().getRelationsLayer()
-                        .addRelation(dependentTask, uiControl.getController().getSelectedTask(), uiControl));
+                    change.getAddedSubList().forEach(dependentTask -> controller.getView().getTaskGanttPlan()
+                            .getRelationsLayer()
+                            .addRelation(dependentTask, controller.getView().getTaskTableView().getSelectionModel().getSelectedItem().getValue(), controller));
                 }
                 if (change.wasRemoved()) {
-                    change.getRemoved().forEach(dependentTask -> uiControl.getMainWindow()
-                            .getDiagramPaneController().getTaskPaneController()
-                            .getGanttPlan().getRelationsLayer()
-                            .removeRelation(dependentTask.getTask(), this.task));
+                    change.getRemoved().forEach(dependentTask ->controller.getView().getTaskGanttPlan()
+                            .getRelationsLayer().removeRelation(dependentTask.getTask(), this.task));
                 }
             }
         };
         zoomListener = observable -> {
-            this.setLayoutX(taskX(task.getStartDate(), uiControl.getController().getProject().getStartDate(), uiControl.getZoomMultiplier()));
-            backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), uiControl.getZoomMultiplier()));
+            this.setLayoutX(taskX(task.getStartDate(), controller.getProject().getStartDate(), controller.getZoomMultiplier()));
+            backgroundRectangle.setWidth(taskWidth(task.getStartDate(), task.getFinishDate(), controller.getZoomMultiplier()));
         };
         /*
          Следим за изменениями в списке задач, если произошло добавление или удаление элемента в списке,
          то пересчитываем индексы у элементов на диаграмме
          */
-        uiControl.getController().getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListChangeListener));
+        controller.getProject().getTaskList().addListener(new WeakListChangeListener<>(taskListChangeListener));
         // Если начальная дата изменилась, то...
         task.startDateProperty().addListener(new WeakChangeListener<>(startDateChangeListener));
         // Если конечная дата изменилась, то...
@@ -174,7 +175,7 @@ public class TaskGanttPlanTaskBar extends TaskBar {
         //подсветка при наведении // TODO: 15.01.2016 Сделать анимацию
         this.hoverProperty().addListener(hoverListener);
 
-        uiControl.getController().getSelectedTask().getParentTasks().addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
-        uiControl.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomListener));
+        controller.getView().getTaskTableView().getSelectionModel().getSelectedItem().getValue().getParentTasks().addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
+        controller.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomListener));
     }
 }

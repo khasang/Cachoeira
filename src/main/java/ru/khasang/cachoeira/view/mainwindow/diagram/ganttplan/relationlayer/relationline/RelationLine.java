@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.mainwindow.ganttplan.relationlayer.relationline;
+package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.relationlayer.relationline;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -14,7 +14,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.TaskDependencyType;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.taskbar.TaskBar;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
 
 public abstract class RelationLine extends Group {
     @SuppressWarnings("FieldCanBeLocal")

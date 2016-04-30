@@ -1,29 +1,26 @@
-package ru.khasang.cachoeira.view.mainwindow.ganttplan;
+package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan;
 
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import ru.khasang.cachoeira.view.UIControl;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.dateline.DateLine;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.gridlayer.GridLayer;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.labelslayer.TaskBarLabelsLayer;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.objectslayer.ObjectsLayer;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.relationlayer.RelationsLayer;
-import ru.khasang.cachoeira.view.mainwindow.ganttplan.selectedobjectlayer.SelectedObjectLayer;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.dateline.DateLine;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.gridlayer.GridLayer;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.labelslayer.TaskBarLabelsLayer;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.ObjectsLayer;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.relationlayer.RelationsLayer;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.selectedobjectlayer.SelectedObjectLayer;
 
 public abstract class GanttPlan extends VBox {
     protected ObjectsLayer objectsLayer;
+    protected MainWindowController controller;
 
-    public GanttPlan() {
-    }
-
-    public void initGanttDiagram(UIControl uiControl) {
+    public void initGanttDiagram() {
         this.getChildren().addAll(createGanttPlan(
-                createDateLine(uiControl),
-                createGridLayer(uiControl),
-                createObjectsLayer(uiControl),
-                uiControl));
+                createDateLine(),
+                createGridLayer(),
+                createObjectsLayer()));
     }
 
     /**
@@ -36,8 +33,7 @@ public abstract class GanttPlan extends VBox {
      */
     private ScrollPane createGanttPlan(DateLine dateLine,
                                        GridLayer gridLayer,
-                                       ScrollPane objectsLayer,
-                                       UIControl uiControl) {
+                                       ScrollPane objectsLayer) {
         StackPane stackPane = new StackPane(gridLayer, objectsLayer);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
         VBox vBox = new VBox(dateLine, stackPane);
@@ -50,31 +46,25 @@ public abstract class GanttPlan extends VBox {
         horizontalScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         VBox.setVgrow(horizontalScrollPane, Priority.ALWAYS);
         // Связываем горизонтальные скроллы с вкладок Задачи и Ресурсы
-        horizontalScrollPane.hvalueProperty().bindBidirectional(uiControl.horizontalScrollValueProperty());
+        horizontalScrollPane.hvalueProperty().bindBidirectional(controller.ganttHorizontalScrollValueProperty());
 
         return horizontalScrollPane;
     }
 
     /**
      * Метод создает слой с сеткой
-     *
-     * @param uiControl Контроллер вьюхи
      */
-    protected abstract GridLayer createGridLayer(UIControl uiControl);
+    protected abstract GridLayer createGridLayer();
 
     /**
      * Метод создает слой для объектов диаграммы
-     *
-     * @param uiControl Контроллер вьюхи
      */
-    protected abstract ScrollPane createObjectsLayer(UIControl uiControl);
+    protected abstract ScrollPane createObjectsLayer();
 
     /**
      * Метод создает шкалу с датами
-     *
-     * @param uiControl Контроллер вьюхи
      */
-    protected abstract DateLine createDateLine(UIControl uiControl);
+    protected abstract DateLine createDateLine();
 
     public ObjectsLayer getObjectsLayer() {
         return objectsLayer;
