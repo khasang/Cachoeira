@@ -15,6 +15,8 @@ import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.GanttPlan;
 import ru.khasang.cachoeira.view.mainwindow.diagram.tables.AbstractTableView;
 
 public abstract class TableAndGanttPane extends VBox {
+    private static final double ROW_HEIGHT = 31;
+
     protected AbstractTableView tableView;
     protected GanttPlan ganttPlan;
 
@@ -25,15 +27,17 @@ public abstract class TableAndGanttPane extends VBox {
     public void createPane() {
         SplitPane splitPane = new SplitPane(createTableView(), ganttPlan);
         splitPane.setDividerPosition(0, 0.3);
+        VBox.setVgrow(splitPane, Priority.ALWAYS);
         // Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
 //        splitPane.getDividers().get(0).positionProperty().bindBidirectional(uiControl.splitPaneDividerValueProperty());
         HBox hBox = createButtonsBox();
+        VBox.setVgrow(hBox, Priority.NEVER);
         this.getChildren().addAll(splitPane, hBox);
     }
 
-    public Node createTableView() {
+    private Node createTableView() {
         VBox.setVgrow(tableView, Priority.ALWAYS);
-        tableView.setFixedCellSize(31);
+        tableView.setFixedCellSize(ROW_HEIGHT);
 
         ScrollBar horizontalScrollBar = new ScrollBar();
         horizontalScrollBar.setOrientation(Orientation.HORIZONTAL);
