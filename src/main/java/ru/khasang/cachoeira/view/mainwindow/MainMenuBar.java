@@ -28,28 +28,28 @@ public class MainMenuBar extends MenuBar {
     }
 
     private Menu createProjectMenu() {
-        createProject = new Menu("Create");
+        createProject = new MenuItem("Create");
         createProject.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-        openProject = new Menu("Open");
+        openProject = new MenuItem("Open");
         openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-        saveProject = new Menu("Save");
+        saveProject = new MenuItem("Save");
         saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-        saveAsProject = new Menu("Save as");
+        saveAsProject = new MenuItem("Save as");
         saveAsProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
         Menu resourcesMenu = new Menu("Resources");
-        exportResources = new Menu("Export");
-        importResources = new Menu("Import");
+        exportResources = new MenuItem("Export");
+        importResources = new MenuItem("Import");
         resourcesMenu.getItems().addAll(exportResources, importResources);
-        exit = new Menu("Exit");
+        exit = new MenuItem("Exit");
         Menu projectMenu = new Menu("Project");
         projectMenu.getItems().addAll(createProject, openProject, saveProject, saveAsProject, resourcesMenu, new SeparatorMenuItem(), exit);
         return projectMenu;
     }
 
     private Menu createEditMenu() {
-        undo = new Menu("Undo");
+        undo = new MenuItem("Undo");
         undo.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
-        redo = new Menu("Redo");
+        redo = new MenuItem("Redo");
         redo.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
         Menu editMenu = new Menu("Edit");
         editMenu.getItems().addAll(undo, redo);
@@ -57,7 +57,7 @@ public class MainMenuBar extends MenuBar {
     }
 
     private Menu createHelpMenu() {
-        about = new Menu("About");
+        about = new MenuItem("About");
         Menu helpMenu = new Menu("Help");
         helpMenu.getItems().addAll(about);
         return helpMenu;
