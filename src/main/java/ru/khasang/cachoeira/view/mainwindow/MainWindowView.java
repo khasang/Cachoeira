@@ -17,6 +17,9 @@ import ru.khasang.cachoeira.view.mainwindow.diagram.TableAndGanttPane;
 import ru.khasang.cachoeira.view.mainwindow.diagram.TaskPane;
 import ru.khasang.cachoeira.view.mainwindow.diagram.tables.ResourceTableView;
 import ru.khasang.cachoeira.view.mainwindow.diagram.tables.TaskTableView;
+import ru.khasang.cachoeira.view.mainwindow.properties.ProjectPropertiesPane;
+import ru.khasang.cachoeira.view.mainwindow.properties.ResourcePropertiesPane;
+import ru.khasang.cachoeira.view.mainwindow.properties.TaskPropertiesPane;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -45,6 +48,10 @@ public class MainWindowView {
     private GanttPlan taskGanttPlan;
     private GanttPlan resourceGanttPlan;
 
+    private ProjectPropertiesPane projectPropertiesPane;
+    private TaskPropertiesPane taskPropertiesPane;
+    private ResourcePropertiesPane resourcePropertiesPane;
+
     public MainWindowView(MainWindowController controller, IProject project) {
         this.controller = controller;
         this.project = project;
@@ -52,6 +59,7 @@ public class MainWindowView {
 
     public void createView() {
         BorderPane borderPane = new BorderPane();
+//        borderPane.getStylesheets().add(getClass().getResource("/css/startwindow.css").toExternalForm());
         borderPane.setTop(createMenuBar());
         borderPane.setCenter(createGanttPlanLayout());
         borderPane.setRight(createPropertiesMenu());
@@ -66,7 +74,14 @@ public class MainWindowView {
     }
 
     private Node createPropertiesMenu() {
-        return null;
+        projectPropertiesPane = new ProjectPropertiesPane();
+        projectPropertiesPane.createPane();
+        resourcePropertiesPane = new ResourcePropertiesPane();
+        resourcePropertiesPane.createPane();
+        TabPane tabPane = new TabPane(new Tab("Project", projectPropertiesPane), new Tab("Task"), new Tab("Resource", resourcePropertiesPane));
+        tabPane.setPrefWidth(310);
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        return tabPane;
     }
 
     private Node createGanttPlanLayout() {
