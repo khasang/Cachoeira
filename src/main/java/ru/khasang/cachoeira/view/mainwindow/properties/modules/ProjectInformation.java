@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.view.mainwindow.properties.modules;
 
+import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
@@ -44,8 +45,10 @@ public class ProjectInformation extends GridPane {
         this.addRow(1, startDateLabel, startDatePicker);
         this.addRow(2, finishDateLabel, finishDatePicker);
         this.addRow(3, descriptionLabel, descriptionTextArea);
+
         this.setVgap(10);
         this.setHgap(10);
+        this.setPadding(new Insets(10));
 
         startDatePicker.setPrefWidth(350);
         finishDatePicker.setPrefWidth(350);
