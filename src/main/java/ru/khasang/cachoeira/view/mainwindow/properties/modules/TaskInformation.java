@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.view.mainwindow.properties.modules;
 
+import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
@@ -60,8 +61,10 @@ public class TaskInformation extends GridPane {
         this.addRow(4, priorityTypeLabel, priorityTypeComboBox);
         this.addRow(5, costLabel, costField);
         this.addRow(6, descriptionLabel, descriptionTextArea);
+
         this.setVgap(10);
         this.setHgap(10);
+        this.setPadding(new Insets(10));
 
         startDatePicker.setPrefWidth(350);
         finishDatePicker.setPrefWidth(350);

@@ -1,5 +1,6 @@
 package ru.khasang.cachoeira.view.mainwindow.properties.modules;
 
+import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
@@ -45,8 +46,10 @@ public class ResourceInformation extends GridPane {
         this.addRow(1, emailLabel, emailField);
         this.addRow(2, resourceTypeLabel, resourceTypeComboBox);
         this.addRow(3, descriptionLabel, descriptionTextArea);
+
         this.setVgap(10);
         this.setHgap(10);
+        this.setPadding(new Insets(10));
 
         emailField.setPrefWidth(350);
         resourceTypeComboBox.setPrefWidth(350);
