@@ -51,4 +51,20 @@ public class ProjectInformation extends GridPane {
         finishDatePicker.setPrefWidth(350);
         GridPane.setValignment(descriptionLabel, VPos.TOP);
     }
+
+    public TextField getNameField() {
+        return nameField;
+    }
+
+    public DatePicker getStartDatePicker() {
+        return startDatePicker;
+    }
+
+    public DatePicker getFinishDatePicker() {
+        return finishDatePicker;
+    }
+
+    public TextArea getDescriptionTextArea() {
+        return descriptionTextArea;
+    }
 }
