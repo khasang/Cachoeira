@@ -68,4 +68,32 @@ public class TaskInformation extends GridPane {
         priorityTypeComboBox.setPrefWidth(350);
         GridPane.setValignment(descriptionTextArea, VPos.TOP);
     }
+
+    public TextField getNameField() {
+        return nameField;
+    }
+
+    public DatePicker getStartDatePicker() {
+        return startDatePicker;
+    }
+
+    public DatePicker getFinishDatePicker() {
+        return finishDatePicker;
+    }
+
+    public Slider getDonePercentSlider() {
+        return donePercentSlider;
+    }
+
+    public ComboBox<PriorityType> getPriorityTypeComboBox() {
+        return priorityTypeComboBox;
+    }
+
+    public TextField getCostField() {
+        return costField;
+    }
+
+    public TextArea getDescriptionTextArea() {
+        return descriptionTextArea;
+    }
 }
