@@ -22,4 +22,12 @@ public class ResourceAssignedTasks extends TableView<ITask> {
         this.getColumns().addAll(Arrays.asList(taskNameColumn, taskCheckboxColumn));
         this.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
+
+    public TableColumn<ITask, String> getTaskNameColumn() {
+        return taskNameColumn;
+    }
+
+    public TableColumn<ITask, Boolean> getTaskCheckboxColumn() {
+        return taskCheckboxColumn;
+    }
 }
