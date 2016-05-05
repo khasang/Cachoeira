@@ -4,8 +4,11 @@ import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
-public class AbstractPropertiesPane extends VBox {
+public abstract class AbstractPropertiesPane extends VBox {
+    private final static double PANE_WIDTH = 299;
+
     public void addNewPropertiesTitledModule(Node module, String titleOfModule) {
-        getChildren().add(new TitledPane(titleOfModule, module));
+        this.getChildren().add(new TitledPane(titleOfModule, module));
+        this.setPrefWidth(PANE_WIDTH);
     }
 }
