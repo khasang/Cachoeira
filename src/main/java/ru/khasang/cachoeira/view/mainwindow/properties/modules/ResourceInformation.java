@@ -52,4 +52,20 @@ public class ResourceInformation extends GridPane {
         resourceTypeComboBox.setPrefWidth(350);
         GridPane.setValignment(descriptionLabel, VPos.TOP);
     }
+
+    public TextField getNameField() {
+        return nameField;
+    }
+
+    public TextField getEmailField() {
+        return emailField;
+    }
+
+    public ComboBox<ResourceType> getResourceTypeComboBox() {
+        return resourceTypeComboBox;
+    }
+
+    public TextArea getDescriptionTextArea() {
+        return descriptionTextArea;
+    }
 }
