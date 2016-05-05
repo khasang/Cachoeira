@@ -5,10 +5,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.ResourceType;
-
-import java.util.Arrays;
 
 public class ResourceInformation extends GridPane {
     private static final double FIRST_COLUMN_PERCENT_WIDTH = 30;
@@ -23,10 +20,6 @@ public class ResourceInformation extends GridPane {
     private TextField emailField;
     private ComboBox<ResourceType> resourceTypeComboBox;
     private TextArea descriptionTextArea;
-
-    private TableView<ITask> assignedTaskTable;
-    private TableColumn<ITask, String> taskNameColumn;
-    private TableColumn<ITask, Boolean> taskCheckboxColumn;
 
     public ResourceInformation() {
         nameLabel = new Label("Name");
