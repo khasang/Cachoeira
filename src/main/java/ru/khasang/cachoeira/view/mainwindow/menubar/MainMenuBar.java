@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.mainwindow;
+package ru.khasang.cachoeira.view.mainwindow.menubar;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -8,7 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
-public class MainMenuBar extends MenuBar {
+public class MainMenuBar extends MenuBar implements IMenuBar {
     private MenuItem createProject;
     private MenuItem openProject;
     private MenuItem saveProject;
@@ -23,6 +23,7 @@ public class MainMenuBar extends MenuBar {
     public MainMenuBar() {
     }
 
+    @Override
     public void createMenu() {
         this.getMenus().addAll(createProjectMenu(), createEditMenu(), createHelpMenu());
     }
@@ -63,42 +64,52 @@ public class MainMenuBar extends MenuBar {
         return helpMenu;
     }
 
+    @Override
     public MenuItem getCreateProject() {
         return createProject;
     }
 
+    @Override
     public MenuItem getOpenProject() {
         return openProject;
     }
 
+    @Override
     public MenuItem getSaveProject() {
         return saveProject;
     }
 
+    @Override
     public MenuItem getSaveAsProject() {
         return saveAsProject;
     }
 
+    @Override
     public MenuItem getExportResources() {
         return exportResources;
     }
 
+    @Override
     public MenuItem getImportResources() {
         return importResources;
     }
 
+    @Override
     public MenuItem getExit() {
         return exit;
     }
 
+    @Override
     public MenuItem getUndo() {
         return undo;
     }
 
+    @Override
     public MenuItem getRedo() {
         return redo;
     }
 
+    @Override
     public MenuItem getAbout() {
         return about;
     }
