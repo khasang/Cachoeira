@@ -5,8 +5,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
+import ru.khasang.cachoeira.view.mainwindow.properties.panes.AbstractPropertiesPane;
 
-public class PropertiesSidePanel extends TabPane {
+public class PropertiesSidePanel extends AbstractPropertiesSidePanel {
     private final AbstractPropertiesPane projectPropertiesPane;
     private final AbstractPropertiesPane taskPropertiesPane;
     private final AbstractPropertiesPane resourcePropertiesPane;
@@ -19,6 +20,7 @@ public class PropertiesSidePanel extends TabPane {
         this.resourcePropertiesPane = resourcePropertiesPane;
     }
 
+    @Override
     public void createPanes() {
         Tab projectTab = new Tab("Project", createScrollPaneToPropertyPane(projectPropertiesPane));
         projectTab.setGraphic(new ImageView(getClass().getResource("/img/ic_project.png").toExternalForm()));
@@ -39,14 +41,17 @@ public class PropertiesSidePanel extends TabPane {
         return scrollPane;
     }
 
+    @Override
     public AbstractPropertiesPane getProjectPropertiesPane() {
         return projectPropertiesPane;
     }
 
+    @Override
     public AbstractPropertiesPane getTaskPropertiesPane() {
         return taskPropertiesPane;
     }
 
+    @Override
     public AbstractPropertiesPane getResourcePropertiesPane() {
         return resourcePropertiesPane;
     }
