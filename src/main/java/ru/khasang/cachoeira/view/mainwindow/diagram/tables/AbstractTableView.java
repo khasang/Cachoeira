@@ -14,6 +14,8 @@ public abstract class AbstractTableView<S> extends TreeTableView<S> {
     private VirtualScrollBar verticalScrollBar;
     private VirtualScrollBar horizontalScrollBar;
 
+    public abstract void createTable();
+
     /**
      * Метод для связывания горизонтального и вертикального скролла с переменными контроллера.
      */
