@@ -69,7 +69,7 @@ public class TaskInformation extends GridPane {
         startDatePicker.setPrefWidth(350);
         finishDatePicker.setPrefWidth(350);
         priorityTypeComboBox.setPrefWidth(350);
-        GridPane.setValignment(descriptionTextArea, VPos.TOP);
+        GridPane.setValignment(descriptionLabel, VPos.TOP);
     }
 
     public TextField getNameField() {
