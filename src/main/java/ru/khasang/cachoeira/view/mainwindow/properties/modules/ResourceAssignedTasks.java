@@ -6,7 +6,7 @@ import ru.khasang.cachoeira.model.ITask;
 
 import java.util.Arrays;
 
-public class ResourceAssignedTasks extends TableView<ITask> {
+public class ResourceAssignedTasks extends TableView<ITask> implements IModule {
     private TableColumn<ITask, String> taskNameColumn;
     private TableColumn<ITask, Boolean> taskCheckboxColumn;
 
@@ -15,6 +15,7 @@ public class ResourceAssignedTasks extends TableView<ITask> {
         taskCheckboxColumn = new TableColumn<>();
     }
 
+    @Override
     public void createPane() {
         taskNameColumn.setPrefWidth(251);
         taskCheckboxColumn.setPrefWidth(47);

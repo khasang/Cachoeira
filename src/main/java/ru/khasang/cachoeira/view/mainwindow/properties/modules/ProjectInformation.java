@@ -7,7 +7,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
-public class ProjectInformation extends GridPane {
+public class ProjectInformation extends GridPane implements IModule {
     private static final double FIRST_COLUMN_PERCENT_WIDTH = 30;
     private static final double SECOND_COLUMN_PERCENT_WIDTH = 70;
 
@@ -33,6 +33,7 @@ public class ProjectInformation extends GridPane {
         descriptionTextArea = new TextArea();
     }
 
+    @Override
     public void createPane() {
         ColumnConstraints firstColumnConstrains = new ColumnConstraints();
         ColumnConstraints secondColumnConstrains = new ColumnConstraints();

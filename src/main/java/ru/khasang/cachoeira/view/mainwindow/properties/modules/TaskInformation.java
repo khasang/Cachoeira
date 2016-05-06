@@ -8,7 +8,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import ru.khasang.cachoeira.model.PriorityType;
 
-public class TaskInformation extends GridPane {
+public class TaskInformation extends GridPane implements IModule {
     private static final double FIRST_COLUMN_PERCENT_WIDTH = 30;
     private static final double SECOND_COLUMN_PERCENT_WIDTH = 70;
 
@@ -46,6 +46,7 @@ public class TaskInformation extends GridPane {
         descriptionTextArea = new TextArea();
     }
 
+    @Override
     public void createPane() {
         ColumnConstraints firstColumnConstrains = new ColumnConstraints();
         ColumnConstraints secondColumnConstrains = new ColumnConstraints();

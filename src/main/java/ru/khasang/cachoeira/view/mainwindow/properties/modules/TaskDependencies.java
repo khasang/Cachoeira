@@ -7,10 +7,11 @@ import ru.khasang.cachoeira.model.TaskDependencyType;
 
 import java.util.Arrays;
 
-public class TaskDependencies extends TableView<IDependentTask> {
+public class TaskDependencies extends TableView<IDependentTask> implements IModule {
     private TableColumn<IDependentTask, String> parentTaskNameColumn;
     private TableColumn<IDependentTask, TaskDependencyType> parentTaskDependencyTypeColumn;
 
+    @Override
     public void createPane() {
         parentTaskNameColumn = new TableColumn<>("Name");
         parentTaskDependencyTypeColumn = new TableColumn<>("Dependency Type");
