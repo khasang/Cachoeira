@@ -12,7 +12,7 @@ import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.Objec
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.relationlayer.RelationsLayer;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.selectedobjectlayer.SelectedObjectLayer;
 
-public abstract class GanttPlan extends VBox {
+public abstract class AbstractGanttPlan extends VBox {
     protected ObjectsLayer objectsLayer;
     protected MainWindowController controller;
 

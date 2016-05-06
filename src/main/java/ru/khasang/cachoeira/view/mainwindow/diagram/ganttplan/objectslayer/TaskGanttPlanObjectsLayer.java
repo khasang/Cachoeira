@@ -19,7 +19,7 @@ public class TaskGanttPlanObjectsLayer extends ObjectsLayer {
     @Override
     public void removeTaskBar(ITask task) {
         super.removeTaskBar(task);
-        controller.getView().getTaskGanttPlan().getLabelsLayer().removeLabel(task);
+        controller.getTaskGanttPlan().getLabelsLayer().removeLabel(task);
     }
 
     @Override
@@ -30,10 +30,10 @@ public class TaskGanttPlanObjectsLayer extends ObjectsLayer {
 //        taskBar.setContextMenu(uiControl.getController(), task);
         taskBar.setTooltip(tooltipFactory.createTooltip(task));
 //         Создаем "панель" на которой будут отображаться привязанные ресурсы
-        controller.getView().getTaskGanttPlan().getLabelsLayer().setLabelToTaskBar(taskBar);
+        controller.getTaskGanttPlan().getLabelsLayer().setLabelToTaskBar(taskBar);
         // Создаем "панель" которая меняет, цвет если эта задача выделена
-        TaskBarLabel paneLabel = controller.getView().getTaskGanttPlan().getLabelsLayer().findLabelByTask(task);
-        controller.getView().getTaskGanttPlan().getSelectedObjectLayer().addBackgroundToTaskBar(taskBar, paneLabel, controller);
+        TaskBarLabel paneLabel = controller.getTaskGanttPlan().getLabelsLayer().findLabelByTask(task);
+        controller.getTaskGanttPlan().getSelectedObjectLayer().addBackgroundToTaskBar(taskBar, paneLabel, controller);
         return taskBar;
     }
 

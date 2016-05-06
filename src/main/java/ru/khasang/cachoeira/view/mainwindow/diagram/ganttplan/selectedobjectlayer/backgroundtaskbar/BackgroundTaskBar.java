@@ -42,7 +42,7 @@ public abstract class BackgroundTaskBar extends Rectangle {
                 setSelected(false);
             }
         };
-        controller.getView().getTaskTableView().getSelectionModel().selectedItemProperty().addListener(selectedTaskListener);
+        controller.getTaskTableView().getSelectionModel().selectedItemProperty().addListener(selectedTaskListener);
     }
 
     public void setSelected(boolean enabled) {

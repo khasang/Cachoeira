@@ -14,9 +14,8 @@ import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.relationlayer.Rela
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.relationlayer.TaskGanttPlanRelationsLayer;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.selectedobjectlayer.SelectedObjectLayer;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.selectedobjectlayer.TaskGanttPlanSelectedObjectLayer;
-import ru.khasang.cachoeira.viewcontroller.UIControl;
 
-public class TaskGanttPlan extends GanttPlan {
+public class TaskGanttPlan extends AbstractGanttPlan {
     private RelationsLayer relationsLayer;
     private TaskBarLabelsLayer labelsLayer;
     private SelectedObjectLayer selectedObjectLayer;

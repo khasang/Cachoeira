@@ -151,7 +151,7 @@ public abstract class TaskBar extends Pane {
         backgroundRectangle.setOnMousePressed(event -> {
             // Выделяем нужный элемент в таблице
             int i = controller.getProject().getTaskList().indexOf(task);
-            controller.getView().getTaskTableView().getSelectionModel().select(i);
+            controller.getTaskTableView().getSelectionModel().select(i);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
                 dragDelta.x = this.getLayoutX() - event.getSceneX();
@@ -234,7 +234,7 @@ public abstract class TaskBar extends Pane {
         leftResizeHandle.setOnMousePressed(event -> {
             // Выделяем нужный элемент в таблице
             int i = controller.getProject().getTaskList().indexOf(task);
-            controller.getView().getTaskTableView().getSelectionModel().select(i);
+            controller.getTaskTableView().getSelectionModel().select(i);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
                 dragDeltaLeft.x = getLayoutX() - event.getSceneX();
@@ -299,7 +299,7 @@ public abstract class TaskBar extends Pane {
         // Ивент при нажатии на прямоугольник
         rightResizeHandle.setOnMousePressed(event -> {
             // Выделяем нужный элемент в таблице
-            controller.getView().getTaskTableView().getSelectionModel().select(rowIndex);
+            controller.getTaskTableView().getSelectionModel().select(rowIndex);
             if (event.isPrimaryButtonDown()) {
                 // record a delta distance for the drag and drop operation.
                 dragDeltaRight.x = backgroundRectangle.getWidth() - event.getSceneX();

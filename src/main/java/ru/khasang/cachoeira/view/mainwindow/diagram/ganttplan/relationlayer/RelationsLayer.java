@@ -26,9 +26,9 @@ public abstract class RelationsLayer extends Pane{
         this.getChildren().clear();
         for (ITask task : controller.getProject().getTaskList()) {
             for (IDependentTask dependentTask : task.getParentTasks()) {
-                TaskBar parentTaskBar = controller.getView().getTaskGanttPlan().getObjectsLayer()
+                TaskBar parentTaskBar = controller.getTaskGanttPlan().getObjectsLayer()
                         .findTaskBarByTask(dependentTask.getTask());
-                TaskBar childTaskBar = controller.getView().getTaskGanttPlan().getObjectsLayer()
+                TaskBar childTaskBar = controller.getTaskGanttPlan().getObjectsLayer()
                         .findTaskBarByTask(task);
                 RelationLine relationLine = new TaskGanttPlanRelationLine(
                         parentTaskBar,
@@ -49,9 +49,9 @@ public abstract class RelationsLayer extends Pane{
     public void addRelation(IDependentTask parentTask,
                             ITask childTask,
                             MainWindowController controller) {
-        TaskBar parentTaskBar = controller.getView().getTaskGanttPlan().getObjectsLayer()
+        TaskBar parentTaskBar = controller.getTaskGanttPlan().getObjectsLayer()
                 .findTaskBarByTask(parentTask.getTask());
-        TaskBar childTaskBar = controller.getView().getTaskGanttPlan().getObjectsLayer()
+        TaskBar childTaskBar = controller.getTaskGanttPlan().getObjectsLayer()
                 .findTaskBarByTask(childTask);
         RelationLine relationLine = new TaskGanttPlanRelationLine(
                 parentTaskBar,

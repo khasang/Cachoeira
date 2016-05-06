@@ -10,9 +10,8 @@ import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.labelslayer.TaskBa
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.ResourceGanttPlanObjectsLayer;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.relationlayer.RelationsLayer;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.selectedobjectlayer.SelectedObjectLayer;
-import ru.khasang.cachoeira.viewcontroller.UIControl;
 
-public class ResourceGanttPlan extends GanttPlan {
+public class ResourceGanttPlan extends AbstractGanttPlan {
     public ResourceGanttPlan(MainWindowController controller) {
         this.controller = controller;
     }

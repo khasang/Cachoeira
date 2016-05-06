@@ -122,13 +122,13 @@ public class TaskGanttPlanTaskBar extends TaskBar {
                 // Если добавился
                 if (change.wasAdded()) {
                     for (IResource res : change.getAddedSubList()) {
-                        controller.getView().getResourceGanttPlan().getObjectsLayer().addTaskBar(task, res);
+                        controller.getResourceGanttPlan().getObjectsLayer().addTaskBar(task, res);
                     }
                 }
                 // Если удалился
                 if (change.wasRemoved()) {
                     for (IResource res : change.getRemoved()) {
-                        controller.getView().getResourceGanttPlan().getObjectsLayer().removeTaskBarByResource(task, res);
+                        controller.getResourceGanttPlan().getObjectsLayer().removeTaskBarByResource(task, res);
                     }
                 }
             }
@@ -147,12 +147,12 @@ public class TaskGanttPlanTaskBar extends TaskBar {
         dependentTaskListChangeListener = change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
-                    change.getAddedSubList().forEach(dependentTask -> controller.getView().getTaskGanttPlan()
+                    change.getAddedSubList().forEach(dependentTask -> controller.getTaskGanttPlan()
                             .getRelationsLayer()
-                            .addRelation(dependentTask, controller.getView().getTaskTableView().getSelectionModel().getSelectedItem().getValue(), controller));
+                            .addRelation(dependentTask, controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue(), controller));
                 }
                 if (change.wasRemoved()) {
-                    change.getRemoved().forEach(dependentTask ->controller.getView().getTaskGanttPlan()
+                    change.getRemoved().forEach(dependentTask ->controller.getTaskGanttPlan()
                             .getRelationsLayer().removeRelation(dependentTask.getTask(), this.task));
                 }
             }
@@ -175,7 +175,7 @@ public class TaskGanttPlanTaskBar extends TaskBar {
         //подсветка при наведении // TODO: 15.01.2016 Сделать анимацию
         this.hoverProperty().addListener(hoverListener);
 
-        controller.getView().getTaskTableView().getSelectionModel().getSelectedItem().getValue().getParentTasks().addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
+        controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue().getParentTasks().addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
         controller.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomListener));
     }
 }
