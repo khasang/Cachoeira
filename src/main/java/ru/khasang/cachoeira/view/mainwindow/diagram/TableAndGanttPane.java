@@ -3,29 +3,23 @@ package ru.khasang.cachoeira.view.mainwindow.diagram;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
-import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import ru.khasang.cachoeira.view.MaterialButton;
-import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.GanttPlan;
+import ru.khasang.cachoeira.view.mainwindow.diagram.buttonbox.AbstractButtonsBox;
+import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.AbstractGanttPlan;
 import ru.khasang.cachoeira.view.mainwindow.diagram.tables.AbstractTableView;
 
 public abstract class TableAndGanttPane extends VBox {
     private static final double ROW_HEIGHT = 31;
 
     protected AbstractTableView tableView;
-    protected GanttPlan ganttPlan;
-
-    protected MaterialButton addButton;
-    protected MaterialButton removeButton;
-    protected Slider zoomSlider;
+    protected AbstractGanttPlan ganttPlan;
+    protected AbstractButtonsBox buttonBox;
 
     public void createPane() {
-        SplitPane splitPane = new SplitPane(createTableView(), ganttPlan);
+        SplitPane splitPane = new SplitPane(createTableView(), createGanttPLan());
         splitPane.setDividerPosition(0, 0.3);
         VBox.setVgrow(splitPane, Priority.ALWAYS);
         // Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
@@ -33,6 +27,11 @@ public abstract class TableAndGanttPane extends VBox {
         HBox hBox = createButtonsBox();
         VBox.setVgrow(hBox, Priority.NEVER);
         this.getChildren().addAll(splitPane, hBox);
+    }
+
+    private Node createGanttPLan() {
+        ganttPlan.initGanttDiagram();
+        return ganttPlan;
     }
 
     private Node createTableView() {
@@ -46,12 +45,8 @@ public abstract class TableAndGanttPane extends VBox {
         return new VBox(tableView, horizontalScrollBar);
     }
 
-    private HBox createButtonsBox() {
-        addButton = new MaterialButton("", new ImageView(getClass().getResource("/img/ic_add.png").toExternalForm()));
-        removeButton = new MaterialButton("", new ImageView(getClass().getResource("/img/ic_remove.png").toExternalForm()));
-        Region separateRegion = new Region();
-        HBox.setHgrow(separateRegion, Priority.ALWAYS);
-        zoomSlider = new Slider();
-        return new HBox(addButton, removeButton, separateRegion, zoomSlider);
+    private AbstractButtonsBox createButtonsBox() {
+        buttonBox.createButtonsBox();
+        return buttonBox;
     }
 }
