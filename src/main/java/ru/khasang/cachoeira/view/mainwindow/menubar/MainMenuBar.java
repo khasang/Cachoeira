@@ -1,14 +1,13 @@
 package ru.khasang.cachoeira.view.mainwindow.menubar;
 
 import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
-public class MainMenuBar extends MenuBar implements IMenuBar {
+public class MainMenuBar extends AbstractMenuBar {
     private MenuItem createProject;
     private MenuItem openProject;
     private MenuItem saveProject;
