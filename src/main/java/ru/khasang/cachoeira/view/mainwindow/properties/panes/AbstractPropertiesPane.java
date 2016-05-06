@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.mainwindow.properties;
+package ru.khasang.cachoeira.view.mainwindow.properties.panes;
 
 import javafx.scene.Node;
 import javafx.scene.control.TitledPane;
