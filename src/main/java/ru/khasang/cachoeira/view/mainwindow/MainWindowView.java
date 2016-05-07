@@ -7,11 +7,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import ru.khasang.cachoeira.model.*;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.view.IView;
 import ru.khasang.cachoeira.view.mainwindow.diagram.TableAndGanttPane;
 import ru.khasang.cachoeira.view.mainwindow.menubar.AbstractMenuBar;
 import ru.khasang.cachoeira.view.mainwindow.properties.*;
 
-public class MainWindowView {
+public class MainWindowView implements IView{
     private final MainWindowController controller;
     private final IProject project;
     private final AbstractMenuBar menuBar;
@@ -35,6 +36,7 @@ public class MainWindowView {
         this.resourcesPane = resourcesPane;
     }
 
+    @Override
     public void createView() {
         BorderPane borderPane = new BorderPane();
 //        borderPane.getStylesheets().add(getClass().getResource("/css/startwindow.css").toExternalForm());
@@ -49,6 +51,11 @@ public class MainWindowView {
         stage.show();
         stage.setMaximized(controller.getIsMaximized());
         stage.titleProperty().bind(project.nameProperty());
+    }
+
+    @Override
+    public Stage getStage() {
+        return stage;
     }
 
     private Node createGanttPlanLayout() {
@@ -70,9 +77,5 @@ public class MainWindowView {
     private AbstractPropertiesSidePanel createPropertiesSidePanel() {
         propertiesSidePanel.createPanes();
         return propertiesSidePanel;
-    }
-
-    public Stage getStage() {
-        return stage;
     }
 }
