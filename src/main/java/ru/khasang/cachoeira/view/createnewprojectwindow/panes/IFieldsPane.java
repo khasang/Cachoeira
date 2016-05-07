@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.createnewprojectwindow;
+package ru.khasang.cachoeira.view.createnewprojectwindow.panes;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;

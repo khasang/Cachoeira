@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.createnewprojectwindow;
+package ru.khasang.cachoeira.view.createnewprojectwindow.panes;
 
 import ru.khasang.cachoeira.view.MaterialButton;
 

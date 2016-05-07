@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.view.createnewprojectwindow;
+package ru.khasang.cachoeira.view.createnewprojectwindow.panes;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
