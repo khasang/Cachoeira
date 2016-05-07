@@ -46,6 +46,13 @@ public class Project implements IProject {
         this.name.set(name);
     }
 
+    public Project(String name, LocalDate startDate, LocalDate finishDate, String description) {
+        this.name.setValue(name);
+        this.startDate.setValue(startDate);
+        this.finishDate.setValue(finishDate);
+        this.description.setValue(description);
+    }
+
     @Override
     public final String getName() {
         return name.get();
