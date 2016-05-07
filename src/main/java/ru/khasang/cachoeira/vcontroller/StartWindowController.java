@@ -47,7 +47,7 @@ public class StartWindowController {
     }
 
     private void createProjectHandler(ActionEvent event) {
-        CreateNewProjectWindowController newProjectWindowController = new CreateNewProjectWindowController();
+        CreateNewProjectWindowController newProjectWindowController = new CreateNewProjectWindowController(view);
         newProjectWindowController.launch();
     }
 
