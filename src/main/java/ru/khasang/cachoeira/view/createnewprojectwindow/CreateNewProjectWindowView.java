@@ -42,7 +42,7 @@ public class CreateNewProjectWindowView implements IView {
         stage.setScene(new Scene(window));
         stage.setResizable(false);
         stage.setTitle("Creating new project...");
-//        stage.initOwner();
+        stage.initOwner(controller.getParentView().getStage());
         stage.initModality(Modality.WINDOW_MODAL);
         stage.showAndWait();
     }
