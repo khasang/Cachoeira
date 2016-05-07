@@ -44,7 +44,7 @@ public class CreateNewProjectWindowView implements IView {
         stage.setTitle("Creating new project...");
         stage.initOwner(controller.getParentView().getStage());
         stage.initModality(Modality.WINDOW_MODAL);
-        stage.showAndWait();
+        stage.show();
     }
 
     @Override
