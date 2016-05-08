@@ -23,12 +23,11 @@ public abstract class TableAndGanttPane extends VBox {
     protected AbstractTableView tableView;
     protected AbstractGanttPlan ganttPlan;
     protected AbstractButtonsBox buttonBox;
+    protected SplitPane splitPane;
 
     public void createPane() {
-        SplitPane splitPane = new SplitPane(createTableView(), createGanttPLan());
+        splitPane.getItems().addAll(createTableView(), createGanttPLan());
         VBox.setVgrow(splitPane, Priority.ALWAYS);
-        // Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
-        splitPane.getDividers().get(0).positionProperty().bindBidirectional(controller.splitPaneDividerValueProperty());
         HBox hBox = createButtonsBox();
         VBox.setVgrow(hBox, Priority.NEVER);
         this.getChildren().addAll(splitPane, hBox);
