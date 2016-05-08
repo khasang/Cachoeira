@@ -143,10 +143,11 @@ public class CreateNewProjectWindowController {
         RecentProjectsController.getInstance().addRecentProject(file);
         // Закрываем это окошко
         view.getStage().close();
-        if (view.getStage().isShowing()) {
-            view.getStage().close(); //закрываем стартовое окно
-        }
-        MainWindowController mainWindowController = new MainWindowController(project);
+        // TODO: 07.05.2016 doesn't work
+//        if (view.getStage().isShowing()) {
+//            view.getStage().close(); //закрываем стартовое окно
+//        }
+        MainWindowController mainWindowController = new MainWindowController(file, project);
         mainWindowController.launch();
     }
 
