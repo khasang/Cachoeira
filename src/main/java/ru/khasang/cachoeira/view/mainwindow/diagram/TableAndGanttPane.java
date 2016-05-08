@@ -14,8 +14,6 @@ import ru.khasang.cachoeira.view.mainwindow.diagram.buttonbox.AbstractButtonsBox
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.AbstractGanttPlan;
 import ru.khasang.cachoeira.view.mainwindow.diagram.tables.AbstractTableView;
 
-import java.time.LocalDate;
-
 public abstract class TableAndGanttPane extends VBox {
     private static final Logger LOGGER = LoggerFactory.getLogger(TableAndGanttPane.class.getName());
 
