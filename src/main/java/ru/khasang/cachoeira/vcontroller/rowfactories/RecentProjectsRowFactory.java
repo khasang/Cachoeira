@@ -49,7 +49,7 @@ public class RecentProjectsRowFactory implements Callback<TableView<File>, Table
                     if (controller.getView().getStage().isShowing()) {
                         controller.getView().getStage().close(); //закрываем стартовое окно
                     }
-                    MainWindowController mainWindowController = new MainWindowController(project);
+                    MainWindowController mainWindowController = new MainWindowController(recentProject, project);
                     mainWindowController.launch();
                 } else {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "File does not exist");
