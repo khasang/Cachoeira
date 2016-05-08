@@ -14,6 +14,7 @@ import ru.khasang.cachoeira.view.mainwindow.diagram.tables.AbstractTableView;
 
 public abstract class TableAndGanttPane extends VBox {
     private static final double ROW_HEIGHT = 31;
+    private static final double DEFAULT_DIVIDER_POSITION = 0.15;
 
     protected MainWindowController controller;
     protected AbstractTableView tableView;
@@ -22,7 +23,7 @@ public abstract class TableAndGanttPane extends VBox {
 
     public void createPane() {
         SplitPane splitPane = new SplitPane(createTableView(), createGanttPLan());
-        splitPane.setDividerPosition(0, 0.3);
+        splitPane.setDividerPosition(0, DEFAULT_DIVIDER_POSITION);
         VBox.setVgrow(splitPane, Priority.ALWAYS);
         // Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
         splitPane.getDividers().get(0).positionProperty().bindBidirectional(controller.splitPaneDividerValueProperty());
