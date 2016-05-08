@@ -5,9 +5,13 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.view.mainwindow.properties.panes.AbstractPropertiesPane;
 
 public class PropertiesSidePanel extends AbstractPropertiesSidePanel {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesSidePanel.class.getName());
+
     private final AbstractPropertiesPane projectPropertiesPane;
     private final AbstractPropertiesPane taskPropertiesPane;
     private final AbstractPropertiesPane resourcePropertiesPane;
@@ -32,6 +36,7 @@ public class PropertiesSidePanel extends AbstractPropertiesSidePanel {
         this.getTabs().addAll(projectTab, taskTab, resourceTab);
         this.setPrefWidth(310);
         this.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        LOGGER.debug("Created.");
     }
 
     private ScrollPane createScrollPaneToPropertyPane(Node pane) {
