@@ -7,14 +7,19 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
 import ru.khasang.cachoeira.view.mainwindow.diagram.buttonbox.AbstractButtonsBox;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.AbstractGanttPlan;
 import ru.khasang.cachoeira.view.mainwindow.diagram.tables.AbstractTableView;
 
+import java.time.LocalDate;
+
 public abstract class TableAndGanttPane extends VBox {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TableAndGanttPane.class.getName());
+
     private static final double ROW_HEIGHT = 31;
-    private static final double DEFAULT_DIVIDER_POSITION = 0.15;
 
     protected MainWindowController controller;
     protected AbstractTableView tableView;
@@ -23,13 +28,13 @@ public abstract class TableAndGanttPane extends VBox {
 
     public void createPane() {
         SplitPane splitPane = new SplitPane(createTableView(), createGanttPLan());
-        splitPane.setDividerPosition(0, DEFAULT_DIVIDER_POSITION);
         VBox.setVgrow(splitPane, Priority.ALWAYS);
         // Связываем разделитель таблицы и диаграммы на вкладке Задачи с разделителем на вкладке Ресурсы
         splitPane.getDividers().get(0).positionProperty().bindBidirectional(controller.splitPaneDividerValueProperty());
         HBox hBox = createButtonsBox();
         VBox.setVgrow(hBox, Priority.NEVER);
         this.getChildren().addAll(splitPane, hBox);
+        LOGGER.debug("Created.");
     }
 
     private Node createGanttPLan() {
