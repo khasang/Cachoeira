@@ -75,7 +75,7 @@ public class StartWindowController {
             if (view.getStage().isShowing()) {
                 view.getStage().close(); //закрываем стартовое окно
             }
-            MainWindowController mainWindowController = new MainWindowController(project);
+            MainWindowController mainWindowController = new MainWindowController(file, project);
             mainWindowController.launch();
         }
     }
