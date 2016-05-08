@@ -6,8 +6,12 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MainMenuBar extends AbstractMenuBar {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainMenuBar.class.getName());
+
     private MenuItem createProject;
     private MenuItem openProject;
     private MenuItem saveProject;
@@ -25,6 +29,7 @@ public class MainMenuBar extends AbstractMenuBar {
     @Override
     public void createMenu() {
         this.getMenus().addAll(createProjectMenu(), createEditMenu(), createHelpMenu());
+        LOGGER.debug("Created.");
     }
 
     private Menu createProjectMenu() {
