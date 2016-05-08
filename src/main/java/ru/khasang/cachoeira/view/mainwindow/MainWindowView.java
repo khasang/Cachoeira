@@ -5,6 +5,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.model.*;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
 import ru.khasang.cachoeira.view.IView;
@@ -13,6 +15,8 @@ import ru.khasang.cachoeira.view.mainwindow.menubar.AbstractMenuBar;
 import ru.khasang.cachoeira.view.mainwindow.properties.*;
 
 public class MainWindowView implements IView{
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainWindowView.class.getName());
+
     private final MainWindowController controller;
     private final IProject project;
     private final AbstractMenuBar menuBar;
@@ -51,6 +55,8 @@ public class MainWindowView implements IView{
         stage.show();
         stage.setMaximized(controller.getIsMaximized());
         stage.titleProperty().bind(project.nameProperty());
+
+        LOGGER.debug("Created.");
     }
 
     @Override
