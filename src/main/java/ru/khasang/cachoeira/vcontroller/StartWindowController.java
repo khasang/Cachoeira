@@ -72,9 +72,7 @@ public class StartWindowController {
             }
 
             RecentProjectsController.getInstance().addRecentProject(file);
-            if (view.getStage().isShowing()) {
-                view.getStage().close(); //закрываем стартовое окно
-            }
+            view.getStage().close();
             MainWindowController mainWindowController = new MainWindowController(file, project);
             mainWindowController.launch();
         }
