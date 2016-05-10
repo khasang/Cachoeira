@@ -6,7 +6,6 @@ import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
-import javafx.util.Callback;
 import ru.khasang.cachoeira.data.DBSchemeManager;
 import ru.khasang.cachoeira.data.DataStoreInterface;
 import ru.khasang.cachoeira.model.IProject;
@@ -18,7 +17,6 @@ import ru.khasang.cachoeira.view.createnewprojectwindow.panes.ButtonsBox;
 import ru.khasang.cachoeira.view.createnewprojectwindow.panes.FieldsPane;
 import ru.khasang.cachoeira.view.createnewprojectwindow.panes.IButtonsBox;
 import ru.khasang.cachoeira.view.createnewprojectwindow.panes.IFieldsPane;
-import ru.khasang.cachoeira.viewcontroller.UIControl;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -75,20 +73,19 @@ public class CreateNewProjectWindowController {
             }
         }));
 
-        fieldsPane.getFinishDatePicker().setDayCellFactory(new Callback<DatePicker, DateCell>() {
+        fieldsPane.getFinishDatePicker().setDayCellFactory(this::makeFinishDatePickerCellsDisabledBeforeStartDate);
+    }
+
+    private DateCell makeFinishDatePickerCellsDisabledBeforeStartDate(DatePicker datePicker) {
+        return new DateCell() {
             @Override
-            public DateCell call(DatePicker param) {
-                return new DateCell() {
-                    @Override
-                    public void updateItem(LocalDate item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item.isBefore(fieldsPane.getStartDatePicker().getValue().plusDays(1))) {
-                            setDisable(true);
-                        }
-                    }
-                };
+            public void updateItem(LocalDate finishDate, boolean empty) {
+                super.updateItem(finishDate, empty);
+                if (finishDate.isBefore(fieldsPane.getStartDatePicker().getValue().plusDays(1))) {
+                    setDisable(true);
+                }
             }
-        });
+        };
     }
 
     private void attachButtonsEvents() {
@@ -98,7 +95,6 @@ public class CreateNewProjectWindowController {
     }
 
     private void pathChooserHandler(ActionEvent event) {
-        System.out.println("fdgdf");
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setInitialDirectory(DEFAULT_PATH);
         File file = directoryChooser.showDialog(view.getStage());
@@ -112,8 +108,8 @@ public class CreateNewProjectWindowController {
         if (!file.exists()) {
             createProjectAndLaunchMainWindow(file);
         } else {
-            ButtonType yesButton = new ButtonType(UIControl.bundle.getString("yes"));
-            ButtonType noButton = new ButtonType(UIControl.bundle.getString("no"), ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType yesButton = new ButtonType("yes");
+            ButtonType noButton = new ButtonType("no", ButtonBar.ButtonData.CANCEL_CLOSE);
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Заменить его?", yesButton, noButton);
             alert.setTitle("Cachoeira");
             alert.setHeaderText("Проект с таким именем уже существует!");
