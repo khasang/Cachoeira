@@ -54,8 +54,8 @@ public class Start extends Application {
                 }
             }
         } else {
-            StartWindowController controller = new StartWindowController();
-            controller.launch();
+            StartWindowController startWindowController = new StartWindowController();
+            startWindowController.launch();
         }
     }
 
