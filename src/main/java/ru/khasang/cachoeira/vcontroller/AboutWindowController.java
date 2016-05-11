@@ -1,10 +1,11 @@
 package ru.khasang.cachoeira.vcontroller;
 
+import javafx.scene.input.MouseEvent;
 import ru.khasang.cachoeira.view.AboutWindowView;
 import ru.khasang.cachoeira.view.IView;
 
 public class AboutWindowController {
-    IView view;
+    private IView view;
 
     public AboutWindowController() {
         view = new AboutWindowView();
@@ -12,5 +13,10 @@ public class AboutWindowController {
 
     public void launch() {
         view.createView();
+        view.getStage().getScene().setOnMouseClicked(this::closeWindow);
+    }
+
+    private void closeWindow(MouseEvent event) {
+        view.getStage().close();
     }
 }
