@@ -29,8 +29,7 @@ public class TaskTooltip extends Tooltip {
                 .concat(bundle.getString("finish_date") + ": ").concat(task.finishDateProperty()).concat("\n")
                 .concat(bundle.getString("duration") + ": ").concat(ChronoUnit.DAYS.between(task.startDateProperty().getValue(), task.finishDateProperty().getValue())).concat("\n")
                 .concat(bundle.getString("done_percent") + ": ").concat(task.donePercentProperty()).concat("\n")
-                .concat(bundle.getString("cost") + ": ").concat(task.costProperty()).concat("\n")
-                .concat(bundle.getString("priority_type") + ": ").concat(task.priorityTypeProperty())
+                .concat(bundle.getString("cost") + ": ").concat(task.costProperty())
         );
     }
 }
