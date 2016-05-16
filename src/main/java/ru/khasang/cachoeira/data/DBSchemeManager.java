@@ -1,7 +1,6 @@
 package ru.khasang.cachoeira.data;
 
 import ru.khasang.cachoeira.model.*;
-import ru.khasang.cachoeira.view.UIControl;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,10 +14,8 @@ import java.util.List;
 
 public class DBSchemeManager implements DataStoreInterface {
     private DBHelper dbHelper = DBHelper.getInstance();
-    private UIControl uiControl;
 
-    public DBSchemeManager(UIControl uiControl) {
-        this.uiControl = uiControl;
+    public DBSchemeManager(){
     }
 
     @Override
@@ -30,7 +27,7 @@ public class DBSchemeManager implements DataStoreInterface {
             statement = connection.createStatement();
             String sql = new String(Files.readAllBytes(Paths.get(getClass().getResource("/sql/createProject.sql").toURI())), "UTF-8");
             statement.executeUpdate(sql);
-            uiControl.setFile(new File(path));
+//            uiControl.setFile(new File(path));
         } catch (IOException | URISyntaxException | SQLException e) {
             e.printStackTrace();
         } finally {
@@ -95,7 +92,6 @@ public class DBSchemeManager implements DataStoreInterface {
                 preparedStatement.setString(3, task.getFinishDate().toString());
                 preparedStatement.setInt(4, task.getDuration());
                 preparedStatement.setDouble(5, task.getDonePercent());
-                preparedStatement.setString(6, task.getPriorityType().toString());
                 preparedStatement.setDouble(7, task.getCost());
                 preparedStatement.setString(8, task.getDescription());
                 preparedStatement.executeUpdate();
@@ -140,7 +136,7 @@ public class DBSchemeManager implements DataStoreInterface {
         PreparedStatement preparedStatement = null;
         try {
             connection = dbHelper.getConnection(file.getPath());
-            for (ITask task : uiControl.getController().getProject().getTaskList()) {
+            for (ITask task : project.getTaskList()) {
                 for (IDependentTask parentTask : task.getParentTasks()) {
                     preparedStatement = connection.prepareStatement("" +
                             "INSERT INTO Parent_Tasks(Task_Id, Parent_Task_Id, Dependency_Type) " +
@@ -166,7 +162,7 @@ public class DBSchemeManager implements DataStoreInterface {
         PreparedStatement preparedStatement = null;
         try {
             connection = dbHelper.getConnection(file.getPath());
-            for (ITask task : uiControl.getController().getProject().getTaskList()) {
+            for (ITask task : project.getTaskList()) {
                 for (IDependentTask childTask : task.getChildTasks()) {
                     preparedStatement = connection.prepareStatement("" +
                             "INSERT INTO Child_Tasks(Task_Id, Child_Task_Id) " +
@@ -191,7 +187,7 @@ public class DBSchemeManager implements DataStoreInterface {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            for (ITask task : uiControl.getController().getProject().getTaskList()) {
+            for (ITask task : project.getTaskList()) {
                 for (IResource resource : task.getResourceList()) {
                     connection = dbHelper.getConnection(file.getPath());
                     preparedStatement = connection.prepareStatement("" +
@@ -232,7 +228,6 @@ public class DBSchemeManager implements DataStoreInterface {
                 task.setDonePercent(resultSet.getInt("Done_Percent"));
                 task.setCost(resultSet.getDouble("Cost"));
                 task.setDescription(resultSet.getString("Description"));
-                task.setPriorityType(PriorityType.valueOf(resultSet.getString("Priority_Type")));
                 taskList.add(task);
             }
         } catch (SQLException e) {
@@ -246,7 +241,7 @@ public class DBSchemeManager implements DataStoreInterface {
     }
 
     @Override
-    public List<IResource> getResourceListByTaskFromFile(File file, ITask task) {
+    public List<IResource> getResourceListByTaskFromFile(File file, IProject project, ITask task) {
         List<IResource> resourceList = new ArrayList<>();
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -260,7 +255,7 @@ public class DBSchemeManager implements DataStoreInterface {
             preparedStatement.setInt(1, task.getId() + 1);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                for (IResource resource : uiControl.getController().getProject().getResourceList()) {
+                for (IResource resource : project.getResourceList()) {
                     if (resource.getId() == resultSet.getInt("Resource_Id")) {
                         resourceList.add(resource);
                     }
@@ -277,7 +272,7 @@ public class DBSchemeManager implements DataStoreInterface {
     }
 
     @Override
-    public List<IDependentTask> getParentTaskListByTaskFromFile(File file, ITask task) {
+    public List<IDependentTask> getParentTaskListByTaskFromFile(File file, IProject project, ITask task) {
         List<IDependentTask> parentTaskList = new ArrayList<>();
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -292,7 +287,7 @@ public class DBSchemeManager implements DataStoreInterface {
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 IDependentTask parentTask = new DependentTask();
-                for (ITask t : uiControl.getController().getProject().getTaskList()) {
+                for (ITask t : project.getTaskList()) {
                     if ((t.getId() + 1) == resultSet.getInt("Parent_Task_Id")) {
                         parentTask.setTask(t);
                     }
@@ -311,7 +306,7 @@ public class DBSchemeManager implements DataStoreInterface {
     }
 
     @Override
-    public List<IDependentTask> getChildTaskListByTaskFromFile(File file, ITask task) {
+    public List<IDependentTask> getChildTaskListByTaskFromFile(File file, IProject project, ITask task) {
         List<IDependentTask> childTaskList = new ArrayList<>();
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -326,7 +321,7 @@ public class DBSchemeManager implements DataStoreInterface {
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 IDependentTask childTask = new DependentTask();
-                for (ITask t : uiControl.getController().getProject().getTaskList()) {
+                for (ITask t : project.getTaskList()) {
                     if ((t.getId() + 1) == resultSet.getInt("Child_Task_Id")) {
                         childTask.setTask(t);
                     }
