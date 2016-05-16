@@ -24,7 +24,6 @@ public class Project implements IProject {
             task.startDateProperty(),
             task.finishDateProperty(),
             task.donePercentProperty(),
-            task.priorityTypeProperty(),
             task.costProperty(),
             task.getParentTasks(),
             task.getChildTasks(),
