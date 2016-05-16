@@ -83,10 +83,4 @@ public interface ITask {
     ObservableList<IResource> getResourceList();
 
     void setResourceList(ObservableList<IResource> resources);
-
-    PriorityType getPriorityType();
-
-    void setPriorityType(PriorityType type);
-
-    ObjectProperty<PriorityType> priorityTypeProperty();
 }

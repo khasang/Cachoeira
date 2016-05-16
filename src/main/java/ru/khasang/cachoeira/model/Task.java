@@ -8,12 +8,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.WeakListChangeListener;
-import ru.khasang.cachoeira.view.UIControl;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
-import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -32,8 +30,6 @@ public class Task implements ITask {
     private IntegerProperty duration = new SimpleIntegerProperty(this, "duration");
     // Процент выполнения задачи
     private IntegerProperty donePercent = new SimpleIntegerProperty(this, "donePercent");
-    // Приоритет задачи
-    private ObjectProperty<PriorityType> priorityType = new SimpleObjectProperty<>(this, "priorityType");
     // Стоимость задачи
     private DoubleProperty cost = new SimpleDoubleProperty(this, "cost");
     // Описание задачи (комментарий)
@@ -56,8 +52,6 @@ public class Task implements ITask {
             resource.descriptionProperty()
     });
 
-    private ResourceBundle bundle = UIControl.bundle;
-
     // Запоминаем количество задач
     private static AtomicInteger taskSequence = new AtomicInteger(-1); // -1, потому что первым идет рутовый элемент в таблице задач (rootTask)
 
@@ -72,11 +66,10 @@ public class Task implements ITask {
      * Конструктор с дефолтовыми значениями.
      */
     public Task() {
-        this.name.setValue(bundle.getString("task") + " " + id.getValue());
+        this.name.setValue("Task" + " " + id.getValue());
         this.startDate.setValue(LocalDate.now());
         this.finishDate.setValue(startDate.getValue().plusDays(1));
         this.duration.setValue(1);
-        this.priorityType.setValue(PriorityType.Normal);
 
         // В случае изменения дат пересчитываем duration
         startDateChangeListener = (observable, oldValue, newValue) -> {
@@ -267,21 +260,6 @@ public class Task implements ITask {
     @Override
     public final StringProperty descriptionProperty() {
         return description;
-    }
-
-    @Override
-    public final PriorityType getPriorityType() {
-        return priorityType.get();
-    }
-
-    @Override
-    public final void setPriorityType(PriorityType type) {
-        this.priorityType.set(type);
-    }
-
-    @Override
-    public final ObjectProperty<PriorityType> priorityTypeProperty() {
-        return priorityType;
     }
 
     @Override
