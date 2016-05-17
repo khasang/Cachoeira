@@ -62,9 +62,11 @@ public class ResourceAssignedTasksModuleController implements ModuleController {
                     this.setGraphic(checkBox);
                     checkBox.setOnAction(event -> {
                         if (checkBox.isSelected()) {
-                            CommandControl.getInstance().execute(new AddResourceToTaskCommand(currentRowTask, selectedResource));
+                            CommandControl.getInstance().execute(
+                                    new AddResourceToTaskCommand(currentRowTask, selectedResource));
                         } else {
-                            CommandControl.getInstance().execute(new RemoveResourceFromTaskCommand(currentRowTask, selectedResource));
+                            CommandControl.getInstance().execute(
+                                    new RemoveResourceFromTaskCommand(currentRowTask, selectedResource));
                         }
                     });
 
