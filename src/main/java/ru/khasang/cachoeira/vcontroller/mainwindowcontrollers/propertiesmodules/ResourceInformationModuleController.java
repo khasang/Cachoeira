@@ -75,32 +75,32 @@ public class ResourceInformationModuleController implements ModuleController {
         if (event.getCode() == KeyCode.ENTER) {
             if (!module.getNameField().getText().trim().isEmpty()) {
                 CommandControl.getInstance().execute(new RenameResourceCommand(
-                        controller.getResourceTableView().getSelectionModel().getSelectedItem().getValue(),
+                        controller.getSelectedResource(),
                         module.getNameField().getText()));
                 module.getNameField().getParent().requestFocus();
             }
         }
         if (event.getCode() == KeyCode.ESCAPE) {
-            module.getNameField().setText(controller.getResourceTableView().getSelectionModel().getSelectedItem().getValue().getName());
+            module.getNameField().setText(controller.getSelectedResource().getName());
             module.getNameField().getParent().requestFocus();
         }
     }
 
     private void resourceTypeComboBoxObserver(ActionEvent event) {
         CommandControl.getInstance().execute(new SetResourceTypeCommand(
-                controller.getResourceTableView().getSelectionModel().getSelectedItem().getValue(),
+                controller.getSelectedResource(),
                 module.getResourceTypeComboBox().getValue()));
     }
 
     private void emailFieldObserver(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             CommandControl.getInstance().execute(new SetResourceEmailCommand(
-                    controller.getResourceTableView().getSelectionModel().getSelectedItem().getValue(),
+                    controller.getSelectedResource(),
                     module.getEmailField().getText()));
             module.getEmailField().getParent().requestFocus();
         }
         if (event.getCode() == KeyCode.ESCAPE) {
-            module.getEmailField().setText(controller.getResourceTableView().getSelectionModel().getSelectedItem().getValue().getEmail());
+            module.getEmailField().setText(controller.getSelectedResource().getEmail());
             module.getEmailField().getParent().requestFocus();
         }
     }
@@ -108,31 +108,31 @@ public class ResourceInformationModuleController implements ModuleController {
     private void descriptionTextAreaObserver(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             CommandControl.getInstance().execute(new SetResourceDescriptionCommand(
-                    controller.getResourceTableView().getSelectionModel().getSelectedItem().getValue(),
+                    controller.getSelectedResource(),
                     module.getDescriptionTextArea().getText()));
             module.getDescriptionTextArea().getParent().requestFocus();
         }
         if (event.getCode() == KeyCode.ESCAPE) {
-            module.getDescriptionTextArea().setText(controller.getResourceTableView().getSelectionModel().getSelectedItem().getValue().getDescription());
+            module.getDescriptionTextArea().setText(controller.getSelectedResource().getDescription());
             module.getDescriptionTextArea().getParent().requestFocus();
         }
     }
 
     private void nameFieldUnfocused(Observable observable) {
         if (!module.getNameField().isFocused()) {
-            module.getNameField().setText(controller.getResourceTableView().getSelectionModel().getSelectedItem().getValue().getName());
+            module.getNameField().setText(controller.getSelectedResource().getName());
         }
     }
 
     private void emailFieldUnfocused(Observable observable) {
         if (!module.getEmailField().isFocused()) {
-            module.getEmailField().setText(controller.getResourceTableView().getSelectionModel().getSelectedItem().getValue().getEmail());
+            module.getEmailField().setText(controller.getSelectedResource().getEmail());
         }
     }
 
     private void descriptionTextAreaUnfocused(Observable observable) {
         if (!module.getDescriptionTextArea().isFocused()) {
-            module.getDescriptionTextArea().setText(controller.getResourceTableView().getSelectionModel().getSelectedItem().getValue().getDescription());
+            module.getDescriptionTextArea().setText(controller.getSelectedResource().getDescription());
         }
     }
 }

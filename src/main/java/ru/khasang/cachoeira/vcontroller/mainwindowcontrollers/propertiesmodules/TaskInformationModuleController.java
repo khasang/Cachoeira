@@ -9,7 +9,6 @@ import javafx.beans.value.WeakChangeListener;
 import javafx.event.ActionEvent;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -72,34 +71,34 @@ public class TaskInformationModuleController implements ModuleController {
         if (event.getCode() == KeyCode.ENTER) {
             if (!module.getNameField().getText().trim().isEmpty()) {
                 CommandControl.getInstance().execute(new RenameTaskCommand(
-                        controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue(),
+                        controller.getSelectedTask(),
                         module.getNameField().getText()));
                 module.getNameField().getParent().requestFocus();
             }
         }
         if (event.getCode() == KeyCode.ESCAPE) {
-            module.getNameField().setText(controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue().getName());
+            module.getNameField().setText(controller.getSelectedTask().getName());
             module.getNameField().getParent().requestFocus();
         }
     }
 
     private void startDatePickerHandler(ActionEvent event) {
         CommandControl.getInstance().execute(new SetTaskStartDateCommand(
-                controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue(),
+                controller.getSelectedTask(),
                 module.getStartDatePicker().getValue()
         ));
     }
 
     private void finishDatePickerHandler(ActionEvent event) {
         CommandControl.getInstance().execute(new SetTaskFinishDateCommand(
-                controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue(),
+                controller.getSelectedTask(),
                 module.getFinishDatePicker().getValue()
         ));
     }
 
     private void donePercentSliderHandler(MouseEvent event) {
         CommandControl.getInstance().execute(new SetTaskDonePercentCommand(
-                controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue(),
+                controller.getSelectedTask(),
                 (int) module.getDonePercentSlider().getValue()
         ));
     }
@@ -107,12 +106,12 @@ public class TaskInformationModuleController implements ModuleController {
     private void costFieldHandler(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             CommandControl.getInstance().execute(new SetTaskCostCommand(
-                    controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue(),
+                    controller.getSelectedTask(),
                     Double.parseDouble(module.getCostField().getText())));
             module.getDescriptionTextArea().getParent().requestFocus();
         }
         if (event.getCode() == KeyCode.ESCAPE) {
-            module.getCostField().setText(String.valueOf(controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue().getCost()));
+            module.getCostField().setText(String.valueOf(controller.getSelectedTask().getCost()));
             module.getCostField().getParent().requestFocus();
         }
     }
@@ -120,12 +119,12 @@ public class TaskInformationModuleController implements ModuleController {
     private void descriptionTextAreaHandler(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             CommandControl.getInstance().execute(new SetTaskDescriptionCommand(
-                    controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue(),
+                    controller.getSelectedTask(),
                     module.getDescriptionTextArea().getText()));
             module.getDescriptionTextArea().getParent().requestFocus();
         }
         if (event.getCode() == KeyCode.ESCAPE) {
-            module.getDescriptionTextArea().setText(controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue().getDescription());
+            module.getDescriptionTextArea().setText(controller.getSelectedTask().getDescription());
             module.getDescriptionTextArea().getParent().requestFocus();
         }
     }
@@ -143,19 +142,19 @@ public class TaskInformationModuleController implements ModuleController {
 
     private void nameFieldUnfocused(Observable observable) {
         if (module.getNameField().isFocused()) {
-            module.getNameField().setText(controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue().getName());
+            module.getNameField().setText(controller.getSelectedTask().getName());
         }
     }
 
     private void costFieldUnfocused(Observable observable) {
         if (module.getCostField().isFocused()) {
-            module.getCostField().setText(String.valueOf(controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue().getCost()));
+            module.getCostField().setText(String.valueOf(controller.getSelectedTask().getCost()));
         }
     }
 
     private void descriptionTextAreaUnfocused(Observable observable) {
         if (module.getDescriptionTextArea().isFocused()) {
-            module.getDescriptionTextArea().setText(controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue().getDescription());
+            module.getDescriptionTextArea().setText(controller.getSelectedTask().getDescription());
         }
     }
 
