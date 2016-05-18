@@ -13,7 +13,6 @@ import ru.khasang.cachoeira.model.Project;
 import ru.khasang.cachoeira.properties.RecentProjectsController;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
 import ru.khasang.cachoeira.vcontroller.StartWindowController;
-import ru.khasang.cachoeira.viewcontroller.UIControl;
 
 import java.io.File;
 import java.util.List;
@@ -22,8 +21,8 @@ import java.util.List;
 /**
  * Этот класс является точкой входа
  */
-public class Start extends Application {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Start.class.getName());
+public class Starter extends Application {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class.getName());
 
     @Override
     public void start(Stage primaryStage) throws Exception {
