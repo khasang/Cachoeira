@@ -18,41 +18,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Класс описывающий задачу.
  */
 public class Task implements ITask {
-    // Айди (изменить нельзя)
     private final ReadOnlyIntegerWrapper id = new ReadOnlyIntegerWrapper(this, "id", taskSequence.incrementAndGet());
-    // Имя задачи
     private StringProperty name = new SimpleStringProperty(this, "name");
-    // Начальная дата
     private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
-    // Конечная дата
     private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
-    // Продолжительность (начальная дата минус конечная)
     private IntegerProperty duration = new SimpleIntegerProperty(this, "duration");
-    // Процент выполнения задачи
     private IntegerProperty donePercent = new SimpleIntegerProperty(this, "donePercent");
-    // Стоимость задачи
     private DoubleProperty cost = new SimpleDoubleProperty(this, "cost");
-    // Описание задачи (комментарий)
     private StringProperty description = new SimpleStringProperty(this, "description");
-    private ObservableList<IDependentTask> parentTasks = FXCollections.observableArrayList(dependentTask -> new Observable[]{
-            dependentTask.getTask().finishDateProperty(),
-            dependentTask.dependenceTypeProperty()
-    });
-    private ObservableList<IDependentTask> childTasks = FXCollections.observableArrayList(dependentTask -> new Observable[]{
-            dependentTask.taskProperty(),
-            dependentTask.dependenceTypeProperty()
-    });
-    // Группа задач в которой находится эта задача
+    private ObservableList<IDependentTask> parentTasks = FXCollections.observableArrayList(this::setObservableParentTaskFields);
+    private ObservableList<IDependentTask> childTasks = FXCollections.observableArrayList(this::setObservableChildTaskFields);
     private ObjectProperty<ITaskGroup> taskGroup = new SimpleObjectProperty<>(this, "taskGroup");
-    // Список ресурсов к которым привязана эта задача
-    private ObservableList<IResource> resources = FXCollections.observableArrayList(resource -> new Observable[]{
-            resource.nameProperty(),
-            resource.resourceTypeProperty(),
-            resource.emailProperty(),
-            resource.descriptionProperty()
-    });
+    private ObservableList<IResource> resources = FXCollections.observableArrayList(this::setObservableResourceFields);
 
-    // Запоминаем количество задач
     private static AtomicInteger taskSequence = new AtomicInteger(-1); // -1, потому что первым идет рутовый элемент в таблице задач (rootTask)
 
     @SuppressWarnings("FieldCanBeLocal")
@@ -349,5 +327,28 @@ public class Task implements ITask {
     @Override
     public void setDuration(int duration) {
         this.duration.set(duration);
+    }
+
+    private Observable[] setObservableParentTaskFields(IDependentTask dependentTask) {
+        return new Observable[]{
+                dependentTask.getTask().finishDateProperty(),
+                dependentTask.dependenceTypeProperty()
+        };
+    }
+
+    private Observable[] setObservableChildTaskFields(IDependentTask dependentTask) {
+        return new Observable[]{
+                dependentTask.taskProperty(),
+                dependentTask.dependenceTypeProperty()
+        };
+    }
+
+    private Observable[] setObservableResourceFields(IResource resource) {
+        return new Observable[]{
+                resource.nameProperty(),
+                resource.resourceTypeProperty(),
+                resource.emailProperty(),
+                resource.descriptionProperty()
+        };
     }
 }
