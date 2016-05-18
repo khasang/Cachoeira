@@ -19,24 +19,8 @@ public class Project implements IProject {
     private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
     private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
     private StringProperty description = new SimpleStringProperty(this, "description");
-    private ObservableList<ITask> tasks = FXCollections.observableArrayList(task -> new Observable[]{
-            task.nameProperty(),
-            task.startDateProperty(),
-            task.finishDateProperty(),
-            task.donePercentProperty(),
-            task.costProperty(),
-            task.getParentTasks(),
-            task.getChildTasks(),
-            task.groupProperty(),
-            task.getResourceList(),
-            task.descriptionProperty()
-    });
-    private ObservableList<IResource> resources = FXCollections.observableArrayList(resource -> new Observable[]{
-            resource.nameProperty(),
-            resource.resourceTypeProperty(),
-            resource.emailProperty(),
-            resource.descriptionProperty()
-    });
+    private ObservableList<ITask> tasks = FXCollections.observableArrayList(this::setObservableTaskFields);
+    private ObservableList<IResource> resources = FXCollections.observableArrayList(this::setObservableResourceFields);
 
     public Project() {
     }
@@ -140,5 +124,29 @@ public class Project implements IProject {
     @Override
     public final StringProperty descriptionProperty() {
         return description;
+    }
+
+    private Observable[] setObservableTaskFields(ITask task) {
+        return new Observable[] {
+                task.nameProperty(),
+                task.startDateProperty(),
+                task.finishDateProperty(),
+                task.donePercentProperty(),
+                task.costProperty(),
+                task.getParentTasks(),
+                task.getChildTasks(),
+                task.groupProperty(),
+                task.getResourceList(),
+                task.descriptionProperty()
+        };
+    }
+
+    private Observable[] setObservableResourceFields(IResource resource) {
+        return new Observable[] {
+                resource.nameProperty(),
+                resource.resourceTypeProperty(),
+                resource.emailProperty(),
+                resource.descriptionProperty()
+        };
     }
 }
