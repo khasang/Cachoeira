@@ -2,7 +2,6 @@ package ru.khasang.cachoeira.vcontroller.mainwindowcontrollers.propertiesmodules
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.beans.value.WeakChangeListener;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import ru.khasang.cachoeira.model.ITask;
