@@ -43,6 +43,8 @@ public class ResourceInformationModuleController implements ModuleController {
 
     @Override
     public void initModule() {
+        module.disableProperty().bind(controller.selectedResourceProperty().isNull());
+
         module.getResourceTypeComboBox().setItems(FXCollections.observableArrayList(ResourceType.values()));
 
         resourceChangeListener = this::selectedResourceObserver;

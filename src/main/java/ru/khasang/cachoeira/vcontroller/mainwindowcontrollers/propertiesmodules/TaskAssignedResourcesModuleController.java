@@ -25,6 +25,8 @@ public class TaskAssignedResourcesModuleController implements ModuleController {
 
     @Override
     public void initModule() {
+        module.disableProperty().bind(controller.selectedTaskProperty().isNull());
+
         module.setItems(controller.getProject().getResourceList());
         module.getResourceNameColumn().setCellValueFactory(cell -> cell.getValue().nameProperty());
 

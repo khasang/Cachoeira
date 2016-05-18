@@ -41,6 +41,8 @@ public class TaskInformationModuleController implements ModuleController {
 
     @Override
     public void initModule() {
+        // set disable if selected task is null
+        module.disableProperty().bind(controller.selectedTaskProperty().isNull());
         // init listeners
         taskChangeListener = this::selectedTaskObserver;
         nameFieldInvalidationListener = this::nameFieldUnfocused;

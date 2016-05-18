@@ -24,6 +24,8 @@ public class TaskDependenciesModuleController implements ModuleController {
 
     @Override
     public void initModule() {
+        module.disableProperty().bind(controller.selectedTaskProperty().isNull());
+
         taskChangeListener = this::selectedTaskObserver;
         // without WeakChangeListener wrapper it can cause a memory leak, but with wrapper it doesn't work properly
         // .addListener(new WeakChangeListener<>(taskChangeListener))
