@@ -14,7 +14,6 @@ import java.time.LocalDate;
  * Класс описывающий проект.
  */
 public class Project implements IProject {
-
     private StringProperty name = new SimpleStringProperty(this, "name");
     private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
     private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
