@@ -23,10 +23,12 @@ public class ResourceCheckBoxCell extends AbstractCheckBoxCell<IResource, Boolea
 
     @Override
     protected void setSelectedCheckBox(CheckBox checkBox) {
-        selectedTask.getResourceList()
-                .stream()
-                .filter(resource -> resource.equals(currentRow) && !checkBox.isSelected())
-                .forEach(resource -> checkBox.setSelected(true));
+        if (currentRow != null) {
+            selectedTask.getResourceList()
+                    .stream()
+                    .filter(resource -> resource.equals(currentRow) && !checkBox.isSelected())
+                    .forEach(resource -> checkBox.setSelected(true));
+        }
     }
 
     private void handleSelection(CheckBox checkBox) {

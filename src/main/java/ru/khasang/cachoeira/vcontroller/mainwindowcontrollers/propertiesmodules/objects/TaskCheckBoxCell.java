@@ -23,10 +23,12 @@ public class TaskCheckBoxCell extends AbstractCheckBoxCell<ITask, Boolean> {
 
     @Override
     protected void setSelectedCheckBox(CheckBox checkBox) {
-        currentRow.getResourceList()
-                .stream()
-                .filter(resource -> selectedResource.equals(resource) && !checkBox.isSelected())
-                .forEach(resource -> checkBox.setSelected(true));
+        if (currentRow != null) {
+            currentRow.getResourceList()
+                    .stream()
+                    .filter(resource -> selectedResource.equals(resource) && !checkBox.isSelected())
+                    .forEach(resource -> checkBox.setSelected(true));
+        }
     }
 
     private void handleSelection(CheckBox checkBox) {
