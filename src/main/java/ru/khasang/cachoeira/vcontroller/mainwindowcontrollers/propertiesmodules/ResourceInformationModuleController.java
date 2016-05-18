@@ -65,10 +65,12 @@ public class ResourceInformationModuleController implements ModuleController {
     private void selectedResourceObserver(ObservableValue<? extends IResource> observableValue,
                                           IResource oldResource,
                                           IResource newResource) {
-        module.getNameField().setText(newResource.getName());
-        module.getResourceTypeComboBox().setValue(newResource.getType());
-        module.getEmailField().setText(newResource.getEmail());
-        module.getDescriptionTextArea().setText(newResource.getDescription());
+        if (newResource != null) {
+            module.getNameField().setText(newResource.getName());
+            module.getResourceTypeComboBox().setValue(newResource.getType());
+            module.getEmailField().setText(newResource.getEmail());
+            module.getDescriptionTextArea().setText(newResource.getDescription());
+        }
     }
 
     private void nameFieldObserver(KeyEvent event) {

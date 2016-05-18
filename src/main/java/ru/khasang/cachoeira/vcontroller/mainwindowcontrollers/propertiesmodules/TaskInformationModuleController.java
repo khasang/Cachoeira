@@ -132,12 +132,14 @@ public class TaskInformationModuleController implements ModuleController {
     private void selectedTaskObserver(ObservableValue<? extends ITask> observableValue,
                                       ITask oldTask,
                                       ITask newTask) {
-        module.getNameField().setText(newTask.getName());
-        module.getStartDatePicker().setValue(newTask.getStartDate());
-        module.getFinishDatePicker().setValue(newTask.getFinishDate());
-        module.getDonePercentSlider().setValue(newTask.getDonePercent());
-        module.getCostField().setText(String.valueOf(newTask.getCost()));
-        module.getDescriptionTextArea().setText(newTask.getDescription());
+        if (newTask != null) {
+            module.getNameField().setText(newTask.getName());
+            module.getStartDatePicker().setValue(newTask.getStartDate());
+            module.getFinishDatePicker().setValue(newTask.getFinishDate());
+            module.getDonePercentSlider().setValue(newTask.getDonePercent());
+            module.getCostField().setText(String.valueOf(newTask.getCost()));
+            module.getDescriptionTextArea().setText(newTask.getDescription());
+        }
     }
 
     private void nameFieldUnfocused(Observable observable) {
