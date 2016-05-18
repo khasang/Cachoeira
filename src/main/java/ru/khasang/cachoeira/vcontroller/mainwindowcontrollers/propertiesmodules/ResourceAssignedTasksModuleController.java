@@ -3,7 +3,6 @@ package ru.khasang.cachoeira.vcontroller.mainwindowcontrollers.propertiesmodules
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.scene.control.TreeItem;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
@@ -16,7 +15,7 @@ public class ResourceAssignedTasksModuleController implements ModuleController {
     private final MainWindowController controller;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private ChangeListener<TreeItem<IResource>> resourceChangeListener;
+    private ChangeListener<IResource> resourceChangeListener;
     @SuppressWarnings("FieldCanBeLocal")
     private ListChangeListener<ITask> taskListChangeListener;
 
@@ -33,14 +32,14 @@ public class ResourceAssignedTasksModuleController implements ModuleController {
         resourceChangeListener = this::refreshCheckBoxColumn;
         taskListChangeListener = change -> refreshCheckBoxColumn(controller.getSelectedResource());
 
-        controller.getResourceTableView().getSelectionModel().selectedItemProperty().addListener(resourceChangeListener);
+        controller.selectedResourceProperty().addListener(resourceChangeListener);
         controller.getProject().getTaskList().addListener(taskListChangeListener);
     }
 
-    private void refreshCheckBoxColumn(ObservableValue<? extends TreeItem<IResource>> observableValue,
-                                       TreeItem<IResource> oldResourceItem,
-                                       TreeItem<IResource> newResourceItem) {
-        refreshCheckBoxColumn(newResourceItem.getValue());
+    private void refreshCheckBoxColumn(ObservableValue<? extends IResource> observableValue,
+                                       IResource oldResourceItem,
+                                       IResource newResourceItem) {
+        refreshCheckBoxColumn(newResourceItem);
     }
 
     private void refreshCheckBoxColumn(IResource selectedResource) {

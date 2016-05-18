@@ -3,7 +3,6 @@ package ru.khasang.cachoeira.vcontroller.mainwindowcontrollers.propertiesmodules
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.scene.control.TreeItem;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
 import ru.khasang.cachoeira.vcontroller.mainwindowcontrollers.propertiesmodules.objects.ResourceCheckBoxCell;
@@ -15,7 +14,7 @@ public class TaskAssignedResourcesModuleController implements ModuleController {
     private final MainWindowController controller;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private ChangeListener<TreeItem<ITask>> taskChangeListener;
+    private ChangeListener<ITask> taskChangeListener;
     @SuppressWarnings("FieldCanBeLocal")
     private ListChangeListener<ITask> taskListChangeListener;
 
@@ -32,14 +31,14 @@ public class TaskAssignedResourcesModuleController implements ModuleController {
         taskChangeListener = this::refreshCheckBoxColumn;
         taskListChangeListener = change -> refreshCheckBoxColumn(controller.getSelectedTask());
 
-        controller.getTaskTableView().getSelectionModel().selectedItemProperty().addListener(taskChangeListener);
+        controller.selectedTaskProperty().addListener(taskChangeListener);
         controller.getProject().getTaskList().addListener(taskListChangeListener);
     }
 
-    private void refreshCheckBoxColumn(ObservableValue<? extends TreeItem<ITask>> observableValue,
-                                       TreeItem<ITask> oldTaskItem,
-                                       TreeItem<ITask> newTaskItem) {
-        refreshCheckBoxColumn(newTaskItem.getValue());
+    private void refreshCheckBoxColumn(ObservableValue<? extends ITask> observableValue,
+                                       ITask oldTask,
+                                       ITask newTask) {
+        refreshCheckBoxColumn(newTask);
     }
 
     private void refreshCheckBoxColumn(ITask selectedTask) {
