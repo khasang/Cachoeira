@@ -30,7 +30,7 @@ public class ResourceAssignedTasksModuleController implements ModuleController {
         module.getTaskNameColumn().setCellValueFactory(cell -> cell.getValue().nameProperty());
 
         resourceChangeListener = this::refreshCheckBoxColumn;
-        taskListChangeListener = change -> refreshCheckBoxColumn(controller.getSelectedResource());
+        taskListChangeListener = this::refreshCheckBoxColumn;
 
         controller.selectedResourceProperty().addListener(resourceChangeListener);
         controller.getProject().getTaskList().addListener(taskListChangeListener);
@@ -40,6 +40,12 @@ public class ResourceAssignedTasksModuleController implements ModuleController {
                                        IResource oldResourceItem,
                                        IResource newResourceItem) {
         refreshCheckBoxColumn(newResourceItem);
+    }
+
+    private void refreshCheckBoxColumn(ListChangeListener.Change<? extends ITask> change) {
+        while (change.next()) {
+            refreshCheckBoxColumn(controller.getSelectedResource());
+        }
     }
 
     private void refreshCheckBoxColumn(IResource selectedResource) {
