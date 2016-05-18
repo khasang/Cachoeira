@@ -126,7 +126,7 @@ public class Project implements IProject {
     }
 
     private Observable[] setObservableTaskFields(ITask task) {
-        return new Observable[] {
+        return new Observable[]{
                 task.nameProperty(),
                 task.startDateProperty(),
                 task.finishDateProperty(),
@@ -141,7 +141,7 @@ public class Project implements IProject {
     }
 
     private Observable[] setObservableResourceFields(IResource resource) {
-        return new Observable[] {
+        return new Observable[]{
                 resource.nameProperty(),
                 resource.resourceTypeProperty(),
                 resource.emailProperty(),
