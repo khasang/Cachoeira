@@ -27,11 +27,14 @@ public class TaskDependenciesModuleController implements ModuleController {
     @Override
     public void initModule() {
         taskChangeListener = this::selectedTaskObserver;
-        controller.getTaskTableView().getSelectionModel().selectedItemProperty().addListener(
-                new WeakChangeListener<>(taskChangeListener));
+        // without WeakChangeListener wrapper it can cause a memory leak, but with wrapper it doesn't work properly
+        // .addListener(new WeakChangeListener<>(taskChangeListener))
+        controller.getTaskTableView().getSelectionModel().selectedItemProperty().addListener(taskChangeListener);
     }
 
-    private void selectedTaskObserver(ObservableValue<? extends TreeItem<ITask>> observableValue, TreeItem<ITask> oldTaskItem, TreeItem<ITask> newTaskItem) {
+    private void selectedTaskObserver(ObservableValue<? extends TreeItem<ITask>> observableValue,
+                                      TreeItem<ITask> oldTaskItem,
+                                      TreeItem<ITask> newTaskItem) {
         if (newTaskItem.getValue() != null) {
             module.setItems(newTaskItem.getValue().getParentTasks());
             module.getParentTaskNameColumn().setCellValueFactory(cellData -> cellData.getValue().getTask().nameProperty());
