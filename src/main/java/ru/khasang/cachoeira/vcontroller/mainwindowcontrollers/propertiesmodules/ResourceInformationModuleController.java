@@ -63,7 +63,9 @@ public class ResourceInformationModuleController implements ModuleController {
         module.getDescriptionTextArea().focusedProperty().addListener(new WeakInvalidationListener(descriptionTextAreaInvalidationListener));
     }
 
-    private void selectedResourceObserver(ObservableValue<? extends TreeItem<IResource>> observableValue, TreeItem<IResource> oldResourceItem, TreeItem<IResource> newResourceItem) {
+    private void selectedResourceObserver(ObservableValue<? extends TreeItem<IResource>> observableValue,
+                                          TreeItem<IResource> oldResourceItem,
+                                          TreeItem<IResource> newResourceItem) {
         module.getNameField().setText(newResourceItem.getValue().getName());
         module.getResourceTypeComboBox().setValue(newResourceItem.getValue().getType());
         module.getEmailField().setText(newResourceItem.getValue().getEmail());
