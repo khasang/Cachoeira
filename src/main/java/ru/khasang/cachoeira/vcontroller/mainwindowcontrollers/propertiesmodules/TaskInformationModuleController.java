@@ -27,7 +27,7 @@ public class TaskInformationModuleController implements ModuleController {
     private final MainWindowController controller;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private ChangeListener<TreeItem<ITask>> taskChangeListener;
+    private ChangeListener<ITask> taskChangeListener;
     @SuppressWarnings("FieldCanBeLocal")
     private InvalidationListener nameFieldInvalidationListener;
     @SuppressWarnings("FieldCanBeLocal")
@@ -48,7 +48,7 @@ public class TaskInformationModuleController implements ModuleController {
         costFieldInvalidationListener = this::costFieldUnfocused;
         descriptionTextAreaInvalidationListener = this::descriptionTextAreaUnfocused;
         // set listener on selected task
-        controller.getTaskTableView().getSelectionModel().selectedItemProperty().addListener(new WeakChangeListener<>(taskChangeListener));
+        controller.selectedTaskProperty().addListener(new WeakChangeListener<>(taskChangeListener));
         // set handlers on fields events
         module.getNameField().setOnKeyPressed(this::nameFieldHandler);
         module.getStartDatePicker().setOnAction(this::startDatePickerHandler);
@@ -130,13 +130,15 @@ public class TaskInformationModuleController implements ModuleController {
         }
     }
 
-    private void selectedTaskObserver(ObservableValue<? extends TreeItem<ITask>> observableValue, TreeItem<ITask> oldTaskItem, TreeItem<ITask> newTaskItem) {
-        module.getNameField().setText(newTaskItem.getValue().getName());
-        module.getStartDatePicker().setValue(newTaskItem.getValue().getStartDate());
-        module.getFinishDatePicker().setValue(newTaskItem.getValue().getFinishDate());
-        module.getDonePercentSlider().setValue(newTaskItem.getValue().getDonePercent());
-        module.getCostField().setText(String.valueOf(newTaskItem.getValue().getCost()));
-        module.getDescriptionTextArea().setText(newTaskItem.getValue().getDescription());
+    private void selectedTaskObserver(ObservableValue<? extends ITask> observableValue,
+                                      ITask oldTask,
+                                      ITask newTask) {
+        module.getNameField().setText(newTask.getName());
+        module.getStartDatePicker().setValue(newTask.getStartDate());
+        module.getFinishDatePicker().setValue(newTask.getFinishDate());
+        module.getDonePercentSlider().setValue(newTask.getDonePercent());
+        module.getCostField().setText(String.valueOf(newTask.getCost()));
+        module.getDescriptionTextArea().setText(newTask.getDescription());
     }
 
     private void nameFieldUnfocused(Observable observable) {

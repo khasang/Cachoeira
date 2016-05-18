@@ -8,7 +8,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import ru.khasang.cachoeira.commands.CommandControl;
@@ -28,7 +27,7 @@ public class ResourceInformationModuleController implements ModuleController {
     private final MainWindowController controller;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private ChangeListener<TreeItem<IResource>> resourceChangeListener;
+    private ChangeListener<IResource> resourceChangeListener;
 
     @SuppressWarnings("FieldCanBeLocal")
     private InvalidationListener nameFieldInvalidationListener;
@@ -51,7 +50,7 @@ public class ResourceInformationModuleController implements ModuleController {
         emailFieldInvalidationListener = this::emailFieldUnfocused;
         descriptionTextAreaInvalidationListener = this::descriptionTextAreaUnfocused;
 
-        controller.getResourceTableView().getSelectionModel().selectedItemProperty().addListener(new WeakChangeListener<>(resourceChangeListener));
+        controller.selectedResourceProperty().addListener(new WeakChangeListener<>(resourceChangeListener));
 
         module.getNameField().setOnKeyPressed(this::nameFieldObserver);
         module.getResourceTypeComboBox().setOnAction(this::resourceTypeComboBoxObserver);
@@ -63,13 +62,13 @@ public class ResourceInformationModuleController implements ModuleController {
         module.getDescriptionTextArea().focusedProperty().addListener(new WeakInvalidationListener(descriptionTextAreaInvalidationListener));
     }
 
-    private void selectedResourceObserver(ObservableValue<? extends TreeItem<IResource>> observableValue,
-                                          TreeItem<IResource> oldResourceItem,
-                                          TreeItem<IResource> newResourceItem) {
-        module.getNameField().setText(newResourceItem.getValue().getName());
-        module.getResourceTypeComboBox().setValue(newResourceItem.getValue().getType());
-        module.getEmailField().setText(newResourceItem.getValue().getEmail());
-        module.getDescriptionTextArea().setText(newResourceItem.getValue().getDescription());
+    private void selectedResourceObserver(ObservableValue<? extends IResource> observableValue,
+                                          IResource oldResource,
+                                          IResource newResource) {
+        module.getNameField().setText(newResource.getName());
+        module.getResourceTypeComboBox().setValue(newResource.getType());
+        module.getEmailField().setText(newResource.getEmail());
+        module.getDescriptionTextArea().setText(newResource.getDescription());
     }
 
     private void nameFieldObserver(KeyEvent event) {
