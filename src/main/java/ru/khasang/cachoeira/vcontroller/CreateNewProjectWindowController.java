@@ -6,11 +6,9 @@ import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
-import ru.khasang.cachoeira.data.DBSchemeManager;
-import ru.khasang.cachoeira.data.DataStoreInterface;
+import ru.khasang.cachoeira.data.DataService;
 import ru.khasang.cachoeira.model.IProject;
 import ru.khasang.cachoeira.model.Project;
-import ru.khasang.cachoeira.properties.RecentProjectsController;
 import ru.khasang.cachoeira.view.IView;
 import ru.khasang.cachoeira.view.createnewprojectwindow.CreateNewProjectWindowView;
 import ru.khasang.cachoeira.view.createnewprojectwindow.panes.ButtonsBox;
@@ -130,21 +128,13 @@ public class CreateNewProjectWindowController {
                 fieldsPane.getStartDatePicker().getValue(),
                 fieldsPane.getFinishDatePicker().getValue(),
                 fieldsPane.getDescriptionTextArea().getText());
-        // Создаем файл
-        DataStoreInterface storeInterface = new DBSchemeManager();
-        storeInterface.createProjectFile(file.getPath(), project);
-        // Очищаем файл проекта на тот случай, если файл перезаписывается
-        storeInterface.eraseAllTables(file);
-        storeInterface.saveProjectToFile(file, project);
-        RecentProjectsController.getInstance().addRecentProject(file);
-        // Закрываем это окошко
-        view.getStage().close();
-        // TODO: 07.05.2016 doesn't work
-//        if (view.getStage().isShowing()) {
-//            view.getStage().close(); //закрываем стартовое окно
-//        }
-        MainWindowController mainWindowController = new MainWindowController(file, project);
-        mainWindowController.launch();
+//        // Закрываем это окошко
+//        view.getStage().close();
+//        // TODO: 07.05.2016 doesn't work
+////        if (view.getStage().isShowing()) {
+////            view.getStage().close(); //закрываем стартовое окно
+////        }
+        DataService.getInstance().createProject(project, file);
     }
 
     public IView getParentView() {
