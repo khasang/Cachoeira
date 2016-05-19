@@ -2,19 +2,11 @@ package ru.khasang.cachoeira.commands;
 
 import java.util.Stack;
 
-public class CommandControl {
-    private static CommandControl instance;
+public class CommandExecutor {
     private Stack<Command> undoStack = new Stack<>();
     private Stack<Command> redoStack = new Stack<>();
 
-    private CommandControl() {
-    }
-
-    public static CommandControl getInstance() {
-        if (instance == null) {
-            instance = new CommandControl();
-        }
-        return instance;
+    public CommandExecutor() {
     }
 
     public void execute(Command command) {
