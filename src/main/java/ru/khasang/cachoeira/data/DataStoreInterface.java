@@ -27,11 +27,11 @@ public interface DataStoreInterface {
 
     List<ITask> getTaskListFromFile(File file);
 
-    List<IResource> getResourceListByTaskFromFile(File file, ITask task);
+    List<IResource> getResourceListByTaskFromFile(File file, IProject project, ITask task);
 
-    List<IDependentTask> getParentTaskListByTaskFromFile(File file, ITask task);
+    List<IDependentTask> getParentTaskListByTaskFromFile(File file, IProject project, ITask task);
 
-    List<IDependentTask> getChildTaskListByTaskFromFile(File file, ITask task);
+    List<IDependentTask> getChildTaskListByTaskFromFile(File file, IProject project, ITask task);
 
     List<IResource> getResourceListFromFile(File file);
 
