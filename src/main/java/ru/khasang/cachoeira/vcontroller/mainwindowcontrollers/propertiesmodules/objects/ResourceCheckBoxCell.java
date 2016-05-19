@@ -1,17 +1,16 @@
 package ru.khasang.cachoeira.vcontroller.mainwindowcontrollers.propertiesmodules.objects;
 
 import javafx.scene.control.CheckBox;
-import ru.khasang.cachoeira.commands.CommandControl;
 import ru.khasang.cachoeira.commands.task.AddResourceToTaskCommand;
 import ru.khasang.cachoeira.commands.task.RemoveResourceFromTaskCommand;
 import ru.khasang.cachoeira.model.IResource;
-import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
 
 public class ResourceCheckBoxCell extends AbstractCheckBoxCell<IResource, Boolean> {
-    protected ITask selectedTask;
+    private MainWindowController controller;
 
-    public ResourceCheckBoxCell(ITask selectedTask) {
-        this.selectedTask = selectedTask;
+    public ResourceCheckBoxCell(MainWindowController controller) {
+        this.controller = controller;
     }
 
     @Override
@@ -24,7 +23,7 @@ public class ResourceCheckBoxCell extends AbstractCheckBoxCell<IResource, Boolea
     @Override
     protected void setSelectedCheckBox(CheckBox checkBox) {
         if (currentRow != null) {
-            selectedTask.getResourceList()
+            controller.getSelectedTask().getResourceList()
                     .stream()
                     .filter(resource -> resource.equals(currentRow) && !checkBox.isSelected())
                     .forEach(resource -> checkBox.setSelected(true));
@@ -33,11 +32,11 @@ public class ResourceCheckBoxCell extends AbstractCheckBoxCell<IResource, Boolea
 
     private void handleSelection(CheckBox checkBox) {
         if (checkBox.isSelected()) {
-            CommandControl.getInstance().execute(
-                    new AddResourceToTaskCommand(selectedTask, currentRow));
+            controller.getCommandExecutor().execute(
+                    new AddResourceToTaskCommand(controller.getSelectedTask(), currentRow));
         } else {
-            CommandControl.getInstance().execute(
-                    new RemoveResourceFromTaskCommand(selectedTask, currentRow));
+            controller.getCommandExecutor().execute(
+                    new RemoveResourceFromTaskCommand(controller.getSelectedTask(), currentRow));
         }
     }
 }

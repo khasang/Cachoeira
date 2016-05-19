@@ -1,17 +1,16 @@
 package ru.khasang.cachoeira.vcontroller.mainwindowcontrollers.propertiesmodules.objects;
 
 import javafx.scene.control.CheckBox;
-import ru.khasang.cachoeira.commands.CommandControl;
 import ru.khasang.cachoeira.commands.task.AddResourceToTaskCommand;
 import ru.khasang.cachoeira.commands.task.RemoveResourceFromTaskCommand;
-import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
 
 public class TaskCheckBoxCell extends AbstractCheckBoxCell<ITask, Boolean> {
-    private IResource selectedResource;
+    private MainWindowController controller;
 
-    public TaskCheckBoxCell(IResource selectedResource) {
-        this.selectedResource = selectedResource;
+    public TaskCheckBoxCell(MainWindowController controller) {
+        this.controller = controller;
     }
 
     @Override
@@ -26,18 +25,18 @@ public class TaskCheckBoxCell extends AbstractCheckBoxCell<ITask, Boolean> {
         if (currentRow != null) {
             currentRow.getResourceList()
                     .stream()
-                    .filter(resource -> selectedResource.equals(resource) && !checkBox.isSelected())
+                    .filter(resource -> controller.getSelectedResource().equals(resource) && !checkBox.isSelected())
                     .forEach(resource -> checkBox.setSelected(true));
         }
     }
 
     private void handleSelection(CheckBox checkBox) {
         if (checkBox.isSelected()) {
-            CommandControl.getInstance().execute(
-                    new AddResourceToTaskCommand(currentRow, selectedResource));
+            controller.getCommandExecutor().execute(
+                    new AddResourceToTaskCommand(currentRow, controller.getSelectedResource()));
         } else {
-            CommandControl.getInstance().execute(
-                    new RemoveResourceFromTaskCommand(currentRow, selectedResource));
+            controller.getCommandExecutor().execute(
+                    new RemoveResourceFromTaskCommand(currentRow, controller.getSelectedResource()));
         }
     }
 }
