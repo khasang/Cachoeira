@@ -25,14 +25,15 @@ public class TaskAssignedResourcesModuleController implements ModuleController {
 
     @Override
     public void initModule() {
+        // set disable when selected task is null
         module.disableProperty().bind(controller.selectedTaskProperty().isNull());
-
+        // table view things
         module.setItems(controller.getProject().getResourceList());
         module.getResourceNameColumn().setCellValueFactory(cell -> cell.getValue().nameProperty());
-
+        // init listeners
         taskChangeListener = this::refreshCheckBoxColumn;
         taskListChangeListener = this::refreshCheckBoxColumn;
-
+        // set listeners, when selected resource or project task list has changed refresh checkbox column
         controller.selectedTaskProperty().addListener(taskChangeListener);
         controller.getProject().getTaskList().addListener(taskListChangeListener);
     }
@@ -51,7 +52,7 @@ public class TaskAssignedResourcesModuleController implements ModuleController {
 
     private void refreshCheckBoxColumn(ITask selectedTask) {
         if (selectedTask != null) {
-            module.getResourceCheckboxColumn().setCellFactory(cellData -> new ResourceCheckBoxCell(selectedTask));
+            module.getResourceCheckboxColumn().setCellFactory(cellData -> new ResourceCheckBoxCell(controller));
         }
     }
 }
