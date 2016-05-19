@@ -3,8 +3,8 @@ package ru.khasang.cachoeira.vcontroller.rowfactories;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.util.Callback;
-import ru.khasang.cachoeira.model.IProject;
 import ru.khasang.cachoeira.model.ITask;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
 import ru.khasang.cachoeira.vcontroller.contextmenus.TaskContextMenu;
 import ru.khasang.cachoeira.vcontroller.draganddrop.TableDragAndDrop;
 import ru.khasang.cachoeira.vcontroller.tooltipfactory.TaskTooltipFactory;
@@ -15,31 +15,30 @@ import ru.khasang.cachoeira.vcontroller.tooltipfactory.TooltipFactory;
  * помощью мышки) для каждой строки таблицы Задач.
  */
 public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask>, TreeTableRow<ITask>> {
-    private final IProject project;
+    private final MainWindowController controller;
     private final TableDragAndDrop dragAndDrop;
 
-    public TaskTreeTableViewRowFactory(IProject project, TableDragAndDrop dragAndDrop) {
-        this.project = project;
+    public TaskTreeTableViewRowFactory(MainWindowController controller, TableDragAndDrop dragAndDrop) {
+        this.controller = controller;
         this.dragAndDrop = dragAndDrop;
     }
 
     @Override
     public TreeTableRow<ITask> call(TreeTableView<ITask> param) {
         TreeTableRow<ITask> row = new TreeTableRow<ITask>() {
-            /* Tooltip & Context Menu */
-            TooltipFactory<ITask> tooltipFactory = new TaskTooltipFactory();
-            TaskContextMenu taskContextMenu = new TaskContextMenu();
-
             @Override
             protected void updateItem(ITask task, boolean empty) {
                 super.updateItem(task, empty);
                 if (empty) {
-                    setTooltip(null);
-                    setContextMenu(null);
+                    this.setTooltip(null);
+                    this.setContextMenu(null);
                 } else {
-                    setTooltip(tooltipFactory.createTooltip(task));
-                    taskContextMenu.initMenus(project, task);
-                    setContextMenu(taskContextMenu);
+                    /* Tooltip & Context Menu */
+                    TooltipFactory<ITask> tooltipFactory = new TaskTooltipFactory();
+                    TaskContextMenu taskContextMenu = new TaskContextMenu(controller.getProject(), task, controller);
+                    this.setTooltip(tooltipFactory.createTooltip(task));
+                    taskContextMenu.initMenus();
+                    this.setContextMenu(taskContextMenu);
                 }
             }
         };
