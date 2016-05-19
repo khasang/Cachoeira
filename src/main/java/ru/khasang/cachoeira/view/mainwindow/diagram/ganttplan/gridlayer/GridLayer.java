@@ -4,7 +4,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
-import ru.khasang.cachoeira.viewcontroller.UIControl;
 
 public abstract class GridLayer extends Pane {
     // This is to make the stroke be drawn 'on pixel'.
