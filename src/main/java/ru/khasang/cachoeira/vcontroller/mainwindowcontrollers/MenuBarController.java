@@ -1,19 +1,15 @@
 package ru.khasang.cachoeira.vcontroller.mainwindowcontrollers;
 
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
-import ru.khasang.cachoeira.commands.CommandExecutor;
 import ru.khasang.cachoeira.data.DBSchemeManager;
+import ru.khasang.cachoeira.data.DataService;
 import ru.khasang.cachoeira.data.DataStoreInterface;
-import ru.khasang.cachoeira.model.IProject;
 import ru.khasang.cachoeira.model.IResource;
-import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.model.Project;
 import ru.khasang.cachoeira.properties.ISettingsManager;
 import ru.khasang.cachoeira.properties.RecentProjectsController;
 import ru.khasang.cachoeira.properties.SettingsManager;
@@ -58,54 +54,23 @@ public class MenuBarController {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CACH", "*.cach"));
         File file = fileChooser.showOpenDialog(controller.getView().getStage());
         if (file != null) {
-            DataStoreInterface storeInterface = new DBSchemeManager();
-            IProject project = storeInterface.getProjectFromFile(file, new Project());
-            project.setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListFromFile(file)));
-            project.setTaskList(FXCollections.observableArrayList(storeInterface.getTaskListFromFile(file)));
-            for (ITask task : project.getTaskList()) {
-                task.setResourceList(FXCollections.observableArrayList(storeInterface.getResourceListByTaskFromFile(file, project, task)));
-            }
-            for (ITask task : project.getTaskList()) {
-                task.setParentTasks(FXCollections.observableArrayList(storeInterface.getParentTaskListByTaskFromFile(file, project, task)));
-            }
-            for (ITask task : project.getTaskList()) {
-                task.setChildTasks(FXCollections.observableArrayList(storeInterface.getChildTaskListByTaskFromFile(file, project, task)));
-            }
-
-            RecentProjectsController.getInstance().addRecentProject(file);
-
-            MainWindowController mainWindowController = new MainWindowController(file, project, new CommandExecutor());
-            mainWindowController.launch();
+            DataService.getInstance().loadProject(file);
         }
     }
 
     private void saveProjectMenuItemHandler(ActionEvent event) {
-        //сохранение проекта
-        DataStoreInterface storeInterface = new DBSchemeManager();
-        storeInterface.saveProjectToFile(controller.getProjectFile(), controller.getProject());
-        storeInterface.saveTasksToFile(controller.getProjectFile(), controller.getProject());
-        storeInterface.saveResourcesToFile(controller.getProjectFile(), controller.getProject());
-        storeInterface.saveParentTasksToFile(controller.getProjectFile(), controller.getProject());
-        storeInterface.saveChildTasksToFile(controller.getProjectFile(), controller.getProject());
-        storeInterface.saveResourcesByTask(controller.getProjectFile(), controller.getProject());
+        DataService.getInstance().saveProject(controller.getProjectFile(), controller.getProject());
         // После сохранения очищаем списки анду и реду
         controller.getCommandExecutor().clearLists();
     }
 
     private void saveAsProjectMenuItemProject(ActionEvent event) {
-        DataStoreInterface storeInterface = new DBSchemeManager();
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CACH", "*.cach"));
         File file = fileChooser.showSaveDialog(controller.getView().getStage());
         if (file != null) {
             controller.setProjectFile(file);
-            storeInterface.createProjectFile(file.getPath(), controller.getProject());
-            storeInterface.saveProjectToFile(controller.getProjectFile(), controller.getProject());
-            storeInterface.saveTasksToFile(controller.getProjectFile(), controller.getProject());
-            storeInterface.saveResourcesToFile(controller.getProjectFile(), controller.getProject());
-            storeInterface.saveParentTasksToFile(controller.getProjectFile(), controller.getProject());
-            storeInterface.saveChildTasksToFile(controller.getProjectFile(), controller.getProject());
-            storeInterface.saveResourcesByTask(controller.getProjectFile(), controller.getProject());
+            DataService.getInstance().saveProjectAs(controller.getProjectFile(), controller.getProject());
             // После сохранения очищаем списки анду и реду
             controller.getCommandExecutor().clearLists();
         }
@@ -177,14 +142,7 @@ public class MenuBarController {
 
             alert.showAndWait().ifPresent(response -> {
                 if (response == saveProjectButtonType) {
-                    DataStoreInterface storeInterface = new DBSchemeManager();
-                    storeInterface.saveProjectToFile(controller.getProjectFile(), controller.getProject());
-                    storeInterface.saveTasksToFile(controller.getProjectFile(), controller.getProject());
-                    storeInterface.saveResourcesToFile(controller.getProjectFile(), controller.getProject());
-                    storeInterface.saveParentTasksToFile(controller.getProjectFile(), controller.getProject());
-                    storeInterface.saveChildTasksToFile(controller.getProjectFile(), controller.getProject());
-                    storeInterface.saveResourcesByTask(controller.getProjectFile(), controller.getProject());
-
+                    DataService.getInstance().saveProject(controller.getProjectFile(), controller.getProject());
                     controller.getView().getStage().close();
                 } else if (response == doNotSaveProjectButtonType) {
                     controller.getView().getStage().close();
