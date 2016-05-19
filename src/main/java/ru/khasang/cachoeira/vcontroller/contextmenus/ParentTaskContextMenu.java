@@ -1,35 +1,26 @@
-package ru.khasang.cachoeira.viewcontroller.mainwindow.contextmenus;
+package ru.khasang.cachoeira.vcontroller.contextmenus;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import ru.khasang.cachoeira.controller.IController;
-import ru.khasang.cachoeira.model.DependentTask;
-import ru.khasang.cachoeira.model.IDependentTask;
-import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.model.TaskDependencyType;
-import ru.khasang.cachoeira.viewcontroller.UIControl;
-
-import java.util.ResourceBundle;
+import ru.khasang.cachoeira.model.*;
 
 public class ParentTaskContextMenu extends ContextMenu {
-    private ResourceBundle bundle = UIControl.bundle;
-
     public ParentTaskContextMenu() {
     }
 
-    public void initMenus(IController controller, ITask task) {
+    public void initMenus(IProject project, ITask task) {
         this.getItems().clear();
-        Menu assignDependencyTask = new Menu(bundle.getString("assign_predecessor"));
+        Menu assignDependencyTask = new Menu("Assign Predecessor");
 
         this.getItems().addAll(assignDependencyTask);  //заполняем меню
 
         this.setOnShowing(event -> refreshDependencyTaskMenu(
                 assignDependencyTask.getItems(),
                 task,
-                controller.getProject().getTaskList()));
+                project.getTaskList()));
     }
 
     private void refreshDependencyTaskMenu(ObservableList<MenuItem> menuItemsList,
