@@ -2,15 +2,12 @@ package ru.khasang.cachoeira.vcontroller.draganddrop;
 
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.input.*;
-import ru.khasang.cachoeira.model.IProject;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
 
 public abstract class TableDragAndDrop {
     protected static final DataFormat SERIALIZED_MIME_TYPE = new DataFormat("application/x-java-serialized-object");
-    protected IProject project;
 
-    public TableDragAndDrop(IProject project) {
-        this.project = project;
-    }
+    protected MainWindowController controller;
 
     public void dragDetected(MouseEvent event, TreeTableRow<?> row) {
         if (!row.isEmpty()) {
