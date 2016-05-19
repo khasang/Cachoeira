@@ -21,6 +21,8 @@ public abstract class AbstractButtonsBox extends HBox{
         Region separateRegion = new Region();
         HBox.setHgrow(separateRegion, Priority.ALWAYS);
         zoomSlider = new Slider();
+        zoomSlider.setMin(2);
+        zoomSlider.setMax(130);
         this.getChildren().addAll(addButton, removeButton, separateRegion, zoomSlider);
     }
 
