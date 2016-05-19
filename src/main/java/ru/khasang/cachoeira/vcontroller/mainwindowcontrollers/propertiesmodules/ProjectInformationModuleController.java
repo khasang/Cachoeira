@@ -6,7 +6,6 @@ import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import ru.khasang.cachoeira.commands.CommandControl;
 import ru.khasang.cachoeira.commands.project.RenameProjectCommand;
 import ru.khasang.cachoeira.commands.project.SetProjectDescriptionCommand;
 import ru.khasang.cachoeira.commands.project.SetProjectFinishDateCommand;
@@ -71,7 +70,7 @@ public class ProjectInformationModuleController implements ModuleController {
     private void projectNameFieldHandler(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             if (!module.getNameField().getText().trim().isEmpty()) {
-                CommandControl.getInstance().execute(new RenameProjectCommand(
+                controller.getCommandExecutor().execute(new RenameProjectCommand(
                         controller.getProject(),
                         module.getNameField().getText()));
                 // Убираем фокусировку с поля наименования задачи
@@ -85,20 +84,20 @@ public class ProjectInformationModuleController implements ModuleController {
     }
 
     private void projectStartDatePickerHandler(ActionEvent event) {
-        CommandControl.getInstance().execute(new SetProjectStartDateCommand(
+        controller.getCommandExecutor().execute(new SetProjectStartDateCommand(
                 controller.getProject(),
                 module.getStartDatePicker().getValue()));
     }
 
     private void projectFinishDatePickerHandler(ActionEvent event) {
-        CommandControl.getInstance().execute(new SetProjectFinishDateCommand(
+        controller.getCommandExecutor().execute(new SetProjectFinishDateCommand(
                 controller.getProject(),
                 module.getFinishDatePicker().getValue()));
     }
 
     private void projectDescriptionTextAreaHandler(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
-            CommandControl.getInstance().execute(new SetProjectDescriptionCommand(
+            controller.getCommandExecutor().execute(new SetProjectDescriptionCommand(
                     controller.getProject(),
                     module.getDescriptionTextArea().getText()));
             module.getDescriptionTextArea().getParent().requestFocus();

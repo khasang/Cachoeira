@@ -10,7 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import ru.khasang.cachoeira.commands.CommandControl;
 import ru.khasang.cachoeira.commands.resource.RenameResourceCommand;
 import ru.khasang.cachoeira.commands.resource.SetResourceDescriptionCommand;
 import ru.khasang.cachoeira.commands.resource.SetResourceEmailCommand;
@@ -78,7 +77,7 @@ public class ResourceInformationModuleController implements ModuleController {
     private void nameFieldObserver(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             if (!module.getNameField().getText().trim().isEmpty()) {
-                CommandControl.getInstance().execute(new RenameResourceCommand(
+                controller.getCommandExecutor().execute(new RenameResourceCommand(
                         controller.getSelectedResource(),
                         module.getNameField().getText()));
                 module.getNameField().getParent().requestFocus();
@@ -91,14 +90,14 @@ public class ResourceInformationModuleController implements ModuleController {
     }
 
     private void resourceTypeComboBoxObserver(ActionEvent event) {
-        CommandControl.getInstance().execute(new SetResourceTypeCommand(
+        controller.getCommandExecutor().execute(new SetResourceTypeCommand(
                 controller.getSelectedResource(),
                 module.getResourceTypeComboBox().getValue()));
     }
 
     private void emailFieldObserver(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
-            CommandControl.getInstance().execute(new SetResourceEmailCommand(
+            controller.getCommandExecutor().execute(new SetResourceEmailCommand(
                     controller.getSelectedResource(),
                     module.getEmailField().getText()));
             module.getEmailField().getParent().requestFocus();
@@ -111,7 +110,7 @@ public class ResourceInformationModuleController implements ModuleController {
 
     private void descriptionTextAreaObserver(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
-            CommandControl.getInstance().execute(new SetResourceDescriptionCommand(
+            controller.getCommandExecutor().execute(new SetResourceDescriptionCommand(
                     controller.getSelectedResource(),
                     module.getDescriptionTextArea().getText()));
             module.getDescriptionTextArea().getParent().requestFocus();

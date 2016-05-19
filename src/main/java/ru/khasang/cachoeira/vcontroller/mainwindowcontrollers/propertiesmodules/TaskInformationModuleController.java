@@ -12,7 +12,6 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import ru.khasang.cachoeira.commands.CommandControl;
 import ru.khasang.cachoeira.commands.task.*;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
@@ -72,7 +71,7 @@ public class TaskInformationModuleController implements ModuleController {
     private void nameFieldHandler(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             if (!module.getNameField().getText().trim().isEmpty()) {
-                CommandControl.getInstance().execute(new RenameTaskCommand(
+                controller.getCommandExecutor().execute(new RenameTaskCommand(
                         controller.getSelectedTask(),
                         module.getNameField().getText()));
                 module.getNameField().getParent().requestFocus();
@@ -85,21 +84,21 @@ public class TaskInformationModuleController implements ModuleController {
     }
 
     private void startDatePickerHandler(ActionEvent event) {
-        CommandControl.getInstance().execute(new SetTaskStartDateCommand(
+        controller.getCommandExecutor().execute(new SetTaskStartDateCommand(
                 controller.getSelectedTask(),
                 module.getStartDatePicker().getValue()
         ));
     }
 
     private void finishDatePickerHandler(ActionEvent event) {
-        CommandControl.getInstance().execute(new SetTaskFinishDateCommand(
+        controller.getCommandExecutor().execute(new SetTaskFinishDateCommand(
                 controller.getSelectedTask(),
                 module.getFinishDatePicker().getValue()
         ));
     }
 
     private void donePercentSliderHandler(MouseEvent event) {
-        CommandControl.getInstance().execute(new SetTaskDonePercentCommand(
+        controller.getCommandExecutor().execute(new SetTaskDonePercentCommand(
                 controller.getSelectedTask(),
                 (int) module.getDonePercentSlider().getValue()
         ));
@@ -107,7 +106,7 @@ public class TaskInformationModuleController implements ModuleController {
 
     private void costFieldHandler(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
-            CommandControl.getInstance().execute(new SetTaskCostCommand(
+            controller.getCommandExecutor().execute(new SetTaskCostCommand(
                     controller.getSelectedTask(),
                     Double.parseDouble(module.getCostField().getText())));
             module.getDescriptionTextArea().getParent().requestFocus();
@@ -120,7 +119,7 @@ public class TaskInformationModuleController implements ModuleController {
 
     private void descriptionTextAreaHandler(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
-            CommandControl.getInstance().execute(new SetTaskDescriptionCommand(
+            controller.getCommandExecutor().execute(new SetTaskDescriptionCommand(
                     controller.getSelectedTask(),
                     module.getDescriptionTextArea().getText()));
             module.getDescriptionTextArea().getParent().requestFocus();
