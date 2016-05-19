@@ -1,6 +1,8 @@
-package ru.khasang.cachoeira.viewcontroller.mainwindow.contextmenus;
+package ru.khasang.cachoeira.vcontroller.contextmenus;
 
-import javafx.scene.control.*;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.TreeTableView;
 
 import java.util.ArrayList;
 
@@ -27,26 +29,4 @@ public class ColumnContextMenu extends ContextMenu {
         }
         return contextItems;
     }
-
-
-    public ColumnContextMenu(TableView<?> tableView) {
-        updateContextMenuColumnTV(tableView);
-    }
-
-    public void updateContextMenuColumnTV(TableView<?> tableView) {
-        super.getItems().clear();
-        super.getItems().addAll(getCheckMenuItems(tableView));
-    }
-
-    private ArrayList<CheckMenuItem> getCheckMenuItems(TableView<?> tableView) {
-        ArrayList<CheckMenuItem> contextItems = new ArrayList<>();
-        for (int i = 1; i < tableView.getColumns().size(); i++) {
-            contextItems.add(new CheckMenuItem(tableView.getColumns().get(i).getText()));
-            contextItems.get(i - 1).setSelected(tableView.getColumns().get(i).isVisible());
-            int j = i;
-            contextItems.get(i - 1).setOnAction(event -> tableView.getColumns().get(j).setVisible(((CheckMenuItem) event.getSource()).isSelected()));
-        }
-        return contextItems;
-    }
-
 }
