@@ -1,43 +1,42 @@
-package ru.khasang.cachoeira.viewcontroller.mainwindow.contextmenus;
+package ru.khasang.cachoeira.vcontroller.contextmenus;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import ru.khasang.cachoeira.commands.CommandControl;
 import ru.khasang.cachoeira.commands.project.RemoveResourceFromProjectCommand;
 import ru.khasang.cachoeira.commands.task.AddResourceToTaskCommand;
 import ru.khasang.cachoeira.commands.task.RemoveResourceFromTaskCommand;
-import ru.khasang.cachoeira.controller.IController;
+import ru.khasang.cachoeira.model.IProject;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.viewcontroller.UIControl;
-
-import java.util.ResourceBundle;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
 
 /**
  * Класс описывает контекстное меню всплывающее при нажатии правой кнопкой на ресурсе.
  */
 public class ResourceContextMenu extends ContextMenu {
-    private ResourceBundle bundle = UIControl.bundle;
+    private final IProject project;
+    private final IResource resource;
+    private final MainWindowController controller;
 
-    public ResourceContextMenu() {
+    public ResourceContextMenu(IProject project, IResource resource, MainWindowController controller) {
+        this.project = project;
+        this.resource = resource;
+        this.controller = controller;
     }
 
-    public ResourceContextMenu(IController controller, IResource resource) {
-        initMenus(controller, resource);
-    }
-
-    public void initMenus(IController controller, IResource resource) {
+    public void initMenus() {
         this.getItems().clear();
-        Menu assignTaskMenu = new Menu(bundle.getString("assign_task"));
-        MenuItem removeResourceMenuItem = new MenuItem(bundle.getString("remove_resource"));
+        Menu assignTaskMenu = new Menu("Assign Task");
+        MenuItem removeResourceMenuItem = new MenuItem("Remove Resource");
 
-        removeResourceMenuItem.setOnAction(event -> CommandControl.getInstance().execute(new RemoveResourceFromProjectCommand(controller.getProject(), resource)));
+        removeResourceMenuItem.setOnAction(event -> controller.getCommandExecutor().execute(
+                new RemoveResourceFromProjectCommand(project, resource)));
         this.getItems().addAll(assignTaskMenu, removeResourceMenuItem);  //заполняем меню
 
-        this.setOnShowing(event -> refreshTaskMenu(assignTaskMenu.getItems(), resource, controller.getProject().getTaskList()));
+        this.setOnShowing(event -> refreshTaskMenu(assignTaskMenu.getItems(), resource, project.getTaskList()));
     }
 
     private void refreshTaskMenu(ObservableList<MenuItem> menuItemList,
@@ -52,9 +51,9 @@ public class ResourceContextMenu extends ContextMenu {
                     .forEach(resource -> checkMenuItem.setSelected(true));
             checkMenuItem.setOnAction(event -> {
                 if (checkMenuItem.isSelected()) {
-                    CommandControl.getInstance().execute(new AddResourceToTaskCommand(task, currentRowResource));
+                    controller.getCommandExecutor().execute(new AddResourceToTaskCommand(task, currentRowResource));
                 } else {
-                    CommandControl.getInstance().execute(new RemoveResourceFromTaskCommand(task, currentRowResource));
+                    controller.getCommandExecutor().execute(new RemoveResourceFromTaskCommand(task, currentRowResource));
                 }
             });
             menuItemList.add(checkMenuItem);

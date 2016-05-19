@@ -1,44 +1,41 @@
-package ru.khasang.cachoeira.viewcontroller.mainwindow.contextmenus;
+package ru.khasang.cachoeira.vcontroller.contextmenus;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import ru.khasang.cachoeira.commands.CommandControl;
 import ru.khasang.cachoeira.commands.project.RemoveTaskFromProjectCommand;
 import ru.khasang.cachoeira.commands.task.*;
-import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.*;
-import ru.khasang.cachoeira.viewcontroller.UIControl;
-
-import java.util.ResourceBundle;
+import ru.khasang.cachoeira.vcontroller.MainWindowController;
 
 /**
  * Класс описывает контекстное меню всплывающее при нажатии правой кнопкой на задаче.
  */
 public class TaskContextMenu extends ContextMenu {
-    private ResourceBundle bundle = UIControl.bundle;
+    private final IProject project;
+    private final ITask task;
+    private final MainWindowController controller;
 
-    public TaskContextMenu() {
+    public TaskContextMenu(IProject project, ITask task, MainWindowController controller) {
+        this.project = project;
+        this.task = task;
+        this.controller = controller;
     }
 
-    public TaskContextMenu(IController controller, ITask task) {
-        initMenus(controller, task);
-    }
-
-    public void initMenus(IController controller, ITask task) {
+    public void initMenus() {
         this.getItems().clear();
-        Menu assignResourceMenu = new Menu(bundle.getString("assign_resource"));
-        Menu assignDependencyTask = new Menu(bundle.getString("assign_predecessor"));
-        MenuItem removeTaskMenuItem = new MenuItem(bundle.getString("remove_task"));
+        Menu assignResourceMenu = new Menu("Assign Resource");
+        Menu assignDependencyTask = new Menu("Assign Predecessor");
+        MenuItem removeTaskMenuItem = new MenuItem("Remove Task");
 
-        removeTaskMenuItem.setOnAction(event -> CommandControl.getInstance().execute(new RemoveTaskFromProjectCommand(controller.getProject(), task)));
+        removeTaskMenuItem.setOnAction(event -> controller.getCommandExecutor().execute(new RemoveTaskFromProjectCommand(project, task)));
         this.getItems().addAll(assignResourceMenu, assignDependencyTask, removeTaskMenuItem);  //заполняем меню
 
         this.setOnShowing(event -> {
-            refreshResourceMenu(assignResourceMenu.getItems(), task, controller.getProject().getResourceList());
-            refreshDependencyTaskMenu(assignDependencyTask.getItems(), task, controller.getProject().getTaskList());
+            refreshResourceMenu(assignResourceMenu.getItems(), task, project.getResourceList());
+            refreshDependencyTaskMenu(assignDependencyTask.getItems(), task, project.getTaskList());
         });
     }
 
@@ -58,17 +55,17 @@ public class TaskContextMenu extends ContextMenu {
                     // Вешаем ивент при нажатии на каком-либо пункте меню
                     checkMenuItem.setOnAction(event -> {
                         if (checkMenuItem.isSelected()) {
-                            CommandControl.getInstance().execute(new AddParentTaskToTaskCommand(task, new DependentTask(parentTask, TaskDependencyType.FINISHSTART)));
-                            CommandControl.getInstance().execute(new AddChildTaskToTaskCommand(parentTask, new DependentTask(task, null)));
+                            controller.getCommandExecutor().execute(new AddParentTaskToTaskCommand(task, new DependentTask(parentTask, TaskDependencyType.FINISHSTART)));
+                            controller.getCommandExecutor().execute(new AddChildTaskToTaskCommand(parentTask, new DependentTask(task, null)));
                         } else {
                             task.getParentTasks().stream()
                                     .filter(dependentTask -> dependentTask.getTask().equals(parentTask))
                                     .findFirst()
-                                    .ifPresent(dependentTask -> CommandControl.getInstance().execute(new RemoveParentTaskFromTaskCommand(task, dependentTask)));
+                                    .ifPresent(dependentTask -> controller.getCommandExecutor().execute(new RemoveParentTaskFromTaskCommand(task, dependentTask)));
                             parentTask.getChildTasks().stream()
                                     .filter(dependentTask -> dependentTask.getTask().equals(task))
                                     .findFirst()
-                                    .ifPresent(dependentTask -> CommandControl.getInstance().execute(new RemoveChildTaskFromTaskCommand(parentTask, dependentTask)));
+                                    .ifPresent(dependentTask -> controller.getCommandExecutor().execute(new RemoveChildTaskFromTaskCommand(parentTask, dependentTask)));
                         }
                     });
                     menuItemsList.add(checkMenuItem);
@@ -115,9 +112,9 @@ public class TaskContextMenu extends ContextMenu {
                     .forEach(resourceOfTask -> checkMenuItem.setSelected(true));
             checkMenuItem.setOnAction(event -> {
                 if (checkMenuItem.isSelected()) {
-                    CommandControl.getInstance().execute(new AddResourceToTaskCommand(task, resource));
+                    controller.getCommandExecutor().execute(new AddResourceToTaskCommand(task, resource));
                 } else {
-                    CommandControl.getInstance().execute(new RemoveResourceFromTaskCommand(task, resource));
+                    controller.getCommandExecutor().execute(new RemoveResourceFromTaskCommand(task, resource));
                 }
             });
             menuItemList.add(checkMenuItem);
