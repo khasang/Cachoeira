@@ -149,7 +149,7 @@ public class TaskGanttPlanTaskBar extends TaskBar {
                 if (change.wasAdded()) {
                     change.getAddedSubList().forEach(dependentTask -> controller.getTaskGanttPlan()
                             .getRelationsLayer()
-                            .addRelation(dependentTask, controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue(), controller));
+                            .addRelation(dependentTask, controller.getSelectedTask(), controller));
                 }
                 if (change.wasRemoved()) {
                     change.getRemoved().forEach(dependentTask ->controller.getTaskGanttPlan()
@@ -175,7 +175,7 @@ public class TaskGanttPlanTaskBar extends TaskBar {
         //подсветка при наведении // TODO: 15.01.2016 Сделать анимацию
         this.hoverProperty().addListener(hoverListener);
 
-        controller.getTaskTableView().getSelectionModel().getSelectedItem().getValue().getParentTasks().addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
+        controller.getSelectedTask().getParentTasks().addListener(new WeakListChangeListener<>(dependentTaskListChangeListener));
         controller.zoomMultiplierProperty().addListener(new WeakInvalidationListener(zoomListener));
     }
 }
