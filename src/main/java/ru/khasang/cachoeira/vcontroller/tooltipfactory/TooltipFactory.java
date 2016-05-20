@@ -1,4 +1,4 @@
-package ru.khasang.cachoeira.viewcontroller.mainwindow.tooltipfactory;
+package ru.khasang.cachoeira.vcontroller.tooltipfactory;
 
 import javafx.scene.control.Tooltip;
 
