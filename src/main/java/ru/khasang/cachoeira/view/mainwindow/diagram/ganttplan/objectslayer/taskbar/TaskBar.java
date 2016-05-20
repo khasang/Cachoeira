@@ -14,15 +14,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import ru.khasang.cachoeira.commands.CommandControl;
 import ru.khasang.cachoeira.commands.task.SetTaskFinishDateCommand;
 import ru.khasang.cachoeira.commands.task.SetTaskStartAndFinishDateCommand;
 import ru.khasang.cachoeira.commands.task.SetTaskStartDateCommand;
-import ru.khasang.cachoeira.controller.IController;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
-import ru.khasang.cachoeira.viewcontroller.mainwindow.contextmenus.TaskContextMenu;
+import ru.khasang.cachoeira.vcontroller.contextmenus.TaskContextMenu;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -128,10 +126,9 @@ public abstract class TaskBar extends Pane {
                                          Rectangle backgroundRectangle,
                                          Rectangle donePercentRectangle);
 
-    public void setContextMenu(IController controller,
-                               ITask task) {
-        taskContextMenu = new TaskContextMenu();
-        taskContextMenu.initMenus(controller, task);
+    public void setContextMenu(ITask task) {
+        taskContextMenu = new TaskContextMenu(controller.getProject(), task, controller);
+        taskContextMenu.initMenus();
     }
 
     public void setTooltip(Tooltip tooltip) {
@@ -171,7 +168,7 @@ public abstract class TaskBar extends Pane {
                         oldRound.old = Math.round(newX / controller.getZoomMultiplier());
                         this.setLayoutX(Math.round(newX / controller.getZoomMultiplier()) * controller.getZoomMultiplier() - 1.5);
                         wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                        CommandControl.getInstance().execute(new SetTaskStartAndFinishDateCommand(
+                        controller.getCommandExecutor().execute(new SetTaskStartAndFinishDateCommand(
                                 task,
                                 controller.getProject().getStartDate().plusDays(
                                         Math.round(newX / controller.getZoomMultiplier())),
@@ -254,7 +251,7 @@ public abstract class TaskBar extends Pane {
                             this.setLayoutX(Math.round(newX / controller.getZoomMultiplier()) * controller.getZoomMultiplier() - 1.5);
                             backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (this.getLayoutX() - oldX));
                             wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                            CommandControl.getInstance().execute(new SetTaskStartDateCommand(
+                            controller.getCommandExecutor().execute(new SetTaskStartDateCommand(
                                     task,
                                     controller.getProject().getStartDate().plusDays((Math.round(newX / controller.getZoomMultiplier())))));
                             wasMovedByMouse = false; // Когда окончили движение фолз
@@ -316,7 +313,7 @@ public abstract class TaskBar extends Pane {
                         oldRoundRight.old = Math.round(newWidth / controller.getZoomMultiplier());
                         backgroundRectangle.setWidth(Math.round(newWidth / controller.getZoomMultiplier()) * controller.getZoomMultiplier());
                         wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                        CommandControl.getInstance().execute(new SetTaskFinishDateCommand(
+                        controller.getCommandExecutor().execute(new SetTaskFinishDateCommand(
                                 task,
                                 task.getStartDate().plusDays(Math.round(backgroundRectangle.getWidth() / controller.getZoomMultiplier()))));
                         wasMovedByMouse = false; // Когда окончили движение фолз
