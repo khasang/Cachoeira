@@ -12,7 +12,6 @@ import javafx.scene.shape.Rectangle;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
-import ru.khasang.cachoeira.viewcontroller.UIControl;
 
 import java.time.LocalDate;
 
