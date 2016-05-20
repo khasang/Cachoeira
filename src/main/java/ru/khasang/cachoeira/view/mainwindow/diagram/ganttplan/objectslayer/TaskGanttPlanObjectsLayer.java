@@ -3,11 +3,11 @@ package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.vcontroller.tooltipfactory.TaskTooltipFactory;
+import ru.khasang.cachoeira.vcontroller.tooltipfactory.TooltipFactory;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskGanttPlanTaskBar;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.labelslayer.label.TaskBarLabel;
-import ru.khasang.cachoeira.viewcontroller.mainwindow.tooltipfactory.TaskTooltipFactory;
-import ru.khasang.cachoeira.viewcontroller.mainwindow.tooltipfactory.TooltipFactory;
 
 public class TaskGanttPlanObjectsLayer extends ObjectsLayer {
     TooltipFactory<ITask> tooltipFactory = new TaskTooltipFactory();
@@ -27,7 +27,7 @@ public class TaskGanttPlanObjectsLayer extends ObjectsLayer {
         TaskBar taskBar = new TaskGanttPlanTaskBar(controller);
         taskBar.initTaskRectangle(task, null);
         taskBar.setTask(task);
-//        taskBar.setContextMenu(uiControl.getController(), task);
+        taskBar.setContextMenu(task);
         taskBar.setTooltip(tooltipFactory.createTooltip(task));
 //         Создаем "панель" на которой будут отображаться привязанные ресурсы
         controller.getTaskGanttPlan().getLabelsLayer().setLabelToTaskBar(taskBar);
