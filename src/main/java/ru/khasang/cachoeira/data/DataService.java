@@ -6,7 +6,7 @@ import ru.khasang.cachoeira.model.IProject;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.Project;
 import ru.khasang.cachoeira.properties.RecentProjectsController;
-import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.MainWindowController;
 
 import java.io.File;
 
