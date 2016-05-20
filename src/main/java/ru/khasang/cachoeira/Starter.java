@@ -5,7 +5,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.data.DataService;
-import ru.khasang.cachoeira.vcontroller.StartWindowController;
+import ru.khasang.cachoeira.viewcontroller.StartWindowController;
 
 import java.io.File;
 import java.util.List;
