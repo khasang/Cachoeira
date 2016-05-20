@@ -1,7 +1,6 @@
 package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.selectedobjectlayer.backgroundtaskbar;
 
 import javafx.beans.value.ChangeListener;
-import javafx.scene.control.TreeItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import ru.khasang.cachoeira.model.ITask;
@@ -12,7 +11,7 @@ import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskb
 public abstract class BackgroundTaskBar extends Rectangle {
     private final TaskBar taskBar;
     @SuppressWarnings("FieldCanBeLocal")
-    private ChangeListener<TreeItem<ITask>> selectedTaskListener;
+    private ChangeListener<ITask> selectedTaskListener;
     private MainWindowController controller;
 
     public BackgroundTaskBar(TaskBar taskBar,
@@ -35,14 +34,14 @@ public abstract class BackgroundTaskBar extends Rectangle {
 
     public void setListener() {
         selectedTaskListener = (observable, oldValue, newValue) -> {
-            if (newValue != null && taskBar.getTask().equals(newValue.getValue())) {
-                setSelected(true);
+            if (newValue != null && taskBar.getTask().equals(newValue)) {
+                this.setSelected(true);
             }
-            if (newValue == null || !taskBar.getTask().equals(newValue.getValue())) {
-                setSelected(false);
+            if (newValue == null || !taskBar.getTask().equals(newValue)) {
+                this.setSelected(false);
             }
         };
-        controller.getTaskTableView().getSelectionModel().selectedItemProperty().addListener(selectedTaskListener);
+        controller.selectedTaskProperty().addListener(selectedTaskListener);
     }
 
     public void setSelected(boolean enabled) {
