@@ -4,7 +4,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.MainWindowController;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.labelslayer.label.TaskBarLabel;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
 

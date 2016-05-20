@@ -19,8 +19,8 @@ import ru.khasang.cachoeira.commands.task.SetTaskStartAndFinishDateCommand;
 import ru.khasang.cachoeira.commands.task.SetTaskStartDateCommand;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.vcontroller.MainWindowController;
-import ru.khasang.cachoeira.vcontroller.contextmenus.TaskContextMenu;
+import ru.khasang.cachoeira.viewcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.contextmenus.TaskContextMenu;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;

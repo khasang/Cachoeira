@@ -7,7 +7,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import ru.khasang.cachoeira.vcontroller.CreateNewProjectWindowController;
+import ru.khasang.cachoeira.viewcontroller.CreateNewProjectWindowController;
 import ru.khasang.cachoeira.view.IView;
 import ru.khasang.cachoeira.view.createnewprojectwindow.panes.IButtonsBox;
 import ru.khasang.cachoeira.view.createnewprojectwindow.panes.IFieldsPane;

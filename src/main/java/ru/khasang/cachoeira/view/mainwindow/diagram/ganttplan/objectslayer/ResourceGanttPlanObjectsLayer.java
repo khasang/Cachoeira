@@ -2,9 +2,9 @@ package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer;
 
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.vcontroller.MainWindowController;
-import ru.khasang.cachoeira.vcontroller.tooltipfactory.TaskTooltipFactory;
-import ru.khasang.cachoeira.vcontroller.tooltipfactory.TooltipFactory;
+import ru.khasang.cachoeira.viewcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.tooltipfactory.TaskTooltipFactory;
+import ru.khasang.cachoeira.viewcontroller.tooltipfactory.TooltipFactory;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.ResourceGanttPlanTaskBar;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
 

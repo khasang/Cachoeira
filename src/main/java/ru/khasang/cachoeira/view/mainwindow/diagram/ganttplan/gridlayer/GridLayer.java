@@ -3,7 +3,7 @@ package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.gridlayer;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.MainWindowController;
 
 public abstract class GridLayer extends Pane {
     // This is to make the stroke be drawn 'on pixel'.

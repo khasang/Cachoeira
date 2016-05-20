@@ -1,6 +1,6 @@
 package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.selectedobjectlayer;
 
-import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.MainWindowController;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.labelslayer.label.TaskBarLabel;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.selectedobjectlayer.backgroundtaskbar.BackgroundTaskBar;

@@ -1,7 +1,7 @@
 package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan;
 
 import javafx.scene.control.ScrollPane;
-import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.MainWindowController;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.dateline.DateLine;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.dateline.ResourceGanttPlanDateLine;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.gridlayer.GridLayer;

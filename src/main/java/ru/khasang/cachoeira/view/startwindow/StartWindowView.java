@@ -14,7 +14,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import ru.khasang.cachoeira.vcontroller.StartWindowController;
+import ru.khasang.cachoeira.viewcontroller.StartWindowController;
 import ru.khasang.cachoeira.view.IView;
 
 import java.io.File;

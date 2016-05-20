@@ -5,7 +5,7 @@ import javafx.beans.WeakInvalidationListener;
 import javafx.scene.layout.Pane;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.MainWindowController;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
 
 public abstract class ObjectsLayer extends Pane {

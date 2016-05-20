@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.khasang.cachoeira.model.*;
-import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.MainWindowController;
 import ru.khasang.cachoeira.view.IView;
 import ru.khasang.cachoeira.view.mainwindow.diagram.TableAndGanttPane;
 import ru.khasang.cachoeira.view.mainwindow.menubar.AbstractMenuBar;

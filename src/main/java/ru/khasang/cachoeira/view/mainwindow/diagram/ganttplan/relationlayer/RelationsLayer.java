@@ -6,7 +6,7 @@ import javafx.collections.WeakListChangeListener;
 import javafx.scene.layout.Pane;
 import ru.khasang.cachoeira.model.IDependentTask;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.MainWindowController;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.relationlayer.relationline.RelationLine;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.relationlayer.relationline.TaskGanttPlanRelationLine;

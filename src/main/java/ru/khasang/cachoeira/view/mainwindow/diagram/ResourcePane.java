@@ -1,7 +1,7 @@
 package ru.khasang.cachoeira.view.mainwindow.diagram;
 
 import javafx.scene.control.SplitPane;
-import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.viewcontroller.MainWindowController;
 import ru.khasang.cachoeira.view.mainwindow.diagram.buttonbox.AbstractButtonsBox;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.AbstractGanttPlan;
 import ru.khasang.cachoeira.view.mainwindow.diagram.tables.AbstractTableView;
