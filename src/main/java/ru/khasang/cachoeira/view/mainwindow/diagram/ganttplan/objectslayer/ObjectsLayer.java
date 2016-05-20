@@ -7,7 +7,6 @@ import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
-import ru.khasang.cachoeira.viewcontroller.UIControl;
 
 public abstract class ObjectsLayer extends Pane {
     protected MainWindowController controller;
