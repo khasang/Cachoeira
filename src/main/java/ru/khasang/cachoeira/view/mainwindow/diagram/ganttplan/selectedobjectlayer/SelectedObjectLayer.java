@@ -6,7 +6,6 @@ import ru.khasang.cachoeira.vcontroller.MainWindowController;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.labelslayer.label.TaskBarLabel;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.selectedobjectlayer.backgroundtaskbar.BackgroundTaskBar;
-import ru.khasang.cachoeira.viewcontroller.UIControl;
 
 public abstract class SelectedObjectLayer extends Pane {
     public SelectedObjectLayer() {
