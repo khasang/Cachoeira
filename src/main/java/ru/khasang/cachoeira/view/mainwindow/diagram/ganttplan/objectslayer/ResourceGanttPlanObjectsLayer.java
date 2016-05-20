@@ -3,10 +3,10 @@ package ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer;
 import ru.khasang.cachoeira.model.IResource;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.vcontroller.MainWindowController;
+import ru.khasang.cachoeira.vcontroller.tooltipfactory.TaskTooltipFactory;
+import ru.khasang.cachoeira.vcontroller.tooltipfactory.TooltipFactory;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.ResourceGanttPlanTaskBar;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.objectslayer.taskbar.TaskBar;
-import ru.khasang.cachoeira.viewcontroller.mainwindow.tooltipfactory.TaskTooltipFactory;
-import ru.khasang.cachoeira.viewcontroller.mainwindow.tooltipfactory.TooltipFactory;
 
 public class ResourceGanttPlanObjectsLayer extends ObjectsLayer {
     TooltipFactory<ITask> tooltipFactory = new TaskTooltipFactory();
@@ -21,7 +21,7 @@ public class ResourceGanttPlanObjectsLayer extends ObjectsLayer {
         taskBar.initTaskRectangle(task, resource);
         taskBar.setTask(task);
         taskBar.setResource(resource);
-//        taskBar.setContextMenu(uiControl.getController(), task);
+        taskBar.setContextMenu(task);
         taskBar.setTooltip(tooltipFactory.createTooltip(task));
         return taskBar;
     }
