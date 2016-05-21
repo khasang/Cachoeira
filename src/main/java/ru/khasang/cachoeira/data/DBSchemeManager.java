@@ -85,15 +85,15 @@ public class DBSchemeManager implements DataStoreInterface {
             connection = dbHelper.getConnection(file.getPath());
             for (ITask task : project.getTaskList()) {
                 preparedStatement = connection.prepareStatement("" +
-                        "INSERT INTO Tasks(Name, Start_Date, Finish_Date, Duration, Done_Percent, Priority_Type, Cost, Description) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+                        "INSERT INTO Tasks(Name, Start_Date, Finish_Date, Duration, Done_Percent, Cost, Description) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?);");
                 preparedStatement.setString(1, task.getName());
                 preparedStatement.setString(2, task.getStartDate().toString());
                 preparedStatement.setString(3, task.getFinishDate().toString());
                 preparedStatement.setInt(4, task.getDuration());
                 preparedStatement.setDouble(5, task.getDonePercent());
-                preparedStatement.setDouble(7, task.getCost());
-                preparedStatement.setString(8, task.getDescription());
+                preparedStatement.setDouble(6, task.getCost());
+                preparedStatement.setString(7, task.getDescription());
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -216,7 +216,7 @@ public class DBSchemeManager implements DataStoreInterface {
             connection = dbHelper.getConnection(file.getPath());
             statement = connection.createStatement();
             resultSet = statement.executeQuery("" +
-                    "SELECT Id, Name, Start_Date, Finish_Date, Duration, Done_Percent, Cost, Description, Priority_Type " +
+                    "SELECT Id, Name, Start_Date, Finish_Date, Duration, Done_Percent, Cost, Description " +
                     "FROM   Tasks;");
             while (resultSet.next()) {
                 ITask task = new Task();
