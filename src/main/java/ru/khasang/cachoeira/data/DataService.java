@@ -44,7 +44,7 @@ public class DataService {
 
             MainWindowController mainWindowController = new MainWindowController(projectFile, project, new CommandExecutor());
             mainWindowController.launch();
-            mainWindowController.refreshTableView();
+            mainWindowController.refreshInformation();
         }
     }
 
