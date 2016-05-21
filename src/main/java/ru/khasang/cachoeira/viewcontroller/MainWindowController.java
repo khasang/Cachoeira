@@ -442,6 +442,26 @@ public class MainWindowController {
         itemList.removeIf(item -> item.getValue().equals(object));
     }
 
+    public void refreshInformation() {
+        // При загрузке проверяем наличие задач
+        for (ITask task : project.getTaskList()) {
+            TreeItem<ITask> treeItem = new TreeItem<>(task);
+            taskTableView.getRoot().getChildren().add(treeItem);
+            taskTableView.getSelectionModel().select(treeItem);
+        }
+
+        for (IResource resource : project.getResourceList()) {
+            TreeItem<IResource> treeItem = new TreeItem<>(resource);
+            resourceTableView.getRoot().getChildren().add(treeItem);
+            resourceTableView.getSelectionModel().select(treeItem);
+        }
+
+        taskGanttPlan.getObjectsLayer().refreshPlan();
+        taskGanttPlan.getRelationsLayer().refreshRelationsDiagram(this);
+
+        resourceGanttPlan.getObjectsLayer().refreshPlan();
+    }
+
     public IProject getProject() {
         return project;
     }
