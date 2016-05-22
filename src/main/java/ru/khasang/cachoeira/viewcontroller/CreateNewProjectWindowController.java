@@ -132,9 +132,9 @@ public class CreateNewProjectWindowController {
 ////        if (view.getStage().isShowing()) {
 ////            view.getStage().close(); //закрываем стартовое окно
 ////        }
-        DataService.getInstance().createProject(project, file);
         // Закрываем это окошко
         view.getStage().close();
+        DataService.getInstance().createProject(project, file);
     }
 
     public IView getParentView() {
