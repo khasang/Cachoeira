@@ -8,57 +8,29 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.WeakListChangeListener;
-import ru.khasang.cachoeira.view.UIControl;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
-import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Класс описывающий задачу.
  */
 public class Task implements ITask {
-    // Айди (изменить нельзя)
     private final ReadOnlyIntegerWrapper id = new ReadOnlyIntegerWrapper(this, "id", taskSequence.incrementAndGet());
-    // Имя задачи
     private StringProperty name = new SimpleStringProperty(this, "name");
-    // Начальная дата
     private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
-    // Конечная дата
     private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
-    // Продолжительность (начальная дата минус конечная)
     private IntegerProperty duration = new SimpleIntegerProperty(this, "duration");
-    // Процент выполнения задачи
     private IntegerProperty donePercent = new SimpleIntegerProperty(this, "donePercent");
-    // Приоритет задачи
-    private ObjectProperty<PriorityType> priorityType = new SimpleObjectProperty<>(this, "priorityType");
-    // Стоимость задачи
     private DoubleProperty cost = new SimpleDoubleProperty(this, "cost");
-    // Описание задачи (комментарий)
     private StringProperty description = new SimpleStringProperty(this, "description");
-    private ObservableList<IDependentTask> parentTasks = FXCollections.observableArrayList(dependentTask -> new Observable[]{
-            dependentTask.getTask().finishDateProperty(),
-            dependentTask.dependenceTypeProperty()
-    });
-    private ObservableList<IDependentTask> childTasks = FXCollections.observableArrayList(dependentTask -> new Observable[]{
-            dependentTask.taskProperty(),
-            dependentTask.dependenceTypeProperty()
-    });
-    // Группа задач в которой находится эта задача
+    private ObservableList<IDependentTask> parentTasks = FXCollections.observableArrayList(this::setObservableParentTaskFields);
+    private ObservableList<IDependentTask> childTasks = FXCollections.observableArrayList(this::setObservableChildTaskFields);
     private ObjectProperty<ITaskGroup> taskGroup = new SimpleObjectProperty<>(this, "taskGroup");
-    // Список ресурсов к которым привязана эта задача
-    private ObservableList<IResource> resources = FXCollections.observableArrayList(resource -> new Observable[]{
-            resource.nameProperty(),
-            resource.resourceTypeProperty(),
-            resource.emailProperty(),
-            resource.descriptionProperty()
-    });
+    private ObservableList<IResource> resources = FXCollections.observableArrayList(this::setObservableResourceFields);
 
-    private ResourceBundle bundle = UIControl.bundle;
-
-    // Запоминаем количество задач
     private static AtomicInteger taskSequence = new AtomicInteger(-1); // -1, потому что первым идет рутовый элемент в таблице задач (rootTask)
 
     @SuppressWarnings("FieldCanBeLocal")
@@ -72,11 +44,10 @@ public class Task implements ITask {
      * Конструктор с дефолтовыми значениями.
      */
     public Task() {
-        this.name.setValue(bundle.getString("task") + " " + id.getValue());
+        this.name.setValue("Task" + " " + id.getValue());
         this.startDate.setValue(LocalDate.now());
         this.finishDate.setValue(startDate.getValue().plusDays(1));
         this.duration.setValue(1);
-        this.priorityType.setValue(PriorityType.Normal);
 
         // В случае изменения дат пересчитываем duration
         startDateChangeListener = (observable, oldValue, newValue) -> {
@@ -270,21 +241,6 @@ public class Task implements ITask {
     }
 
     @Override
-    public final PriorityType getPriorityType() {
-        return priorityType.get();
-    }
-
-    @Override
-    public final void setPriorityType(PriorityType type) {
-        this.priorityType.set(type);
-    }
-
-    @Override
-    public final ObjectProperty<PriorityType> priorityTypeProperty() {
-        return priorityType;
-    }
-
-    @Override
     public void addParentTask(IDependentTask parentTask) {
         this.parentTasks.add(parentTask);
     }
@@ -371,5 +327,28 @@ public class Task implements ITask {
     @Override
     public void setDuration(int duration) {
         this.duration.set(duration);
+    }
+
+    private Observable[] setObservableParentTaskFields(IDependentTask dependentTask) {
+        return new Observable[]{
+                dependentTask.getTask().finishDateProperty(),
+                dependentTask.dependenceTypeProperty()
+        };
+    }
+
+    private Observable[] setObservableChildTaskFields(IDependentTask dependentTask) {
+        return new Observable[]{
+                dependentTask.taskProperty(),
+                dependentTask.dependenceTypeProperty()
+        };
+    }
+
+    private Observable[] setObservableResourceFields(IResource resource) {
+        return new Observable[]{
+                resource.nameProperty(),
+                resource.resourceTypeProperty(),
+                resource.emailProperty(),
+                resource.descriptionProperty()
+        };
     }
 }

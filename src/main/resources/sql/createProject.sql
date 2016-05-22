@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS Tasks (
 	Finish_Date         TEXT                NOT NULL,
 	Duration            INTEGER             NOT NULL,
 	Done_Percent        REAL,
-	Priority_Type       TEXT                NOT NULL,
 	Cost                REAL,
 	Description         TEXT,
 	Task_Group          TEXT

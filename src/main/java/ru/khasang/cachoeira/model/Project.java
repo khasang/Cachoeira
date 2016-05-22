@@ -14,36 +14,25 @@ import java.time.LocalDate;
  * Класс описывающий проект.
  */
 public class Project implements IProject {
-
     private StringProperty name = new SimpleStringProperty(this, "name");
     private ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(this, "startDate");
     private ObjectProperty<LocalDate> finishDate = new SimpleObjectProperty<>(this, "finishDate");
     private StringProperty description = new SimpleStringProperty(this, "description");
-    private ObservableList<ITask> tasks = FXCollections.observableArrayList(task -> new Observable[]{
-            task.nameProperty(),
-            task.startDateProperty(),
-            task.finishDateProperty(),
-            task.donePercentProperty(),
-            task.priorityTypeProperty(),
-            task.costProperty(),
-            task.getParentTasks(),
-            task.getChildTasks(),
-            task.groupProperty(),
-            task.getResourceList(),
-            task.descriptionProperty()
-    });
-    private ObservableList<IResource> resources = FXCollections.observableArrayList(resource -> new Observable[]{
-            resource.nameProperty(),
-            resource.resourceTypeProperty(),
-            resource.emailProperty(),
-            resource.descriptionProperty()
-    });
+    private ObservableList<ITask> tasks = FXCollections.observableArrayList(this::setObservableTaskFields);
+    private ObservableList<IResource> resources = FXCollections.observableArrayList(this::setObservableResourceFields);
 
     public Project() {
     }
 
     public Project(String name) {
         this.name.set(name);
+    }
+
+    public Project(String name, LocalDate startDate, LocalDate finishDate, String description) {
+        this.name.setValue(name);
+        this.startDate.setValue(startDate);
+        this.finishDate.setValue(finishDate);
+        this.description.setValue(description);
     }
 
     @Override
@@ -134,5 +123,29 @@ public class Project implements IProject {
     @Override
     public final StringProperty descriptionProperty() {
         return description;
+    }
+
+    private Observable[] setObservableTaskFields(ITask task) {
+        return new Observable[]{
+                task.nameProperty(),
+                task.startDateProperty(),
+                task.finishDateProperty(),
+                task.donePercentProperty(),
+                task.costProperty(),
+                task.getParentTasks(),
+                task.getChildTasks(),
+                task.groupProperty(),
+                task.getResourceList(),
+                task.descriptionProperty()
+        };
+    }
+
+    private Observable[] setObservableResourceFields(IResource resource) {
+        return new Observable[]{
+                resource.nameProperty(),
+                resource.resourceTypeProperty(),
+                resource.emailProperty(),
+                resource.descriptionProperty()
+        };
     }
 }
