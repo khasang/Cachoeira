@@ -105,8 +105,10 @@ public class SettingsManager implements ISettingsManager {
     public void writeRecentProjects(List<File> recentProjectList) {
         Properties properties = new Properties();
         StringBuilder recentProjectsValue = new StringBuilder();
-        recentProjectList.forEach(recentProject -> recentProjectsValue.append(recentProject.getPath()).append(","));
-        recentProjectsValue.delete(recentProjectsValue.length() - 1, recentProjectsValue.length());
+        if (!recentProjectList.isEmpty()) {
+            recentProjectList.forEach(recentProject -> recentProjectsValue.append(recentProject.getPath()).append(","));
+            recentProjectsValue.delete(recentProjectsValue.length() - 1, recentProjectsValue.length());
+        }
         try (OutputStream outputStream = new FileOutputStream(RECENT_PROJECTS)){
             properties.setProperty("RecentProjects", recentProjectsValue.toString());
             properties.store(outputStream, null);
