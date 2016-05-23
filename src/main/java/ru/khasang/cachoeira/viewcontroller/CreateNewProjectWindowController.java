@@ -128,12 +128,12 @@ public class CreateNewProjectWindowController {
                 fieldsPane.getStartDatePicker().getValue(),
                 fieldsPane.getFinishDatePicker().getValue(),
                 fieldsPane.getDescriptionTextArea().getText());
-//        // Закрываем это окошко
-//        view.getStage().close();
 //        // TODO: 07.05.2016 doesn't work
 ////        if (view.getStage().isShowing()) {
 ////            view.getStage().close(); //закрываем стартовое окно
 ////        }
+        // Закрываем это окошко
+        view.getStage().close();
         DataService.getInstance().createProject(project, file);
     }
 

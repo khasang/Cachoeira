@@ -1,32 +1,31 @@
 group 'ru.khasang.cachoeira'
-version '1.5.0'
+version '1.8.0'
 
 apply plugin: 'java'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+compileJava.sourceCompatibility = 1.8
+compileJava.targetCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
 
-repositories {
-    mavenCentral()
-}
+repositories.mavenCentral()
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.13'
     compile 'ch.qos.logback:logback-classic:1.1.3'
     compile 'ch.qos.logback:logback-core:1.1.3'
     compile 'org.xerial:sqlite-jdbc:3.7.2'
+    compile 'commons-io:commons-io:2.5'
+
     testCompile 'junit:junit:4.11'
 }
 
-compileJava {
-    options.encoding = "UTF-8"
-}
-
-jar {
-    manifest {
-        attributes(
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-                'Main-Class': 'ru.khasang.cachoeira.Start'
-        )
-    }
-}
+jar.from(configurations.compile.collect {
+    it.isDirectory() ? it : zipTree(it)
+})
+jar.manifest.attributes(
+        'Class-Path': configurations.compile.collect {
+            it.getName()
+        }.join(' '),
+        'Main-Class': 'ru.khasang.cachoeira.Starter'
+)
+jar.archiveName = 'cachoeira.jar'

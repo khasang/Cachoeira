@@ -1,12 +1,9 @@
 package ru.khasang.cachoeira.data;
 
+import org.apache.commons.io.IOUtils;
 import ru.khasang.cachoeira.model.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.*;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,10 +22,9 @@ public class DBSchemeManager implements DataStoreInterface {
         try {
             connection = dbHelper.getConnection(path);
             statement = connection.createStatement();
-            String sql = new String(Files.readAllBytes(Paths.get(getClass().getResource("/sql/createProject.sql").toURI())), "UTF-8");
+            String sql = new String(IOUtils.toByteArray(this.getClass().getResourceAsStream("/sql/createProject.sql")));
             statement.executeUpdate(sql);
-//            uiControl.setFile(new File(path));
-        } catch (IOException | URISyntaxException | SQLException e) {
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         } finally {
             DBHelper.closeResources(statement);
@@ -43,9 +39,9 @@ public class DBSchemeManager implements DataStoreInterface {
         try {
             connection = dbHelper.getConnection(file.getPath());
             statement = connection.createStatement();
-            String sql = new String(Files.readAllBytes(Paths.get(getClass().getResource("/sql/createResourceExport.sql").toURI())), "UTF-8");
+            String sql = new String(IOUtils.toByteArray(this.getClass().getResourceAsStream("/sql/createResourceExport.sql")));
             statement.executeUpdate(sql);
-        } catch (URISyntaxException | IOException | SQLException e) {
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         } finally {
             DBHelper.closeResources(statement);
