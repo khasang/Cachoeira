@@ -89,6 +89,8 @@ public class MainWindowController {
     private AbstractGanttPlan taskGanttPlan;
     private AbstractGanttPlan resourceGanttPlan;
 
+    private AbstractPropertiesSidePanel sidePanel;
+
     private ProjectInformation projectInformation;
     private TaskInformation taskInformation;
     private TaskAssignedResources taskAssignedResources;
@@ -258,7 +260,7 @@ public class MainWindowController {
         resourceGanttPlan = new ResourceGanttPlan(this);
         menuBar = new MainMenuBar();
 
-        AbstractPropertiesSidePanel sidePanel = new PropertiesSidePanel(new ProjectPropertiesPane(), new TaskPropertiesPane(), new ResourcePropertiesPane());
+        sidePanel = new PropertiesSidePanel(new ProjectPropertiesPane(), new TaskPropertiesPane(), new ResourcePropertiesPane());
 
         projectInformation = (ProjectInformation) createPropertiesModule(new ProjectInformation());
         sidePanel.getProjectPropertiesPane().addNewPropertiesTitledModule(projectInformation, "Information");
@@ -592,5 +594,9 @@ public class MainWindowController {
 
     public CommandExecutor getCommandExecutor() {
         return commandExecutor;
+    }
+
+    public AbstractPropertiesSidePanel getSidePanel() {
+        return sidePanel;
     }
 }
