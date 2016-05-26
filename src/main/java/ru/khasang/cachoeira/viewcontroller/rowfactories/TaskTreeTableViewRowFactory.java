@@ -2,6 +2,8 @@ package ru.khasang.cachoeira.viewcontroller.rowfactories;
 
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.viewcontroller.MainWindowController;
@@ -47,6 +49,14 @@ public class TaskTreeTableViewRowFactory implements Callback<TreeTableView<ITask
         row.setOnDragDetected(event -> dragAndDrop.dragDetected(event, row));
         row.setOnDragOver(event -> dragAndDrop.dragOver(event, row));
         row.setOnDragDropped(event -> dragAndDrop.dragDropped(event, row));
+        /* Properties double-click */
+        row.setOnMouseClicked(this::handleDoubleClick);
         return row;
+    }
+
+    private void handleDoubleClick(MouseEvent event) {
+        if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
+            controller.getSidePanel().getSelectionModel().select(controller.getSidePanel().getTaskPropertiesTab());
+        }
     }
 }

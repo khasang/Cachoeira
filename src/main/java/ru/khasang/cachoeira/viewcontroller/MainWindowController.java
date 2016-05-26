@@ -48,10 +48,10 @@ import ru.khasang.cachoeira.view.mainwindow.menubar.AbstractMenuBar;
 import ru.khasang.cachoeira.view.mainwindow.menubar.MainMenuBar;
 import ru.khasang.cachoeira.view.mainwindow.properties.AbstractPropertiesSidePanel;
 import ru.khasang.cachoeira.view.mainwindow.properties.modules.*;
-import ru.khasang.cachoeira.view.mainwindow.properties.panes.ProjectPropertiesPane;
 import ru.khasang.cachoeira.view.mainwindow.properties.PropertiesSidePanel;
-import ru.khasang.cachoeira.view.mainwindow.properties.panes.ResourcePropertiesPane;
-import ru.khasang.cachoeira.view.mainwindow.properties.panes.TaskPropertiesPane;
+import ru.khasang.cachoeira.view.mainwindow.properties.panes.ProjectPropertiesTab;
+import ru.khasang.cachoeira.view.mainwindow.properties.panes.ResourcePropertiesTab;
+import ru.khasang.cachoeira.view.mainwindow.properties.panes.TaskPropertiesTab;
 
 import java.io.File;
 
@@ -88,6 +88,8 @@ public class MainWindowController {
 
     private AbstractGanttPlan taskGanttPlan;
     private AbstractGanttPlan resourceGanttPlan;
+
+    private AbstractPropertiesSidePanel sidePanel;
 
     private ProjectInformation projectInformation;
     private TaskInformation taskInformation;
@@ -258,22 +260,22 @@ public class MainWindowController {
         resourceGanttPlan = new ResourceGanttPlan(this);
         menuBar = new MainMenuBar();
 
-        AbstractPropertiesSidePanel sidePanel = new PropertiesSidePanel(new ProjectPropertiesPane(), new TaskPropertiesPane(), new ResourcePropertiesPane());
+        sidePanel = new PropertiesSidePanel(new ProjectPropertiesTab(), new TaskPropertiesTab(), new ResourcePropertiesTab());
 
         projectInformation = (ProjectInformation) createPropertiesModule(new ProjectInformation());
-        sidePanel.getProjectPropertiesPane().addNewPropertiesTitledModule(projectInformation, "Information");
+        sidePanel.getProjectPropertiesTab().addNewPropertiesTitledModule(projectInformation, "Information");
 
         taskInformation = (TaskInformation) createPropertiesModule(new TaskInformation());
-        sidePanel.getTaskPropertiesPane().addNewPropertiesTitledModule(taskInformation, "Information");
+        sidePanel.getTaskPropertiesTab().addNewPropertiesTitledModule(taskInformation, "Information");
         taskAssignedResources = (TaskAssignedResources) createPropertiesModule(new TaskAssignedResources());
-        sidePanel.getTaskPropertiesPane().addNewPropertiesTitledModule(taskAssignedResources, "Assigned Resources");
+        sidePanel.getTaskPropertiesTab().addNewPropertiesTitledModule(taskAssignedResources, "Assigned Resources");
         taskDependencies = (TaskDependencies) createPropertiesModule(new TaskDependencies());
-        sidePanel.getTaskPropertiesPane().addNewPropertiesTitledModule(taskDependencies, "Dependencies");
+        sidePanel.getTaskPropertiesTab().addNewPropertiesTitledModule(taskDependencies, "Dependencies");
 
         resourceInformation = (ResourceInformation) createPropertiesModule(new ResourceInformation());
-        sidePanel.getResourcePropertiesPane().addNewPropertiesTitledModule(resourceInformation, "Information");
+        sidePanel.getResourcePropertiesTab().addNewPropertiesTitledModule(resourceInformation, "Information");
         resourceAssignedTasks = (ResourceAssignedTasks) createPropertiesModule(new ResourceAssignedTasks());
-        sidePanel.getResourcePropertiesPane().addNewPropertiesTitledModule(resourceAssignedTasks, "Assigned Tasks");
+        sidePanel.getResourcePropertiesTab().addNewPropertiesTitledModule(resourceAssignedTasks, "Assigned Tasks");
 
         tasksButtonsBox = new TasksButtonBox();
         resourcesButtonBox = new ResourcesButtonBox();
@@ -592,5 +594,9 @@ public class MainWindowController {
 
     public CommandExecutor getCommandExecutor() {
         return commandExecutor;
+    }
+
+    public AbstractPropertiesSidePanel getSidePanel() {
+        return sidePanel;
     }
 }
