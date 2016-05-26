@@ -91,13 +91,6 @@ public class MainWindowController {
 
     private AbstractPropertiesSidePanel sidePanel;
 
-    private ProjectInformation projectInformation;
-    private TaskInformation taskInformation;
-    private TaskAssignedResources taskAssignedResources;
-    private TaskDependencies taskDependencies;
-    private ResourceInformation resourceInformation;
-    private ResourceAssignedTasks resourceAssignedTasks;
-
     private AbstractButtonsBox tasksButtonsBox;
     private AbstractButtonsBox resourcesButtonBox;
 
@@ -141,24 +134,6 @@ public class MainWindowController {
         taskButtonsBoxController.attachButtonsEvents();
         ButtonsBoxController resourceButtonsBoxController = new ResourceButtonsBoxController(resourcesButtonBox, this);
         resourceButtonsBoxController.attachButtonsEvents();
-
-        ModuleController projectInformationModuleController = new ProjectInformationModuleController(projectInformation, this);
-        projectInformationModuleController.initModule();
-
-        ModuleController taskInformationModuleController = new TaskInformationModuleController(taskInformation, this);
-        taskInformationModuleController.initModule();
-
-        TaskAssignedResourcesModuleController taskAssignedResourcesModuleController = new TaskAssignedResourcesModuleController(taskAssignedResources, this);
-        taskAssignedResourcesModuleController.initModule();
-
-        TaskDependenciesModuleController taskDependenciesModuleController = new TaskDependenciesModuleController(taskDependencies, this);
-        taskDependenciesModuleController.initModule();
-
-        ModuleController resourceInformationModuleController = new ResourceInformationModuleController(resourceInformation, this);
-        resourceInformationModuleController.initModule();
-
-        ResourceAssignedTasksModuleController resourceAssignedTasksModuleController = new ResourceAssignedTasksModuleController(resourceAssignedTasks, this);
-        resourceAssignedTasksModuleController.initModule();
 
         this.attachGanttPlanEvents();
         this.attachContextMenus();
@@ -260,22 +235,7 @@ public class MainWindowController {
         resourceGanttPlan = new ResourceGanttPlan(this);
         menuBar = new MainMenuBar();
 
-        sidePanel = new PropertiesSidePanel(new ProjectPropertiesTab(), new TaskPropertiesTab(), new ResourcePropertiesTab());
-
-        projectInformation = (ProjectInformation) createPropertiesModule(new ProjectInformation());
-        sidePanel.getProjectPropertiesTab().addNewPropertiesTitledModule(projectInformation, "Information");
-
-        taskInformation = (TaskInformation) createPropertiesModule(new TaskInformation());
-        sidePanel.getTaskPropertiesTab().addNewPropertiesTitledModule(taskInformation, "Information");
-        taskAssignedResources = (TaskAssignedResources) createPropertiesModule(new TaskAssignedResources());
-        sidePanel.getTaskPropertiesTab().addNewPropertiesTitledModule(taskAssignedResources, "Assigned Resources");
-        taskDependencies = (TaskDependencies) createPropertiesModule(new TaskDependencies());
-        sidePanel.getTaskPropertiesTab().addNewPropertiesTitledModule(taskDependencies, "Dependencies");
-
-        resourceInformation = (ResourceInformation) createPropertiesModule(new ResourceInformation());
-        sidePanel.getResourcePropertiesTab().addNewPropertiesTitledModule(resourceInformation, "Information");
-        resourceAssignedTasks = (ResourceAssignedTasks) createPropertiesModule(new ResourceAssignedTasks());
-        sidePanel.getResourcePropertiesTab().addNewPropertiesTitledModule(resourceAssignedTasks, "Assigned Tasks");
+        sidePanel = createSidePropertiesPanel();
 
         tasksButtonsBox = new TasksButtonBox();
         resourcesButtonBox = new ResourcesButtonBox();
@@ -304,6 +264,40 @@ public class MainWindowController {
                         resourceGanttPlan,
                         resourcesButtonBox,
                         resourceSplitPane));
+    }
+
+    private AbstractPropertiesSidePanel createSidePropertiesPanel() {
+        AbstractPropertiesSidePanel sidePanel = new PropertiesSidePanel(new ProjectPropertiesTab(), new TaskPropertiesTab(), new ResourcePropertiesTab());
+
+        ProjectInformation projectInformation = (ProjectInformation) createPropertiesModule(new ProjectInformation());
+        sidePanel.getProjectPropertiesTab().addNewPropertiesTitledModule(projectInformation, "Information");
+
+        TaskInformation taskInformation = (TaskInformation) createPropertiesModule(new TaskInformation());
+        sidePanel.getTaskPropertiesTab().addNewPropertiesTitledModule(taskInformation, "Information");
+        TaskAssignedResources taskAssignedResources = (TaskAssignedResources) createPropertiesModule(new TaskAssignedResources());
+        sidePanel.getTaskPropertiesTab().addNewPropertiesTitledModule(taskAssignedResources, "Assigned Resources");
+        TaskDependencies taskDependencies = (TaskDependencies) createPropertiesModule(new TaskDependencies());
+        sidePanel.getTaskPropertiesTab().addNewPropertiesTitledModule(taskDependencies, "Dependencies");
+
+        ResourceInformation resourceInformation = (ResourceInformation) createPropertiesModule(new ResourceInformation());
+        sidePanel.getResourcePropertiesTab().addNewPropertiesTitledModule(resourceInformation, "Information");
+        ResourceAssignedTasks resourceAssignedTasks = (ResourceAssignedTasks) createPropertiesModule(new ResourceAssignedTasks());
+        sidePanel.getResourcePropertiesTab().addNewPropertiesTitledModule(resourceAssignedTasks, "Assigned Tasks");
+
+        ModuleController projectInformationModuleController = new ProjectInformationModuleController(projectInformation, this);
+        projectInformationModuleController.initModule();
+        ModuleController taskInformationModuleController = new TaskInformationModuleController(taskInformation, this);
+        taskInformationModuleController.initModule();
+        TaskAssignedResourcesModuleController taskAssignedResourcesModuleController = new TaskAssignedResourcesModuleController(taskAssignedResources, this);
+        taskAssignedResourcesModuleController.initModule();
+        TaskDependenciesModuleController taskDependenciesModuleController = new TaskDependenciesModuleController(taskDependencies, this);
+        taskDependenciesModuleController.initModule();
+        ModuleController resourceInformationModuleController = new ResourceInformationModuleController(resourceInformation, this);
+        resourceInformationModuleController.initModule();
+        ResourceAssignedTasksModuleController resourceAssignedTasksModuleController = new ResourceAssignedTasksModuleController(resourceAssignedTasks, this);
+        resourceAssignedTasksModuleController.initModule();
+
+        return sidePanel;
     }
 
     private boolean isMaximized() {
