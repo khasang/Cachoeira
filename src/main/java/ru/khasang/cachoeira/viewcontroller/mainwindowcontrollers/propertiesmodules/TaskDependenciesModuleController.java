@@ -24,6 +24,8 @@ public class TaskDependenciesModuleController implements ModuleController {
 
     @Override
     public void initModule() {
+        module.createPane();
+
         module.disableProperty().bind(controller.selectedTaskProperty().isNull());
 
         taskChangeListener = this::selectedTaskObserver;

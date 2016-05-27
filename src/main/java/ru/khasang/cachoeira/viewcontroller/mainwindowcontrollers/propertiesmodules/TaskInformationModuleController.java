@@ -40,6 +40,7 @@ public class TaskInformationModuleController implements ModuleController {
 
     @Override
     public void initModule() {
+        module.createPane();
         // set disable if selected task is null
         module.disableProperty().bind(controller.selectedTaskProperty().isNull());
         // init listeners

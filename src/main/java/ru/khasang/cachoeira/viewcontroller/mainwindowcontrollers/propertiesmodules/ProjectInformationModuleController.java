@@ -27,11 +27,14 @@ public class ProjectInformationModuleController implements ModuleController {
 
     @Override
     public void initModule() {
+        // initialize module
+        module.createPane();
+        //
         module.getNameField().setText(controller.getProject().getName());
         module.getStartDatePicker().setValue(controller.getProject().getStartDate());
         module.getFinishDatePicker().setValue(controller.getProject().getFinishDate());
         module.getDescriptionTextArea().setText(controller.getProject().getDescription());
-
+        //
         controller.getProject().nameProperty().addListener(this::projectNameObserver);
         controller.getProject().startDateProperty().addListener(this::projectStartDateObserver);
         controller.getProject().finishDateProperty().addListener(this::projectFinishDateObserver);

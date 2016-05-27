@@ -25,6 +25,7 @@ public class TaskAssignedResourcesModuleController implements ModuleController {
 
     @Override
     public void initModule() {
+        module.createPane();
         // set disable when selected task is null
         module.disableProperty().bind(controller.selectedTaskProperty().isNull());
         // table view things
