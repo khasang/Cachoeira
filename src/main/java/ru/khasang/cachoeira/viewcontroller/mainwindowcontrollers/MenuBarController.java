@@ -31,6 +31,9 @@ public class MenuBarController {
     }
 
     public void attachMenuBarEvents() {
+        // build menu bar
+        menuBar.createMenu();
+        // set handlers on menu buttons
         menuBar.getCreateProject().setOnAction(this::createProjectMenuItemHandler);
         menuBar.getOpenProject().setOnAction(this::openProjectMenuItemHandler);
         menuBar.getSaveProject().setOnAction(this::saveProjectMenuItemHandler);
