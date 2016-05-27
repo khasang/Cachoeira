@@ -21,6 +21,7 @@ public class PropertiesSidePanelController {
     public void createSidePanel() {
         //
         sidePanel = new PropertiesSidePanel(new ProjectPropertiesTab(), new TaskPropertiesTab(), new ResourcePropertiesTab());
+        sidePanel.createPanes();
         //
         IModule projectInformation = new ProjectInformation();
         IModule taskInformation = new TaskInformation();
