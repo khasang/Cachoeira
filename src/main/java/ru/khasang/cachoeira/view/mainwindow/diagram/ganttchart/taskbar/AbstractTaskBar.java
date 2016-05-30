@@ -1,16 +1,10 @@
 package ru.khasang.cachoeira.view.mainwindow.diagram.ganttchart.taskbar;
 
 import javafx.geometry.Insets;
-import javafx.scene.Cursor;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import ru.khasang.cachoeira.commands.task.SetTaskStartAndFinishDateCommand;
-import ru.khasang.cachoeira.commands.task.SetTaskStartDateCommand;
 import ru.khasang.cachoeira.model.ITask;
-import ru.khasang.cachoeira.viewcontroller.MainWindowController;
 
 public abstract class AbstractTaskBar extends Pane {
     protected static final String BAR_COLOR = "#03A9F4";
@@ -22,27 +16,28 @@ public abstract class AbstractTaskBar extends Pane {
     protected static final double BAR_ARC = 5;
 
     private final ITask task;
-    private final MainWindowController controller;
 
     protected Rectangle backgroundRectangle;
     protected Rectangle donePercentRectangle;
+    protected Rectangle leftResizableRectangle;
+    protected Rectangle rightResizableRectangle;
 
-    private Delta dragDelta;
-    private Delta leftDelta;
-    private Delta rightDelta;
-
-    public AbstractTaskBar(ITask task, MainWindowController controller) {
+    public AbstractTaskBar(ITask task) {
         this.task = task;
-        this.controller = controller;
         this.setPadding(new Insets(0, 0, 5, 0));
     }
 
     public void createBar() {
         backgroundRectangle = createBackgroundRectangle();
         donePercentRectangle = createDonePercentRectangle(backgroundRectangle);
-        enableBarDrag();
-        enableBarResizing();
+        leftResizableRectangle = createLeftResizableRectangle(backgroundRectangle);
+        rightResizableRectangle = createRightResizableRectangle(backgroundRectangle);
 
+        this.getChildren().addAll(
+                backgroundRectangle,
+                donePercentRectangle,
+                leftResizableRectangle,
+                rightResizableRectangle);
     }
 
     private Rectangle createBackgroundRectangle() {
@@ -72,92 +67,7 @@ public abstract class AbstractTaskBar extends Pane {
         return rectangle;
     }
 
-    private void enableBarDrag() {
-        dragDelta = new Delta();
-        backgroundRectangle.setOnMousePressed(this::handleBackgroundRectangleOnMousePressed);
-        backgroundRectangle.setOnMouseDragged(this::handleBackgroundRectangleOnMouseDragged);
-        backgroundRectangle.setOnMouseReleased(this::handleBackgroundRectangleOnMouseReleased);
-    }
-
-    private void handleBackgroundRectangleOnMousePressed(MouseEvent event) {
-        if (event.getButton() == MouseButton.PRIMARY) {
-            dragDelta.x = getLayoutX() - event.getSceneX();
-            getScene().setCursor(Cursor.MOVE);
-        }
-        if (event.getButton() == MouseButton.SECONDARY) {
-            // TODO: 27.05.2016 context menu
-        }
-    }
-
-    private void handleBackgroundRectangleOnMouseDragged(MouseEvent event) {
-        if (event.getButton() == MouseButton.PRIMARY) {
-            double newX = event.getSceneX() + dragDelta.x;
-            if (newX > 0 && newX + backgroundRectangle.getWidth() <= getParent().getBoundsInParent().getWidth()) {
-                if (Math.round(newX / controller.getZoomMultiplier()) != dragDelta.oldX) {
-                    dragDelta.oldX = Math.round(newX / controller.getZoomMultiplier() * controller.getZoomMultiplier() - 1.5);
-                    controller.getCommandExecutor().execute(new SetTaskStartAndFinishDateCommand(
-                            task,
-                            controller.getProject().getStartDate().plusDays(
-                                    Math.round(newX / controller.getZoomMultiplier())
-                            ),
-                            Math.round(backgroundRectangle.getWidth() / controller.getZoomMultiplier())
-                    ));
-                }
-            }
-        }
-    }
-
-    private void handleBackgroundRectangleOnMouseReleased(MouseEvent event) {
-        if (event.getButton() == MouseButton.PRIMARY) {
-            getScene().setCursor(Cursor.DEFAULT);
-        }
-    }
-
-    private void enableBarResizing() {
-        leftDelta = new Delta();
-        rightDelta = new Delta();
-        Rectangle leftResizableRectangle = createLeftResizableRectangle(backgroundRectangle);
-//        leftResizableRectangle.hoverProperty().addListener(this::handleHoverAction);
-        leftResizableRectangle.setOnMousePressed(this::handleResizableRectangleMousePressed);
-        leftResizableRectangle.setOnMouseDragged(this::handleResizableRectangleMouseDragged);
-        leftResizableRectangle.setOnMouseReleased(this::handleResizableRectangleMouseReleased);
-    }
-
-    private void handleResizableRectangleMousePressed(MouseEvent event) {
-        if (event.getButton() == MouseButton.PRIMARY) {
-            leftDelta.x = getLayoutX() - event.getSceneX();
-            getScene().setCursor(Cursor.H_RESIZE);
-        }
-    }
-
-    private void handleResizableRectangleMouseDragged(MouseEvent event) {
-        if (event.getButton() == MouseButton.PRIMARY) {
-            double newX = event.getSceneX() + leftDelta.x;
-            if (newX >= 0 && newX <= getLayoutX() + backgroundRectangle.getWidth()) {
-                if (Math.round(newX / controller.getZoomMultiplier()) != leftDelta.oldX) {
-                    if (!(Math.round(newX / controller.getZoomMultiplier()) * controller.getZoomMultiplier() - 1.5 == getLayoutX() + backgroundRectangle.getWidth())) {
-                        leftDelta.oldX = Math.round(newX / controller.getZoomMultiplier());
-                        double oldX = getLayoutX();
-                        this.setLayoutX(Math.round(newX / controller.getZoomMultiplier()) * controller.getZoomMultiplier() - 1.5);
-                        backgroundRectangle.setWidth(backgroundRectangle.getWidth() - (this.getLayoutX() - oldX));
-                        wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
-                        controller.getCommandExecutor().execute(new SetTaskStartDateCommand(
-                                task,
-                                controller.getProject().getStartDate().plusDays((Math.round(newX / controller.getZoomMultiplier())))));
-                        wasMovedByMouse = false; // Когда окончили движение фолз
-                    }
-                }
-            }
-        }
-    }
-
-    private void handleResizableRectangleMouseReleased(MouseEvent event) {
-        if (!event.isPrimaryButtonDown()) {
-            getScene().setCursor(Cursor.DEFAULT);
-        }
-    }
-
-    public Rectangle createLeftResizableRectangle(Rectangle backgroundRectangle) {
+    private Rectangle createLeftResizableRectangle(Rectangle backgroundRectangle) {
         Rectangle rectangle = new Rectangle();
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.widthProperty().bind(backgroundRectangle.widthProperty().divide(100).multiply(5));
@@ -167,8 +77,35 @@ public abstract class AbstractTaskBar extends Pane {
         return rectangle;
     }
 
-    private class Delta {
-        double x;
-        double oldX;
+    private Rectangle createRightResizableRectangle(Rectangle backgroundRectangle) {
+        Rectangle rectangle = new Rectangle();
+        rectangle.setFill(Color.TRANSPARENT);
+        rectangle.widthProperty().bind(backgroundRectangle.widthProperty().divide(100).multiply(5));
+        rectangle.xProperty().bind(backgroundRectangle.xProperty()
+                .add(backgroundRectangle.widthProperty())
+                .subtract(rectangle.widthProperty()));
+        rectangle.heightProperty().bind(backgroundRectangle.heightProperty());
+        rectangle.layoutYProperty().bind(backgroundRectangle.layoutYProperty());
+        return rectangle;
+    }
+
+    public ITask getTask() {
+        return task;
+    }
+
+    public Rectangle getBackgroundRectangle() {
+        return backgroundRectangle;
+    }
+
+    public Rectangle getDonePercentRectangle() {
+        return donePercentRectangle;
+    }
+
+    public Rectangle getLeftResizableRectangle() {
+        return leftResizableRectangle;
+    }
+
+    public Rectangle getRightResizableRectangle() {
+        return rightResizableRectangle;
     }
 }
