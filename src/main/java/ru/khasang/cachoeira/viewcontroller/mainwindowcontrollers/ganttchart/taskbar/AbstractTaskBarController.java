@@ -6,12 +6,16 @@ import javafx.scene.input.MouseEvent;
 import ru.khasang.cachoeira.commands.task.SetTaskFinishDateCommand;
 import ru.khasang.cachoeira.commands.task.SetTaskStartAndFinishDateCommand;
 import ru.khasang.cachoeira.commands.task.SetTaskStartDateCommand;
+import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttchart.taskbar.AbstractTaskBar;
 import ru.khasang.cachoeira.viewcontroller.MainWindowController;
 
 public abstract class AbstractTaskBarController {
+    public static final double PIXELS_OFFSET = 1.5;
+
     protected final AbstractTaskBar taskBar;
     protected final MainWindowController controller;
+    protected final ITask task;
 
     private Delta dragDelta;
     private Delta leftDelta;
@@ -19,9 +23,10 @@ public abstract class AbstractTaskBarController {
 
     protected boolean wasMovedByMouse;
 
-    public AbstractTaskBarController(AbstractTaskBar taskBar, MainWindowController controller) {
+    public AbstractTaskBarController(AbstractTaskBar taskBar, MainWindowController controller, ITask task) {
         this.taskBar = taskBar;
         this.controller = controller;
+        this.task = task;
     }
 
     public void build() {
@@ -36,11 +41,9 @@ public abstract class AbstractTaskBarController {
     }
 
     private void handleBackgroundRectangleOnMousePressed(MouseEvent event) {
-        // Выделяем нужный элемент в таблице
-        int i = controller.getProject().getTaskList().indexOf(taskBar.getTask());
-        controller.getTaskTableView().getSelectionModel().select(i);
+        setSelectedThisTaskInTableViewByIndex(getIndexOfTask(task));
         if (event.getButton() == MouseButton.PRIMARY) {
-            dragDelta.x = taskBar.getLayoutX() - event.getSceneX();
+            dragDelta.x = getInitialDragCoordinate(event);
             taskBar.getScene().setCursor(Cursor.MOVE);
         }
         if (event.getButton() == MouseButton.SECONDARY) {
@@ -52,15 +55,15 @@ public abstract class AbstractTaskBarController {
         if (event.getButton() == MouseButton.PRIMARY) {
             double newX = event.getSceneX() + dragDelta.x;
             if (newX > 0 && newX + taskBar.getBackgroundRectangle().getWidth() <= taskBar.getParent().getBoundsInParent().getWidth()) {
-                if (Math.round(newX / controller.getZoomMultiplier()) != dragDelta.oldX) {
-                    dragDelta.oldX = Math.round(newX / controller.getZoomMultiplier() * controller.getZoomMultiplier() - 1.5);
+                if (getFullDaysFromValue(newX) != dragDelta.oldX) {
+                    dragDelta.oldX = getPixelsValueFromFullDays(getFullDaysFromValue(newX)) - PIXELS_OFFSET;
                     wasMovedByMouse = true;
                     controller.getCommandExecutor().execute(new SetTaskStartAndFinishDateCommand(
-                            taskBar.getTask(),
+                            task,
                             controller.getProject().getStartDate().plusDays(
-                                    Math.round(newX / controller.getZoomMultiplier())
+                                    getFullDaysFromValue(newX)
                             ),
-                            Math.round(taskBar.getBackgroundRectangle().getWidth() / controller.getZoomMultiplier())
+                            getFullDaysFromValue(taskBar.getBackgroundRectangle().getWidth())
                     ));
                     wasMovedByMouse = false;
                 }
@@ -85,36 +88,33 @@ public abstract class AbstractTaskBarController {
 
 
 //        rightResizableRectangle.hoverProperty().addListener(this::handleHoverAction);
-        taskBar.getRightResizableRectangle().setOnMousePressed(this::handleRightResizableRectangleMousePresses);
+        taskBar.getRightResizableRectangle().setOnMousePressed(this::handleRightResizableRectangleMousePressed);
         taskBar.getRightResizableRectangle().setOnMouseDragged(this::handleRightResizableRectangleMouseDragged);
         taskBar.getRightResizableRectangle().setOnMouseReleased(this::handleRightResizableRectangleMouseReleased);
     }
 
     private void handleResizableRectangleMousePressed(MouseEvent event) {
-        // Выделяем нужный элемент в таблице
-        int i = controller.getProject().getTaskList().indexOf(taskBar.getTask());
-        controller.getTaskTableView().getSelectionModel().select(i);
+        setSelectedThisTaskInTableViewByIndex(getIndexOfTask(task));
         if (event.getButton() == MouseButton.PRIMARY) {
-            leftDelta.x = taskBar.getLayoutX() - event.getSceneX();
+            leftDelta.x = getInitialDragCoordinate(event);
             taskBar.getScene().setCursor(Cursor.H_RESIZE);
         }
     }
 
-
     private void handleResizableRectangleMouseDragged(MouseEvent event) {
         if (event.getButton() == MouseButton.PRIMARY) {
             double newX = event.getSceneX() + leftDelta.x;
-            if (newX >= 0 && newX <= taskBar.getLayoutX() + taskBar.getBackgroundRectangle().getWidth()) {
-                if (Math.round(newX / controller.getZoomMultiplier()) != leftDelta.oldX) {
-                    if (!(Math.round(newX / controller.getZoomMultiplier()) * controller.getZoomMultiplier() - 1.5 == taskBar.getLayoutX() + taskBar.getBackgroundRectangle().getWidth())) {
-                        leftDelta.oldX = Math.round(newX / controller.getZoomMultiplier());
+            if (newX >= 0 && newX <= getTaskBarEndCoordinate()) {
+                if (getFullDaysFromValue(newX) != leftDelta.oldX) {
+                    if (!isNewCoordinateEqualsTaskBarEndCoordinate(newX)) {
+                        leftDelta.oldX = getFullDaysFromValue(newX);
                         double oldX = taskBar.getLayoutX();
-                        taskBar.setLayoutX(Math.round(newX / controller.getZoomMultiplier()) * controller.getZoomMultiplier() - 1.5);
+                        taskBar.setLayoutX(getPixelsValueFromFullDays(getFullDaysFromValue(newX)) - PIXELS_OFFSET);
                         taskBar.getBackgroundRectangle().setWidth(taskBar.getBackgroundRectangle().getWidth() - (taskBar.getLayoutX() - oldX));
                         wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                         controller.getCommandExecutor().execute(new SetTaskStartDateCommand(
-                                taskBar.getTask(),
-                                controller.getProject().getStartDate().plusDays((Math.round(newX / controller.getZoomMultiplier())))));
+                                task,
+                                controller.getProject().getStartDate().plusDays((getFullDaysFromValue(newX)))));
                         wasMovedByMouse = false; // Когда окончили движение фолз
                     }
                 }
@@ -122,17 +122,9 @@ public abstract class AbstractTaskBarController {
         }
     }
 
-    private void handleResizableRectangleMouseReleased(MouseEvent event) {
-        if (!event.isPrimaryButtonDown()) {
-            taskBar.getScene().setCursor(Cursor.DEFAULT);
-        }
-    }
-
-    private void handleRightResizableRectangleMousePresses(MouseEvent event) {
-        // Выделяем нужный элемент в таблице
-        int i = controller.getProject().getTaskList().indexOf(taskBar.getTask());
-        controller.getTaskTableView().getSelectionModel().select(i);
-        if (event.isPrimaryButtonDown()) {
+    private void handleRightResizableRectangleMousePressed(MouseEvent event) {
+        setSelectedThisTaskInTableViewByIndex(getIndexOfTask(task));
+        if (event.getButton() == MouseButton.PRIMARY) {
             // record a delta distance for the drag and drop operation.
             rightDelta.x = taskBar.getBackgroundRectangle().getWidth() - event.getSceneX();
             taskBar.getScene().setCursor(Cursor.H_RESIZE);
@@ -140,17 +132,17 @@ public abstract class AbstractTaskBarController {
     }
 
     private void handleRightResizableRectangleMouseDragged(MouseEvent event) {
-        if (event.isPrimaryButtonDown()) {
+        if (event.getButton() == MouseButton.PRIMARY) {
             double newWidth = event.getSceneX() + rightDelta.x;
             if (newWidth >= controller.getZoomMultiplier() && taskBar.getLayoutX() + newWidth <= taskBar.getParent().getBoundsInLocal().getWidth()) {
                 // Хреначим привязку к сетке
-                if (Math.round(newWidth / controller.getZoomMultiplier()) != rightDelta.oldX) {
-                    rightDelta.oldX = Math.round(newWidth / controller.getZoomMultiplier());
-                    taskBar.getBackgroundRectangle().setWidth(Math.round(newWidth / controller.getZoomMultiplier()) * controller.getZoomMultiplier());
+                if (getFullDaysFromValue(newWidth) != rightDelta.oldX) {
+                    rightDelta.oldX = getFullDaysFromValue(newWidth);
+                    taskBar.getBackgroundRectangle().setWidth(getPixelsValueFromFullDays(getFullDaysFromValue(newWidth)));
                     wasMovedByMouse = true; // Когда начитаем двигать, то тру, чтобы не началась рекурсия
                     controller.getCommandExecutor().execute(new SetTaskFinishDateCommand(
-                            taskBar.getTask(),
-                            taskBar.getTask().getStartDate().plusDays(Math.round(taskBar.getBackgroundRectangle().getWidth() / controller.getZoomMultiplier()))));
+                            task,
+                            task.getStartDate().plusDays(getFullDaysFromValue(taskBar.getBackgroundRectangle().getWidth()))));
                     wasMovedByMouse = false; // Когда окончили движение фолз
                 }
             }
@@ -161,6 +153,41 @@ public abstract class AbstractTaskBarController {
         if (!event.isPrimaryButtonDown()) {
             taskBar.getScene().setCursor(Cursor.DEFAULT);
         }
+    }
+
+    private boolean isNewCoordinateEqualsTaskBarEndCoordinate(double newX) {
+        return getPixelsValueFromFullDays(getFullDaysFromValue(newX)) - PIXELS_OFFSET == getTaskBarEndCoordinate();
+    }
+
+    private double getInitialDragCoordinate(MouseEvent event) {
+        return taskBar.getLayoutX() - event.getSceneX();
+    }
+
+    private double getTaskBarEndCoordinate() {
+        return taskBar.getLayoutX() + taskBar.getBackgroundRectangle().getWidth();
+    }
+
+    private void handleResizableRectangleMouseReleased(MouseEvent event) {
+        if (!event.isPrimaryButtonDown()) {
+            taskBar.getScene().setCursor(Cursor.DEFAULT);
+        }
+    }
+
+    private void setSelectedThisTaskInTableViewByIndex(int indexOfTask) {
+        // Выделяем нужный элемент в таблице
+        controller.getTaskTableView().getSelectionModel().select(indexOfTask);
+    }
+
+    private int getIndexOfTask(ITask task) {
+        return controller.getProject().getTaskList().indexOf(task);
+    }
+
+    private long getFullDaysFromValue(double value) {
+        return Math.round(value / controller.getZoomMultiplier());
+    }
+
+    private long getPixelsValueFromFullDays(long days) {
+        return days * controller.getZoomMultiplier();
     }
 
     private class Delta {
