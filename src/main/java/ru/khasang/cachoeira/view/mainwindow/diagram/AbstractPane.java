@@ -14,8 +14,8 @@ import ru.khasang.cachoeira.view.mainwindow.diagram.buttonbox.AbstractButtonsBox
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.AbstractGanttPlan;
 import ru.khasang.cachoeira.view.mainwindow.diagram.tables.AbstractTableView;
 
-public abstract class TableAndGanttPane extends VBox {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TableAndGanttPane.class.getName());
+public abstract class AbstractPane extends VBox {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPane.class.getName());
 
     private static final double ROW_HEIGHT = 31;
 

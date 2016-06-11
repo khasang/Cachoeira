@@ -6,7 +6,7 @@ import ru.khasang.cachoeira.view.mainwindow.diagram.buttonbox.AbstractButtonsBox
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttplan.AbstractGanttPlan;
 import ru.khasang.cachoeira.view.mainwindow.diagram.tables.AbstractTableView;
 
-public class TaskPane extends TableAndGanttPane {
+public class TaskPane extends AbstractPane {
     public TaskPane(MainWindowController controller, AbstractTableView tableView, AbstractGanttPlan ganttPlan, AbstractButtonsBox buttonsBox, SplitPane splitPane) {
         this.controller = controller;
         this.tableView = tableView;
