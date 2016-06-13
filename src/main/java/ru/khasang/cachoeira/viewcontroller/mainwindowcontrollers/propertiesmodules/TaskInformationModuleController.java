@@ -160,7 +160,7 @@ public class TaskInformationModuleController implements ModuleController {
                         || startDate.isAfter(controller.getProject().getFinishDate())) {
                     setDisable(true);
                 }
-                setOnMousePressed(event -> startDateHandler(startDate));
+                setOnMouseReleased(event -> startDateHandler(startDate));
             }
         };
     }
