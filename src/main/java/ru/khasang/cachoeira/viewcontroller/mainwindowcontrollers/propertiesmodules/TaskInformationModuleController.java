@@ -6,7 +6,6 @@ import javafx.beans.WeakInvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
-import javafx.event.ActionEvent;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.input.KeyCode;
@@ -52,15 +51,16 @@ public class TaskInformationModuleController implements ModuleController {
         controller.selectedTaskProperty().addListener(new WeakChangeListener<>(taskChangeListener));
         // set handlers on fields events
         module.getNameField().setOnKeyPressed(this::nameFieldHandler);
-        module.getStartDatePicker().setOnAction(this::startDatePickerHandler);
-        module.getFinishDatePicker().setOnAction(this::finishDatePickerHandler);
         module.getDonePercentSlider().setOnMouseReleased(this::donePercentSliderHandler);
         module.getCostField().setOnKeyPressed(this::costFieldHandler);
         module.getDescriptionTextArea().setOnKeyPressed(this::descriptionTextAreaHandler);
         // set listeners to discard changes when field is unfocused
-        module.getNameField().focusedProperty().addListener(new WeakInvalidationListener(nameFieldInvalidationListener));
-        module.getCostField().focusedProperty().addListener(new WeakInvalidationListener(costFieldInvalidationListener));
-        module.getDescriptionTextArea().focusedProperty().addListener(new WeakInvalidationListener(descriptionTextAreaInvalidationListener));
+        module.getNameField().focusedProperty().addListener(
+                new WeakInvalidationListener(nameFieldInvalidationListener));
+        module.getCostField().focusedProperty().addListener(
+                new WeakInvalidationListener(costFieldInvalidationListener));
+        module.getDescriptionTextArea().focusedProperty().addListener(
+                new WeakInvalidationListener(descriptionTextAreaInvalidationListener));
         // set day cells disabled outer valid range
         module.getStartDatePicker().setDayCellFactory(this::makeStartDatePickerCellsDisabled);
         module.getFinishDatePicker().setDayCellFactory(this::makeFinishDatePickerCellsDisabled);
@@ -82,20 +82,6 @@ public class TaskInformationModuleController implements ModuleController {
             module.getNameField().setText(controller.getSelectedTask().getName());
             module.getNameField().getParent().requestFocus();
         }
-    }
-
-    private void startDatePickerHandler(ActionEvent event) {
-        controller.getCommandExecutor().execute(new SetTaskStartDateCommand(
-                controller.getSelectedTask(),
-                module.getStartDatePicker().getValue()
-        ));
-    }
-
-    private void finishDatePickerHandler(ActionEvent event) {
-        controller.getCommandExecutor().execute(new SetTaskFinishDateCommand(
-                controller.getSelectedTask(),
-                module.getFinishDatePicker().getValue()
-        ));
     }
 
     private void donePercentSliderHandler(MouseEvent event) {
@@ -170,11 +156,20 @@ public class TaskInformationModuleController implements ModuleController {
                 if (startDate.isBefore(controller.getProject().getStartDate())) {
                     setDisable(true);
                 }
-                if (startDate.isEqual(controller.getProject().getFinishDate()) || startDate.isAfter(controller.getProject().getFinishDate())) {
+                if (startDate.isEqual(controller.getProject().getFinishDate())
+                        || startDate.isAfter(controller.getProject().getFinishDate())) {
                     setDisable(true);
                 }
+                setOnMousePressed(event -> startDateHandler(startDate));
             }
         };
+    }
+
+    private void startDateHandler(LocalDate startDate) {
+        controller.getCommandExecutor().execute(new SetTaskStartDateCommand(
+                controller.getSelectedTask(),
+                startDate
+        ));
     }
 
     private DateCell makeFinishDatePickerCellsDisabled(DatePicker datePicker) {
@@ -185,10 +180,19 @@ public class TaskInformationModuleController implements ModuleController {
                 if (finishDate.isBefore(module.getStartDatePicker().getValue().plusDays(1))) {
                     setDisable(true);
                 }
-                if (finishDate.isEqual(controller.getProject().getFinishDate().plusDays(1)) || finishDate.isAfter(controller.getProject().getFinishDate().plusDays(1))) {
+                if (finishDate.isEqual(controller.getProject().getFinishDate().plusDays(1))
+                        || finishDate.isAfter(controller.getProject().getFinishDate().plusDays(1))) {
                     setDisable(true);
                 }
+                setOnMouseReleased(event -> finishDateHandler(finishDate));
             }
         };
+    }
+
+    private void finishDateHandler(LocalDate finishDate) {
+        controller.getCommandExecutor().execute(new SetTaskFinishDateCommand(
+                controller.getSelectedTask(),
+                finishDate
+        ));
     }
 }
