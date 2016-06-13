@@ -7,7 +7,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import ru.khasang.cachoeira.commands.resource.RenameResourceCommand;
@@ -56,13 +57,16 @@ public class ResourceInformationModuleController implements ModuleController {
         controller.selectedResourceProperty().addListener(new WeakChangeListener<>(resourceChangeListener));
 
         module.getNameField().setOnKeyPressed(this::nameFieldObserver);
-        module.getResourceTypeComboBox().setOnAction(this::resourceTypeComboBoxObserver);
+        module.getResourceTypeComboBox().setCellFactory(this::resourceTypeComboBoxFactory);
         module.getEmailField().setOnKeyPressed(this::emailFieldObserver);
         module.getDescriptionTextArea().setOnKeyPressed(this::descriptionTextAreaObserver);
 
-        module.getNameField().focusedProperty().addListener(new WeakInvalidationListener(nameFieldInvalidationListener));
-        module.getEmailField().focusedProperty().addListener(new WeakInvalidationListener(emailFieldInvalidationListener));
-        module.getDescriptionTextArea().focusedProperty().addListener(new WeakInvalidationListener(descriptionTextAreaInvalidationListener));
+        module.getNameField().focusedProperty().addListener(
+                new WeakInvalidationListener(nameFieldInvalidationListener));
+        module.getEmailField().focusedProperty().addListener(
+                new WeakInvalidationListener(emailFieldInvalidationListener));
+        module.getDescriptionTextArea().focusedProperty().addListener(
+                new WeakInvalidationListener(descriptionTextAreaInvalidationListener));
     }
 
     private void selectedResourceObserver(ObservableValue<? extends IResource> observableValue,
@@ -91,12 +95,6 @@ public class ResourceInformationModuleController implements ModuleController {
         }
     }
 
-    private void resourceTypeComboBoxObserver(ActionEvent event) {
-        controller.getCommandExecutor().execute(new SetResourceTypeCommand(
-                controller.getSelectedResource(),
-                module.getResourceTypeComboBox().getValue()));
-    }
-
     private void emailFieldObserver(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             controller.getCommandExecutor().execute(new SetResourceEmailCommand(
@@ -108,6 +106,27 @@ public class ResourceInformationModuleController implements ModuleController {
             module.getEmailField().setText(controller.getSelectedResource().getEmail());
             module.getEmailField().getParent().requestFocus();
         }
+    }
+
+    private ListCell<ResourceType> resourceTypeComboBoxFactory(ListView<ResourceType> resourceTypeListView) {
+        return new ListCell<ResourceType>() {
+            @Override
+            protected void updateItem(ResourceType item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(item.toString());
+                    setOnMouseReleased(event -> resourceTypeHandler(item));
+                }
+            }
+        };
+    }
+
+    private void resourceTypeHandler(ResourceType item) {
+        controller.getCommandExecutor().execute(new SetResourceTypeCommand(
+                controller.getSelectedResource(),
+                item));
     }
 
     private void descriptionTextAreaObserver(KeyEvent event) {
