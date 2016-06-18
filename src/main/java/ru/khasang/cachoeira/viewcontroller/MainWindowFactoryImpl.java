@@ -111,26 +111,26 @@ public class MainWindowFactoryImpl implements MainWindowFactory {
         while (change.next()) {
             // Добавляем
             if (change.wasAdded()) {
-                change.getAddedSubList().forEach(task -> {
-                    // Получаем индекс задачи
-                    int indexOfTask = controller.getProject().getTaskList().indexOf(task);
-                    // Создаем элемент таблицы и присваиваем ему нашу задачу
-                    TreeItem<ITask> taskTreeItem = new TreeItem<>(task);
-                    // Добавляем элемент в таблицу на нужную строку (indexOfTask)
-                    // Обязательно нужен индекс элемента, иначе драгндроп не будет работать
-                    controller.getTaskTableView().getRoot().getChildren().add(indexOfTask, taskTreeItem);
-                    // Выделяем добавленный элемент в таблице
-                    controller.getTaskTableView().getSelectionModel().select(taskTreeItem);
-                });
+                change.getAddedSubList().forEach(this::createTreeItem);
             }
             // Удаляем
             if (change.wasRemoved()) {
-                change.getRemoved().forEach(task -> {
-                    // Сначала удаляем из таблицы...
-                    removeTreeItem(task, controller.getTaskTableView().getRoot().getChildren());
-                });
+                change.getRemoved().forEach(task ->
+                        removeTreeItem(task, controller.getTaskTableView().getRoot().getChildren()));
             }
         }
+    }
+
+    private void createTreeItem(ITask task) {
+        // Получаем индекс задачи
+        int indexOfTask = controller.getProject().getTaskList().indexOf(task);
+        // Создаем элемент таблицы и присваиваем ему нашу задачу
+        TreeItem<ITask> taskTreeItem = new TreeItem<>(task);
+        // Добавляем элемент в таблицу на нужную строку (indexOfTask)
+        // Обязательно нужен индекс элемента, иначе драгндроп не будет работать
+        controller.getTaskTableView().getRoot().getChildren().add(indexOfTask, taskTreeItem);
+        // Выделяем добавленный элемент в таблице
+        controller.getTaskTableView().getSelectionModel().select(taskTreeItem);
     }
 
     private void setSelectedResourceNull(ListChangeListener.Change<? extends TreeItem<IResource>> change) {
@@ -175,7 +175,6 @@ public class MainWindowFactoryImpl implements MainWindowFactory {
             }
         }
     }
-
 
     /**
      * Removes item from list.
