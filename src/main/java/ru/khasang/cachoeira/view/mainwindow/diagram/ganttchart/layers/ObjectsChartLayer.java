@@ -37,4 +37,20 @@ public class ObjectsChartLayer extends Pane implements AbstractChartLayer {
             }
         }
     }
+
+    /**
+     * Gets task bar by task.
+     *
+     * @param task Task.
+     * @return TaskBar or null.
+     */
+    public TaskBar findTaskBarByTask(ITask task) {
+        for (Node node : this.getChildren()) {
+            TaskBar taskBar = (TaskBar) node;
+            if (taskBar.getTask().equals(task)) {
+                return taskBar;
+            }
+        }
+        return null;
+    }
 }
