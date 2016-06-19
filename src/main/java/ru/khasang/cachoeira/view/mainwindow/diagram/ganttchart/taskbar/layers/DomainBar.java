@@ -74,7 +74,9 @@ public class DomainBar implements TaskBarLayer {
                 taskBar.getPixelsValueFromFullDays(
                         taskBar.getFullDaysFromValue(taskBar.getLayoutX())) - X_OFFSET, DURATION);
         timeline.play();
+        taskBar.isMovedByMouse(true);
         taskBar.executeDraggingCommand();
+        taskBar.isMovedByMouse(false);
     }
 
     private class Delta {
