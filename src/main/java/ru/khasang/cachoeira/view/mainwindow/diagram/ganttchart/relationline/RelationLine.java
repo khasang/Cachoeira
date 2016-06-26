@@ -17,6 +17,9 @@ import ru.khasang.cachoeira.model.ITask;
 import ru.khasang.cachoeira.model.TaskDependencyType;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttchart.taskbar.TaskBar;
 
+/**
+ * Abstract relation line.
+ */
 public abstract class RelationLine extends Group {
     private static final double[] ARROW_SHAPE = {3, 0, -3, -3, -3, 3};
     private static final Color LINE_COLOR = Color.valueOf("03bdf4");
