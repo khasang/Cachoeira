@@ -13,6 +13,7 @@ public abstract class GanttChart extends VBox {
     private final AbstractChartLayer dataLineChartLayer;
     private final AbstractChartLayer gridChartLayer;
     private final AbstractChartLayer objectsChartLayer;
+    private final AbstractChartLayer relationsChartLayer;
 
     private ScrollPane horizontalScrollPane;
     private ScrollPane verticalScrollPane;
@@ -26,6 +27,7 @@ public abstract class GanttChart extends VBox {
         this.dataLineChartLayer = layerFactory.createDateLine();
         this.gridChartLayer = layerFactory.createGridLayer();
         this.objectsChartLayer = layerFactory.createObjectsLayer();
+        this.relationsChartLayer = layerFactory.createRelationsLayer();
     }
 
     /**
@@ -36,7 +38,8 @@ public abstract class GanttChart extends VBox {
                 createChart(
                         dataLineChartLayer,
                         gridChartLayer,
-                        objectsChartLayer));
+                        objectsChartLayer,
+                        relationsChartLayer));
     }
 
     /**
@@ -49,8 +52,12 @@ public abstract class GanttChart extends VBox {
      */
     private Node createChart(AbstractChartLayer dataLineChartLayer,
                              AbstractChartLayer gridChartLayer,
-                             AbstractChartLayer objectsChartLayer) {
-        StackPane stackPane = new StackPane((Node) gridChartLayer, (Node) objectsChartLayer);
+                             AbstractChartLayer objectsChartLayer,
+                             AbstractChartLayer relationsChartLayer) {
+        StackPane stackPane = new StackPane(
+                (Node) gridChartLayer,
+                (Node) relationsChartLayer,
+                (Node) objectsChartLayer);
         verticalScrollPane = new ScrollPane(stackPane);
         verticalScrollPane.setFitToWidth(true);
         verticalScrollPane.setFitToHeight(true);
@@ -114,5 +121,14 @@ public abstract class GanttChart extends VBox {
      */
     public AbstractChartLayer getObjectsChartLayer() {
         return objectsChartLayer;
+    }
+
+    /**
+     * Getter.
+     *
+     * @return Returns relations layer.
+     */
+    public AbstractChartLayer getRelationsChartLayer() {
+        return relationsChartLayer;
     }
 }
