@@ -5,7 +5,8 @@ import javafx.scene.shape.Rectangle;
 import ru.khasang.cachoeira.view.mainwindow.diagram.ganttchart.taskbar.TaskBar;
 
 public class BackgroundBar implements TaskBarLayer {
-    public static final int BAR_ARC = 10;
+    private static final int BAR_ARC = 10;
+    private static final double OPACITY = 0.5;
 
     private final TaskBar taskBar;
 
@@ -16,9 +17,10 @@ public class BackgroundBar implements TaskBarLayer {
     @Override
     public Rectangle create() {
         Rectangle rectangle = new Rectangle();
+
         rectangle.setArcHeight(BAR_ARC);
         rectangle.setArcWidth(BAR_ARC);
-
+        rectangle.setOpacity(OPACITY);
         rectangle.setStroke(Color.TRANSPARENT);
         rectangle.setFill(Color.TRANSPARENT);
 
