@@ -32,6 +32,8 @@ public class GanttChartLayerFactoryImpl implements GanttChartLayerFactory {
 
     @Override
     public AbstractChartLayer createRelationsLayer() {
-        throw new RuntimeException("Still not implemented.");
+        RelationsChartLayer relationsChartLayer = new RelationsChartLayer(controller);
+        relationsChartLayer.createLayer();
+        return relationsChartLayer;
     }
 }
